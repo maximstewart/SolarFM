@@ -1,0 +1,11 @@
+#!/bin/bash
+#postrm (script executed after uninstalling the package)
+#set -e
+
+if [ -f /bin/pytop ]; then
+    rm /bin/pytop
+fi
+
+if [ -d /opt/Pytop ]; then
+    rm -rf /opt/Pytop
+fi
