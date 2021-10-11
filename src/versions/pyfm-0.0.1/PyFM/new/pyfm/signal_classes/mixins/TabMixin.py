@@ -37,6 +37,9 @@ class TabMixin(WidgetMixin):
         notebook.show_all()
         notebook.set_current_page(index)
 
+        # FIXME: set_tab_reorderable doesn't seem to work...
+        # notebook.set_tab_reorderable(tab, True)
+
     def close_tab(self, widget, eve):
         notebook      = widget.get_parent().get_parent()
         page          = notebook.get_current_page()

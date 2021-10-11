@@ -8,9 +8,10 @@ import inspect
 # Application imports
 from utils import Settings
 from signal_classes import Signals
+from __builtins__ import Builtins
 
 
-class Main:
+class Main(Builtins):
     def __init__(self, args):
         settings = Settings()
 

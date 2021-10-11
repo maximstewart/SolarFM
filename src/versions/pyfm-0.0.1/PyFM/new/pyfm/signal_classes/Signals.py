@@ -42,6 +42,7 @@ class Signals(WindowMixin, PaneMixin):
         self.window.show()
         self.generate_windows(self.state)
 
+
     def generate_windows(self, data = None):
         if data:
             for j, value in enumerate(data):
