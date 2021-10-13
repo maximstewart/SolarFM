@@ -57,6 +57,7 @@ class Settings:
 
             subpath           = settings["base_of_home"]
             HIDE_HIDDEN_FILES = True if settings["hide_hidden_files"] == "true" else False
+            FFMPG_THUMBNLR    = FFMPG_THUMBNLR if settings["thumbnailer_path"] == "" else settings["thumbnailer_path"]
             go_past_home      = True if settings["go_past_home"] == "true" else False
             lock_folder       = True if settings["lock_folder"] == "true" else False
             locked_folders    = settings["locked_folders"].split("::::")
