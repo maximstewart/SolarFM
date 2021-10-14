@@ -1,24 +1,39 @@
 # Python imports
-import json
+import threading, subprocess, time, json
 from os import path
 
 # Lib imports
-
 
 # Application imports
 from . import Window
 
 
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+    return wrapper
+
+
 class WindowController:
     def __init__(self):
-        USER_HOME             = path.expanduser('~')
-        CONFIG_PATH           = USER_HOME + "/.config/pyfm"
-        self.session_file     = CONFIG_PATH + "/session.json"
+        USER_HOME              = path.expanduser('~')
+        CONFIG_PATH            = USER_HOME + "/.config/pyfm"
+        self.session_file      = CONFIG_PATH + "/session.json"
 
-        self.active_window_id = ""
-        self.active_tab_id    = ""
-        self.windows          = []
+        self._event_sleep_time = 1
+        self.active_window_id  = ""
+        self.active_tab_id     = ""
+        self.windows           = []
+        self.fm_event_observer()
 
+    @threaded
+    def fm_event_observer(self):
+        while monitor_events:
+            time.sleep(event_sleep_time)
+            event = event_system.consume_fm_event()
+            print("fm")
+            if event:
+                print(event)
 
     def set_active_data(self, wid, tid):
         self.active_window_id = str(wid)

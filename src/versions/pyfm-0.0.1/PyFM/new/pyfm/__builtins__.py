@@ -1,34 +1,56 @@
 import builtins
 
 class Builtins:
-    # Makeshift "events" type system FIFO
-    def push_gui_event(event):
-        gui_events.append(event)
+    """Docstring for __builtins__ extender"""
 
-    def push_fm_event(event):
-        fm_events.append(event)
+    def __init__(self):
+        # NOTE: The format used is list of [type, target, data]
+        #       Where data may be any kind of data
+        self._gui_events = []
+        self._fm_events  = []
 
-    def pop_gui_event():
-        gui_events.pop(0)
+    # Makeshift fake "events" type system FIFO
+    def _pop_gui_event(self):
+        if len(self._gui_events) > 0:
+            return self._gui_events.pop(0)
+        return None
 
-    def pop_fm_event():
-        fm_events.pop(0)
-
-    def read_gui_event():
-        return gui_events[0]
-
-    def read_fm_event():
-        return fm_events[0]
+    def _pop_fm_event(self):
+        if len(self._fm_events) > 0:
+            return self._fm_events.pop(0)
+        return None
 
 
-    builtins.gui_events = []
-    builtins.fm_events  = []
+    def push_gui_event(self, event):
+        if len(event) == 3:
+            self._gui_events.append(event)
+            return None
 
-    # NOTE: Just reminding myself we can add to builtins two different ways...
-    __builtins__.update({"push_gui_event": push_gui_event})
-    __builtins__.update({"push_fm_event": push_fm_event})
+        raise Exception("Invald event format! Please do:  [type, target, data]")
 
-    builtins.pop_gui_event  = pop_gui_event
-    builtins.pop_fm_event   = pop_fm_event
-    builtins.read_gui_event = read_gui_event
-    builtins.read_fm_event  = read_fm_event
+    def push_fm_event(self, event):
+        if len(event) == 3:
+            self._fm_events.append(event)
+            return None
+
+        raise Exception("Invald event format! Please do:  [type, target, data]")
+
+    def read_gui_event(self):
+        return self._gui_events[0]
+
+    def read_fm_event(self):
+        return self._fm_events[0]
+
+    def consume_gui_event(self):
+        return self._pop_gui_event()
+
+    def consume_fm_event(self):
+        return self._pop_fm_event()
+
+
+
+# NOTE: Just reminding myself we can add to builtins two different ways...
+# __builtins__.update({"event_system": Builtins()})
+builtins.event_system      = Builtins()
+builtins.monitor_events    = True
+builtins.event_sleep_time  = 1

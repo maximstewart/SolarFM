@@ -1,7 +1,10 @@
 # Python imports
-import threading, subprocess, os
+import threading, subprocess, os, time
 
 # Gtk imports
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk as gtk
 
 # Application imports
 from .mixins import *
@@ -13,7 +16,6 @@ from shellfm import WindowController
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs).start()
-
     return wrapper
 
 
@@ -33,6 +35,12 @@ class Signals(WindowMixin, PaneMixin):
         self.window4           = self.builder.get_object("window4")
         self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
 
+        event_system.push_gui_event(["update", "window_1", []])
+        event_system.push_gui_event(["update", "window_2", []])
+        event_system.push_fm_event(["update", "window_fm_1", []])
+        event_system.push_fm_event(["update", "window_fm_2", []])
+
+
         self.single_click_open  = False
         self.is_pane1_hidden    = False
         self.is_pane2_hidden    = False
@@ -42,6 +50,24 @@ class Signals(WindowMixin, PaneMixin):
         self.window.show()
         self.generate_windows(self.state)
 
+        self.window.connect("delete-event", self.tear_down)
+        self.gui_event_observer()
+
+
+    @threaded
+    def gui_event_observer(self):
+        while monitor_events:
+            time.sleep(event_sleep_time)
+            event = event_system.consume_gui_event()
+            print("gui")
+            if event:
+                print(event)
+
+
+    def tear_down(self, widget, eve):
+        monitor_events = False
+        time.sleep(2)
+        gtk.main_quit()
 
     def generate_windows(self, data = None):
         if data:
