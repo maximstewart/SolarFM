@@ -56,17 +56,16 @@ class Signals(WindowMixin, PaneMixin):
 
     @threaded
     def gui_event_observer(self):
-        while monitor_events:
+        while event_system.monitor_events:
             time.sleep(event_sleep_time)
             event = event_system.consume_gui_event()
-            print("gui")
             if event:
                 print(event)
 
 
     def tear_down(self, widget, eve):
-        monitor_events = False
-        time.sleep(2)
+        event_system.monitor_events = False
+        time.sleep(event_sleep_time)
         gtk.main_quit()
 
     def generate_windows(self, data = None):

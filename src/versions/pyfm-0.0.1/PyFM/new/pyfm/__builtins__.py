@@ -6,8 +6,9 @@ class Builtins:
     def __init__(self):
         # NOTE: The format used is list of [type, target, data]
         #       Where data may be any kind of data
-        self._gui_events = []
-        self._fm_events  = []
+        self._gui_events    = []
+        self._fm_events     = []
+        self.monitor_events = True
 
     # Makeshift fake "events" type system FIFO
     def _pop_gui_event(self):
@@ -52,5 +53,4 @@ class Builtins:
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
 builtins.event_system      = Builtins()
-builtins.monitor_events    = True
 builtins.event_sleep_time  = 1

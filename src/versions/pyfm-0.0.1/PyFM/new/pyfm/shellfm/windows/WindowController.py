@@ -28,10 +28,9 @@ class WindowController:
 
     @threaded
     def fm_event_observer(self):
-        while monitor_events:
+        while event_system.monitor_events:
             time.sleep(event_sleep_time)
             event = event_system.consume_fm_event()
-            print("fm")
             if event:
                 print(event)
 
