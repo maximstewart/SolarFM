@@ -12,17 +12,22 @@ class PaneMixin:
             child.show()
 
     def run_flag_toggle(self, pane_index):
+        tggl_button = self.builder.get_object(f"tggl_notebook_{pane_index}")
         if pane_index == 1:
             self.is_pane1_hidden = not self.is_pane1_hidden
+            tggl_button.set_active(not self.is_pane1_hidden)
             return self.is_pane1_hidden
         elif pane_index == 2:
             self.is_pane2_hidden = not self.is_pane2_hidden
+            tggl_button.set_active(not self.is_pane2_hidden)
             return self.is_pane2_hidden
         elif pane_index == 3:
             self.is_pane3_hidden = not self.is_pane3_hidden
+            tggl_button.set_active(not self.is_pane3_hidden)
             return self.is_pane3_hidden
         elif pane_index == 4:
             self.is_pane4_hidden = not self.is_pane4_hidden
+            tggl_button.set_active(not self.is_pane4_hidden)
             return self.is_pane4_hidden
 
     def toggle_notebook_pane(self, widget, eve=None):

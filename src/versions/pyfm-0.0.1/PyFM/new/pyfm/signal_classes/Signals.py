@@ -69,6 +69,7 @@ class Signals(WindowMixin, PaneMixin):
                 object   = self.builder.get_object(f"tggl_notebook_{i}")
                 views    = value[0]["window"]["views"]
                 self.window_controller.create_window()
+                object.set_active(True)
 
                 for view in views:
                     self.create_new_view_notebook(None, view, i)

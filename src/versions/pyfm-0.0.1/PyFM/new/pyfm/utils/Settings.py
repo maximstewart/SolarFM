@@ -26,7 +26,7 @@ class Settings:
         # Get window and connect signals
         window = self.builder.get_object("Main_Window")
         window.connect("delete-event", gtk.main_quit)
-        self.setWindowData(window, False)
+        self.setWindowData(window, True)
         return window
 
     def setWindowData(self, window, paintable):
