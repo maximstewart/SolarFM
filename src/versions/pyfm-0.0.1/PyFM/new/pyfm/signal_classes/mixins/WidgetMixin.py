@@ -35,29 +35,31 @@ class WidgetMixin:
 
 
 
+    @threaded
     def load_store(self, view, store, save_state=True):
         store.clear()
-        files = view.get_files()
         dir   = view.get_current_directory()
-        for file in files:
+        files = view.get_files()
+        for i, file in enumerate(files):
+            icon = Gtk.Image.new_from_file(view.DEFAULT_ICON).get_pixbuf()
+            store.append([icon, file[0]])
             try:
-                self.create_icon(view, store, dir, file[0])
+                self.create_icon(i, view, store, dir, file[0])
             except Exception as e:
                 pass
 
         if save_state:
             self.window_controller.save_state()
 
-
     @threaded
-    def create_icon(self, view, store, dir, file):
-        icon = view.create_icon(dir, file).get_pixbuf()
-        data = [icon, file]
-        GLib.idle_add(self.update_store, (store, data,))
+    def create_icon(self, i, view, store, dir, file):
+        GLib.idle_add(self.update_store, (i, view, store, dir, file,))
 
     def update_store(self, item):
-        store, data = item
-        store.append(data)
+        i, view, store, dir, file = item
+        icon = view.create_icon(dir, file).get_pixbuf()
+        itr  = store.get_iter(i)
+        store.set_value(itr, 0, icon)
 
 
 
