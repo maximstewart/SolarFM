@@ -27,10 +27,8 @@ class TabMixin(WidgetMixin):
 
         tab           = self.create_tab_widget(view)
         scroll, store = self.create_grid_iconview_widget(view, wid)
-        index         = notebook.append_page(scroll, tab)
-
         # scroll, store = self.create_grid_treeview_widget(view, wid)
-        self.load_store(view, store, save_state)
+        index         = notebook.append_page(scroll, tab)
 
         self.window_controller.set_active_data(wid, view.get_tab_id())
         path_entry.set_text(view.get_current_directory())
@@ -39,6 +37,7 @@ class TabMixin(WidgetMixin):
 
         # FIXME: set_tab_reorderable doesn't seem to work...
         # notebook.set_tab_reorderable(tab, True)
+        self.load_store(view, store, save_state)
 
     def close_tab(self, widget, eve):
         notebook      = widget.get_parent().get_parent()

@@ -8,7 +8,6 @@ from gi.repository import Gtk as gtk
 
 # Application imports
 from .mixins import *
-# from pyfm.shellfm.windows import WindowController
 from shellfm import WindowController
 
 
@@ -35,12 +34,6 @@ class Signals(WindowMixin, PaneMixin):
         self.window4           = self.builder.get_object("window4")
         self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
 
-        event_system.push_gui_event(["update", "window_1", []])
-        event_system.push_gui_event(["update", "window_2", []])
-        event_system.push_fm_event(["update", "window_fm_1", []])
-        event_system.push_fm_event(["update", "window_fm_2", []])
-
-
         self.single_click_open  = False
         self.is_pane1_hidden    = False
         self.is_pane2_hidden    = False
@@ -60,7 +53,7 @@ class Signals(WindowMixin, PaneMixin):
             time.sleep(event_sleep_time)
             event = event_system.consume_gui_event()
             if event:
-                print(event)
+                type, target, data = event
 
 
     def tear_down(self, widget, eve):

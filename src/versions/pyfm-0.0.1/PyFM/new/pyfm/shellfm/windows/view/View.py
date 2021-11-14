@@ -152,6 +152,7 @@ class View(Settings, Launcher, Icon, Path):
 
         return data
 
+
     def get_gtk_icon_str_combo(self):
         data = []
         dir  = self.get_current_directory()

@@ -53,4 +53,4 @@ class Builtins:
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
 builtins.event_system      = Builtins()
-builtins.event_sleep_time  = 1
+builtins.event_sleep_time  = 0.2

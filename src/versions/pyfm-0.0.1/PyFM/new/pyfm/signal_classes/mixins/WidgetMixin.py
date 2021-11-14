@@ -1,26 +1,66 @@
 # Python imports
+import threading, subprocess
 
 # Lib imports
 import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+from gi.repository import GLib
 from gi.repository import GdkPixbuf
 
 # Application imports
 
 
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+    return wrapper
+
+
+
 class WidgetMixin:
     # This feels ugly but I don't see a better option than itterating over the list.
+    # @threaded
+    # def load_store(self, view, store, save_state=True):
+    #     store.clear()
+    #     files = view.get_pixbuf_icon_str_combo()
+    #
+    #     for data in files:
+    #         store.append(data)
+    #
+    #     if save_state:
+    #         self.window_controller.save_state()
+
+
+
+
     def load_store(self, view, store, save_state=True):
         store.clear()
-        files = view.get_pixbuf_icon_str_combo()
-
-        for data in files:
-            store.append(data)
+        files = view.get_files()
+        dir   = view.get_current_directory()
+        for file in files:
+            try:
+                self.create_icon(view, store, dir, file[0])
+            except Exception as e:
+                pass
 
         if save_state:
             self.window_controller.save_state()
+
+
+    @threaded
+    def create_icon(self, view, store, dir, file):
+        icon = view.create_icon(dir, file).get_pixbuf()
+        data = [icon, file]
+        GLib.idle_add(self.update_store, (store, data,))
+
+    def update_store(self, item):
+        store, data = item
+        store.append(data)
+
+
+
 
     def create_tab_widget(self, view):
         tab   = Gtk.Box()
