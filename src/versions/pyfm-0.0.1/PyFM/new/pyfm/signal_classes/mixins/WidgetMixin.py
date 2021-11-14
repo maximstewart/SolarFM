@@ -20,44 +20,29 @@ def threaded(fn):
 
 
 class WidgetMixin:
-    # This feels ugly but I don't see a better option than itterating over the list.
-    # @threaded
-    # def load_store(self, view, store, save_state=True):
-    #     store.clear()
-    #     files = view.get_pixbuf_icon_str_combo()
-    #
-    #     for data in files:
-    #         store.append(data)
-    #
-    #     if save_state:
-    #         self.window_controller.save_state()
 
-
-
-
-    @threaded
     def load_store(self, view, store, save_state=True):
         store.clear()
         dir   = view.get_current_directory()
         files = view.get_files()
         for i, file in enumerate(files):
-            icon = Gtk.Image.new_from_file(view.DEFAULT_ICON).get_pixbuf()
-            store.append([icon, file[0]])
-            try:
-                self.create_icon(i, view, store, dir, file[0])
-            except Exception as e:
-                pass
+            generic_icon = Gtk.Image.new_from_file(view.DEFAULT_ICON).get_pixbuf()
+            store.append([generic_icon, file[0]])
+            self.create_icon(i, view, store, dir, file[0])
 
         if save_state:
             self.window_controller.save_state()
 
     @threaded
     def create_icon(self, i, view, store, dir, file):
-        GLib.idle_add(self.update_store, (i, view, store, dir, file,))
+        try:
+            icon = view.create_icon(dir, file).get_pixbuf()
+            GLib.idle_add(self.update_store, (i, store, icon,))
+        except Exception as e:
+            return
 
     def update_store(self, item):
-        i, view, store, dir, file = item
-        icon = view.create_icon(dir, file).get_pixbuf()
+        i, store, icon = item
         itr  = store.get_iter(i)
         store.set_value(itr, 0, icon)
 
