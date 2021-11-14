@@ -36,7 +36,7 @@ class TabMixin(WidgetMixin):
         notebook.set_current_page(index)
 
         # FIXME: set_tab_reorderable doesn't seem to work...
-        # notebook.set_tab_reorderable(tab, True)
+        notebook.set_tab_reorderable(scroll, True)
         self.load_store(view, store, save_state)
 
     def close_tab(self, widget, eve):
@@ -123,6 +123,10 @@ class TabMixin(WidgetMixin):
         except Exception as e:
             print(repr(e))
 
+    def update_path(self, widget, eve=None):
+        print(widget)
+
+
     def do_action_from_bar_controls(self, widget, eve=None):
         action    = widget.get_name()
         wid, tid  = self.window_controller.get_active_data()
@@ -142,6 +146,11 @@ class TabMixin(WidgetMixin):
             dir = view.get_current_directory()
             self.create_tab(wid, dir)
             return
+        if action == "path_entry":
+            path      = widget.get_text()
+            traversed = view.set_path(path)
+            if not traversed:
+                return
 
         self.load_store(view, store, True)
         self.set_path_text(wid, tid)
