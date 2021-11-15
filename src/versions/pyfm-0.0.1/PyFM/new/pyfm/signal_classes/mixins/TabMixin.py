@@ -35,7 +35,6 @@ class TabMixin(WidgetMixin):
         notebook.show_all()
         notebook.set_current_page(index)
 
-        # FIXME: set_tab_reorderable doesn't seem to work...
         notebook.set_tab_reorderable(scroll, True)
         self.load_store(view, store, save_state)
 
@@ -50,7 +49,7 @@ class TabMixin(WidgetMixin):
         notebook.remove_page(page)
         self.window_controller.save_state()
 
-    def icon_double_left_click(self, widget, item):
+    def grid_icon_double_left_click(self, widget, item):
         try:
             wid, tid   = self.window_controller.get_active_data()
             notebook   = self.builder.get_object(f"window_{wid}")
@@ -82,7 +81,8 @@ class TabMixin(WidgetMixin):
         except Exception as e:
             print(repr(e))
 
-    def icon_single_click(self, widget, eve):
+
+    def grid_icon_single_click(self, widget, eve):
         try:
             wid, tid = widget.get_name().split("|")
             self.window_controller.set_active_data(wid, tid)
@@ -123,9 +123,48 @@ class TabMixin(WidgetMixin):
         except Exception as e:
             print(repr(e))
 
-    def update_path(self, widget, eve=None):
-        print(widget)
 
+    def grid_on_drag_set(self, widget, drag_context, data, info, time):
+        action    = widget.get_name()
+        store     = widget.get_model()
+        treePaths = widget.get_selected_items()
+        wid, tid  = action.split("|")
+        view      = self.get_fm_window(wid).get_view_by_id(tid)
+        dir       = view.get_current_directory()
+        uris      = []
+
+        for path in treePaths:
+            itr   = store.get_iter(path)
+            file  = store.get(itr, 1)[0]
+            fpath = f"file://{dir}/{file}"
+            uris.append(fpath)
+
+        data.set_uris(uris)
+
+
+    def grid_on_drag_motion(self, widget, drag_context, x, y, data):
+        wid, tid = widget.get_name().split("|")
+        self.window_controller.set_active_data(wid, tid)
+
+    def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
+        if info == 80:
+            wid, tid  = self.window_controller.get_active_data()
+            notebook  = self.builder.get_object(f"window_{wid}")
+            icon_view, tab_label = self.get_icon_view_and_label_from_notebook(notebook, f"{wid}|{tid}")
+
+            view  = self.get_fm_window(wid).get_view_by_id(tid)
+            store = icon_view.get_model()
+            uris  = data.get_uris()
+            dest  = view.get_current_directory()
+
+            print(f"Target Move Path:  {dest}")
+            if len(uris) > 0:
+                for uri in uris:
+                    print(f"URI:  {uri}")
+                    self.move_file(view, uri, dest)
+
+                view.load_directory()
+                self.load_store(view, store, False)
 
     def do_action_from_bar_controls(self, widget, eve=None):
         action    = widget.get_name()
@@ -155,3 +194,33 @@ class TabMixin(WidgetMixin):
         self.load_store(view, store, True)
         self.set_path_text(wid, tid)
         tab_label.set_label(view.get_end_of_path())
+
+
+
+
+    # File control events
+    def create_file(self):
+        pass
+
+    def update_file(self):
+        nFile = widget.get_text().strip()
+        if data and data.keyval == 65293:    # Enter key event
+            view.update_file(nFile)
+        elif data == None:                   # Save button 'event'
+            view.update_file(nFile)
+
+    def delete_file(self):
+        pass
+
+
+    def move_file(self, view, fFile, tFile):
+        view.move_file(fFile.replace("file://", ""), tFile)
+
+    def copy_file(self):
+        pass
+
+    def cut_file(self):
+        pass
+
+    def paste_file(self):
+        pass

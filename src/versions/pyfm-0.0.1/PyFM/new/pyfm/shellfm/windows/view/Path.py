@@ -29,7 +29,6 @@ class Path:
 
         self.load_directory()
 
-
     def set_path(self, path):
         if path == self.get_path():
             return
@@ -38,17 +37,19 @@ class Path:
             self.path = list( filter(None, path.replace("\\", "/").split('/')) )
             self.load_directory()
             return True
+
         return False
 
     def set_path_with_sub_path(self, sub_path):
         path = os.path.join(self.get_home(), sub_path)
         if path == self.get_path():
-            return
+            return False
 
         if os.path.isdir(path):
             self.path = list( filter(None, path.replace("\\", "/").split('/')) )
             self.load_directory()
             return True
+
         return False
 
     def set_to_home(self):

@@ -11,12 +11,12 @@ from random import randint
 
 
 # Application imports
-from .utils import Settings, Launcher
+from .utils import Settings, Launcher, FileHandler
 from .icons import Icon
 from . import Path
 
 
-class View(Settings, Launcher, Icon, Path):
+class View(Settings, FileHandler, Launcher, Icon, Path):
     def __init__(self):
         self. logger   = None
         self.id_length = 10
