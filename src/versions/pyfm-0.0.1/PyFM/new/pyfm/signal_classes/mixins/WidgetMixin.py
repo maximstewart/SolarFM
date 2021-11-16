@@ -23,7 +23,7 @@ def threaded(fn):
 
 class WidgetMixin:
 
-    def load_store(self, view, store, save_state=True):
+    def load_store(self, view, store, save_state=False):
         store.clear()
         dir   = view.get_current_directory()
         files = view.get_files()
@@ -32,16 +32,18 @@ class WidgetMixin:
             store.append([generic_icon, file[0]])
             self.create_icon(i, view, store, dir, file[0])
 
+        # Not likely called often here but could be useful
         if save_state:
             self.window_controller.save_state()
 
     @threaded
     def create_icon(self, i, view, store, dir, file):
+        icon = None
         try:
             icon = view.create_icon(dir, file).get_pixbuf()
-            GLib.idle_add(self.update_store, (i, store, icon,))
         except Exception as e:
             return
+        GLib.idle_add(self.update_store, (i, store, icon,))
 
     def update_store(self, item):
         i, store, icon = item
@@ -59,6 +61,9 @@ class WidgetMixin:
         icon  = Gtk.Image(stock=Gtk.STOCK_CLOSE)
 
         label.set_label(f"{view.get_end_of_path()}")
+        label.set_width_chars(25)
+        label.set_max_width_chars(64)
+        label.set_ellipsize(2)  #PANGO_ELLIPSIZE_MIDDLE
         tid.set_label(f"{view.id}")
 
         close.add(icon)
@@ -80,7 +85,7 @@ class WidgetMixin:
         grid.set_pixbuf_column(0)
         grid.set_text_column(1)
 
-        grid.set_item_orientation(0)
+        grid.set_item_orientation(1)
         grid.set_selection_mode(3)
         grid.set_item_width(152)
         grid.set_item_padding(2)
@@ -149,6 +154,7 @@ class WidgetMixin:
         wid, tid   = content.get_children()[0].get_name().split("|")
         self.window_controller.set_active_data(wid, tid)
         self.set_path_text(wid, tid)
+        self.set_window_title()
 
     def set_path_text(self, wid, tid):
         path_entry = self.builder.get_object("path_entry")

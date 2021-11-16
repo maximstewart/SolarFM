@@ -10,10 +10,9 @@ tracemalloc.start()
 
 
 # Gtk imports
-import gi, faulthandler, traceback, signal
+import gi, faulthandler, traceback
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk as gtk
-from gi.repository import GLib
 
 # Application imports
 from __init__ import Main
@@ -22,7 +21,6 @@ from __init__ import Main
 if __name__ == "__main__":
     try:
         setproctitle('PyFM')
-        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, gtk.main_quit)
         faulthandler.enable()  # For better debug info
         parser = argparse.ArgumentParser()
         # Add long and short arguments

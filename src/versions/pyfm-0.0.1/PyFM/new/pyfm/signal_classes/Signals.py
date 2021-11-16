@@ -1,10 +1,11 @@
 # Python imports
-import threading, subprocess, os, time
+import threading, subprocess, signal, inspect, os, time
 
 # Gtk imports
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk as gtk
+from gi.repository import GLib
 
 # Application imports
 from .mixins import *
@@ -39,11 +40,13 @@ class Signals(WindowMixin, PaneMixin):
         self.is_pane2_hidden    = False
         self.is_pane3_hidden    = False
         self.is_pane4_hidden    = False
+        self.refresh_lock       = False
 
         self.window.show()
         self.generate_windows(self.state)
 
         self.window.connect("delete-event", self.tear_down)
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
         self.gui_event_observer()
 
 
@@ -53,10 +56,26 @@ class Signals(WindowMixin, PaneMixin):
             time.sleep(event_sleep_time)
             event = event_system.consume_gui_event()
             if event:
-                type, target, data = event
+                try:
+                    type, target, data = event
+                    method = getattr(self.__class__, type)
+                    GLib.idle_add(method, (self, data,))
+                except Exception as e:
+                    print(repr(e))
+
+    def refresh_tab(data=None):
+        self, ids = data
+        wid, tid  = ids.split("|")
+        notebook  = self.builder.get_object(f"window_{wid}")
+        icon_view, tab_label = self.get_icon_view_and_label_from_notebook(notebook, f"{wid}|{tid}")
+        view      = self.get_fm_window(wid).get_view_by_id(tid)
+        store     = icon_view.get_model()
+        view.load_directory()
+        self.load_store(view, store)
 
 
-    def tear_down(self, widget, eve):
+    def tear_down(self, widget=None, eve=None):
+        self.window_controller.save_state()
         event_system.monitor_events = False
         time.sleep(event_sleep_time)
         gtk.main_quit()
@@ -72,7 +91,7 @@ class Signals(WindowMixin, PaneMixin):
                 object.set_active(True)
 
                 for view in views:
-                    self.create_new_view_notebook(None, view, i)
+                    self.create_new_view_notebook(None, i, view)
 
                 if isHidden:
                     self.toggle_notebook_pane(object)
@@ -80,7 +99,7 @@ class Signals(WindowMixin, PaneMixin):
             for j in range(0, 4):
                 i = j + 1
                 self.window_controller.create_window()
-                self.create_new_view_notebook(None, None, i)
+                self.create_new_view_notebook(None, i, None)
 
 
     def getClipboardData(self):

@@ -17,7 +17,7 @@ class TabMixin(WidgetMixin):
     def get_fm_window(self, wid):
         return self.window_controller.get_window_by_nickname(f"window_{wid}")
 
-    def create_tab(self, wid, path=None, save_state=True):
+    def create_tab(self, wid, path=None):
         notebook    = self.builder.get_object(f"window_{wid}")
         path_entry  = self.builder.get_object(f"path_entry")
         view        = self.window_controller.add_view_for_window_by_nickname(f"window_{wid}")
@@ -36,51 +36,25 @@ class TabMixin(WidgetMixin):
         notebook.set_current_page(index)
 
         notebook.set_tab_reorderable(scroll, True)
-        self.load_store(view, store, save_state)
+        self.load_store(view, store)
+        self.set_window_title()
 
     def close_tab(self, widget, eve):
-        notebook      = widget.get_parent().get_parent()
-        page          = notebook.get_current_page()
-
-        tid           = self.get_tab_id_from_widget(widget.get_parent())
-        wid           = int(notebook.get_name()[-1])
+        notebook = widget.get_parent().get_parent()
+        page     = notebook.get_current_page()
+        tid      = self.get_tab_id_from_widget(widget.get_parent())
+        wid      = int(notebook.get_name()[-1])
 
         self.get_fm_window(wid).delete_view_by_id(tid)
         notebook.remove_page(page)
         self.window_controller.save_state()
+        self.set_window_title()
 
-    def grid_icon_double_left_click(self, widget, item):
-        try:
-            wid, tid   = self.window_controller.get_active_data()
-            notebook   = self.builder.get_object(f"window_{wid}")
-            path_entry = self.builder.get_object(f"path_entry")
-            tab_label  = self.get_tab_label_widget_from_widget(notebook, widget)
-
-            view       = self.get_fm_window(wid).get_view_by_id(tid)
-            model      = widget.get_model()
-
-            fileName   = model[item][1]
-            dir        = view.get_current_directory()
-            file       = dir + "/" + fileName
-            refresh    = True
-
-            if fileName == ".":
-                view.load_directory()
-            elif fileName == "..":
-                view.pop_from_path()
-            elif isdir(file):
-                view.set_path(file)
-            elif isfile(file):
-                refresh = False
-                view.open_file_locally(file)
-
-            if refresh == True:
-                self.load_store(view, model)
-                tab_label.set_label(view.get_end_of_path())
-                path_entry.set_text(view.get_current_directory())
-        except Exception as e:
-            print(repr(e))
-
+    def set_window_title(self):
+        wid, tid = self.window_controller.get_active_data()
+        view     = self.get_fm_window(wid).get_view_by_id(tid)
+        dir      = view.get_current_directory()
+        self.window.set_title(dir)
 
     def grid_icon_single_click(self, widget, eve):
         try:
@@ -89,6 +63,7 @@ class TabMixin(WidgetMixin):
 
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
                 self.set_path_text(wid, tid)
+                self.set_window_title()
 
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
                     self.icon_double_left_click(widget)
@@ -123,6 +98,33 @@ class TabMixin(WidgetMixin):
         except Exception as e:
             print(repr(e))
 
+    def grid_icon_double_left_click(self, widget, item):
+        try:
+            wid, tid   = self.window_controller.get_active_data()
+            notebook   = self.builder.get_object(f"window_{wid}")
+            path_entry = self.builder.get_object(f"path_entry")
+            tab_label  = self.get_tab_label_widget_from_widget(notebook, widget)
+
+            view       = self.get_fm_window(wid).get_view_by_id(tid)
+            model      = widget.get_model()
+
+            fileName   = model[item][1]
+            dir        = view.get_current_directory()
+            file       = dir + "/" + fileName
+            refresh    = True
+
+            if isdir(file):
+                view.set_path(file)
+            elif isfile(file):
+                refresh = False
+                view.open_file_locally(file)
+
+            if refresh == True:
+                self.load_store(view, model)
+                tab_label.set_label(view.get_end_of_path())
+                path_entry.set_text(view.get_current_directory())
+        except Exception as e:
+            print(repr(e))
 
     def grid_on_drag_set(self, widget, drag_context, data, info, time):
         action    = widget.get_name()
@@ -140,7 +142,7 @@ class TabMixin(WidgetMixin):
             uris.append(fpath)
 
         data.set_uris(uris)
-
+        event_system.push_gui_event(["refresh_tab", None, action])
 
     def grid_on_drag_motion(self, widget, drag_context, x, y, data):
         wid, tid = widget.get_name().split("|")
@@ -157,14 +159,18 @@ class TabMixin(WidgetMixin):
             uris  = data.get_uris()
             dest  = view.get_current_directory()
 
-            print(f"Target Move Path:  {dest}")
+            print(f"{wid}|{tid}")
             if len(uris) > 0:
+                print(f"Target Move Path:  {dest}")
+                self.refresh_lock = True
                 for uri in uris:
                     print(f"URI:  {uri}")
                     self.move_file(view, uri, dest)
 
+                # Reloads new directory
                 view.load_directory()
-                self.load_store(view, store, False)
+                self.load_store(view, store)
+                self.refresh_lock = False
 
     def do_action_from_bar_controls(self, widget, eve=None):
         action    = widget.get_name()
@@ -181,7 +187,7 @@ class TabMixin(WidgetMixin):
             view.set_to_home()
         if action == "refresh_view":
             view.load_directory()
-        if action == "create_tab" :
+        if action == "create_tab":
             dir = view.get_current_directory()
             self.create_tab(wid, dir)
             return
@@ -191,11 +197,10 @@ class TabMixin(WidgetMixin):
             if not traversed:
                 return
 
-        self.load_store(view, store, True)
+        self.load_store(view, store)
         self.set_path_text(wid, tid)
         tab_label.set_label(view.get_end_of_path())
-
-
+        self.set_window_title()
 
 
     # File control events

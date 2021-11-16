@@ -31,8 +31,8 @@
     <property name="height-request">600</property>
     <property name="can-focus">False</property>
     <property name="window-position">center</property>
-    <property name="default-width">1200</property>
-    <property name="default-height">720</property>
+    <property name="default-width">1670</property>
+    <property name="default-height">830</property>
     <property name="icon">pyfm.png</property>
     <property name="gravity">center</property>
     <child>

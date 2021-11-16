@@ -46,7 +46,7 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
 
     def load_directory(self):
         path           = self.get_path()
-        self.dirs      = [".", ".."]
+        self.dirs      = []
         self.vids      = []
         self.images    = []
         self.desktop   = []
