@@ -1,5 +1,5 @@
 # Python imports
-import threading, subprocess
+import os, threading, subprocess
 
 # Lib imports
 import gi
@@ -9,6 +9,7 @@ gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GLib
+from gi.repository import Gio
 from gi.repository import GdkPixbuf
 
 # Application imports
@@ -27,28 +28,53 @@ class WidgetMixin:
         store.clear()
         dir   = view.get_current_directory()
         files = view.get_files()
+
+        icon = GdkPixbuf.Pixbuf.new_from_file(view.DEFAULT_ICON)
         for i, file in enumerate(files):
-            generic_icon = Gtk.Image.new_from_file(view.DEFAULT_ICON).get_pixbuf()
-            store.append([generic_icon, file[0]])
+            store.append([icon, file[0]])
             self.create_icon(i, view, store, dir, file[0])
 
-        # Not likely called often here but could be useful
+        # NOTE: Not likely called often from here but it could be useful
         if save_state:
             self.window_controller.save_state()
 
     @threaded
     def create_icon(self, i, view, store, dir, file):
-        icon = None
-        try:
-            icon = view.create_icon(dir, file).get_pixbuf()
-        except Exception as e:
-            return
-        GLib.idle_add(self.update_store, (i, store, icon,))
+        icon  = view.create_icon(dir, file)
+        fpath = dir + "/" + file
+        GLib.idle_add(self.update_store, (i, store, icon, view, fpath,))
 
     def update_store(self, item):
-        i, store, icon = item
+        i, store, icon, view, fpath = item
         itr  = store.get_iter(i)
+
+        if not icon:
+            icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])
+            if not icon:
+                icon = GdkPixbuf.Pixbuf.new_from_file(view.DEFAULT_ICON)
+
         store.set_value(itr, 0, icon)
+
+
+    def get_system_thumbnail(self, filename, size):
+        try:
+            if os.path.exists(filename):
+                gioFile   = Gio.File.new_for_path(filename)
+                info      = gioFile.query_info('standard::icon' , 0, Gio.Cancellable())
+                icon      = info.get_icon().get_names()[0]
+                iconTheme = Gtk.IconTheme.get_default()
+                iconData  = iconTheme.lookup_icon(icon , size , 0)
+                if iconData:
+                    iconPath  = iconData.get_filename()
+                    return GdkPixbuf.Pixbuf.new_from_file(iconPath)
+                else:
+                    return None
+            else:
+                return None
+        except Exception as e:
+            print("System icon generation issue:")
+            print( repr(e) )
+            return None
 
 
 
@@ -147,26 +173,6 @@ class WidgetMixin:
         grid.set_name(f"{wid}|{view.id}")
         return scroll, store
 
-
-
-
-    def on_tab_switch_update(self, notebook, content=None, index=None):
-        wid, tid   = content.get_children()[0].get_name().split("|")
-        self.window_controller.set_active_data(wid, tid)
-        self.set_path_text(wid, tid)
-        self.set_window_title()
-
-    def set_path_text(self, wid, tid):
-        path_entry = self.builder.get_object("path_entry")
-        view       = self.get_fm_window(wid).get_view_by_id(tid)
-        path_entry.set_text(view.get_current_directory())
-
-    def get_tab_id_from_widget(self, tab_box):
-        tid = tab_box.get_children()[2]
-        return tid.get_text()
-
-    def get_tab_label_widget_from_widget(self, notebook, widget):
-        return notebook.get_tab_label(widget.get_parent()).get_children()[0]
 
     def get_icon_view_and_label_from_notebook(self, notebook, _name):
         icon_view = None

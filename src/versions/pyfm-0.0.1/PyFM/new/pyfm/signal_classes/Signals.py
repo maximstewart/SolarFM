@@ -40,7 +40,6 @@ class Signals(WindowMixin, PaneMixin):
         self.is_pane2_hidden    = False
         self.is_pane3_hidden    = False
         self.is_pane4_hidden    = False
-        self.refresh_lock       = False
 
         self.window.show()
         self.generate_windows(self.state)

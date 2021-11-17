@@ -19,15 +19,16 @@ from . import Path
 class View(Settings, FileHandler, Launcher, Icon, Path):
     def __init__(self):
         self. logger   = None
-        self.id_length = 10
+        self.id_length   = 10
 
-        self.id        = ""
-        self.files     = []
-        self.dirs      = []
-        self.vids      = []
-        self.images    = []
-        self.desktop   = []
-        self.ungrouped = []
+        self.id          = ""
+        self.hide_hidden = self.HIDE_HIDDEN_FILES
+        self.files       = []
+        self.dirs        = []
+        self.vids        = []
+        self.images      = []
+        self.desktop     = []
+        self.ungrouped   = []
 
         self.generate_id()
         self.set_to_home()
@@ -59,7 +60,7 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
 
         for f in listdir(path):
             file = join(path, f)
-            if self.HIDE_HIDDEN_FILES:
+            if self.hide_hidden:
                 if f.startswith('.'):
                     continue
 

@@ -6,7 +6,8 @@ from os.path import isfile
 import gi
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk
+# from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 
 # Application imports
 from .mixins import *
@@ -34,17 +35,10 @@ class Icon(DesktopIconMixin, VideoIconMixin):
                 thumbnl = self.create_scaled_image(full_path, self.VIDEO_ICON_WH)
             elif full_path.lower().endswith( ('.desktop',) ):    # .desktop file parsing
                 thumbnl = self.parse_desktop_files(full_path)
-            else:                                                # System icons
-                thumbnl = self.get_system_thumbnail(full_path, self.SYS_ICON_WH[0])
-
-            if thumbnl == None: # If no icon whatsoever, return internal default
-                thumbnl = Gtk.Image.new_from_file(self.DEFAULT_ICON)
 
             return thumbnl
         except Exception as e:
-            print("Icon generation issue:")
-            print( repr(e) )
-            return Gtk.Image.new_from_file(self.DEFAULT_ICON)
+            return None
 
     def create_thumbnail(self, dir, file):
         full_path = dir + "/" + file
@@ -56,20 +50,20 @@ class Icon(DesktopIconMixin, VideoIconMixin):
 
             thumbnl = self.create_scaled_image(hash_img_pth, self.VIDEO_ICON_WH)
             if thumbnl == None: # If no icon whatsoever, return internal default
-                thumbnl = Gtk.Image.new_from_file(self.DEFAULT_ICONS + "/video.png")
+                thumbnl = GdkPixbuf.Pixbuf.new_from_file(self.DEFAULT_ICONS + "/video.png")
 
             return thumbnl
         except Exception as e:
             print("Thumbnail generation issue:")
             print( repr(e) )
-            return Gtk.Image.new_from_file(self.DEFAULT_ICONS + "/video.png")
+            return GdkPixbuf.Pixbuf.new_from_file(self.DEFAULT_ICONS + "/video.png")
 
 
     def create_scaled_image(self, path, wxh):
         try:
-            pixbuf         = Gtk.Image.new_from_file(path).get_pixbuf()
+            pixbuf        = GdkPixbuf.Pixbuf.new_from_file(path)#.get_pixbuf()
             scaled_pixbuf = pixbuf.scale_simple(wxh[0], wxh[1], 2)  # 2 = BILINEAR and is best by default
-            return Gtk.Image.new_from_pixbuf(scaled_pixbuf)
+            return scaled_pixbuf # Gtk.Image.new_from_pixbuf(scaled_pixbuf)
         except Exception as e:
             print("Image Scaling Issue:")
             print( repr(e) )
@@ -77,11 +71,11 @@ class Icon(DesktopIconMixin, VideoIconMixin):
 
     def create_from_file(self, path):
         try:
-            return Gtk.Image.new_from_file(path)
+            return GdkPixbuf.Pixbuf.new_from_file(path)
         except Exception as e:
             print("Image from file Issue:")
             print( repr(e) )
             return None
 
     def return_generic_icon(self):
-        return Gtk.Image.new_from_file(self.DEFAULT_ICON)
+        return GdkPixbuf.Pixbuf.new_from_file(self.DEFAULT_ICON)
