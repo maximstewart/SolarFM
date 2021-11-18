@@ -127,10 +127,9 @@ class WindowMixin(TabMixin):
         if info == 80:
             wid, tid  = self.window_controller.get_active_data()
             notebook  = self.builder.get_object(f"window_{wid}")
-            icon_view, tab_label = self.get_icon_view_and_label_from_notebook(notebook, f"{wid}|{tid}")
+            store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
 
             view  = self.get_fm_window(wid).get_view_by_id(tid)
-            store = icon_view.get_model()
             uris  = data.get_uris()
             dest  = view.get_current_directory()
 

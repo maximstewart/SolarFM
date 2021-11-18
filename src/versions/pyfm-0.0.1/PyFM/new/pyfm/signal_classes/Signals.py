@@ -66,9 +66,9 @@ class Signals(WindowMixin, PaneMixin):
         self, ids = data
         wid, tid  = ids.split("|")
         notebook  = self.builder.get_object(f"window_{wid}")
-        icon_view, tab_label = self.get_icon_view_and_label_from_notebook(notebook, f"{wid}|{tid}")
+        store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
         view      = self.get_fm_window(wid).get_view_by_id(tid)
-        store     = icon_view.get_model()
+
         view.load_directory()
         self.load_store(view, store)
 

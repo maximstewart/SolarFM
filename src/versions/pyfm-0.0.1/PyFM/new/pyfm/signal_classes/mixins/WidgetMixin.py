@@ -99,7 +99,7 @@ class WidgetMixin:
 
         close.connect("button_release_event", self.close_tab)
         tab.show_all()
-        tid.hide()
+        # tid.hide()
         return tab
 
     def create_grid_iconview_widget(self, view, wid):
@@ -174,14 +174,16 @@ class WidgetMixin:
         return scroll, store
 
 
-    def get_icon_view_and_label_from_notebook(self, notebook, _name):
+    def get_store_and_label_from_notebook(self, notebook, _name):
         icon_view = None
         tab_label = None
+        store     = None
 
         for obj in notebook.get_children():
             icon_view = obj.get_children()[0]
             name      =  icon_view.get_name()
             if name == _name:
+                store = icon_view.get_model()
                 tab_label = notebook.get_tab_label(obj).get_children()[0]
 
-        return icon_view, tab_label
+        return store, tab_label
