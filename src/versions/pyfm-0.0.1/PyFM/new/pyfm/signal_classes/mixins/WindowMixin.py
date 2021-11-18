@@ -31,7 +31,7 @@ class WindowMixin(TabMixin):
         view       = self.get_fm_window(wid).get_view_by_id(tid)
         path_entry.set_text(view.get_current_directory())
 
-    def grid_icon_single_click(self, widget, eve):
+    def grid_icon_single_left_click(self, widget, eve):
         try:
             wid, tid = widget.get_name().split("|")
             self.window_controller.set_active_data(wid, tid)
@@ -134,9 +134,12 @@ class WindowMixin(TabMixin):
             dest  = view.get_current_directory()
 
             if len(uris) > 0:
-                print(f"Target Move Path:  {dest}")
+                if debug:
+                    print(f"Target Move Path:  {dest}")
+
                 for uri in uris:
-                    print(f"URI:  {uri}")
+                    if debug:
+                        print(f"URI:  {uri}")
                     self.move_file(view, uri, dest)
 
                 # Reloads new directory

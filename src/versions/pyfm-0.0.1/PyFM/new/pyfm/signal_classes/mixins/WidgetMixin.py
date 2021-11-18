@@ -99,7 +99,7 @@ class WidgetMixin:
 
         close.connect("button_release_event", self.close_tab)
         tab.show_all()
-        # tid.hide()
+        tid.hide()
         return tab
 
     def create_grid_iconview_widget(self, view, wid):
@@ -121,7 +121,7 @@ class WidgetMixin:
         grid.set_spacing(1)
         grid.set_column_spacing(2)
 
-        grid.connect("button_release_event", self.grid_icon_single_click)
+        grid.connect("button_release_event", self.grid_icon_single_left_click)
         grid.connect("item-activated", self.grid_icon_double_left_click)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
@@ -161,8 +161,8 @@ class WidgetMixin:
         grid.set_enable_tree_lines(False)
         grid.set_visible(True)
 
-        # grid.connect("button_release_event", self.icon_single_click)
-        # grid.connect("item-activated", self.icon_double_left_click)
+        grid.connect("button_release_event", self.grid_icon_single_left_click)
+        grid.connect("item-activated", self.grid_icon_double_left_click)
 
         column.set_visible(True)
         icon.set_visible(True)

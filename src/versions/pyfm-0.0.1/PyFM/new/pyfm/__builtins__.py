@@ -54,3 +54,4 @@ class Builtins:
 # __builtins__.update({"event_system": Builtins()})
 builtins.event_system      = Builtins()
 builtins.event_sleep_time  = 0.2
+builtins.debug             = False
