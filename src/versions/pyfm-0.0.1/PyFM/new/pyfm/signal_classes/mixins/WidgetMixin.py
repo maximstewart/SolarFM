@@ -126,6 +126,7 @@ class WidgetMixin:
 
         grid.connect("button_release_event", self.grid_icon_single_left_click)
         grid.connect("item-activated", self.grid_icon_double_left_click)
+        grid.connect("selection-changed", self.grid_set_selected_items)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
         grid.connect("drag-motion", self.grid_on_drag_motion)
@@ -140,6 +141,7 @@ class WidgetMixin:
         grid.show_all()
         scroll.add(grid)
         grid.set_name(f"{wid}|{view.id}")
+        self.builder.expose_object(f"{wid}|{view.id}|iconview", grid)
         self.builder.expose_object(f"{wid}|{view.id}", scroll)
         return scroll, store
 

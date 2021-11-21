@@ -44,6 +44,7 @@ class TabMixin(WidgetMixin):
         self.set_window_title()
 
     def on_tab_switch_update(self, notebook, content=None, index=None):
+        self.selected_files.clear()
         wid, tid = content.get_children()[0].get_name().split("|")
         self.window_controller.set_active_data(wid, tid)
         self.set_path_text(wid, tid)
@@ -111,17 +112,6 @@ class TabMixin(WidgetMixin):
         self.builder.get_object("refresh_view").released()
 
 
-    def get_uris(self, store, treePaths=None):
-        uris = []
-
-        for path in treePaths:
-            itr   = store.get_iter(path)
-            file  = store.get(itr, 1)[0]
-            fpath = f"file://{dir}/{file}"
-            uris.append(fpath)
-
-        return uris
-
     def create_file(self):
         pass
 
@@ -142,28 +132,22 @@ class TabMixin(WidgetMixin):
     def menu_bar_copy(self, widget, eve):
         self.copy_file()
 
-    def copy_file(self):
+    def copy_files(self):
         wid, tid  = self.window_controller.get_active_data()
-        print(wid)
-        print(tid)
-        notebook  = self.builder.get_object(f"window_{wid}")
-        iconview  = self.get_tab_iconview_from_notebook(notebook)
-        print(iconview)
+        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
         store     = iconview.get_model()
-        treePaths = iconview.get_selected_items()
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
+        self.to_copy_files = uris
 
-        print(len(treePaths))
-        for path in treePaths:
-            itr   = store.get_iter(path)
-            file  = store.get(itr, 1)[0]
-            print(file)
+    def cut_files(self):
+        wid, tid  = self.window_controller.get_active_data()
+        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store     = iconview.get_model()
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
+        self.to_cut_files = uris
 
-        # uris      = self.get_uris(store, treePaths)
-        # print(uris)
-
-
-    def cut_file(self):
-        pass
-
-    def paste_file(self):
-        pass
+    def paste_files(self):
+        if len(self.to_copy_files):
+            pass
+        else:
+            pass

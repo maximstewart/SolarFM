@@ -36,6 +36,9 @@ class Signals(PaneMixin, WindowMixin):
         self.window3           = self.builder.get_object("window3")
         self.window4           = self.builder.get_object("window4")
         self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
+        self.selected_files    = []
+        self.to_copy_files     = []
+        self.to_cut_files      = []
 
         self.single_click_open  = False
         self.is_pane1_hidden    = False
@@ -122,9 +125,13 @@ class Signals(PaneMixin, WindowMixin):
         if self.ctrlDown and keyname == "h":
             self.show_hide_hidden_files()
         if self.ctrlDown and keyname == "c":
-            self.copy_file()
+            self.to_cut_files.clear()
+            self.copy_files()
+        if self.ctrlDown and keyname == "x":
+            self.to_copy_files.clear()
+            self.cut_files()
         if self.ctrlDown and keyname == "v":
-            print("[paste] stub...")
+            self.paste_files()
 
 
     def tear_down(self, widget=None, eve=None):

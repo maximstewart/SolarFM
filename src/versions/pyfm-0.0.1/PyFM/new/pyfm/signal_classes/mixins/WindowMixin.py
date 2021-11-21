@@ -20,6 +20,19 @@ class WindowMixin(TabMixin):
     def get_fm_window(self, wid):
         return self.window_controller.get_window_by_nickname(f"window_{wid}")
 
+    def format_to_uris(self, store, wid, tid, treePaths):
+        view = self.get_fm_window(wid).get_view_by_id(tid)
+        dir  = view.get_current_directory()
+        uris = []
+
+        for path in treePaths:
+            itr   = store.get_iter(path)
+            file  = store.get(itr, 1)[0]
+            fpath = f"file://{dir}/{file}"
+            uris.append(fpath)
+
+        return uris
+
     def set_window_title(self):
         wid, tid = self.window_controller.get_active_data()
         view     = self.get_fm_window(wid).get_view_by_id(tid)
@@ -30,6 +43,9 @@ class WindowMixin(TabMixin):
         path_entry = self.builder.get_object("path_entry")
         view       = self.get_fm_window(wid).get_view_by_id(tid)
         path_entry.set_text(view.get_current_directory())
+
+    def grid_set_selected_items(self, iconview):
+        self.selected_files = iconview.get_selected_items()
 
     def grid_icon_single_left_click(self, iconview, eve):
         try:
@@ -105,18 +121,10 @@ class WindowMixin(TabMixin):
 
     def grid_on_drag_set(self, iconview, drag_context, data, info, time):
         action    = iconview.get_name()
+        wid, tid  = action.split("|")
         store     = iconview.get_model()
         treePaths = iconview.get_selected_items()
-        wid, tid  = action.split("|")
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        dir       = view.get_current_directory()
-        uris      = []
-
-        for path in treePaths:
-            itr   = store.get_iter(path)
-            file  = store.get(itr, 1)[0]
-            fpath = f"file://{dir}/{file}"
-            uris.append(fpath)
+        uris      = self.format_to_uris(store, wid, tid, treePaths)
 
         data.set_uris(uris)
         event_system.push_gui_event(["refresh_tab", None, action])
