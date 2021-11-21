@@ -35,6 +35,8 @@
     <property name="default-height">830</property>
     <property name="icon">pyfm.png</property>
     <property name="gravity">center</property>
+    <signal name="key-press-event" handler="global_key_press_controller" swapped="no"/>
+    <signal name="key-release-event" handler="global_key_release_controller" swapped="no"/>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -140,6 +142,7 @@
                             <property name="can-focus">False</property>
                             <property name="use-underline">True</property>
                             <property name="use-stock">True</property>
+                            <signal name="button-release-event" handler="menu_bar_copy" swapped="no"/>
                           </object>
                         </child>
                         <child>
@@ -307,7 +310,7 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="go_home">
                 <property name="label">gtk-home</property>
                 <property name="name">go_home</property>
                 <property name="visible">True</property>
@@ -324,7 +327,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="refresh_view">
                 <property name="label">gtk-refresh</property>
                 <property name="name">refresh_view</property>
                 <property name="visible">True</property>
@@ -341,7 +344,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="go_up">
                 <property name="label">gtk-go-up</property>
                 <property name="name">go_up</property>
                 <property name="visible">True</property>
@@ -373,7 +376,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="create_tab">
                 <property name="label">gtk-add</property>
                 <property name="name">create_tab</property>
                 <property name="visible">True</property>
@@ -417,6 +420,7 @@
                     <property name="name">notebook1</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="has-focus">True</property>
                     <property name="margin-left">5</property>
                     <property name="margin-right">5</property>
                     <property name="margin-top">5</property>

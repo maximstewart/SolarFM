@@ -4,7 +4,9 @@ import threading, subprocess, signal, inspect, os, time
 # Gtk imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk as gtk
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GLib
 
 # Application imports
@@ -19,7 +21,7 @@ def threaded(fn):
     return wrapper
 
 
-class Signals(WindowMixin, PaneMixin):
+class Signals(PaneMixin, WindowMixin):
     def __init__(self, settings):
         self.settings          = settings
         self.builder           = self.settings.builder
@@ -40,6 +42,10 @@ class Signals(WindowMixin, PaneMixin):
         self.is_pane2_hidden    = False
         self.is_pane3_hidden    = False
         self.is_pane4_hidden    = False
+
+        self.ctrlDown           = False
+        self.shiftDown          = False
+        self.altDown            = False
 
         self.window.show()
         self.generate_windows(self.state)
@@ -73,11 +79,63 @@ class Signals(WindowMixin, PaneMixin):
         self.load_store(view, store)
 
 
+
+
+    def global_key_press_controller(self, eve, user_data):
+        keyname = Gdk.keyval_name(user_data.keyval).lower()
+        if "control" in keyname or "alt" in keyname or "shift" in keyname:
+            if "control" in keyname:
+                self.ctrlDown    = True
+            if "shift" in keyname:
+                self.shiftDown   = True
+            if "alt" in keyname:
+                self.altDown = True
+
+    # NOTE: Yes, this should actually be mapped to some key
+    #       controller setting file or something. Sue me.
+    def global_key_release_controller(self, eve, user_data):
+        keyname = Gdk.keyval_name(user_data.keyval).lower()
+        if debug:
+            print(f"global_key_release_controller > key > {keyname}")
+
+        if "control" in keyname or "alt" in keyname or "shift" in keyname:
+            if "control" in keyname:
+                self.ctrlDown    = False
+            if "shift" in keyname:
+                self.shiftDown   = False
+            if "alt" in keyname:
+                self.altDown = False
+
+        if (self.ctrlDown and keyname == "h") or keyname == "home":
+            self.builder.get_object("go_home").released()
+        if self.ctrlDown and keyname == "r":
+            self.builder.get_object("refresh_view").released()
+        if (self.ctrlDown and keyname == "up") or (self.ctrlDown and keyname == "up"):
+            self.builder.get_object("go_up").released()
+        if self.ctrlDown and keyname == "l":
+            self.builder.get_object("path_entry").grab_focus()
+        if self.ctrlDown and keyname == "t":
+            self.builder.get_object("create_tab").released()
+        if self.ctrlDown and keyname == "w":
+            print("[close tab] stub...")
+
+        if self.ctrlDown and keyname == "period":
+            wid, tid = self.window_controller.get_active_data()
+            view     = self.get_fm_window(wid).get_view_by_id(tid)
+            view.hide_hidden = not view.hide_hidden
+            view.load_directory()
+            self.builder.get_object("refresh_view").released()
+        if self.ctrlDown and keyname == "c":
+            print("[copy] stub...")
+        if self.ctrlDown and keyname == "v":
+            print("[paste] stub...")
+
+
     def tear_down(self, widget=None, eve=None):
         self.window_controller.save_state()
         event_system.monitor_events = False
         time.sleep(event_sleep_time)
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def generate_windows(self, data = None):
         if data:

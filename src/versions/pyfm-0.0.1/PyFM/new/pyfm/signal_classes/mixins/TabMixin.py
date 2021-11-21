@@ -34,7 +34,7 @@ class TabMixin(WidgetMixin):
     def close_tab(self, widget, eve):
         notebook = widget.get_parent().get_parent()
         page     = notebook.get_current_page()
-        tid      = self.get_tab_id_from_widget(widget.get_parent())
+        tid      = self.get_tab_id_from_tab_box(widget.get_parent())
         wid      = int(notebook.get_name()[-1])
 
         self.get_fm_window(wid).delete_view_by_id(tid)
@@ -43,17 +43,20 @@ class TabMixin(WidgetMixin):
         self.set_window_title()
 
     def on_tab_switch_update(self, notebook, content=None, index=None):
-        wid, tid   = content.get_children()[0].get_name().split("|")
+        wid, tid = content.get_children()[0].get_name().split("|")
         self.window_controller.set_active_data(wid, tid)
         self.set_path_text(wid, tid)
         self.set_window_title()
 
-    def get_tab_id_from_widget(self, tab_box):
+    def get_tab_id_from_tab_box(self, tab_box):
         tid = tab_box.get_children()[2]
         return tid.get_text()
 
-    def get_tab_label_widget_from_widget(self, notebook, widget):
-        return notebook.get_tab_label(widget.get_parent()).get_children()[0]
+    def get_tab_label(self, notebook, iconview):
+        return notebook.get_tab_label(iconview.get_parent()).get_children()[0]
+
+    def get_tab_iconview_from_notebook(self, notebook):
+        return notebook.get_children()[1].get_children()[0]
 
 
     def do_action_from_bar_controls(self, widget, eve=None):
@@ -74,7 +77,11 @@ class TabMixin(WidgetMixin):
             self.create_tab(wid, dir)
             return
         if action == "path_entry":
-            path      = widget.get_text()
+            path = widget.get_text()
+            dir  = view.get_current_directory() + "/"
+            if path == dir :
+                return
+
             traversed = view.set_path(path)
             if not traversed:
                 return
@@ -86,6 +93,17 @@ class TabMixin(WidgetMixin):
 
 
     # File control events
+    def get_uris(self, store, treePaths=None):
+        uris = []
+
+        for path in treePaths:
+            itr   = store.get_iter(path)
+            file  = store.get(itr, 1)[0]
+            fpath = f"file://{dir}/{file}"
+            uris.append(fpath)
+
+        return uris
+
     def create_file(self):
         pass
 
@@ -103,8 +121,28 @@ class TabMixin(WidgetMixin):
     def move_file(self, view, fFile, tFile):
         view.move_file(fFile.replace("file://", ""), tFile)
 
+    def menu_bar_copy(self, widget, eve):
+        self.copy_file()
+
     def copy_file(self):
-        pass
+        wid, tid  = self.window_controller.get_active_data()
+        print(wid)
+        print(tid)
+        notebook  = self.builder.get_object(f"window_{wid}")
+        iconview  = self.get_tab_iconview_from_notebook(notebook)
+        print(iconview)
+        store     = iconview.get_model()
+        treePaths = iconview.get_selected_items()
+
+        print(len(treePaths))
+        for path in treePaths:
+            itr   = store.get_iter(path)
+            file  = store.get(itr, 1)[0]
+            # print(file)
+
+        # uris      = self.get_uris(store, treePaths)
+        # print(uris)
+
 
     def cut_file(self):
         pass

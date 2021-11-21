@@ -51,7 +51,10 @@ class WidgetMixin:
         if not icon:
             icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])
             if not icon:
-                icon = GdkPixbuf.Pixbuf.new_from_file(view.DEFAULT_ICON)
+                if fpath.endswith(".gif"):
+                    icon = GdkPixbuf.PixbufAnimation.get_static_image(fpath)
+                else:
+                    icon = GdkPixbuf.Pixbuf.new_from_file(view.DEFAULT_ICON)
 
         store.set_value(itr, 0, icon)
 
@@ -143,34 +146,47 @@ class WidgetMixin:
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.TreeView()
         store  = Gtk.ListStore(GdkPixbuf.Pixbuf, str)
+        # store  = Gtk.TreeStore(GdkPixbuf.Pixbuf, str)
         column = Gtk.TreeViewColumn("Icons")
         icon   = Gtk.CellRendererPixbuf()
         name   = Gtk.CellRendererText()
+        selec  = grid.get_selection()
 
         grid.set_model(store)
+        selec.set_mode(3)
         column.pack_start(icon, False)
         column.pack_start(name, True)
         column.add_attribute(icon, "pixbuf", 0)
         column.add_attribute(name, "text", 1)
-        column.set_expand(True)
+        column.set_expand(False)
+        column.set_sizing(2)
+        column.set_min_width(120)
+        column.set_max_width(74)
 
         grid.append_column(column)
         grid.set_search_column(1)
         grid.set_rubber_banding(True)
         grid.set_headers_visible(False)
         grid.set_enable_tree_lines(False)
-        grid.set_visible(True)
 
         grid.connect("button_release_event", self.grid_icon_single_left_click)
-        grid.connect("item-activated", self.grid_icon_double_left_click)
+        grid.connect("row-activated", self.grid_icon_double_left_click)
+        grid.connect("drag-data-get", self.grid_on_drag_set)
+        grid.connect("drag-data-received", self.grid_on_drag_data_received)
+        grid.connect("drag-motion", self.grid_on_drag_motion)
 
-        column.set_visible(True)
-        icon.set_visible(True)
-        name.set_visible(True)
+        URI_TARGET_TYPE  = 80
+        uri_target       = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags(0), URI_TARGET_TYPE)
+        targets          = [ uri_target ]
+        action           = Gdk.DragAction.COPY
+        grid.enable_model_drag_dest(targets, action)
+        grid.enable_model_drag_source(0, targets, action)
+
 
         grid.show_all()
         scroll.add(grid)
         grid.set_name(f"{wid}|{view.id}")
+        grid.columns_autosize()
         return scroll, store
 
 

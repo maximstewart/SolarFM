@@ -24,16 +24,16 @@ class WindowMixin(TabMixin):
         wid, tid = self.window_controller.get_active_data()
         view     = self.get_fm_window(wid).get_view_by_id(tid)
         dir      = view.get_current_directory()
-        self.window.set_title(dir)
+        self.window.set_title("PyFM ~ " + dir)
 
     def set_path_text(self, wid, tid):
         path_entry = self.builder.get_object("path_entry")
         view       = self.get_fm_window(wid).get_view_by_id(tid)
         path_entry.set_text(view.get_current_directory())
 
-    def grid_icon_single_left_click(self, widget, eve):
+    def grid_icon_single_left_click(self, iconview, eve):
         try:
-            wid, tid = widget.get_name().split("|")
+            wid, tid = iconview.get_name().split("|")
             self.window_controller.set_active_data(wid, tid)
 
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
@@ -41,7 +41,7 @@ class WindowMixin(TabMixin):
                 self.set_window_title()
 
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
-                    self.grid_icon_double_left_click(widget)
+                    self.grid_icon_double_left_click(iconview)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
                 pass
             #     input          = self.builder.get_object("filenameInput")
@@ -73,15 +73,15 @@ class WindowMixin(TabMixin):
         except Exception as e:
             print(repr(e))
 
-    def grid_icon_double_left_click(self, widget, item):
+    def grid_icon_double_left_click(self, iconview, item, data=None):
         try:
             wid, tid   = self.window_controller.get_active_data()
             notebook   = self.builder.get_object(f"window_{wid}")
             path_entry = self.builder.get_object(f"path_entry")
-            tab_label  = self.get_tab_label_widget_from_widget(notebook, widget)
+            tab_label  = self.get_tab_label(notebook, iconview)
 
             view       = self.get_fm_window(wid).get_view_by_id(tid)
-            model      = widget.get_model()
+            model      = iconview.get_model()
 
             fileName   = model[item][1]
             dir        = view.get_current_directory()
@@ -101,10 +101,12 @@ class WindowMixin(TabMixin):
         except Exception as e:
             print(repr(e))
 
-    def grid_on_drag_set(self, widget, drag_context, data, info, time):
-        action    = widget.get_name()
-        store     = widget.get_model()
-        treePaths = widget.get_selected_items()
+
+
+    def grid_on_drag_set(self, iconview, drag_context, data, info, time):
+        action    = iconview.get_name()
+        store     = iconview.get_model()
+        treePaths = iconview.get_selected_items()
         wid, tid  = action.split("|")
         view      = self.get_fm_window(wid).get_view_by_id(tid)
         dir       = view.get_current_directory()
@@ -119,8 +121,8 @@ class WindowMixin(TabMixin):
         data.set_uris(uris)
         event_system.push_gui_event(["refresh_tab", None, action])
 
-    def grid_on_drag_motion(self, widget, drag_context, x, y, data):
-        wid, tid = widget.get_name().split("|")
+    def grid_on_drag_motion(self, iconview, drag_context, x, y, data):
+        wid, tid = iconview.get_name().split("|")
         self.window_controller.set_active_data(wid, tid)
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
@@ -128,8 +130,8 @@ class WindowMixin(TabMixin):
             wid, tid  = self.window_controller.get_active_data()
             notebook  = self.builder.get_object(f"window_{wid}")
             store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
+            view      = self.get_fm_window(wid).get_view_by_id(tid)
 
-            view  = self.get_fm_window(wid).get_view_by_id(tid)
             uris  = data.get_uris()
             dest  = view.get_current_directory()
 
