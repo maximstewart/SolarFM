@@ -106,7 +106,7 @@ class Signals(PaneMixin, WindowMixin):
             if "alt" in keyname:
                 self.altDown = False
 
-        if (self.ctrlDown and keyname == "h") or keyname == "home":
+        if (self.ctrlDown and keyname == "slash") or keyname == "home":
             self.builder.get_object("go_home").released()
         if self.ctrlDown and keyname == "r":
             self.builder.get_object("refresh_view").released()
@@ -117,16 +117,12 @@ class Signals(PaneMixin, WindowMixin):
         if self.ctrlDown and keyname == "t":
             self.builder.get_object("create_tab").released()
         if self.ctrlDown and keyname == "w":
-            print("[close tab] stub...")
+            self.keyboard_close_tab()
 
-        if self.ctrlDown and keyname == "period":
-            wid, tid = self.window_controller.get_active_data()
-            view     = self.get_fm_window(wid).get_view_by_id(tid)
-            view.hide_hidden = not view.hide_hidden
-            view.load_directory()
-            self.builder.get_object("refresh_view").released()
+        if self.ctrlDown and keyname == "h":
+            self.show_hide_hidden_files()
         if self.ctrlDown and keyname == "c":
-            print("[copy] stub...")
+            self.copy_file()
         if self.ctrlDown and keyname == "v":
             print("[paste] stub...")
 

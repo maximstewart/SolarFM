@@ -31,11 +31,12 @@ class TabMixin(WidgetMixin):
         self.load_store(view, store)
         self.set_window_title()
 
-    def close_tab(self, widget, eve):
-        notebook = widget.get_parent().get_parent()
-        page     = notebook.get_current_page()
-        tid      = self.get_tab_id_from_tab_box(widget.get_parent())
+    def close_tab(self, button, eve=None):
+        notebook = button.get_parent().get_parent()
+        tid      = self.get_tab_id_from_tab_box(button.get_parent())
         wid      = int(notebook.get_name()[-1])
+        scroll   = self.builder.get_object(f"{wid}|{tid}")
+        page     = notebook.page_num(scroll)
 
         self.get_fm_window(wid).delete_view_by_id(tid)
         notebook.remove_page(page)
@@ -54,6 +55,9 @@ class TabMixin(WidgetMixin):
 
     def get_tab_label(self, notebook, iconview):
         return notebook.get_tab_label(iconview.get_parent()).get_children()[0]
+
+    def get_tab_close(self, notebook, iconview):
+        return notebook.get_tab_label(iconview.get_parent()).get_children()[1]
 
     def get_tab_iconview_from_notebook(self, notebook):
         return notebook.get_children()[1].get_children()[0]
@@ -91,8 +95,22 @@ class TabMixin(WidgetMixin):
         tab_label.set_label(view.get_end_of_path())
         self.set_window_title()
 
+    def keyboard_close_tab(self):
+        wid, tid  = self.window_controller.get_active_data()
+        notebook  = self.builder.get_object(f"window_{wid}")
+        iconview  = self.get_tab_iconview_from_notebook(notebook)
+        close     = self.get_tab_close(notebook, iconview)
+        close.released()
 
     # File control events
+    def show_hide_hidden_files(self):
+        wid, tid = self.window_controller.get_active_data()
+        view     = self.get_fm_window(wid).get_view_by_id(tid)
+        view.hide_hidden = not view.hide_hidden
+        view.load_directory()
+        self.builder.get_object("refresh_view").released()
+
+
     def get_uris(self, store, treePaths=None):
         uris = []
 
@@ -138,7 +156,7 @@ class TabMixin(WidgetMixin):
         for path in treePaths:
             itr   = store.get_iter(path)
             file  = store.get(itr, 1)[0]
-            # print(file)
+            print(file)
 
         # uris      = self.get_uris(store, treePaths)
         # print(uris)

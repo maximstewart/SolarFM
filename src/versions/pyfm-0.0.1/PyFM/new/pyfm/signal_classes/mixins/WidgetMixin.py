@@ -86,7 +86,7 @@ class WidgetMixin:
         tab   = Gtk.Box()
         label = Gtk.Label()
         tid   = Gtk.Label()
-        close = Gtk.EventBox()
+        close = Gtk.Button()
         icon  = Gtk.Image(stock=Gtk.STOCK_CLOSE)
 
         label.set_label(f"{view.get_end_of_path()}")
@@ -100,7 +100,7 @@ class WidgetMixin:
         tab.add(close)
         tab.add(tid)
 
-        close.connect("button_release_event", self.close_tab)
+        close.connect("released", self.close_tab)
         tab.show_all()
         tid.hide()
         return tab
@@ -140,6 +140,7 @@ class WidgetMixin:
         grid.show_all()
         scroll.add(grid)
         grid.set_name(f"{wid}|{view.id}")
+        self.builder.expose_object(f"{wid}|{view.id}", scroll)
         return scroll, store
 
     def create_grid_treeview_widget(self, view, wid):
@@ -187,6 +188,7 @@ class WidgetMixin:
         scroll.add(grid)
         grid.set_name(f"{wid}|{view.id}")
         grid.columns_autosize()
+        self.builder.expose_object(f"{wid}|{view.id}", scroll)
         return scroll, store
 
 
