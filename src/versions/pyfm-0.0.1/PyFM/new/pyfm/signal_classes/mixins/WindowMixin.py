@@ -114,6 +114,7 @@ class WindowMixin(TabMixin):
                 self.load_store(view, model)
                 tab_label.set_label(view.get_end_of_path())
                 path_entry.set_text(view.get_current_directory())
+                self.set_file_watcher(view)
         except Exception as e:
             print(repr(e))
 
@@ -151,10 +152,6 @@ class WindowMixin(TabMixin):
                     if debug:
                         print(f"URI:  {uri}")
                     self.move_file(view, uri, dest)
-
-                # Reloads new directory
-                view.load_directory()
-                self.load_store(view, store)
 
     def create_new_view_notebook(self, widget=None, wid=None, path=None):
         self.create_tab(wid, path)

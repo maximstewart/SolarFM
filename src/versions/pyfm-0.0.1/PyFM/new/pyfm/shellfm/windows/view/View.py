@@ -22,6 +22,8 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
         self.id_length   = 10
 
         self.id          = ""
+        self.wid         = None
+        self.dir_watcher = None
         self.hide_hidden = self.HIDE_HIDDEN_FILES
         self.files       = []
         self.dirs        = []
@@ -44,6 +46,18 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
 
     def get_tab_id(self):
         return self.id
+
+    def set_wid(self, _wid):
+        self.wid = _wid
+
+    def get_wid(self):
+        return self.wid
+
+    def set_dir_watcher(self, watcher):
+        self.dir_watcher = watcher
+
+    def get_dir_watcher(self):
+        return self.dir_watcher
 
     def load_directory(self):
         path           = self.get_path()

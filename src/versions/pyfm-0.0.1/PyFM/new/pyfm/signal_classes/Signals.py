@@ -14,7 +14,6 @@ from .mixins import *
 from shellfm import WindowController
 
 
-
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs).start()
@@ -98,14 +97,12 @@ class Signals(PaneMixin, WindowMixin):
             if "alt" in keyname:
                 self.altDown = True
 
-    # NOTE: Yes, this should actually be mapped to some key
-    #       controller setting file or something. Sue me.
+    # NOTE: Yes, this should actually be mapped to some key controller setting
+    #       file or something. Sue me.
     def global_key_release_controller(self, eve, user_data):
         keyname = Gdk.keyval_name(user_data.keyval).lower()
         if debug:
             print(f"global_key_release_controller > key > {keyname}")
-        print(f"global_key_release_controller > key > {keyname}")
-
 
         if "control" in keyname or "alt" in keyname or "shift" in keyname:
             if "control" in keyname:
@@ -144,6 +141,9 @@ class Signals(PaneMixin, WindowMixin):
             view     = self.get_fm_window(wid).get_view_by_id(tid)
             dir      = view.get_current_directory()
             self.execute("terminator", dir)
+
+        if keyname == "delete":
+            self.trash_files()
 
 
     def execute(self, option, start_dir=os.getenv("HOME")):
