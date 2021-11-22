@@ -51,40 +51,14 @@ class WindowMixin(TabMixin):
         try:
             wid, tid = iconview.get_name().split("|")
             self.window_controller.set_active_data(wid, tid)
+            self.set_path_text(wid, tid)
+            self.set_window_title()
 
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
-                self.set_path_text(wid, tid)
-                self.set_window_title()
-
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
                     self.grid_icon_double_left_click(iconview)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
-                pass
-            #     input          = self.builder.get_object("filenameInput")
-            #     controls       = self.builder.get_object("iconControlsWindow")
-            #     iconsButtonBox = self.builder.get_object("iconsButtonBox")
-            #     menuButtonBox  = self.builder.get_object("menuButtonBox")
-            #
-            #
-            #     if len(self.selectedFiles) == 1:
-            #         parts = self.selectedFiles[0].split("/")
-            #         input.set_text(parts[len(parts) - 1])
-            #         input.show()
-            #         iconsButtonBox.show()
-            #         menuButtonBox.hide()
-            #         controls.show()
-            #     elif len(self.selectedFiles) > 1:
-            #         input.set_text("")
-            #         input.hide()
-            #         menuButtonBox.hide()
-            #         iconsButtonBox.show()
-            #         controls.show()
-            #     else:
-            #         input.set_text("")
-            #         input.show()
-            #         menuButtonBox.show()
-            #         iconsButtonBox.hide()
-            #         controls.show()
+                self.show_context_menu()
 
         except Exception as e:
             print(repr(e))

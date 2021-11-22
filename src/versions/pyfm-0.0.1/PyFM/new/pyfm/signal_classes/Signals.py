@@ -20,7 +20,7 @@ def threaded(fn):
     return wrapper
 
 
-class Signals(PaneMixin, WindowMixin):
+class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
     def __init__(self, settings):
         self.settings          = settings
         self.builder           = self.settings.builder
@@ -87,6 +87,30 @@ class Signals(PaneMixin, WindowMixin):
         self.load_store(view, store)
 
 
+    def do_action_from_menu_controls(self, imagemenuitem, eventbutton):
+        action        = imagemenuitem.get_name()
+        self.ctrlDown = True
+        self.hide_context_menu()
+
+        if action == "create":
+            self.create_file()
+        if action == "cut":
+            self.to_copy_files.clear()
+            self.cut_files()
+        if action == "copy":
+            self.to_cut_files.clear()
+            self.copy_files()
+        if action == "paste":
+            self.paste_files()
+        if action == "delete":
+            # self.delete_files()
+            self.trash_files()
+        if action == "trash":
+            self.trash_files()
+
+        self.ctrlDown = False
+
+
     def global_key_press_controller(self, eve, user_data):
         keyname = Gdk.keyval_name(user_data.keyval).lower()
         if "control" in keyname or "alt" in keyname or "shift" in keyname:
@@ -110,13 +134,13 @@ class Signals(PaneMixin, WindowMixin):
             if "shift" in keyname:
                 self.shiftDown   = False
             if "alt" in keyname:
-                self.altDown = False
+                self.altDown     = False
 
         if (self.ctrlDown and keyname == "slash") or keyname == "home":
             self.builder.get_object("go_home").released()
         if self.ctrlDown and keyname == "r":
             self.builder.get_object("refresh_view").released()
-        if (self.ctrlDown and keyname == "up") or (self.ctrlDown and keyname == "up"):
+        if (self.ctrlDown and keyname == "up") or (self.ctrlDown and keyname == "u"):
             self.builder.get_object("go_up").released()
         if self.ctrlDown and keyname == "l":
             self.builder.get_object("path_entry").grab_focus()
@@ -124,7 +148,6 @@ class Signals(PaneMixin, WindowMixin):
             self.builder.get_object("create_tab").released()
         if self.ctrlDown and keyname == "w":
             self.keyboard_close_tab()
-
         if self.ctrlDown and keyname == "h":
             self.show_hide_hidden_files()
         if self.ctrlDown and keyname == "c":
@@ -136,20 +159,40 @@ class Signals(PaneMixin, WindowMixin):
         if self.ctrlDown and keyname == "v":
             self.paste_files()
 
+        if self.ctrlDown and keyname == "o":
+            pass
+
+        if keyname == "delete":
+            self.trash_files()
+
         if keyname == "f4":
             wid, tid = self.window_controller.get_active_data()
             view     = self.get_fm_window(wid).get_view_by_id(tid)
             dir      = view.get_current_directory()
             self.execute("terminator", dir)
 
-        if keyname == "delete":
-            self.trash_files()
-
 
     def execute(self, option, start_dir=os.getenv("HOME")):
         DEVNULL = open(os.devnull, 'w')
         command = option.split()
         subprocess.Popen(command, cwd=start_dir, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
+
+
+    def show_about_page(self, widget, eve):
+        about_page = self.builder.get_object("about_page")
+        response   = about_page.run()
+        if response == -4:
+            self.hide_about_page()
+
+    def hide_about_page(self, widget=None, eve=None):
+        about_page = self.builder.get_object("about_page").hide()
+
+
+    def show_context_menu(self, widget=None, eve=None):
+        self.builder.get_object("context_menu").run()
+
+    def hide_context_menu(self, widget=None, eve=None):
+        self.builder.get_object("context_menu").hide()
 
 
     def generate_windows(self, data = None):
