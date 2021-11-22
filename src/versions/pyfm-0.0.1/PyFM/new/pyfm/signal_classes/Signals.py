@@ -57,6 +57,12 @@ class Signals(PaneMixin, WindowMixin):
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
         self.gui_event_observer()
 
+    def tear_down(self, widget=None, eve=None):
+        self.window_controller.save_state()
+        event_system.monitor_events = False
+        time.sleep(event_sleep_time)
+        Gtk.main_quit()
+
 
     @threaded
     def gui_event_observer(self):
@@ -82,8 +88,6 @@ class Signals(PaneMixin, WindowMixin):
         self.load_store(view, store)
 
 
-
-
     def global_key_press_controller(self, eve, user_data):
         keyname = Gdk.keyval_name(user_data.keyval).lower()
         if "control" in keyname or "alt" in keyname or "shift" in keyname:
@@ -100,6 +104,8 @@ class Signals(PaneMixin, WindowMixin):
         keyname = Gdk.keyval_name(user_data.keyval).lower()
         if debug:
             print(f"global_key_release_controller > key > {keyname}")
+        print(f"global_key_release_controller > key > {keyname}")
+
 
         if "control" in keyname or "alt" in keyname or "shift" in keyname:
             if "control" in keyname:
@@ -133,12 +139,18 @@ class Signals(PaneMixin, WindowMixin):
         if self.ctrlDown and keyname == "v":
             self.paste_files()
 
+        if keyname == "f4":
+            wid, tid = self.window_controller.get_active_data()
+            view     = self.get_fm_window(wid).get_view_by_id(tid)
+            dir      = view.get_current_directory()
+            self.execute("terminator", dir)
 
-    def tear_down(self, widget=None, eve=None):
-        self.window_controller.save_state()
-        event_system.monitor_events = False
-        time.sleep(event_sleep_time)
-        Gtk.main_quit()
+
+    def execute(self, option, start_dir=os.getenv("HOME")):
+        DEVNULL = open(os.devnull, 'w')
+        command = option.split()
+        subprocess.Popen(command, cwd=start_dir, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
+
 
     def generate_windows(self, data = None):
         if data:
