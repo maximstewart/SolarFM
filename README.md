@@ -9,3 +9,6 @@ PyFM is a Gtk + Python file manager.
 # TODO
 <ul>
 </ul>
+
+# Images
+![1 PyFM showing different directories. ](images/pic1.png)
