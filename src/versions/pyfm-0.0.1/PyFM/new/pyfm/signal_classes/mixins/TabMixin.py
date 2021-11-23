@@ -51,6 +51,22 @@ class TabMixin(WidgetMixin):
         self.window_controller.save_state()
         self.set_window_title()
 
+    def on_tab_reorder(self, child, page_num, new_index):
+        wid, tid = page_num.get_name().split("|")
+        window   = self.get_fm_window(wid)
+        view     = None
+
+        for i, view in enumerate(window.views):
+            if view.id == tid:
+                _view = window.get_view_by_id(tid)
+                watcher  = _view.get_dir_watcher()
+                watcher.cancel()
+                window.views.insert(new_index, window.views.pop(i))
+
+        view = window.get_view_by_id(tid)
+        self.set_file_watcher(view)
+        self.window_controller.save_state()
+
     def on_tab_switch_update(self, notebook, content=None, index=None):
         self.selected_files.clear()
         wid, tid = content.get_children()[0].get_name().split("|")

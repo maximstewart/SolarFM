@@ -141,6 +141,7 @@ class WidgetMixin:
         grid.show_all()
         scroll.add(grid)
         grid.set_name(f"{wid}|{view.id}")
+        scroll.set_name(f"{wid}|{view.id}")
         self.builder.expose_object(f"{wid}|{view.id}|iconview", grid)
         self.builder.expose_object(f"{wid}|{view.id}", scroll)
         return scroll, store
@@ -189,6 +190,7 @@ class WidgetMixin:
         grid.show_all()
         scroll.add(grid)
         grid.set_name(f"{wid}|{view.id}")
+        scroll.set_name(f"{wid}|{view.id}")
         grid.columns_autosize()
         self.builder.expose_object(f"{wid}|{view.id}", scroll)
         return scroll, store
