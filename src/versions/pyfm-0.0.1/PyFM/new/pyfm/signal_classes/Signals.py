@@ -29,7 +29,7 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         self.window_controller = WindowController()
         self.state             = self.window_controller.load_state()
 
-        self.window            = self.builder.get_object("Main_Window")
+        self.window            = self.settings.getMainWindow()
         self.window1           = self.builder.get_object("window1")
         self.window2           = self.builder.get_object("window2")
         self.window3           = self.builder.get_object("window3")

@@ -14,6 +14,7 @@ from __builtins__ import Builtins
 class Main(Builtins):
     def __init__(self, args):
         settings = Settings()
+        settings.createWindow()
 
         # Gets the methods from the classes and sets to handler.
         # Then, builder connects to any signals it needs.

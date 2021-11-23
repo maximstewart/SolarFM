@@ -12,3 +12,4 @@ PyFM is a Gtk + Python file manager.
 
 # Images
 ![1 PyFM showing different directories. ](images/pic1.png)
+![1 PyFM themed dark and made transparent. ](images/pic2.png)
