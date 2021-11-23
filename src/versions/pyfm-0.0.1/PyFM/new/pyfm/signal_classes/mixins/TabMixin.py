@@ -115,8 +115,12 @@ class TabMixin(WidgetMixin):
             if not traversed:
                 return
 
+
         self.load_store(view, store)
         self.set_path_text(wid, tid)
+
+        char_width = len(view.get_end_of_path())
+        tab_label.set_width_chars(char_width)
         tab_label.set_label(view.get_end_of_path())
         self.set_window_title()
         self.set_file_watcher(view)

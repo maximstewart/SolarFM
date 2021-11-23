@@ -90,9 +90,9 @@ class WidgetMixin:
         icon  = Gtk.Image(stock=Gtk.STOCK_CLOSE)
 
         label.set_label(f"{view.get_end_of_path()}")
-        label.set_width_chars(25)
-        label.set_max_width_chars(64)
-        label.set_ellipsize(2)  #PANGO_ELLIPSIZE_MIDDLE
+        label.set_width_chars(len(view.get_end_of_path()))
+        label.set_xalign(0.0)
+        # label.set_ellipsize(2)  #PANGO_ELLIPSIZE_MIDDLE
         tid.set_label(f"{view.id}")
 
         close.add(icon)
