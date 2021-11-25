@@ -24,11 +24,14 @@ class DBusControllerMixin:
             print(f"New Connection: {listener.last_accepted}")
             while True:
                 msg = conn.recv()
-                print(msg)
+                if debug:
+                    print(msg)
 
                 if "FILE|" in msg:
                     file = msg.split("FILE|")[1].strip()
-                    event_system.push_gui_event(["create_tab_from_ipc", None, file])
+                    if file:
+                        event_system.push_gui_event(["create_tab_from_ipc", None, file])
+
                     conn.close()
                     break
 

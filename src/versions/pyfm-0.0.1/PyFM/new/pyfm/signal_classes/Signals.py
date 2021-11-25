@@ -21,7 +21,7 @@ def threaded(fn):
 
 
 class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
-    def __init__(self, args, settings):
+    def __init__(self, args, unknownargs, settings):
         self.settings          = settings
         self.builder           = self.settings.builder
         self.logger            = self.settings.logger
@@ -30,10 +30,10 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         self.state             = self.window_controller.load_state()
 
         self.window            = self.settings.getMainWindow()
-        self.window1           = self.builder.get_object("window1")
-        self.window2           = self.builder.get_object("window2")
-        self.window3           = self.builder.get_object("window3")
-        self.window4           = self.builder.get_object("window4")
+        self.window1           = self.builder.get_object("window_1")
+        self.window2           = self.builder.get_object("window_2")
+        self.window3           = self.builder.get_object("window_3")
+        self.window4           = self.builder.get_object("window_4")
         self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files    = []
         self.to_copy_files     = []
@@ -56,10 +56,21 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
         self.gui_event_observer()
 
+        if unknownargs:
+            for arg in unknownargs:
+                if os.path.isdir(arg):
+                    message = f"FILE|{arg}"
+                    event_system.send_ipc_message(message)
+
+        if args.new_tab and os.path.isdir(args.new_tab):
+            message = f"FILE|{args.new_tab}"
+            event_system.send_ipc_message(message)
+
+
     def tear_down(self, widget=None, eve=None):
         self.window_controller.save_state()
-        event_system.send_ipc_message("close server")
         event_system.monitor_events  = False
+        event_system.send_ipc_message("close server")
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 

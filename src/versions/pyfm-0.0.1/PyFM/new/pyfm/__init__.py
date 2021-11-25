@@ -1,5 +1,5 @@
 # Python imports
-import inspect, time
+import os, inspect, time
 
 # Gtk imports
 
@@ -10,19 +10,27 @@ from __builtins__ import Builtins
 
 
 class Main(Builtins):
-    def __init__(self, args):
+    def __init__(self, args, unknownargs):
         event_system.create_ipc_server()
         time.sleep(0.5)
         if not event_system.is_ipc_alive:
-            if args.new_tab:
+            if unknownargs:
+                for arg in unknownargs:
+                    if os.path.isdir(arg):
+                        message = f"FILE|{arg}"
+                        event_system.send_ipc_message(message)
+
+            if args.new_tab and os.path.isdir(args.new_tab):
                 message = f"FILE|{args.new_tab}"
                 event_system.send_ipc_message(message)
-            raise Exception("IPC Server Exists: Will send message to it and close...")
+
+            raise Exception("IPC Server Exists: Will send path(s) to it and close...")
+
 
         settings = Settings()
         settings.createWindow()
 
-        signals = Signals(args, settings)
+        signals = Signals(args, unknownargs, settings)
         if not signals:
             raise Exception("Signals exited...")
 
@@ -39,4 +47,3 @@ class Main(Builtins):
                 pass
 
         settings.builder.connect_signals(handlers)
-        window = settings.createWindow()

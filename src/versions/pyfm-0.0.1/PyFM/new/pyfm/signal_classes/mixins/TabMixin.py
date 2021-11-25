@@ -11,8 +11,14 @@ class TabMixin(WidgetMixin):
 
     def create_tab_from_ipc(data):
         self, path = data
-        wid, tid   = self.window_controller.get_active_data()
-        self.create_tab(wid, path)
+        if not self.is_pane1_hidden:
+            self.create_tab(1, path)
+        elif not self.is_pane2_hidden:
+            self.create_tab(2, path)
+        elif not self.is_pane3_hidden:
+            self.create_tab(3, path)
+        elif not self.is_pane4_hidden:
+            self.create_tab(4, path)
 
 
     def create_tab(self, wid, path=None):

@@ -24,12 +24,13 @@ if __name__ == "__main__":
         faulthandler.enable()  # For better debug info
         parser = argparse.ArgumentParser()
         # Add long and short arguments
-        parser.add_argument("--new-tab", "-t", help="Open a file into new tab.")
-        parser.add_argument("--new-window", "-w", help="Open a file into a new window.")
+        parser.add_argument("--new-tab", "-t", default="", help="Open a file into new tab.")
+        parser.add_argument("--new-window", "-w", default="", help="Open a file into a new window.")
 
         # Read arguments (If any...)
-        args = parser.parse_args()
-        Main(args)
+        args, unknownargs = parser.parse_known_args()
+
+        Main(args, unknownargs)
         Gtk.main()
     except Exception as e:
         event_system.keep_ipc_alive = False
