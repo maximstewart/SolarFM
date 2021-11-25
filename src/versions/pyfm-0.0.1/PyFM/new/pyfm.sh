@@ -13,6 +13,6 @@ function main() {
     echo "Working Dir: " $(pwd)
 
     source "/home/abaddon/Portable_Apps/py-venvs/flask-apps-venv/venv/bin/activate"
-    python .
+    python ./pyfm
 }
 main "$@";

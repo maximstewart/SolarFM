@@ -9,6 +9,12 @@ from . import WidgetMixin
 class TabMixin(WidgetMixin):
     """docstring for TabMixin"""
 
+    def create_tab_from_ipc(data):
+        self, path = data
+        wid, tid   = self.window_controller.get_active_data()
+        self.create_tab(wid, path)
+
+
     def create_tab(self, wid, path=None):
         notebook    = self.builder.get_object(f"window_{wid}")
         path_entry  = self.builder.get_object(f"path_entry")
@@ -104,6 +110,7 @@ class TabMixin(WidgetMixin):
         if action == "create_tab":
             dir = view.get_current_directory()
             self.create_tab(wid, dir)
+            self.window_controller.save_state()
             return
         if action == "path_entry":
             path = widget.get_text()
@@ -124,6 +131,7 @@ class TabMixin(WidgetMixin):
         tab_label.set_label(view.get_end_of_path())
         self.set_window_title()
         self.set_file_watcher(view)
+        self.window_controller.save_state()
 
 
     def keyboard_close_tab(self):

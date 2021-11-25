@@ -21,7 +21,7 @@ def threaded(fn):
 
 
 class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
-    def __init__(self, settings):
+    def __init__(self, args, settings):
         self.settings          = settings
         self.builder           = self.settings.builder
         self.logger            = self.settings.logger
@@ -39,15 +39,15 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         self.to_copy_files     = []
         self.to_cut_files      = []
 
-        self.single_click_open  = False
-        self.is_pane1_hidden    = False
-        self.is_pane2_hidden    = False
-        self.is_pane3_hidden    = False
-        self.is_pane4_hidden    = False
+        self.single_click_open = False
+        self.is_pane1_hidden   = False
+        self.is_pane2_hidden   = False
+        self.is_pane3_hidden   = False
+        self.is_pane4_hidden   = False
 
-        self.ctrlDown           = False
-        self.shiftDown          = False
-        self.altDown            = False
+        self.ctrlDown          = False
+        self.shiftDown         = False
+        self.altDown           = False
 
         self.window.show()
         self.generate_windows(self.state)
@@ -58,7 +58,8 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
 
     def tear_down(self, widget=None, eve=None):
         self.window_controller.save_state()
-        event_system.monitor_events = False
+        event_system.send_ipc_message("close server")
+        event_system.monitor_events  = False
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 
@@ -136,6 +137,8 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
             if "alt" in keyname:
                 self.altDown     = False
 
+        if self.ctrlDown and keyname == "q":
+            self.tear_down()
         if (self.ctrlDown and keyname == "slash") or keyname == "home":
             self.builder.get_object("go_home").released()
         if self.ctrlDown and keyname == "r":
@@ -159,12 +162,9 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         if self.ctrlDown and keyname == "v":
             self.paste_files()
 
-        if self.ctrlDown and keyname == "o":
-            pass
 
         if keyname == "delete":
             self.trash_files()
-
         if keyname == "f4":
             wid, tid = self.window_controller.get_active_data()
             view     = self.get_fm_window(wid).get_view_by_id(tid)
@@ -217,14 +217,14 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
                 self.create_new_view_notebook(None, i, None)
 
 
-    def getClipboardData(self):
-        proc    = subprocess.Popen(['xclip','-selection', 'clipboard', '-o'], stdout=subprocess.PIPE)
-        retcode = proc.wait()
-        data    = proc.stdout.read()
-        return data.decode("utf-8").strip()
-
-    def setClipboardData(self, data):
-        proc = subprocess.Popen(['xclip','-selection','clipboard'], stdin=subprocess.PIPE)
-        proc.stdin.write(data)
-        proc.stdin.close()
-        retcode = proc.wait()
+    # def getClipboardData(self):
+    #     proc    = subprocess.Popen(['xclip','-selection', 'clipboard', '-o'], stdout=subprocess.PIPE)
+    #     retcode = proc.wait()
+    #     data    = proc.stdout.read()
+    #     return data.decode("utf-8").strip()
+    #
+    # def setClipboardData(self, data):
+    #     proc = subprocess.Popen(['xclip','-selection','clipboard'], stdin=subprocess.PIPE)
+    #     proc.stdin.write(data)
+    #     proc.stdin.close()
+    #     retcode = proc.wait()

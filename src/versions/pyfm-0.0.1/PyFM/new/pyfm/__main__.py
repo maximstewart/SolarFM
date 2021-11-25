@@ -12,7 +12,7 @@ tracemalloc.start()
 # Gtk imports
 import gi, faulthandler, traceback
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk as gtk
+from gi.repository import Gtk
 
 # Application imports
 from __init__ import Main
@@ -24,11 +24,14 @@ if __name__ == "__main__":
         faulthandler.enable()  # For better debug info
         parser = argparse.ArgumentParser()
         # Add long and short arguments
-        parser.add_argument("--file", "-f", default="default", help="JUST SOME FILE ARG.")
+        parser.add_argument("--new-tab", "-t", help="Open a file into new tab.")
+        parser.add_argument("--new-window", "-w", help="Open a file into a new window.")
 
         # Read arguments (If any...)
         args = parser.parse_args()
-        main = Main(args)
-        gtk.main()
+        Main(args)
+        Gtk.main()
     except Exception as e:
-        traceback.print_exc()
+        event_system.keep_ipc_alive = False
+        if debug:
+            traceback.print_exc()

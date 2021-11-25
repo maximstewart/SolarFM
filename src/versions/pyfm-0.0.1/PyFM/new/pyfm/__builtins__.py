@@ -1,6 +1,13 @@
+# Python imports
 import builtins
 
-class Builtins:
+# Gtk imports
+
+# Application imports
+from signal_classes.DBusControllerMixin import DBusControllerMixin
+
+
+class Builtins(DBusControllerMixin):
     """Docstring for __builtins__ extender"""
 
     def __init__(self):
@@ -9,6 +16,8 @@ class Builtins:
         self._gui_events    = []
         self._fm_events     = []
         self.monitor_events = True
+        self.keep_ipc_alive = True
+        self.is_ipc_alive   = False
 
     # Makeshift fake "events" type system FIFO
     def _pop_gui_event(self):
@@ -53,5 +62,5 @@ class Builtins:
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
 builtins.event_system      = Builtins()
-builtins.event_sleep_time  = 0.2
+builtins.event_sleep_time  = 0.5
 builtins.debug             = False
