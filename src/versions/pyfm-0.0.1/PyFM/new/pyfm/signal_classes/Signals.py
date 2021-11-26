@@ -36,6 +36,7 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         self.window4           = self.builder.get_object("window_4")
         self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files    = []
+        self.to_rename_files   = []
         self.to_copy_files     = []
         self.to_cut_files      = []
 
@@ -45,6 +46,8 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         self.is_pane3_hidden   = False
         self.is_pane4_hidden   = False
 
+        self.skip_edit         = False
+        self.cancel_edit       = False
         self.ctrlDown          = False
         self.shiftDown         = False
         self.altDown           = False
@@ -68,9 +71,9 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
 
 
     def tear_down(self, widget=None, eve=None):
-        self.window_controller.save_state()
         event_system.monitor_events  = False
         event_system.send_ipc_message("close server")
+        self.window_controller.save_state()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 
@@ -98,14 +101,25 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         view.load_directory()
         self.load_store(view, store)
 
+    def has_method(self, o, name):
+        return callable(getattr(o, name, None))
+
 
     def do_action_from_menu_controls(self, imagemenuitem, eventbutton):
         action        = imagemenuitem.get_name()
         self.ctrlDown = True
         self.hide_context_menu()
+        self.hide_new_file_menu()
+        self.hide_edit_file_menu()
 
         if action == "create":
             self.create_file()
+            self.hide_new_file_menu()
+        if action == "open":
+            self.open_files()
+        if action == "rename":
+            self.to_rename_files = self.selected_files
+            self.rename_files()
         if action == "cut":
             self.to_copy_files.clear()
             self.cut_files()
@@ -160,10 +174,14 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
             self.builder.get_object("path_entry").grab_focus()
         if self.ctrlDown and keyname == "t":
             self.builder.get_object("create_tab").released()
+        if self.ctrlDown and keyname == "o":
+            self.open_files()
         if self.ctrlDown and keyname == "w":
             self.keyboard_close_tab()
         if self.ctrlDown and keyname == "h":
             self.show_hide_hidden_files()
+        if (self.ctrlDown and keyname == "e"):
+            self.edit_files()
         if self.ctrlDown and keyname == "c":
             self.to_cut_files.clear()
             self.copy_files()
@@ -172,11 +190,14 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
             self.cut_files()
         if self.ctrlDown and keyname == "v":
             self.paste_files()
-        if self.ctrlDown and keyname == "o":
-            self.open_files()
+        if self.ctrlDown and keyname == "n":
+            self.show_new_file_menu()
 
         if keyname == "delete":
             self.trash_files()
+        if keyname == "f2":
+            self.to_rename_files = self.selected_files
+            self.rename_files()
         if keyname == "f4":
             wid, tid = self.window_controller.get_active_data()
             view     = self.get_fm_window(wid).get_view_by_id(tid)
@@ -190,6 +211,8 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         subprocess.Popen(command, cwd=start_dir, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
 
 
+
+
     def show_about_page(self, widget, eve):
         about_page = self.builder.get_object("about_page")
         response   = about_page.run()
@@ -199,12 +222,34 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
     def hide_about_page(self, widget=None, eve=None):
         about_page = self.builder.get_object("about_page").hide()
 
-
     def show_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu").run()
 
     def hide_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu").hide()
+
+    def show_edit_file_menu(self, widget=None, eve=None):
+        self.builder.get_object("edit_file_menu").run()
+
+    def hide_edit_file_menu(self, widget=None, eve=None):
+        self.builder.get_object("edit_file_menu").hide()
+
+    def show_new_file_menu(self, widget=None, eve=None):
+        self.builder.get_object("new_file_menu").run()
+
+    def hide_new_file_menu(self, widget=None, eve=None):
+        self.builder.get_object("new_file_menu").hide()
+
+    def hide_edit_file_menu_skip(self, widget=None, eve=None):
+        self.skip_edit   = True
+        self.builder.get_object("edit_file_menu").hide()
+
+    def hide_edit_file_menu_cancel(self, widget=None, eve=None):
+        self.cancel_edit = True
+        self.builder.get_object("edit_file_menu").hide()
+
+
+
 
 
     def generate_windows(self, data = None):

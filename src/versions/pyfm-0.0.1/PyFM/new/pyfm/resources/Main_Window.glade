@@ -8,6 +8,7 @@
     <property name="window-position">center-on-parent</property>
     <property name="icon">pyfm.png</property>
     <property name="type-hint">dialog</property>
+    <property name="gravity">center</property>
     <property name="program-name">PyFM</property>
     <property name="version">0.0.1</property>
     <property name="copyright" translatable="yes">Copyright (C) 2021   GPL2</property>
@@ -386,6 +387,303 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="stock">gtk-new</property>
+  </object>
+  <object class="GtkDialog" id="new_file_menu">
+    <property name="can-focus">False</property>
+    <property name="window-position">center</property>
+    <property name="type-hint">splashscreen</property>
+    <property name="gravity">center</property>
+    <signal name="focus-out-event" handler="hide_new_file_menu" swapped="no"/>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkEntry" id="context_menu_fname">
+                <property name="width-request">500</property>
+                <property name="height-request">26</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="primary-icon-stock">gtk-edit</property>
+                <property name="placeholder-text" translatable="yes">New File/Dir Name...</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="menuButtonBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="margin-bottom">20</property>
+                <property name="orientation">vertical</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">15</property>
+                        <property name="label" translatable="yes">Folder</property>
+                        <attributes>
+                          <attribute name="size" value="12000"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">15</property>
+                        <property name="label" translatable="yes">File</property>
+                        <attributes>
+                          <attribute name="size" value="12000"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSwitch" id="context_menu_type_toggle">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">File/Folder</property>
+                    <property name="active">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Create</property>
+                    <property name="name">create</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Create File/Folder...</property>
+                    <property name="image">createImage</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkImage" id="rename_img">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-edit</property>
+    <property name="icon_size">3</property>
+  </object>
+  <object class="GtkImage" id="rename_img2">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-edit</property>
+  </object>
+  <object class="GtkImage" id="skip_img">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-media-forward</property>
+  </object>
+  <object class="GtkDialog" id="edit_file_menu">
+    <property name="can-focus">False</property>
+    <property name="modal">True</property>
+    <property name="window-position">center</property>
+    <property name="type-hint">splashscreen</property>
+    <property name="gravity">center</property>
+    <signal name="focus-out-event" handler="hide_edit_file_menu" swapped="no"/>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Skip</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">skip_img</property>
+                <property name="always-show-image">True</property>
+                <signal name="button-release-event" handler="hide_edit_file_menu_skip" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <signal name="button-release-event" handler="hide_edit_file_menu_cancel" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Rename:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="file_to_rename_label">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="new_rename_fname">
+                <property name="width-request">500</property>
+                <property name="height-request">26</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="primary-icon-stock">gtk-edit</property>
+                <property name="placeholder-text" translatable="yes">To:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Rename</property>
+                <property name="name">rename</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">rename_img</property>
+                <property name="always-show-image">True</property>
+                <signal name="button-release-event" handler="hide_edit_file_menu" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
   <object class="GtkImage" id="tggl_notebook_1_img">
     <property name="visible">True</property>
@@ -961,11 +1259,6 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
       </object>
     </child>
   </object>
-  <object class="GtkImage" id="trashImage">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="pixbuf">icons/trash.png</property>
-  </object>
   <object class="GtkImage" id="trash_img">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -973,9 +1266,12 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
   </object>
   <object class="GtkDialog" id="context_menu">
     <property name="can-focus">False</property>
+    <property name="resizable">False</property>
     <property name="window-position">mouse</property>
     <property name="type-hint">splashscreen</property>
-    <property name="gravity">south</property>
+    <property name="decorated">False</property>
+    <property name="deletable">False</property>
+    <property name="gravity">static</property>
     <signal name="focus-out-event" handler="hide_context_menu" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox">
@@ -1001,112 +1297,9 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
         </child>
         <child>
           <object class="GtkBox">
-            <property name="width-request">500</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkEntry" id="context_menu_fname">
-                <property name="width-request">500</property>
-                <property name="height-request">26</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="primary-icon-stock">gtk-edit</property>
-                <property name="placeholder-text" translatable="yes">New File/Dir Name...</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="menuButtonBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-bottom">20</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="margin-top">15</property>
-                        <property name="label" translatable="yes">Folder</property>
-                        <attributes>
-                          <attribute name="size" value="12000"/>
-                        </attributes>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="margin-top">15</property>
-                        <property name="label" translatable="yes">File</property>
-                        <attributes>
-                          <attribute name="size" value="12000"/>
-                        </attributes>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSwitch" id="context_menu_type_toggle">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">File/Folder</property>
-                    <property name="active">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Create</property>
-                    <property name="name">create</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Create File/Folder...</property>
-                    <property name="image">createImage</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
             <child>
               <object class="GtkBox" id="iconsButtonBox">
                 <property name="visible">True</property>
@@ -1128,19 +1321,18 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton">
-                    <property name="label">gtk-cut</property>
-                    <property name="name">cut</property>
+                    <property name="label">gtk-open</property>
+                    <property name="name">open</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Cut...</property>
+                    <property name="tooltip-text" translatable="yes">Open...</property>
                     <property name="use-stock">True</property>
-                    <property name="always-show-image">True</property>
                     <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                   </object>
                   <packing>
@@ -1151,15 +1343,15 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                 </child>
                 <child>
                   <object class="GtkButton">
-                    <property name="label">gtk-copy</property>
-                    <property name="name">copy</property>
+                    <property name="label" translatable="yes">Rename</property>
+                    <property name="name">rename</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Copy...</property>
-                    <property name="use-stock">True</property>
+                    <property name="tooltip-text" translatable="yes">Rename...</property>
+                    <property name="image">rename_img2</property>
                     <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                    <signal name="button-release-event" handler="show_edit_file_menu" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1183,7 +1375,43 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="pack-type">end</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">gtk-cut</property>
+                    <property name="name">cut</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Cut...</property>
+                    <property name="use-stock">True</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">gtk-copy</property>
+                    <property name="name">copy</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Copy...</property>
+                    <property name="use-stock">True</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -1201,7 +1429,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
               </object>

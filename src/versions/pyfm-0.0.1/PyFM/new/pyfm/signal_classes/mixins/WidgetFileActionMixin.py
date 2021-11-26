@@ -1,4 +1,5 @@
 # Python imports
+import os
 
 # Lib imports
 from gi.repository import GObject, Gio
@@ -42,13 +43,17 @@ class WidgetFileActionMixin:
                 self.load_store(view, store)
                 tab_label.set_label(view.get_end_of_path())
 
-    def create_file(self):
-        file_name = self.builder.get_object("context_menu_fname").get_text().strip()
-        type      = self.builder.get_object("context_menu_type_toggle").get_state()
 
-        wid, tid  = self.window_controller.get_active_data()
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        target    = f"{view.get_current_directory()}"
+
+
+    def create_file(self):
+        fname_field = self.builder.get_object("context_menu_fname")
+        file_name   = fname_field.get_text().strip()
+        type        = self.builder.get_object("context_menu_type_toggle").get_state()
+
+        wid, tid    = self.window_controller.get_active_data()
+        view        = self.get_fm_window(wid).get_view_by_id(tid)
+        target      = f"{view.get_current_directory()}"
 
         if file_name != "":
             file_name = "file://" + target + "/" + file_name
@@ -57,11 +62,7 @@ class WidgetFileActionMixin:
             else:                # Create Folder
                 self.handle_file([file_name], "create_dir")
 
-    def update_file(self):
-        pass
-
-    def menu_bar_copy(self, widget, eve):
-        self.copy_file()
+        fname_field.set_text("")
 
     def open_files(self):
         wid, tid  = self.window_controller.get_active_data()
@@ -73,12 +74,50 @@ class WidgetFileActionMixin:
         for file in uris:
             view.open_file_locally(file)
 
-    def copy_files(self):
-        wid, tid  = self.window_controller.get_active_data()
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store     = iconview.get_model()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
-        self.to_copy_files = uris
+    def edit_files(self):
+        pass
+
+    def rename_files(self):
+        rename_label = self.builder.get_object("file_to_rename_label")
+        rename_input = self.builder.get_object("new_rename_fname")
+        wid, tid     = self.window_controller.get_active_data()
+        view         = self.get_fm_window(wid).get_view_by_id(tid)
+        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store        = iconview.get_model()
+        uris         = self.format_to_uris(store, wid, tid, self.to_rename_files, True)
+
+        # The rename button hides the rename dialog box which lets this loop continue.
+        # Weirdly, the show at the end is needed to flow through all the list properly
+        # than auto chosing the first rename entry you do.
+        for uri in uris:
+            entry = uri.split("/")[-1]
+            rename_label.set_label(entry)
+            rename_input.set_text(entry)
+            if self.skip_edit:
+                self.skip_edit = False
+                self.show_edit_file_menu()
+
+            self.show_edit_file_menu()
+
+            if self.skip_edit:
+                continue
+            if self.cancel_edit:
+                break
+
+            rname_to = rename_input.get_text().strip()
+            target   = f"file://{view.get_current_directory()}/{rname_to}"
+            self.handle_file([f"file://{uri}"], "edit", target)
+
+            self.show_edit_file_menu()
+
+
+        self.skip_edit   = False
+        self.cancel_edit = False
+        self.hide_new_file_menu()
+        self.to_rename_files.clear()
+
+
+
 
     def cut_files(self):
         wid, tid  = self.window_controller.get_active_data()
@@ -86,6 +125,13 @@ class WidgetFileActionMixin:
         store     = iconview.get_model()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
         self.to_cut_files = uris
+
+    def copy_files(self):
+        wid, tid  = self.window_controller.get_active_data()
+        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store     = iconview.get_model()
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
+        self.to_copy_files = uris
 
     def paste_files(self):
         wid, tid  = self.window_controller.get_active_data()
@@ -96,6 +142,8 @@ class WidgetFileActionMixin:
             self.handle_file(self.to_copy_files, "copy", target)
         elif len(self.to_cut_files) > 0:
             self.handle_file(self.to_cut_files, "move", target)
+
+
 
 
     def move_file(self, view, files, target):
@@ -118,10 +166,12 @@ class WidgetFileActionMixin:
         self.handle_file(uris, "trash")
 
 
+
+
     # NOTE: Gio moves files by generating the target file path with name in it
     #       We can't just give a base target directory and run with it.
     #       Also, the display name is UTF-8 safe and meant for displaying in GUIs
-    def handle_file(self, paths, action, base_dir=None):
+    def handle_file(self, paths, action, _target_path=None):
         paths  = self.preprocess_paths(paths)
         target = None
 
@@ -137,13 +187,16 @@ class WidgetFileActionMixin:
                     break
 
 
-                if base_dir:
-                    info    = f.query_info("standard::display-name", 0, cancellable=None)
-                    _target = f"file://{base_dir}/{info.get_display_name()}"
-                    target  = Gio.File.new_for_uri(_target)
+                if _target_path:
+                    if os.path.isdir(_target_path):
+                        info    = f.query_info("standard::display-name", 0, cancellable=None)
+                        _target = f"file://{base_dir}/{info.get_display_name()}"
+                        target  = Gio.File.new_for_uri(_target_path)
+                    else:
+                        target  = Gio.File.new_for_uri(_target_path)
 
                 # See if dragging to same directory then break
-                if action != "trash" and action != "delete" and \
+                if action not in ["trash", "delete", "edit"] and \
                     (f.get_parent().get_path() == target.get_parent().get_path()):
                     break
 
@@ -153,7 +206,7 @@ class WidgetFileActionMixin:
                     f.trash(cancellable=None)
                 if action == "copy":
                     f.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
-                if action == "move":
+                if action == "move" or action == "edit":
                     f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
             except GObject.GError as e:
                 raise OSError(e.message)
