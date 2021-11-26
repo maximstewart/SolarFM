@@ -1,6 +1,6 @@
 #!/bin/bash
 
 function main() {
-    gcc -no-pie -s Pytop_exec_bin.cpp -o pytop
+    gcc -no-pie -s PyFM_exec_bin.cpp -o pyfm
 }
 main;

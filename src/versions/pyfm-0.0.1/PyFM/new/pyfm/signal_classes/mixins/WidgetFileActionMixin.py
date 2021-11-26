@@ -63,6 +63,16 @@ class WidgetFileActionMixin:
     def menu_bar_copy(self, widget, eve):
         self.copy_file()
 
+    def open_files(self):
+        wid, tid  = self.window_controller.get_active_data()
+        view      = self.get_fm_window(wid).get_view_by_id(tid)
+        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store     = iconview.get_model()
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
+
+        for file in uris:
+            view.open_file_locally(file)
+
     def copy_files(self):
         wid, tid  = self.window_controller.get_active_data()
         iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
@@ -142,9 +152,9 @@ class WidgetFileActionMixin:
                 if action == "trash":
                     f.trash(cancellable=None)
                 if action == "copy":
-                    f.copy(target, flags=Gio.FileCopyFlags.OVERWRITE, cancellable=None)
+                    f.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
                 if action == "move":
-                    f.move(target, flags=Gio.FileCopyFlags.OVERWRITE, cancellable=None)
+                    f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
             except GObject.GError as e:
                 raise OSError(e.message)
 

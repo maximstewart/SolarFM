@@ -11,14 +11,20 @@ class TabMixin(WidgetMixin):
 
     def create_tab_from_ipc(data):
         self, path = data
-        if not self.is_pane1_hidden:
-            self.create_tab(1, path)
-        elif not self.is_pane2_hidden:
-            self.create_tab(2, path)
+        wid, tid   = self.window_controller.get_active_data()
+        notebook   = self.builder.get_object(f"window_{wid}")
+        if notebook.is_visible():
+            self.create_tab(wid, path)
+            return
+
+        if not self.is_pane4_hidden:
+            self.create_tab(4, path)
         elif not self.is_pane3_hidden:
             self.create_tab(3, path)
-        elif not self.is_pane4_hidden:
-            self.create_tab(4, path)
+        elif not self.is_pane2_hidden:
+            self.create_tab(2, path)
+        elif not self.is_pane1_hidden:
+            self.create_tab(1, path)
 
 
     def create_tab(self, wid, path=None):
@@ -143,9 +149,16 @@ class TabMixin(WidgetMixin):
     def keyboard_close_tab(self):
         wid, tid  = self.window_controller.get_active_data()
         notebook  = self.builder.get_object(f"window_{wid}")
-        iconview  = self.get_tab_iconview_from_notebook(notebook)
-        close     = self.get_tab_close(notebook, iconview)
-        close.released()
+        scroll    = self.builder.get_object(f"{wid}|{tid}")
+        page      = notebook.page_num(scroll)
+        view      = self.get_fm_window(wid).get_view_by_id(tid)
+        watcher   = view.get_dir_watcher()
+        watcher.cancel()
+
+        self.get_fm_window(wid).delete_view_by_id(tid)
+        notebook.remove_page(page)
+        self.window_controller.save_state()
+        self.set_window_title()
 
     # File control events
     def show_hide_hidden_files(self):

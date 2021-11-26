@@ -172,7 +172,8 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
             self.cut_files()
         if self.ctrlDown and keyname == "v":
             self.paste_files()
-
+        if self.ctrlDown and keyname == "o":
+            self.open_files()
 
         if keyname == "delete":
             self.trash_files()

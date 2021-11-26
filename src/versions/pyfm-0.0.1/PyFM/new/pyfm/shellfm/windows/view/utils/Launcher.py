@@ -30,10 +30,12 @@ class Launcher:
             command = [self.text_app, file]
         elif lowerName.endswith(self.fpdf):
             command = [self.pdf_app, file]
-        else:
+        elif lowerName.endswith("placeholder-until-i-can-get-a-use-pref-fm-flag"):
             command = [self.file_manager_app, file]
+        else:
+            command = ["xdg-open", file]
 
-            self.logger.debug(command)
+        self.logger.debug(command)
         DEVNULL = open(os.devnull, 'w')
         subprocess.Popen(command, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
 

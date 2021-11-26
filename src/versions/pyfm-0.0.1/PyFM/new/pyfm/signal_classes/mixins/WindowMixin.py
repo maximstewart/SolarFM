@@ -20,7 +20,7 @@ class WindowMixin(TabMixin):
     def get_fm_window(self, wid):
         return self.window_controller.get_window_by_nickname(f"window_{wid}")
 
-    def format_to_uris(self, store, wid, tid, treePaths):
+    def format_to_uris(self, store, wid, tid, treePaths, use_just_path=False):
         view = self.get_fm_window(wid).get_view_by_id(tid)
         dir  = view.get_current_directory()
         uris = []
@@ -28,7 +28,13 @@ class WindowMixin(TabMixin):
         for path in treePaths:
             itr   = store.get_iter(path)
             file  = store.get(itr, 1)[0]
-            fpath = f"file://{dir}/{file}"
+            fpath = ""
+
+            if not use_just_path:
+                fpath = f"file://{dir}/{file}"
+            else:
+                fpath = f"{dir}/{file}"
+
             uris.append(fpath)
 
         return uris
@@ -102,7 +108,6 @@ class WindowMixin(TabMixin):
         uris      = self.format_to_uris(store, wid, tid, treePaths)
 
         data.set_uris(uris)
-        event_system.push_gui_event(["refresh_tab", None, action])
 
     def grid_on_drag_motion(self, iconview, drag_context, x, y, data):
         wid, tid = iconview.get_name().split("|")
