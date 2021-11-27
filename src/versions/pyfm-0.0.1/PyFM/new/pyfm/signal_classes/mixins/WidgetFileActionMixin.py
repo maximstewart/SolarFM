@@ -223,25 +223,29 @@ class WidgetFileActionMixin:
                     if action == "move" or action == "edit":
                         f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
                 else:
+                    # Yes, life is hopeless and there is no God. Blame Gio for this sinful shitshow. =/
                     wid, tid  = self.window_controller.get_active_data()
                     view      = self.get_fm_window(wid).get_view_by_id(tid)
                     fPath     = f.get_path()
                     tPath     = None
+                    state     = True
 
                     if target:
                         tPath = target.get_path()
 
+
                     if action == "delete":
-                        view.delete_file(fPath)
+                        state = view.delete_file(fPath)
                     if action == "trash":
                         f.trash(cancellable=None)
                     if action == "copy":
-                        view.copy_file(fPath, tPath)
-                        # f.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+                        state = view.copy_file(fPath, tPath)
                     if action == "move" or action == "edit":
-                        view.move_file(fPath, tPath)
-                        # f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+                        tPath = target.get_parent().get_path()
+                        state = view.move_file(fPath, tPath)
 
+                    if not state:
+                        raise Exception("Failed to perform requested dir/file action!")
             except GObject.GError as e:
                 raise OSError(e.message)
 

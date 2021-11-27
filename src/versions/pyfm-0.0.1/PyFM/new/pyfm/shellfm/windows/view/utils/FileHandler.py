@@ -3,18 +3,29 @@ import os, shutil, subprocess, threading
 
 
 class FileHandler:
-    def create_file(self, nFile):
-        pass
+    def create_file(self, nFile, type):
+        try:
+            if TYPE == "dir":
+                os.mkdir(nFile)
+            elif TYPE == "file":
+                open(nFile, 'a').close()
+        except Exception as e:
+            print("An error occured creating the file/dir:")
+            print(repr(e))
+            return False
+
+        return True
 
     def update_file(self, oFile, nFile):
         try:
             print(f"Renaming:  {oFile}  -->  {nFile}")
             os.rename(oFile, nFile)
-            return True
         except Exception as e:
             print("An error occured renaming the file:")
             print(repr(e))
             return False
+
+        return True
 
     def delete_file(self, toDeleteFile):
         try:
@@ -66,6 +77,4 @@ class FileHandler:
             print(repr(e))
             return False
 
-
-    def paste_file(self):
-        pass
+        return True
