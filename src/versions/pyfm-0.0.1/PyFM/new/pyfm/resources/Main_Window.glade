@@ -383,6 +383,75 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
       </object>
     </child>
   </object>
+  <object class="GtkDialog" id="appchooser_menu">
+    <property name="can-focus">False</property>
+    <property name="window-position">mouse</property>
+    <property name="type-hint">splashscreen</property>
+    <property name="gravity">south</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
+            <child>
+              <object class="GtkButton" id="button1">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="appchooser_select_btn">
+                <property name="label" translatable="yes">Select</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkAppChooserWidget" id="appchooser_widget">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="show-recommended">False</property>
+            <property name="show-all">True</property>
+            <signal name="application-activated" handler="run_appchooser_launch" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-6">button1</action-widget>
+      <action-widget response="-5">appchooser_select_btn</action-widget>
+    </action-widgets>
+  </object>
   <object class="GtkImage" id="createImage">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -534,6 +603,11 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="open_with_img">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-open</property>
+  </object>
   <object class="GtkImage" id="rename_img">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -555,6 +629,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
     <property name="modal">True</property>
     <property name="window-position">center</property>
     <property name="type-hint">splashscreen</property>
+    <property name="skip-pager-hint">True</property>
     <property name="gravity">center</property>
     <signal name="focus-out-event" handler="hide_edit_file_menu" swapped="no"/>
     <child internal-child="vbox">
@@ -1256,6 +1331,9 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
             <property name="position">2</property>
           </packing>
         </child>
+        <child>
+          <placeholder/>
+        </child>
       </object>
     </child>
   </object>
@@ -1269,6 +1347,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
     <property name="resizable">False</property>
     <property name="window-position">mouse</property>
     <property name="type-hint">splashscreen</property>
+    <property name="skip-pager-hint">True</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <property name="gravity">static</property>
@@ -1321,7 +1400,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -1343,6 +1422,22 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                 </child>
                 <child>
                   <object class="GtkButton">
+                    <property name="label" translatable="yes">Open With</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="image">open_with_img</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="show_appchooser_menu" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
                     <property name="label" translatable="yes">Rename</property>
                     <property name="name">rename</property>
                     <property name="visible">True</property>
@@ -1356,7 +1451,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -1375,7 +1470,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="pack-type">end</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -1393,7 +1488,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -1411,7 +1506,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -1429,7 +1524,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
               </object>

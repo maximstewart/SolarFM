@@ -62,8 +62,8 @@ class TabMixin(WidgetMixin):
         page     = notebook.page_num(scroll)
         view     = self.get_fm_window(wid).get_view_by_id(tid)
         watcher  = view.get_dir_watcher()
-        watcher.cancel()
 
+        watcher.cancel()
         self.get_fm_window(wid).delete_view_by_id(tid)
         notebook.remove_page(page)
         self.window_controller.save_state()
@@ -76,8 +76,8 @@ class TabMixin(WidgetMixin):
 
         for i, view in enumerate(window.views):
             if view.id == tid:
-                _view = window.get_view_by_id(tid)
-                watcher  = _view.get_dir_watcher()
+                _view   = window.get_view_by_id(tid)
+                watcher = _view.get_dir_watcher()
                 watcher.cancel()
                 window.views.insert(new_index, window.views.pop(i))
 

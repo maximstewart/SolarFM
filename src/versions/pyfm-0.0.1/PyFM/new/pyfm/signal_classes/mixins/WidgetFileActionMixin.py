@@ -74,6 +74,17 @@ class WidgetFileActionMixin:
         for file in uris:
             view.open_file_locally(file)
 
+    def open_with_files(self, appchooser_widget):
+        wid, tid  = self.window_controller.get_active_data()
+        view      = self.get_fm_window(wid).get_view_by_id(tid)
+        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store     = iconview.get_model()
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
+
+        f         = Gio.File.new_for_uri(uris[0])
+        app_info  = appchooser_widget.get_app_info()
+        app_info.launch([f], None)
+
     def edit_files(self):
         pass
 
@@ -84,9 +95,9 @@ class WidgetFileActionMixin:
         view         = self.get_fm_window(wid).get_view_by_id(tid)
         iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
         store        = iconview.get_model()
-        uris         = self.format_to_uris(store, wid, tid, self.to_rename_files, True)
+        uris         = self.format_to_uris(store, wid, tid, self.to_rename_files)
 
-        # The rename button hides the rename dialog box which lets this loop continue.
+        # The rename button hides the rename dialog box which lets the loop continue.
         # Weirdly, the show at the end is needed to flow through all the list properly
         # than auto chosing the first rename entry you do.
         for uri in uris:
@@ -97,6 +108,7 @@ class WidgetFileActionMixin:
                 self.skip_edit = False
                 self.show_edit_file_menu()
 
+            # Yes...this step is required even with the above... =/
             self.show_edit_file_menu()
 
             if self.skip_edit:
@@ -106,7 +118,7 @@ class WidgetFileActionMixin:
 
             rname_to = rename_input.get_text().strip()
             target   = f"file://{view.get_current_directory()}/{rname_to}"
-            self.handle_file([f"file://{uri}"], "edit", target)
+            self.handle_file([uri], "edit", target)
 
             self.show_edit_file_menu()
 
@@ -190,8 +202,8 @@ class WidgetFileActionMixin:
                 if _target_path:
                     if os.path.isdir(_target_path):
                         info    = f.query_info("standard::display-name", 0, cancellable=None)
-                        _target = f"file://{base_dir}/{info.get_display_name()}"
-                        target  = Gio.File.new_for_uri(_target_path)
+                        _target = f"file://{_target_path}/{info.get_display_name()}"
+                        target  = Gio.File.new_for_uri(_target)
                     else:
                         target  = Gio.File.new_for_uri(_target_path)
 
@@ -200,14 +212,36 @@ class WidgetFileActionMixin:
                     (f.get_parent().get_path() == target.get_parent().get_path()):
                     break
 
-                if action == "delete":
-                    f.delete(cancellable=None)
-                if action == "trash":
-                    f.trash(cancellable=None)
-                if action == "copy":
-                    f.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
-                if action == "move" or action == "edit":
-                    f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+                type = f.query_file_type(flags=Gio.FileQueryInfoFlags.NONE, cancellable=None)
+                if not type == Gio.FileType.DIRECTORY:
+                    if action == "delete":
+                        f.delete(cancellable=None)
+                    if action == "trash":
+                        f.trash(cancellable=None)
+                    if action == "copy":
+                        f.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+                    if action == "move" or action == "edit":
+                        f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+                else:
+                    wid, tid  = self.window_controller.get_active_data()
+                    view      = self.get_fm_window(wid).get_view_by_id(tid)
+                    fPath     = f.get_path()
+                    tPath     = None
+
+                    if target:
+                        tPath = target.get_path()
+
+                    if action == "delete":
+                        view.delete_file(fPath)
+                    if action == "trash":
+                        f.trash(cancellable=None)
+                    if action == "copy":
+                        view.copy_file(fPath, tPath)
+                        # f.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+                    if action == "move" or action == "edit":
+                        view.move_file(fPath, tPath)
+                        # f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+
             except GObject.GError as e:
                 raise OSError(e.message)
 

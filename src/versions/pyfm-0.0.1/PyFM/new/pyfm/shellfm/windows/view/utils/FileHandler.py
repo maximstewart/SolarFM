@@ -13,7 +13,7 @@ class FileHandler:
             return True
         except Exception as e:
             print("An error occured renaming the file:")
-            print(e)
+            print(repr(e))
             return False
 
     def delete_file(self, toDeleteFile):
@@ -32,7 +32,7 @@ class FileHandler:
                 return False
         except Exception as e:
             print("An error occured deleting the file:")
-            print(e)
+            print(repr(e))
             return False
 
         return True
@@ -50,16 +50,22 @@ class FileHandler:
                 return False
         except Exception as e:
             print("An error occured moving the file:")
-            print(e)
+            print(repr(e))
             return False
 
         return True
 
-    def copy_file(self):
-        pass
+    def copy_file(self,fFile, tFile, symlinks=False, ignore=None):
+        try:
+            if os.path.isdir(fFile):
+                shutil.copytree(fFile, tFile, symlinks, ignore)
+            else:
+                shutil.copy2(fFile, tFile)
+        except Exception as e:
+            print("An error occured copying the file:")
+            print(repr(e))
+            return False
 
-    def cut_file(self):
-        pass
 
     def paste_file(self):
         pass
