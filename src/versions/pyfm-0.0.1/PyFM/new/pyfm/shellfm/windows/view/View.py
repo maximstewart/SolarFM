@@ -18,7 +18,7 @@ from . import Path
 
 class View(Settings, FileHandler, Launcher, Icon, Path):
     def __init__(self):
-        self. logger   = None
+        self. logger     = None
         self.id_length   = 10
 
         self.id          = ""

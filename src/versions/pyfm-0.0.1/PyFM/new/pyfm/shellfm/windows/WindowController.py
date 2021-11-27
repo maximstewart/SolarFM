@@ -17,7 +17,7 @@ def threaded(fn):
 class WindowController:
     def __init__(self):
         USER_HOME              = path.expanduser('~')
-        CONFIG_PATH            = USER_HOME + "/.config/pyfm"
+        CONFIG_PATH            = USER_HOME   + "/.config/pyfm"
         self.session_file      = CONFIG_PATH + "/session.json"
 
         self._event_sleep_time = 1

@@ -3,15 +3,10 @@ import os, subprocess, threading, hashlib
 from os.path import isfile
 
 # Gtk imports
-import gi
-gi.require_version('Gtk', '3.0')
-
-# from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 
 # Application imports
 from .mixins import *
-
 
 
 def threaded(fn):
@@ -61,9 +56,9 @@ class Icon(DesktopIconMixin, VideoIconMixin):
 
     def create_scaled_image(self, path, wxh):
         try:
-            pixbuf        = GdkPixbuf.Pixbuf.new_from_file(path)#.get_pixbuf()
+            pixbuf        = GdkPixbuf.Pixbuf.new_from_file(path)
             scaled_pixbuf = pixbuf.scale_simple(wxh[0], wxh[1], 2)  # 2 = BILINEAR and is best by default
-            return scaled_pixbuf # Gtk.Image.new_from_pixbuf(scaled_pixbuf)
+            return scaled_pixbuf
         except Exception as e:
             print("Image Scaling Issue:")
             print( repr(e) )

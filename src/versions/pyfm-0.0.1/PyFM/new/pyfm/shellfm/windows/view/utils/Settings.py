@@ -80,7 +80,7 @@ class Settings:
     fpdf    = ('.pdf')
 
 
-    # Dire structure check
+    # Dir structure check
     if path.isdir(REMUX_FOLDER) == False:
         os.mkdir(REMUX_FOLDER)
 
