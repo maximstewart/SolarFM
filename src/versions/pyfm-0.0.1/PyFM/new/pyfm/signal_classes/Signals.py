@@ -12,6 +12,7 @@ from gi.repository import GLib
 # Application imports
 from .mixins import *
 from shellfm import WindowController
+from . import KeyboardSignalsMixin
 
 
 def threaded(fn):
@@ -20,7 +21,7 @@ def threaded(fn):
     return wrapper
 
 
-class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
+class Signals(KeyboardSignalsMixin, WidgetFileActionMixin, PaneMixin, WindowMixin):
     def __init__(self, args, unknownargs, settings):
         self.settings          = settings
         self.builder           = self.settings.builder
@@ -77,7 +78,6 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 
-
     @threaded
     def gui_event_observer(self):
         while event_system.monitor_events:
@@ -91,6 +91,10 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
                 except Exception as e:
                     print(repr(e))
 
+    def has_method(self, o, name):
+        return callable(getattr(o, name, None))
+
+
     def refresh_tab(data=None):
         self, ids = data
         wid, tid  = ids.split("|")
@@ -101,8 +105,14 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         view.load_directory()
         self.load_store(view, store)
 
-    def has_method(self, o, name):
-        return callable(getattr(o, name, None))
+    def do_edit_files(self, widget=None, eve=None):
+        self.to_rename_files = self.selected_files
+        self.rename_files()
+
+    def execute(self, option, start_dir=os.getenv("HOME")):
+        DEVNULL = open(os.devnull, 'w')
+        command = option.split()
+        subprocess.Popen(command, cwd=start_dir, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
 
 
     def do_action_from_menu_controls(self, imagemenuitem, eventbutton):
@@ -137,82 +147,6 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         self.ctrlDown = False
 
 
-    def global_key_press_controller(self, eve, user_data):
-        keyname = Gdk.keyval_name(user_data.keyval).lower()
-        if "control" in keyname or "alt" in keyname or "shift" in keyname:
-            if "control" in keyname:
-                self.ctrlDown    = True
-            if "shift" in keyname:
-                self.shiftDown   = True
-            if "alt" in keyname:
-                self.altDown = True
-
-    # NOTE: Yes, this should actually be mapped to some key controller setting
-    #       file or something. Sue me.
-    def global_key_release_controller(self, eve, user_data):
-        keyname = Gdk.keyval_name(user_data.keyval).lower()
-        if debug:
-            print(f"global_key_release_controller > key > {keyname}")
-
-        if "control" in keyname or "alt" in keyname or "shift" in keyname:
-            if "control" in keyname:
-                self.ctrlDown    = False
-            if "shift" in keyname:
-                self.shiftDown   = False
-            if "alt" in keyname:
-                self.altDown     = False
-
-        if self.ctrlDown and keyname == "q":
-            self.tear_down()
-        if (self.ctrlDown and keyname == "slash") or keyname == "home":
-            self.builder.get_object("go_home").released()
-        if self.ctrlDown and keyname == "r":
-            self.builder.get_object("refresh_view").released()
-        if (self.ctrlDown and keyname == "up") or (self.ctrlDown and keyname == "u"):
-            self.builder.get_object("go_up").released()
-        if self.ctrlDown and keyname == "l":
-            self.builder.get_object("path_entry").grab_focus()
-        if self.ctrlDown and keyname == "t":
-            self.builder.get_object("create_tab").released()
-        if self.ctrlDown and keyname == "o":
-            self.open_files()
-        if self.ctrlDown and keyname == "w":
-            self.keyboard_close_tab()
-        if self.ctrlDown and keyname == "h":
-            self.show_hide_hidden_files()
-        if (self.ctrlDown and keyname == "e"):
-            self.edit_files()
-        if self.ctrlDown and keyname == "c":
-            self.to_cut_files.clear()
-            self.copy_files()
-        if self.ctrlDown and keyname == "x":
-            self.to_copy_files.clear()
-            self.cut_files()
-        if self.ctrlDown and keyname == "v":
-            self.paste_files()
-        if self.ctrlDown and keyname == "n":
-            self.show_new_file_menu()
-
-        if keyname == "delete":
-            self.trash_files()
-        if keyname == "f2":
-            self.to_rename_files = self.selected_files
-            self.rename_files()
-        if keyname == "f4":
-            wid, tid = self.window_controller.get_active_data()
-            view     = self.get_fm_window(wid).get_view_by_id(tid)
-            dir      = view.get_current_directory()
-            self.execute("terminator", dir)
-
-
-    def execute(self, option, start_dir=os.getenv("HOME")):
-        DEVNULL = open(os.devnull, 'w')
-        command = option.split()
-        subprocess.Popen(command, cwd=start_dir, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
-
-
-
-
     def show_about_page(self, widget, eve):
         about_page = self.builder.get_object("about_page")
         response   = about_page.run()
@@ -221,7 +155,6 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
 
     def hide_about_page(self, widget=None, eve=None):
         about_page = self.builder.get_object("about_page").hide()
-
 
     def show_appchooser_menu(self, widget=None, eve=None):
         appchooser_menu   = self.builder.get_object("appchooser_menu")
@@ -267,9 +200,6 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
         self.builder.get_object("edit_file_menu").hide()
 
 
-
-
-
     def generate_windows(self, data = None):
         if data:
             for j, value in enumerate(data):
@@ -290,16 +220,3 @@ class Signals(WidgetFileActionMixin, PaneMixin, WindowMixin):
                 i = j + 1
                 self.window_controller.create_window()
                 self.create_new_view_notebook(None, i, None)
-
-
-    # def getClipboardData(self):
-    #     proc    = subprocess.Popen(['xclip','-selection', 'clipboard', '-o'], stdout=subprocess.PIPE)
-    #     retcode = proc.wait()
-    #     data    = proc.stdout.read()
-    #     return data.decode("utf-8").strip()
-    #
-    # def setClipboardData(self, data):
-    #     proc = subprocess.Popen(['xclip','-selection','clipboard'], stdin=subprocess.PIPE)
-    #     proc.stdin.write(data)
-    #     proc.stdin.close()
-    #     retcode = proc.wait()

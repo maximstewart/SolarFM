@@ -631,7 +631,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
     <property name="type-hint">splashscreen</property>
     <property name="skip-pager-hint">True</property>
     <property name="gravity">center</property>
-    <signal name="focus-out-event" handler="hide_edit_file_menu" swapped="no"/>
+    <signal name="focus-out-event" handler="hide_edit_file_menu_cancel" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>
@@ -1446,7 +1446,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                     <property name="tooltip-text" translatable="yes">Rename...</property>
                     <property name="image">rename_img2</property>
                     <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="show_edit_file_menu" swapped="no"/>
+                    <signal name="button-release-event" handler="do_edit_files" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
