@@ -388,6 +388,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
     <property name="window-position">mouse</property>
     <property name="type-hint">splashscreen</property>
     <property name="gravity">south</property>
+    <signal name="focus-out-event" handler="hide_appchooser_menu" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>

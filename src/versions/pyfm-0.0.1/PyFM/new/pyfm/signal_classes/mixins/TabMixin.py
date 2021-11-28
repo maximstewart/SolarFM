@@ -105,6 +105,15 @@ class TabMixin(WidgetMixin):
     def get_tab_iconview_from_notebook(self, notebook):
         return notebook.get_children()[1].get_children()[0]
 
+    def refresh_tab(data=None):
+        self, ids = data
+        wid, tid  = ids.split("|")
+        notebook  = self.builder.get_object(f"window_{wid}")
+        store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
+        view      = self.get_fm_window(wid).get_view_by_id(tid)
+
+        view.load_directory()
+        self.load_store(view, store)
 
     def do_action_from_bar_controls(self, widget, eve=None):
         action    = widget.get_name()

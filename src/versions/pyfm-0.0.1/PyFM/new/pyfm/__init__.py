@@ -5,7 +5,7 @@ import os, inspect, time
 
 # Application imports
 from utils import Settings
-from signal_classes import Signals
+from signal_classes import Controller
 from __builtins__ import Builtins
 
 
@@ -30,13 +30,13 @@ class Main(Builtins):
         settings = Settings()
         settings.createWindow()
 
-        signals = Signals(args, unknownargs, settings)
-        if not signals:
-            raise Exception("Signals exited...")
+        controller = Controller(args, unknownargs, settings)
+        if not controller:
+            raise Exception("Controller exited and doesn't exist...")
 
         # Gets the methods from the classes and sets to handler.
         # Then, builder connects to any signals it needs.
-        classes  = [signals]
+        classes  = [controller]
         handlers = {}
         for c in classes:
             methods = None

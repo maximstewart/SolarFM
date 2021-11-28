@@ -4,4 +4,5 @@
 from .mixins import *
 from .DBusControllerMixin import DBusControllerMixin
 from .KeyboardSignalsMixin import KeyboardSignalsMixin
-from .Signals import Signals
+from .ShowHideMixin import ShowHideMixin
+from .Controller import Controller
