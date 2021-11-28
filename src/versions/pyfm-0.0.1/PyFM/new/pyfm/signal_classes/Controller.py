@@ -70,13 +70,8 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFil
         start_itr = self.message_buffer.get_start_iter()
         self.message_buffer.place_cursor(start_itr)
         self.display_message(self.error, data)
-        #     print "Handler code goes here"
-        # else:
-        #     sys.__excepthook__(exctype, value, traceback)
 
     def display_message(self, type, text, seconds=None):
-        # markup = "<span foreground='" + type + "'>" + text + "</span>"
-        # self.message_label.set_markup(markup)
         self.message_buffer.insert_at_cursor(text)
         self.message_widget.popup()
         if seconds:
