@@ -3,14 +3,12 @@ import copy
 from os.path import isdir, isfile
 
 
-# Lib imports
-from . import TabMixin
-
+# Gtk imports
 import gi
-
 from gi.repository import Gdk
 
 # Application imports
+from . import TabMixin
 from . import WidgetMixin
 
 
@@ -54,8 +52,17 @@ class WindowMixin(TabMixin):
 
     def set_window_title(self):
         wid, tid = self.window_controller.get_active_data()
+        notebook = self.builder.get_object(f"window_{wid}")
         view     = self.get_fm_window(wid).get_view_by_id(tid)
         dir      = view.get_current_directory()
+
+        for _notebook in self.notebooks:
+            ctx      = _notebook.get_style_context()
+            ctx.remove_class("notebook-selected-focus")
+
+        ctx      = notebook.get_style_context()
+        ctx.add_class("notebook-selected-focus")
+
         self.window.set_title("PyFM ~ " + dir)
         self.set_bottom_labels(view)
 

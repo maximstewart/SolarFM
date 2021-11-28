@@ -17,11 +17,19 @@ notebook > header > tabs > tab:checked {
     background-color: rgba(0, 232, 255, 0.25);
     /* Dark Bergundy */
     /* background-color: rgba(116, 0, 0, 0.25); */
+
     color: rgba(255, 255, 255, 0.5);
 }
 
 #message_view {
     font: 16px "Monospace";
+}
+
+.notebook-selected-focus {
+    /* Neon Blue 00e8ff border */
+    border: 2px solid rgba(0, 232, 255, 0.25);
+    /* Dark Bergundy */
+    /* border: 2px solid rgba(116, 0, 0, 0.64); */
 }
 
 
