@@ -245,9 +245,11 @@ class WidgetFileActionMixin:
                         state = view.move_file(fPath, tPath)
 
                     if not state:
-                        raise Exception("Failed to perform requested dir/file action!")
+                        raise GObject.GError("Failed to perform requested dir/file action!")
             except GObject.GError as e:
-                raise OSError(e.message)
+                if debug:
+                    print(repr(e))
+                self.display_message(self.error, f"{e.message}")
 
     def preprocess_paths(self, paths):
         if not isinstance(paths, list):

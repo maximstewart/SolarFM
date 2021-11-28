@@ -19,7 +19,7 @@ class KeyboardSignalsMixin:
             if "shift" in keyname:
                 self.shiftDown   = True
             if "alt" in keyname:
-                self.altDown = True
+                self.altDown     = True
 
     # NOTE: Yes, this should actually be mapped to some key controller setting
     #       file or something. Sue me.

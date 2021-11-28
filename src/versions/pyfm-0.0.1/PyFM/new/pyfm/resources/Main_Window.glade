@@ -1048,7 +1048,7 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="controll_box">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
@@ -1335,6 +1335,22 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
         <child>
           <placeholder/>
         </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="message_widget">
+    <property name="width-request">320</property>
+    <property name="can-focus">False</property>
+    <property name="relative-to">controll_box</property>
+    <property name="position">bottom</property>
+    <child>
+      <object class="GtkLabel" id="message_label">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="justify">center</property>
+        <attributes>
+          <attribute name="scale" value="2"/>
+        </attributes>
       </object>
     </child>
   </object>

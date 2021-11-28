@@ -9,8 +9,7 @@ from gi.repository import GLib
 
 # Application imports
 from .mixins import *
-from shellfm import WindowController
-from . import ShowHideMixin, KeyboardSignalsMixin
+from . import ShowHideMixin, KeyboardSignalsMixin, Controller_Data
 
 
 def threaded(fn):
@@ -19,37 +18,11 @@ def threaded(fn):
     return wrapper
 
 
-class Controller(ShowHideMixin, KeyboardSignalsMixin, WidgetFileActionMixin, PaneMixin, WindowMixin):
-    def __init__(self, args, unknownargs, settings):
-        self.settings          = settings
-        self.builder           = self.settings.builder
-        self.logger            = self.settings.logger
-
-        self.window_controller = WindowController()
-        self.state             = self.window_controller.load_state()
-
-        self.window            = self.settings.getMainWindow()
-        self.window1           = self.builder.get_object("window_1")
-        self.window2           = self.builder.get_object("window_2")
-        self.window3           = self.builder.get_object("window_3")
-        self.window4           = self.builder.get_object("window_4")
-        self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
-        self.selected_files    = []
-        self.to_rename_files   = []
-        self.to_copy_files     = []
-        self.to_cut_files      = []
-
-        self.single_click_open = False
-        self.is_pane1_hidden   = False
-        self.is_pane2_hidden   = False
-        self.is_pane3_hidden   = False
-        self.is_pane4_hidden   = False
-
-        self.skip_edit         = False
-        self.cancel_edit       = False
-        self.ctrlDown          = False
-        self.shiftDown         = False
-        self.altDown           = False
+class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFileActionMixin, \
+                                    PaneMixin, WindowMixin):
+    def __init__(self, args, unknownargs, _settings):
+        self.settings = _settings
+        self.setup_controller_data()
 
         self.window.show()
         self.generate_windows(self.state)
@@ -89,9 +62,19 @@ class Controller(ShowHideMixin, KeyboardSignalsMixin, WidgetFileActionMixin, Pan
                 except Exception as e:
                     print(repr(e))
 
-    def has_method(self, o, name):
-        return callable(getattr(o, name, None))
 
+
+
+    def display_message(self, type, text, seconds=3):
+        markup = "<span foreground='" + type + "'>" + text + "</span>"
+        self.message_label.set_markup(markup)
+        self.message_widget.popup()
+        self.hide_message_timeout(seconds)
+
+    @threaded
+    def hide_message_timeout(self, seconds=3):
+        time.sleep(seconds)
+        GLib.idle_add(self.message_widget.popdown)
 
 
 
