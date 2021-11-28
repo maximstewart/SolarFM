@@ -9,7 +9,10 @@ from gi.repository import Gtk
 
 
 class ShowHideMixin:
-    def show_about_page(self, widget, eve):
+    def show_messages_popup(self, type, text, seconds=None):
+        self.message_widget.popup()
+
+    def show_about_page(self, widget=None, eve=None):
         about_page = self.builder.get_object("about_page")
         response   = about_page.run()
         if response == -4:

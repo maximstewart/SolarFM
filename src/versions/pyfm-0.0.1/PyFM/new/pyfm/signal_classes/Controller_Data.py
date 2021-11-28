@@ -23,7 +23,8 @@ class Controller_Data:
         self.window3           = self.builder.get_object("window_3")
         self.window4           = self.builder.get_object("window_4")
         self.message_widget    = self.builder.get_object("message_widget")
-        self.message_label     = self.builder.get_object("message_label")
+        self.message_view      = self.builder.get_object("message_view")
+        self.message_buffer    = self.builder.get_object("message_buffer")
 
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")
         self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")

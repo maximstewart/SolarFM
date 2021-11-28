@@ -248,9 +248,7 @@ class WidgetFileActionMixin:
                     if not state:
                         raise GObject.GError("Failed to perform requested dir/file action!")
             except GObject.GError as e:
-                if debug:
-                    print(repr(e))
-                self.display_message(self.error, f"{e.message}")
+                raise OSError(e)
 
     def preprocess_paths(self, paths):
         if not isinstance(paths, list):

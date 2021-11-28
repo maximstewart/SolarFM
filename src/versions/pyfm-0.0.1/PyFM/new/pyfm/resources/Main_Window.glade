@@ -604,6 +604,12 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-justify-center</property>
+  </object>
+  <object class="GtkTextBuffer" id="message_buffer"/>
   <object class="GtkImage" id="open_with_img">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -934,6 +940,29 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
                             <property name="use-underline">True</property>
                             <property name="use-stock">True</property>
                             <signal name="button-release-event" handler="show_about_page" swapped="no"/>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuItem">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Debug</property>
+                    <child type="submenu">
+                      <object class="GtkMenu">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <object class="GtkImageMenuItem">
+                            <property name="label">Show Errors</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="image">image1</property>
+                            <property name="use-stock">False</property>
+                            <signal name="button-release-event" handler="show_messages_popup" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -1390,16 +1419,28 @@ PyFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspecti
   <object class="GtkPopover" id="message_widget">
     <property name="width-request">320</property>
     <property name="can-focus">False</property>
+    <property name="hexpand">True</property>
     <property name="relative-to">controll_box</property>
     <property name="position">bottom</property>
     <child>
-      <object class="GtkLabel" id="message_label">
+      <object class="GtkScrolledWindow">
+        <property name="height-request">600</property>
         <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="justify">center</property>
-        <attributes>
-          <attribute name="scale" value="2"/>
-        </attributes>
+        <property name="can-focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="shadow-type">in</property>
+        <property name="overlay-scrolling">False</property>
+        <child>
+          <object class="GtkTextView" id="message_view">
+            <property name="name">message_view</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="editable">False</property>
+            <property name="cursor-visible">False</property>
+            <property name="buffer">message_buffer</property>
+          </object>
+        </child>
       </object>
     </child>
   </object>

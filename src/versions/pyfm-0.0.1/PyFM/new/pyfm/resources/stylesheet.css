@@ -31,6 +31,9 @@ treeview.view,
     color: rgba(255, 255, 255, 0.5);;
 }
 
+#message_view {
+    font: 16px "Monospace";
+}
 
 /* Rubberband coloring */
 /* .rubberband,

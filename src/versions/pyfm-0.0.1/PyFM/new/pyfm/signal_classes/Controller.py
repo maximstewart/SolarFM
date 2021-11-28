@@ -1,5 +1,5 @@
 # Python imports
-import threading, subprocess, signal, inspect, os, time
+import sys, traceback, threading, subprocess, signal, inspect, os, time
 
 # Gtk imports
 import gi
@@ -21,7 +21,8 @@ def threaded(fn):
 class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFileActionMixin, \
                                     PaneMixin, WindowMixin):
     def __init__(self, args, unknownargs, _settings):
-        self.settings = _settings
+        sys.excepthook = self.my_except_hook
+        self.settings  = _settings
         self.setup_controller_data()
 
         self.window.show()
@@ -63,13 +64,23 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFil
                     print(repr(e))
 
 
+    def my_except_hook(self, exctype, value, _traceback):
+        trace     = ''.join(traceback.format_tb(_traceback))
+        data      = f"Exectype:  {exctype}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"
+        start_itr = self.message_buffer.get_start_iter()
+        self.message_buffer.place_cursor(start_itr)
+        self.display_message(self.error, data)
+        #     print "Handler code goes here"
+        # else:
+        #     sys.__excepthook__(exctype, value, traceback)
 
-
-    def display_message(self, type, text, seconds=3):
-        markup = "<span foreground='" + type + "'>" + text + "</span>"
-        self.message_label.set_markup(markup)
+    def display_message(self, type, text, seconds=None):
+        # markup = "<span foreground='" + type + "'>" + text + "</span>"
+        # self.message_label.set_markup(markup)
+        self.message_buffer.insert_at_cursor(text)
         self.message_widget.popup()
-        self.hide_message_timeout(seconds)
+        if seconds:
+            self.hide_message_timeout(seconds)
 
     @threaded
     def hide_message_timeout(self, seconds=3):
