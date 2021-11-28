@@ -31,6 +31,7 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
         self.images      = []
         self.desktop     = []
         self.ungrouped   = []
+        self.hidden      = []
 
         self.generate_id()
         self.set_to_home()
@@ -66,6 +67,7 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
         self.images    = []
         self.desktop   = []
         self.ungrouped = []
+        self.hidden    = []
         self.files     = []
 
         if not isdir(path):
@@ -76,6 +78,7 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
             file = join(path, f)
             if self.hide_hidden:
                 if f.startswith('.'):
+                    self.hidden.append(f)
                     continue
 
             if isfile(file):
@@ -125,7 +128,19 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
             return False
 
 
+    def get_not_hidden_count(self):
+        return len(self.files)    + \
+                len(self.dirs)    + \
+                len(self.vids)    + \
+                len(self.images)  + \
+                len(self.desktop) + \
+                len(self.ungrouped)
 
+    def get_hidden_count(self):
+        return len(self.hidden)
+
+    def get_files_count(self):
+        return len(self.files)
 
     def get_path_part_from_hash(self, hash):
         files = self.get_files()

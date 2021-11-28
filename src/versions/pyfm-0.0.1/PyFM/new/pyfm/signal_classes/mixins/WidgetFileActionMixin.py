@@ -42,6 +42,7 @@ class WidgetFileActionMixin:
                 view.load_directory()
                 self.load_store(view, store)
                 tab_label.set_label(view.get_end_of_path())
+                self.set_bottom_labels(view)
 
 
 

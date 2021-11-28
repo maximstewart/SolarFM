@@ -1,5 +1,5 @@
 # Python imports
-import threading, socket
+import threading, socket, time
 from multiprocessing.connection import Listener, Client
 
 # Gtk imports
@@ -20,7 +20,9 @@ class DBusControllerMixin:
         listener          = Listener(('127.0.0.1', 4848), authkey=b'pyfm-ipc')
         self.is_ipc_alive = True
         while event_system.keep_ipc_alive:
-            conn = listener.accept()
+            conn       = listener.accept()
+            start_time = time.time()
+
             print(f"New Connection: {listener.last_accepted}")
             while True:
                 msg = conn.recv()
@@ -43,6 +45,12 @@ class DBusControllerMixin:
                     conn.close()
                     event_system.keep_ipc_alive = False
                     break
+
+                # NOTE: Not perfect but insures we don't lockup the connection for too long.
+                end_time = time.time()
+                if (end - start) > 15.0:
+                    conn.close()
+
         listener.close()
 
 

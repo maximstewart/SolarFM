@@ -39,11 +39,25 @@ class WindowMixin(TabMixin):
 
         return uris
 
+
+    def set_bottom_labels(self, view):
+        self.bottom_size_label.set_label("TBD")
+        if view.hide_hidden:
+            if view.get_hidden_count() > 0:
+                self.bottom_file_count_label.set_label(f"{view.get_not_hidden_count()} visible ({view.get_hidden_count()} hidden)")
+            else:
+                self.bottom_file_count_label.set_label(f"{view.get_files_count()} items")
+        else:
+            self.bottom_file_count_label.set_label(f"{view.get_files_count()} items")
+        self.bottom_path_label.set_label(view.get_current_directory())
+
+
     def set_window_title(self):
         wid, tid = self.window_controller.get_active_data()
         view     = self.get_fm_window(wid).get_view_by_id(tid)
         dir      = view.get_current_directory()
         self.window.set_title("PyFM ~ " + dir)
+        self.set_bottom_labels(view)
 
     def set_path_text(self, wid, tid):
         path_entry = self.builder.get_object("path_entry")
@@ -68,6 +82,7 @@ class WindowMixin(TabMixin):
 
         except Exception as e:
             print(repr(e))
+            self.display_message(self.error, f"{repr(e)}")
 
     def grid_icon_double_left_click(self, iconview, item, data=None):
         try:
@@ -95,8 +110,9 @@ class WindowMixin(TabMixin):
                 tab_label.set_label(view.get_end_of_path())
                 path_entry.set_text(view.get_current_directory())
                 self.set_file_watcher(view)
+                self.set_bottom_labels(view)
         except Exception as e:
-            print(repr(e))
+            self.display_message(self.error, f"{repr(e)}")
 
 
 

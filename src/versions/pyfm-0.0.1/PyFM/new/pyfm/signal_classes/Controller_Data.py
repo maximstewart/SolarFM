@@ -25,6 +25,10 @@ class Controller_Data:
         self.message_widget    = self.builder.get_object("message_widget")
         self.message_label     = self.builder.get_object("message_label")
 
+        self.bottom_size_label       = self.builder.get_object("bottom_size_label")
+        self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
+        self.bottom_path_label       = self.builder.get_object("bottom_path_label")
+
         self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files    = []
         self.to_rename_files   = []
