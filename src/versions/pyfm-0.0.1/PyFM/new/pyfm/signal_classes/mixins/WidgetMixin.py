@@ -91,6 +91,8 @@ class WidgetMixin:
 
         label.set_label(f"{view.get_end_of_path()}")
         label.set_width_chars(len(view.get_end_of_path()))
+        label.set_margin_start(5)
+        label.set_margin_end(15)
         label.set_xalign(0.0)
         # label.set_ellipsize(2)  #PANGO_ELLIPSIZE_MIDDLE
         tid.set_label(f"{view.id}")
