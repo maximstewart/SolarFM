@@ -1,0 +1,67 @@
+/* Set fm to have transparent window */
+box,
+iconview,
+notebook,
+paned,
+stack,
+scrolledwindow,
+treeview.view,
+.content-view,
+.view {
+    background: rgba(19, 21, 25, 0.14);
+    color: rgba(255, 255, 255, 1);
+}
+
+notebook > header > tabs > tab:checked {
+    /* Neon Blue 00e8ff */
+    background-color: rgba(0, 232, 255, 0.25);
+    /* Dark Bergundy */
+    /* background-color: rgba(116, 0, 0, 0.25); */
+
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#message_view {
+    font: 16px "Monospace";
+}
+
+.notebook-selected-focus {
+    /* Neon Blue 00e8ff border */
+    border: 2px solid rgba(0, 232, 255, 0.25);
+    /* Dark Bergundy */
+    /* border: 2px solid rgba(116, 0, 0, 0.64); */
+}
+
+
+.view:selected,
+.view:selected:hover {
+    box-shadow: inset 0 0 0 9999px rgba(21, 158, 167, 0.57);
+    color: rgba(255, 255, 255, 0.5);;
+}
+
+
+/* * {
+    background: rgba(0, 0, 0, 0.14);
+    color: rgba(255, 255, 255, 1);
+} */
+
+/* * selection {
+    background-color: rgba(116, 0, 0, 0.65);
+    color: rgba(255, 255, 255, 0.5);
+} */
+
+/* Rubberband coloring */
+/* .rubberband,
+rubberband,
+flowbox rubberband,
+treeview.view rubberband,
+.content-view rubberband,
+.content-view .rubberband,
+XfdesktopIconView.view .rubberband {
+    border: 1px solid #6c6c6c;
+    background-color: rgba(21, 158, 167, 0.57);
+}
+
+XfdesktopIconView.view:active {
+    background-color: rgba(172, 102, 21, 1);
+} */

@@ -1,0 +1,11 @@
+#!/bin/bash
+#postrm (script executed after uninstalling the package)
+#set -e
+
+if [ -f /bin/solarfm ]; then
+    rm /bin/solarfm
+fi
+
+if [ -d /opt/SolarFM ]; then
+    rm -rf /opt/SolarFM
+fi
