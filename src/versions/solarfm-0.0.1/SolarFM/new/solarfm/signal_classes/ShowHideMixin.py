@@ -50,9 +50,11 @@ class ShowHideMixin:
         self.builder.get_object("about_page").hide()
 
     def show_archiver_dialogue(self, widget=None, eve=None):
+        wid, tid          = self.window_controller.get_active_data()
+        view              = self.get_fm_window(wid).get_view_by_id(tid)
         archiver_dialogue = self.builder.get_object("archiver_dialogue")
         archiver_dialogue.set_action(Gtk.FileChooserAction.SAVE)
-        archiver_dialogue.set_select_multiple(True)
+        archiver_dialogue.set_current_folder(view.get_current_directory())
         archiver_dialogue.set_current_name("arc.7z")
 
         response = archiver_dialogue.run()

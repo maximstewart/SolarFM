@@ -261,7 +261,7 @@ class WidgetFileActionMixin:
 
                 # NOTE: Past here, we need to handle detected conflicts.
                 #       Maybe create a collection of file and target pares
-                #       that then get passed to a handler who calls show_exists_page? 
+                #       that then get passed to a handler who calls show_exists_page?
                 # type     = None
                 # gio_flag = None
                 # self.exists_alert.hide()
