@@ -76,7 +76,6 @@ class WidgetMixin:
                 return None
         except Exception as e:
             print("System icon generation issue:")
-            print( repr(e) )
             return None
 
 
@@ -91,8 +90,6 @@ class WidgetMixin:
 
         label.set_label(f"{view.get_end_of_path()}")
         label.set_width_chars(len(view.get_end_of_path()))
-        # label.set_margin_start(5)
-        # label.set_margin_end(15)
         label.set_xalign(0.0)
         tid.set_label(f"{view.id}")
 

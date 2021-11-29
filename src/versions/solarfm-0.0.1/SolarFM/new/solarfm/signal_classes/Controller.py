@@ -82,6 +82,27 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFil
         time.sleep(seconds)
         GLib.idle_add(self.message_widget.popdown)
 
+    def save_debug_alerts(self, widget=None, eve=None):
+        start_itr, end_itr   = self.message_buffer.get_bounds()
+        save_location_prompt = Gtk.FileChooserDialog("Choose Save Folder", self.window, \
+                                                        action  = Gtk.FileChooserAction.SAVE, \
+                                                        buttons = (Gtk.STOCK_CANCEL, \
+                                                                    Gtk.ResponseType.CANCEL, \
+                                                                    Gtk.STOCK_SAVE, \
+                                                                    Gtk.ResponseType.OK))
+
+        text = self.message_buffer.get_text(start_itr, end_itr, False)
+        resp = save_location_prompt.run()
+        if (resp == Gtk.ResponseType.CANCEL) or (resp == Gtk.ResponseType.DELETE_EVENT):
+            pass
+        elif resp == Gtk.ResponseType.OK:
+            target = save_location_prompt.get_filename();
+            with open(target, "w") as f:
+                f.write(text)
+
+        save_location_prompt.destroy()
+
+
 
 
     def do_edit_files(self, widget=None, eve=None):

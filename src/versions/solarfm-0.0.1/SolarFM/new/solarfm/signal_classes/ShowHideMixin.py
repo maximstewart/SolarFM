@@ -15,7 +15,7 @@ class ShowHideMixin:
     def show_about_page(self, widget=None, eve=None):
         about_page = self.builder.get_object("about_page")
         response   = about_page.run()
-        if response == -4:
+        if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
             self.hide_about_page()
 
     def hide_about_page(self, widget=None, eve=None):
