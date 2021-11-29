@@ -1,5 +1,6 @@
 # Python imports
 import os
+from os import path
 
 # Gtk imports
 import gi, cairo
@@ -16,30 +17,38 @@ from . import Logger
 
 class Settings:
     def __init__(self):
-        self.SCRIPT_PTH = os.path.dirname(os.path.realpath(__file__))
-        self.gladefile  = self.SCRIPT_PTH + "/../resources/Main_Window.glade"
-        self.cssFile    = self.SCRIPT_PTH + '/../resources/stylesheet.css'
-        self.logger     = Logger().get_logger()
+        self.SCRIPT_PTH    = os.path.dirname(os.path.realpath(__file__))
+        self.USER_HOME     = path.expanduser('~')
+        self.CONFIG_PATH   = self.USER_HOME   + "/.config/solarfm"
 
-        self.builder    = gtk.Builder()
+        self.gladefile     = self.CONFIG_PATH + "/Main_Window.glade"
+        self.cssFile       = self.CONFIG_PATH + '/stylesheet.css'
+        self.logger        = Logger().get_logger()
+
+        self.builder       = gtk.Builder()
         self.builder.add_from_file(self.gladefile)
-        self.mainWindow = None
+
+        self.DEFAULT_ICONS = self.CONFIG_PATH   + "/icons"
+        self.window_icon   = self.DEFAULT_ICONS + "/solarfm.png"
+        self.main_window   = None
+
 
 
 
     def createWindow(self):
         # Get window and connect signals
-        self.mainWindow = self.builder.get_object("Main_Window")
+        self.main_window = self.builder.get_object("Main_Window")
         self.setWindowData()
 
     def setWindowData(self):
-        screen = self.mainWindow.get_screen()
+        self.main_window.set_icon_from_file(self.window_icon)
+        screen = self.main_window.get_screen()
         visual = screen.get_rgba_visual()
 
         if visual != None and screen.is_composited():
-            self.mainWindow.set_visual(visual)
-            self.mainWindow.set_app_paintable(True)
-            self.mainWindow.connect("draw", self.area_draw)
+            self.main_window.set_visual(visual)
+            self.main_window.set_app_paintable(True)
+            self.main_window.connect("draw", self.area_draw)
 
         # bind css file
         cssProvider  = gtk.CssProvider()
@@ -54,7 +63,7 @@ class Settings:
         cr.paint()
         cr.set_operator(cairo.OPERATOR_OVER)
 
-    def getMainWindow(self):  return self.mainWindow
+    def getMainWindow(self):  return self.main_window
 
 
     def getMonitorData(self):

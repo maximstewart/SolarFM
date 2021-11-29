@@ -797,7 +797,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="window-position">center</property>
     <property name="default-width">1670</property>
     <property name="default-height">830</property>
-    <property name="icon">solarfm.png</property>
     <property name="gravity">center</property>
     <signal name="key-press-event" handler="global_key_press_controller" swapped="no"/>
     <signal name="key-release-event" handler="global_key_release_controller" swapped="no"/>
@@ -1137,7 +1136,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <property name="can-focus">True</property>
                 <property name="hexpand">True</property>
                 <property name="placeholder-text" translatable="yes">Path...</property>
-                <signal name="key-release-event" handler="do_action_from_bar_controls" swapped="no"/>
+                <signal name="changed" handler="do_action_from_bar_controls" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1474,6 +1473,11 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="can-focus">False</property>
     <property name="icon-name">user-trash</property>
   </object>
+  <object class="GtkImage" id="trash_img2">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">user-trash</property>
+  </object>
   <object class="GtkDialog" id="context_menu">
     <property name="can-focus">False</property>
     <property name="resizable">False</property>
@@ -1532,7 +1536,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -1620,7 +1624,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -1638,6 +1642,25 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Go To Trash</property>
+                    <property name="name">go_to_trash</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Go To Trash...</property>
+                    <property name="image">trash_img2</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="pack-type">end</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
