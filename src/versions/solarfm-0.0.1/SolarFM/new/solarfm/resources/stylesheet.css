@@ -14,11 +14,11 @@ treeview.view,
 
 notebook > header > tabs > tab:checked {
     /* Neon Blue 00e8ff */
-    background-color: rgba(0, 232, 255, 0.25);
+    background-color: rgba(0, 232, 255, 0.2);
     /* Dark Bergundy */
     /* background-color: rgba(116, 0, 0, 0.25); */
 
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 #message_view {
@@ -36,7 +36,7 @@ notebook > header > tabs > tab:checked {
 .view:selected,
 .view:selected:hover {
     box-shadow: inset 0 0 0 9999px rgba(21, 158, 167, 0.57);
-    color: rgba(255, 255, 255, 0.5);;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 

@@ -56,7 +56,7 @@ class DBusControllerMixin:
 
     def send_ipc_message(self, message="Empty Data..."):
         try:
-            conn = Client(('127.0.0.1', 4848), authkey=b'solar-ipc')
+            conn = Client(('127.0.0.1', 4848), authkey=b'solarfm-ipc')
             conn.send(message)
             conn.send('close connection')
         except Exception as e:

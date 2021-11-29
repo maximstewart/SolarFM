@@ -18,5 +18,7 @@ SolarFM is a Gtk + Python file manager.
 </ul>
 
 # Images
-![1 SolarFM showing different directories. ](images/pic1.png)
-![1 SolarFM themed dark and made transparent. ](images/pic2.png)
+![1 SolarFM single pane. ](images/pic1.png)
+![2 SolarFM double pane. ](images/pic2.png)
+![3 SolarFM triple pane. ](images/pic3.png)
+![4 SolarFM quad pane. ](images/pic4.png)

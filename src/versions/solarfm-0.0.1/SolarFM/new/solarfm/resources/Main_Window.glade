@@ -1190,7 +1190,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="name">notebook1</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="has-focus">True</property>
                     <property name="margin-left">5</property>
                     <property name="margin-right">5</property>
                     <property name="margin-top">5</property>
