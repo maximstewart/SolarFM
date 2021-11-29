@@ -56,10 +56,10 @@ class WidgetFileActionMixin:
         view        = self.get_fm_window(wid).get_view_by_id(tid)
         target      = f"{view.get_current_directory()}"
 
-        if file_name != "":
+        if file_name:
             file_name = "file://" + target + "/" + file_name
             if type == True:     # Create File
-                self.handle_file([file_name], "create_file", target)
+                self.handle_file([file_name], "create_file")
             else:                # Create Folder
                 self.handle_file([file_name], "create_dir")
 
@@ -82,12 +82,9 @@ class WidgetFileActionMixin:
         store     = iconview.get_model()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
 
-        f         = Gio.File.new_for_uri(uris[0])
+        file      = Gio.File.new_for_uri(uris[0])
         app_info  = appchooser_widget.get_app_info()
-        app_info.launch([f], None)
-
-    def edit_files(self):
-        pass
+        app_info.launch([file], None)
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
@@ -119,6 +116,7 @@ class WidgetFileActionMixin:
 
             rname_to = rename_input.get_text().strip()
             target   = f"file://{view.get_current_directory()}/{rname_to}"
+            print(target)
             self.handle_file([uri], "edit", target)
 
             self.show_edit_file_menu()
@@ -133,7 +131,7 @@ class WidgetFileActionMixin:
         wid, tid    = self.window_controller.get_active_data()
         iconview    = self.builder.get_object(f"{wid}|{tid}|iconview")
         store       = iconview.get_model()
-        paths       = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        paths       = self.format_to_uris(store, wid, tid, self.selected_files)
 
         save_target        = archiver_dialogue.get_filename();
         start_itr, end_itr = self.arc_command_buffer.get_bounds()
@@ -163,7 +161,7 @@ class WidgetFileActionMixin:
     def paste_files(self):
         wid, tid  = self.window_controller.get_active_data()
         view      = self.get_fm_window(wid).get_view_by_id(tid)
-        target    = f"{view.get_current_directory()}"
+        target    = f"file://{view.get_current_directory()}"
 
         if len(self.to_copy_files) > 0:
             self.handle_file(self.to_copy_files, "copy", target)
@@ -173,8 +171,8 @@ class WidgetFileActionMixin:
 
 
 
-    def move_file(self, view, files, target):
-        self.handle_file([files], "move", target)
+    def move_files(self, files, target):
+        self.handle_file(files, "move", target)
 
     def delete_files(self):
         wid, tid  = self.window_controller.get_active_data()
@@ -195,74 +193,83 @@ class WidgetFileActionMixin:
 
 
 
-    # NOTE: Gio moves files by generating the target file path with name in it
-    #       We can't just give a base target directory and run with it.
-    #       Also, the display name is UTF-8 safe and meant for displaying in GUIs
+    # NOTE: While not fully race condition proof, we happy path it first
+    #       and then handle anything after as a conflict for renaming before
+    #       copy, move, or edit.
     def handle_file(self, paths, action, _target_path=None):
-        paths  = self.preprocess_paths(paths)
-        target = None
+        paths    = self.preprocess_paths(paths)
+        target   = None
 
         for path in paths:
             try:
-                f = Gio.File.new_for_uri(path)
+                file = Gio.File.new_for_uri(path)
 
-                if action == "create_file":
-                    f.create(Gio.FileCreateFlags.NONE, cancellable=None)
-                    break
-                if action == "create_dir":
-                    f.make_directory(cancellable=None)
-                    break
+                if action == "trash":
+                    file.trash(cancellable=None)
+
+                if action == "delete":
+                    # TODO: Add proper confirmation prompt befor doing either
+                    type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
+
+                    if type == Gio.FileType.DIRECTORY:
+                        wid, tid  = self.window_controller.get_active_data()
+                        view      = self.get_fm_window(wid).get_view_by_id(tid)
+                        view.delete_file( file.get_path() )
+                    else:
+                        file.delete(cancellable=None)
+
+                if (action == "create_file" or action == "create_dir") and not file.query_exists():
+                    if action == "create_file":
+                        file.create(flags=Gio.FileCreateFlags.NONE, cancellable=None)
+                        continue
+                    if action == "create_dir":
+                        file.make_directory(cancellable=None)
+                        continue
 
 
                 if _target_path:
-                    if os.path.isdir(_target_path):
-                        info    = f.query_info("standard::display-name", 0, cancellable=None)
-                        _target = f"file://{_target_path}/{info.get_display_name()}"
+                    if os.path.isdir(_target_path.split("file://")[1]):
+                        info    = file.query_info("standard::display-name", 0, cancellable=None)
+                        _target = f"{_target_path}/{info.get_display_name()}"
                         target  = Gio.File.new_for_uri(_target)
                     else:
                         target  = Gio.File.new_for_uri(_target_path)
 
-                # See if dragging to same directory then break
-                if action not in ["trash", "delete", "edit"] and \
-                    (f.get_parent().get_path() == target.get_parent().get_path()):
-                    break
+                if target and not target.query_exists():
+                    type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
-                type = f.query_file_type(flags=Gio.FileQueryInfoFlags.NONE, cancellable=None)
-                if not type == Gio.FileType.DIRECTORY:
-                    if action == "delete":
-                        f.delete(cancellable=None)
-                    if action == "trash":
-                        f.trash(cancellable=None)
-                    if action == "copy":
-                        f.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
-                    if action == "move" or action == "edit":
-                        f.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
-                else:
-                    # Yes, life is hopeless and there is no God. Blame Gio for this sinful shitshow. =/
-                    wid, tid  = self.window_controller.get_active_data()
-                    view      = self.get_fm_window(wid).get_view_by_id(tid)
-                    fPath     = f.get_path()
-                    tPath     = None
-                    state     = True
+                    if type == Gio.FileType.DIRECTORY:
+                        wid, tid  = self.window_controller.get_active_data()
+                        view      = self.get_fm_window(wid).get_view_by_id(tid)
+                        fPath     = file.get_path()
+                        tPath     = None
+                        state     = True
 
-                    if target:
-                        tPath = target.get_path()
+                        if action == "copy":
+                            tPath = target.get_path()
+                            view.copy_file(fPath, tPath)
+                        if action == "move" or action == "edit":
+                            tPath = target.get_parent().get_path()
+                            view.move_file(fPath, tPath)
+                    else:
+                        if action == "copy":
+                            file.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
+                        if action == "move" or action == "edit":
+                            file.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
 
 
-                    if action == "delete":
-                        state = view.delete_file(fPath)
-                    if action == "trash":
-                        f.trash(cancellable=None)
-                    if action == "copy":
-                        state = view.copy_file(fPath, tPath)
-                    if action == "move" or action == "edit":
-                        tPath = target.get_parent().get_path()
-                        state = view.move_file(fPath, tPath)
 
-                    if not state:
-                        raise GObject.GError("Failed to perform requested dir/file action!")
+                # NOTE: Past here, we need to handle detected conflicts.
+                #       Maybe create a collection of file and target pares
+                #       that then get passed to a handler who calls show_exists_page? 
+                # type     = None
+                # gio_flag = None
+                # self.exists_alert.hide()
+                # if not state:
+                #     raise GObject.GError("Failed to perform requested dir/file action!")
             except GObject.GError as e:
                 raise OSError(e)
+
 
     def preprocess_paths(self, paths):
         if not isinstance(paths, list):

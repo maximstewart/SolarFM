@@ -144,16 +144,11 @@ class WindowMixin(TabMixin):
             view      = self.get_fm_window(wid).get_view_by_id(tid)
 
             uris  = data.get_uris()
-            dest  = view.get_current_directory()
+            dest  = f"file://{view.get_current_directory()}"
 
             if len(uris) > 0:
-                if debug:
-                    print(f"Target Move Path:  {dest}")
+                self.move_files(uris, dest)
 
-                for uri in uris:
-                    if debug:
-                        print(f"URI:  {uri}")
-                    self.move_file(view, uri, dest)
 
     def create_new_view_notebook(self, widget=None, wid=None, path=None):
         self.create_tab(wid, path)

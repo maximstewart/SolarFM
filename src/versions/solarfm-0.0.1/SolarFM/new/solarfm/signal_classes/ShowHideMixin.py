@@ -4,6 +4,7 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from gi.repository import Gio
 
 # Application imports
 
@@ -11,6 +12,33 @@ from gi.repository import Gtk
 class ShowHideMixin:
     def show_messages_popup(self, type, text, seconds=None):
         self.message_widget.popup()
+
+
+    def show_exists_page(self, widget=None, eve=None):
+        # self.exists_alert       = self.builder.get_object("exists_alert")
+        # self.exists_from_label  = self.builder.get_object("exists_from_label")
+        # self.exists_to_label    = self.builder.get_object("exists_to_label")
+        # self.exists_file_field  = self.builder.get_object("exists_file_field")
+
+
+        response = self.exists_alert.run()
+        if response == Gtk.ResponseType.OK:      # Rename
+            print(response)
+            return "rename", Gio.FileCreateFlags.NONE
+        if response == Gtk.ResponseType.ACCEPT:  # Auto rename
+            return "rename_auto", Gio.FileCreateFlags.NONE
+        if response == Gtk.ResponseType.CLOSE:   # Auto rename all
+            return "rename_auto_all", Gio.FileCreateFlags.NONE
+        if response == Gtk.ResponseType.YES:     # Overwrite
+            return "overwrite", Gio.FileCreateFlags.OVERWRITE
+        if response == Gtk.ResponseType.APPLY:   # Overwrite all
+            return "overwrite_all", Gio.FileCreateFlags.OVERWRITE
+        if response == Gtk.ResponseType.NO:      # Skip
+            return "skip", Gio.FileCreateFlags.NONE
+        if response == Gtk.ResponseType.CANCEL:  # Skip all
+            return "skip_all", Gio.FileCreateFlags.NONE
+
+
 
     def show_about_page(self, widget=None, eve=None):
         about_page = self.builder.get_object("about_page")

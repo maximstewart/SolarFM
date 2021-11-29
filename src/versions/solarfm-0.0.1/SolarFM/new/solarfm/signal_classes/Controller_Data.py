@@ -30,6 +30,11 @@ class Controller_Data:
         self.message_buffer     = self.builder.get_object("message_buffer")
         self.arc_command_buffer = self.builder.get_object("arc_command_buffer")
 
+        self.exists_alert       = self.builder.get_object("exists_alert")
+        self.exists_from_label  = self.builder.get_object("exists_from_label")
+        self.exists_to_label    = self.builder.get_object("exists_to_label")
+        self.exists_file_field  = self.builder.get_object("exists_file_field")
+
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")
         self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
         self.bottom_path_label       = self.builder.get_object("bottom_path_label")
