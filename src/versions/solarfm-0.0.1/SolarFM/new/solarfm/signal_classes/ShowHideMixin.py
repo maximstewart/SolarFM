@@ -19,16 +19,33 @@ class ShowHideMixin:
             self.hide_about_page()
 
     def hide_about_page(self, widget=None, eve=None):
-        about_page = self.builder.get_object("about_page").hide()
+        self.builder.get_object("about_page").hide()
+
+    def show_archiver_dialogue(self, widget=None, eve=None):
+        archiver_dialogue = self.builder.get_object("archiver_dialogue")
+        archiver_dialogue.set_action(Gtk.FileChooserAction.SAVE)
+        archiver_dialogue.set_select_multiple(True)
+        archiver_dialogue.set_current_name("arc.7z")
+
+        response = archiver_dialogue.run()
+        if response == Gtk.ResponseType.OK:
+            self.archive_files(archiver_dialogue)
+        if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
+            pass
+
+        archiver_dialogue.hide()
+
+    def hide_archiver_dialogue(self, widget=None, eve=None):
+        self.builder.get_object("archiver_dialogue").hide()
 
     def show_appchooser_menu(self, widget=None, eve=None):
         appchooser_menu   = self.builder.get_object("appchooser_menu")
         appchooser_widget = self.builder.get_object("appchooser_widget")
+        response          = appchooser_menu.run()
 
-        resp = appchooser_menu.run()
-        if resp == Gtk.ResponseType.CANCEL:
+        if response == Gtk.ResponseType.CANCEL:
             self.hide_appchooser_menu()
-        if resp == Gtk.ResponseType.OK:
+        if response == Gtk.ResponseType.OK:
             self.open_with_files(appchooser_widget)
             self.hide_appchooser_menu()
 

@@ -129,6 +129,20 @@ class WidgetFileActionMixin:
         self.hide_new_file_menu()
         self.to_rename_files.clear()
 
+    def archive_files(self, archiver_dialogue):
+        wid, tid    = self.window_controller.get_active_data()
+        iconview    = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store       = iconview.get_model()
+        paths       = self.format_to_uris(store, wid, tid, self.selected_files, True)
+
+        save_target        = archiver_dialogue.get_filename();
+        start_itr, end_itr = self.arc_command_buffer.get_bounds()
+        command            = self.arc_command_buffer.get_text(start_itr, end_itr, False)
+
+        command            = command.replace("%o", save_target)
+        command            = command.replace("%N", ' '.join(paths))
+        final_command      = f"terminator -e '{command}'"
+        self.execute(final_command, start_dir=None, use_os_system=True)
 
 
 

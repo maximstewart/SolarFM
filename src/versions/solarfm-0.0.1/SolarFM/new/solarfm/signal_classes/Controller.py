@@ -18,8 +18,8 @@ def threaded(fn):
     return wrapper
 
 
-class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFileActionMixin, \
-                                    PaneMixin, WindowMixin):
+class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
+                            WidgetFileActionMixin, PaneMixin, WindowMixin):
     def __init__(self, args, unknownargs, _settings):
         sys.excepthook = self.my_except_hook
         self.settings  = _settings
@@ -109,10 +109,18 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFil
         self.to_rename_files = self.selected_files
         self.rename_files()
 
-    def execute(self, option, start_dir=os.getenv("HOME")):
-        DEVNULL = open(os.devnull, 'w')
-        command = option.split()
-        subprocess.Popen(command, cwd=start_dir, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
+    def set_arc_buffer_text(self, widget=None, eve=None):
+        id = widget.get_active_id()
+        self.arc_command_buffer.set_text(self.arc_commands[int(id)])
+
+    def execute(self, _command, start_dir=os.getenv("HOME"), use_os_system=None):
+        if use_os_system:
+            os.system(_command)
+        else:
+            DEVNULL = open(os.devnull, 'w')
+            command = _command.split()
+            subprocess.Popen(command, cwd=start_dir, shell=False, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
+
 
 
     def do_action_from_menu_controls(self, imagemenuitem, eventbutton):
@@ -138,11 +146,13 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, WidgetFil
             self.copy_files()
         if action == "paste":
             self.paste_files()
+        if action == "archive":
+            self.show_archiver_dialogue()
         if action == "delete":
             # self.delete_files()
             self.trash_files()
-        if action == "trash":
-            self.trash_files()
+        if action == "go_to_trash":
+            self.builder.get_object("path_entry").set_text(self.trash_files_path)
 
         self.ctrlDown = False
 
