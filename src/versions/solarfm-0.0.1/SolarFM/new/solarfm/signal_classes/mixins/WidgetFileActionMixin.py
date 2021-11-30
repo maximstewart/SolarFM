@@ -27,11 +27,9 @@ class WidgetFileActionMixin:
         view.set_dir_watcher(dir_watcher)
 
     def dir_watch_updates(self, file_monitor, file, other_file=None, eve_type=None, data=None):
-        if eve_type ==  Gio.FileMonitorEvent.CREATED or \
-            eve_type ==  Gio.FileMonitorEvent.DELETED or \
-            eve_type == Gio.FileMonitorEvent.RENAMED or \
-            eve_type == Gio.FileMonitorEvent.MOVED_IN or \
-            eve_type == Gio.FileMonitorEvent.MOVED_OUT:
+        if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
+                        Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
+                                                    Gio.FileMonitorEvent.MOVED_OUT]:
                 wid, tid  = data[0].split("|")
                 notebook  = self.builder.get_object(f"window_{wid}")
                 view      = self.get_fm_window(wid).get_view_by_id(tid)
@@ -65,34 +63,34 @@ class WidgetFileActionMixin:
 
         fname_field.set_text("")
 
+
+    def get_current_state(self):
+        wid, tid     = self.window_controller.get_active_data()
+        view         = self.get_fm_window(wid).get_view_by_id(tid)
+        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store        = iconview.get_model()
+        return wid, tid, view, iconview, store
+
     def open_files(self):
-        wid, tid  = self.window_controller.get_active_data()
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store     = iconview.get_model()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        wid, tid, view, iconview, store = self.get_current_state()
+        uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
 
         for file in uris:
             view.open_file_locally(file)
 
-    def open_with_files(self, appchooser_widget):
-        wid, tid  = self.window_controller.get_active_data()
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store     = iconview.get_model()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
 
+    def open_with_files(self, appchooser_widget):
+        wid, tid, view, iconview, store = self.get_current_state()
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
         file      = Gio.File.new_for_uri(uris[0])
         app_info  = appchooser_widget.get_app_info()
+
         app_info.launch([file], None)
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
         rename_input = self.builder.get_object("new_rename_fname")
-        wid, tid     = self.window_controller.get_active_data()
-        view         = self.get_fm_window(wid).get_view_by_id(tid)
-        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store        = iconview.get_model()
+        wid, tid, view, iconview, store = self.get_current_state()
         uris         = self.format_to_uris(store, wid, tid, self.to_rename_files)
 
         # The rename button hides the rename dialog box which lets the loop continue.
@@ -116,11 +114,9 @@ class WidgetFileActionMixin:
 
             rname_to = rename_input.get_text().strip()
             target   = f"file://{view.get_current_directory()}/{rname_to}"
-            print(target)
             self.handle_file([uri], "edit", target)
 
             self.show_edit_file_menu()
-
 
         self.skip_edit   = False
         self.cancel_edit = False
@@ -128,10 +124,8 @@ class WidgetFileActionMixin:
         self.to_rename_files.clear()
 
     def archive_files(self, archiver_dialogue):
-        wid, tid    = self.window_controller.get_active_data()
-        iconview    = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store       = iconview.get_model()
-        paths       = self.format_to_uris(store, wid, tid, self.selected_files)
+        wid, tid, view, iconview, store = self.get_current_state()
+        paths = self.format_to_uris(store, wid, tid, self.selected_files)
 
         save_target        = archiver_dialogue.get_filename();
         start_itr, end_itr = self.arc_command_buffer.get_bounds()
@@ -145,16 +139,12 @@ class WidgetFileActionMixin:
 
 
     def cut_files(self):
-        wid, tid  = self.window_controller.get_active_data()
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store     = iconview.get_model()
+        wid, tid, view, iconview, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
         self.to_cut_files = uris
 
     def copy_files(self):
-        wid, tid  = self.window_controller.get_active_data()
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store     = iconview.get_model()
+        wid, tid, view, iconview, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
         self.to_copy_files = uris
 
@@ -175,18 +165,12 @@ class WidgetFileActionMixin:
         self.handle_file(files, "move", target)
 
     def delete_files(self):
-        wid, tid  = self.window_controller.get_active_data()
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        store     = iconview.get_model()
+        wid, tid, view, iconview, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
         self.handle_file(uris, "delete")
 
     def trash_files(self):
-        wid, tid  = self.window_controller.get_active_data()
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        store     = iconview.get_model()
+        wid, tid, view, iconview, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
         self.handle_file(uris, "trash")
 
