@@ -104,20 +104,16 @@ class WindowMixin(TabMixin):
             fileName   = model[item][1]
             dir        = view.get_current_directory()
             file       = dir + "/" + fileName
-            refresh    = True
 
             if isdir(file):
                 view.set_path(file)
-            elif isfile(file):
-                refresh = False
-                view.open_file_locally(file)
-
-            if refresh == True:
                 self.load_store(view, model)
                 tab_label.set_label(view.get_end_of_path())
                 path_entry.set_text(view.get_current_directory())
                 self.set_file_watcher(view)
                 self.set_bottom_labels(view)
+            else:
+                view.open_file_locally(file)
         except Exception as e:
             self.display_message(self.error, f"{repr(e)}")
 

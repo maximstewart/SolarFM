@@ -16,10 +16,15 @@ class WidgetFileActionMixin:
             if debug:
                 print(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
 
-        dir_watcher  = Gio.File.new_for_path(view.get_current_directory()) \
-                                .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES,
-                                                    Gio.Cancellable()
-                                                    )
+        cur_dir = view.get_current_directory()
+        # Temp updating too much with current events we are checking for.
+        # Causes invalid iter errors in WidbetMixin > update_store
+        if cur_dir == "/tmp":
+            watcher = None
+            return
+
+        dir_watcher  = Gio.File.new_for_path(cur_dir) \
+                                .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, Gio.Cancellable())
 
         wid = view.get_wid()
         tid = view.get_tab_id()
@@ -30,6 +35,9 @@ class WidgetFileActionMixin:
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
                                                     Gio.FileMonitorEvent.MOVED_OUT]:
+                if debug:
+                    print(eve_type)
+
                 wid, tid  = data[0].split("|")
                 notebook  = self.builder.get_object(f"window_{wid}")
                 view      = self.get_fm_window(wid).get_view_by_id(tid)

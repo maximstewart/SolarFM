@@ -44,6 +44,8 @@ class WidgetMixin:
         fpath = dir + "/" + file
         GLib.idle_add(self.update_store, (i, store, icon, view, fpath,))
 
+    # NOTE: Might need to keep an eye on this throwing invalid iters when too
+    #       many updates are happening to a folder. Example: /tmp
     def update_store(self, item):
         i, store, icon, view, fpath = item
         itr  = store.get_iter(i)
