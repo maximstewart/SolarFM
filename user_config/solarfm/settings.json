@@ -2,7 +2,7 @@
     "settings": {
         "base_of_home": "",
         "hide_hidden_files": "true",
-        "thumbnailer_path": "",
+        "thumbnailer_path": "ffmpegthumbnailer",
         "go_past_home": "true",
         "lock_folder": "false",
         "locked_folders": "venv::::flasks",
@@ -14,6 +14,7 @@
         "pdf_app": "evince",
         "text_app": "leafpad",
         "file_manager_app": "solarfm",
+        "terminal_app": "terminator",
         "remux_folder_max_disk_usage": "8589934592"
     }
 }

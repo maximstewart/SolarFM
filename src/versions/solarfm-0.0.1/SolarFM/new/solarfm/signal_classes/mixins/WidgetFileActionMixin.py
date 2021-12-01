@@ -79,6 +79,16 @@ class WidgetFileActionMixin:
         store        = iconview.get_model()
         return wid, tid, view, iconview, store
 
+    def execute_files(self, in_terminal=False):
+        wid, tid, view, iconview, store = self.get_current_state()
+        paths       = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        current_dir = view.get_current_directory()
+        command     = None
+
+        for path in paths:
+            command = f"sh -c '{path}'" if not in_terminal else f"{view.terminal_app} -e '{path}'"
+            self.execute(command, current_dir)
+
     def open_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
         uris = self.format_to_uris(store, wid, tid, self.selected_files, True)

@@ -123,13 +123,18 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
 
 
 
-    def do_action_from_menu_controls(self, imagemenuitem, eventbutton):
-        action        = imagemenuitem.get_name()
+    def do_action_from_menu_controls(self, widget, eventbutton):
+        action        = widget.get_name()
         self.ctrlDown = True
         self.hide_context_menu()
         self.hide_new_file_menu()
         self.hide_edit_file_menu()
 
+
+        if action == "execute":
+            self.execute_files()
+        if action == "execute_in_terminal":
+            self.execute_files(in_terminal=True)
         if action == "create":
             self.create_file()
             self.hide_new_file_menu()

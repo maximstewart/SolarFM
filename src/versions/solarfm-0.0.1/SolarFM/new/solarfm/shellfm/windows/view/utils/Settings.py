@@ -69,6 +69,7 @@ class Settings:
             pdf_app           = settings["pdf_app"]
             text_app          = settings["text_app"]
             file_manager_app  = settings["file_manager_app"]
+            terminal_app      = settings["terminal_app"]
             remux_folder_max_disk_usage = settings["remux_folder_max_disk_usage"]
 
     # Filters
