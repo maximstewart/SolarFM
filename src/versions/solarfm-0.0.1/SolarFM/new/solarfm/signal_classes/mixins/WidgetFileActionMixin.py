@@ -2,7 +2,9 @@
 import os
 
 # Lib imports
-from gi.repository import GObject, Gio
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GObject, Gio
 
 # Application imports
 
@@ -89,13 +91,13 @@ class WidgetFileActionMixin:
             command = f"sh -c '{path}'" if not in_terminal else f"{view.terminal_app} -e '{path}'"
             self.execute(command, current_dir)
 
+
     def open_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
         uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
 
         for file in uris:
             view.open_file_locally(file)
-
 
     def open_with_files(self, appchooser_widget):
         wid, tid, view, iconview, store = self.get_current_state()
@@ -197,10 +199,13 @@ class WidgetFileActionMixin:
 
     # NOTE: While not fully race condition proof, we happy path it first
     #       and then handle anything after as a conflict for renaming before
-    #       copy, move, or edit.
+    #       copy, move, or edit. This is literally the oppopsite of what Gtk says to do.
+    #       But, they can't even delete directories properly. So... f**k them.
     def handle_file(self, paths, action, _target_path=None):
         paths    = self.preprocess_paths(paths)
         target   = None
+        response = None
+        self.warning_alert.format_secondary_text(f"Do you really want to {action} the {len(paths)} file(s)?")
 
         for path in paths:
             try:
@@ -208,17 +213,6 @@ class WidgetFileActionMixin:
 
                 if action == "trash":
                     file.trash(cancellable=None)
-
-                if action == "delete":
-                    # TODO: Add proper confirmation prompt befor doing either
-                    type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
-
-                    if type == Gio.FileType.DIRECTORY:
-                        wid, tid  = self.window_controller.get_active_data()
-                        view      = self.get_fm_window(wid).get_view_by_id(tid)
-                        view.delete_file( file.get_path() )
-                    else:
-                        file.delete(cancellable=None)
 
                 if (action == "create_file" or action == "create_dir") and not file.query_exists():
                     if action == "create_file":
@@ -261,14 +255,28 @@ class WidgetFileActionMixin:
 
 
 
+
                 # NOTE: Past here, we need to handle detected conflicts.
                 #       Maybe create a collection of file and target pares
                 #       that then get passed to a handler who calls show_exists_page?
-                # type     = None
-                # gio_flag = None
-                # self.exists_alert.hide()
-                # if not state:
-                #     raise GObject.GError("Failed to perform requested dir/file action!")
+
+                if action == "delete":
+                    if not response:
+                        response = self.warning_alert.run()
+                        self.warning_alert.hide()
+                    if response == Gtk.ResponseType.YES:
+                        type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
+
+                        if type == Gio.FileType.DIRECTORY:
+                            wid, tid  = self.window_controller.get_active_data()
+                            view      = self.get_fm_window(wid).get_view_by_id(tid)
+                            view.delete_file( file.get_path() )
+                        else:
+                            file.delete(cancellable=None)
+                    else:
+                        break
+
+
             except GObject.GError as e:
                 raise OSError(e)
 

@@ -46,14 +46,9 @@ class WidgetMixin:
 
     # NOTE: Might need to keep an eye on this throwing invalid iters when too
     #       many updates are happening to a folder. Example: /tmp
-    #       Will sink for now. (Aka ignore forever)
     def update_store(self, item):
         i, store, icon, view, fpath = item
-        itr = None
-        try:
-            itr  = store.get_iter(i)
-        except Exception as e:
-            return
+        itr = store.get_iter(i)
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])

@@ -30,6 +30,7 @@ class Controller_Data:
         self.message_buffer     = self.builder.get_object("message_buffer")
         self.arc_command_buffer = self.builder.get_object("arc_command_buffer")
 
+        self.warning_alert      = self.builder.get_object("warning_alert")
         self.exists_alert       = self.builder.get_object("exists_alert")
         self.exists_from_label  = self.builder.get_object("exists_from_label")
         self.exists_to_label    = self.builder.get_object("exists_to_label")

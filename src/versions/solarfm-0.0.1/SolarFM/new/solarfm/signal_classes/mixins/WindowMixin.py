@@ -93,6 +93,13 @@ class WindowMixin(TabMixin):
 
     def grid_icon_double_left_click(self, iconview, item, data=None):
         try:
+            if self.ctrlDown and self.shiftDown:
+                self.execute_files(in_terminal=True)
+                return
+            elif self.ctrlDown:
+                self.execute_files()
+                return
+
             wid, tid   = self.window_controller.get_active_data()
             notebook   = self.builder.get_object(f"window_{wid}")
             path_entry = self.builder.get_object(f"path_entry")

@@ -50,6 +50,7 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 
+
     @threaded
     def gui_event_observer(self):
         while event_system.monitor_events:
@@ -103,8 +104,6 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
         save_location_prompt.destroy()
 
 
-
-
     def do_edit_files(self, widget=None, eve=None):
         self.to_rename_files = self.selected_files
         self.rename_files()
@@ -112,6 +111,7 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
     def set_arc_buffer_text(self, widget=None, eve=None):
         id = widget.get_active_id()
         self.arc_command_buffer.set_text(self.arc_commands[int(id)])
+
 
     def execute(self, _command, start_dir=os.getenv("HOME"), use_os_system=None):
         if use_os_system:
@@ -121,15 +121,12 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
             command = _command.split()
             subprocess.Popen(command, cwd=start_dir, shell=False, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
 
-
-
     def do_action_from_menu_controls(self, widget, eventbutton):
         action        = widget.get_name()
         self.ctrlDown = True
         self.hide_context_menu()
         self.hide_new_file_menu()
         self.hide_edit_file_menu()
-
 
         if action == "execute":
             self.execute_files()
@@ -154,14 +151,13 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
         if action == "archive":
             self.show_archiver_dialogue()
         if action == "delete":
-            # self.delete_files()
+            self.delete_files()
+        if action == "trash":
             self.trash_files()
         if action == "go_to_trash":
             self.builder.get_object("path_entry").set_text(self.trash_files_path)
 
         self.ctrlDown = False
-
-
 
 
     def generate_windows(self, data = None):

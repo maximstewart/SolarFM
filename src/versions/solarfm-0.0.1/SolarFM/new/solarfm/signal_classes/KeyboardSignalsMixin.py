@@ -4,8 +4,7 @@
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk
-from gi.repository import Gdk
+from gi.repository import Gtk, Gdk
 
 # Application imports
 
@@ -67,8 +66,10 @@ class KeyboardSignalsMixin:
         if self.ctrlDown and keyname == "n":
             self.show_new_file_menu()
 
-        if keyname == "delete":
+        if self.ctrlDown and self.shiftDown and keyname == "t":
             self.trash_files()
+        if keyname == "delete":
+            self.delete_files()
         if keyname == "f2":
             self.do_edit_files()
         if keyname == "f4":
