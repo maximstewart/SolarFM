@@ -165,7 +165,9 @@ class WidgetFileActionMixin:
 
     def copy_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
+        print(self.selected_files)
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
+        print(uris)
         self.to_copy_files = uris
 
     def paste_files(self):

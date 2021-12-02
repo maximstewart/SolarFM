@@ -14,8 +14,6 @@ SolarFM is a Gtk+ Python file manager.
 <li>Add drive size free and consumed info to bottom bar.</li>
 <li>Add simpleish plugin system to run bash/python scripts.</li>
 <li>Add DnD context awareness for over folder drop.</li>
-<li>Add double click event for App chooser.</li>
-<li>Add enter key event for rename dialog.</li>
 </ul>
 
 # Images

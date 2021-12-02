@@ -3,7 +3,8 @@
 # Gtk imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, Gdk, Gio
 
 # Application imports
 
@@ -82,7 +83,8 @@ class ShowHideMixin:
         self.builder.get_object("appchooser_menu").hide()
 
     def run_appchooser_launch(self, widget=None, eve=None):
-        self.builder.get_object("appchooser_select_btn").pressed()
+        dialog = widget.get_parent().get_parent()
+        dialog.response(Gtk.ResponseType.OK)
 
     def show_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu").run()
@@ -100,7 +102,15 @@ class ShowHideMixin:
         self.builder.get_object("edit_file_menu").run()
 
     def hide_edit_file_menu(self, widget=None, eve=None):
-        self.builder.get_object("edit_file_menu").hide()
+        if widget:
+            name = widget.get_name()
+            if name == "rename":
+                self.builder.get_object("edit_file_menu").hide()
+
+            keyname = Gdk.keyval_name(eve.keyval).lower()
+            if "return" in keyname or "enter" in keyname:
+                self.builder.get_object("edit_file_menu").hide()
+
 
     def hide_edit_file_menu_skip(self, widget=None, eve=None):
         self.skip_edit   = True
