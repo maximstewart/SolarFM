@@ -22,12 +22,10 @@ class Settings:
         self.CONFIG_PATH   = self.USER_HOME   + "/.config/solarfm"
 
         self.cssFile       = self.CONFIG_PATH + '/stylesheet.css'
-        self.popups_glade  = self.CONFIG_PATH + "/Menu_Popups.glade"
         self.windows_glade = self.CONFIG_PATH + "/Main_Window.glade"
 
         self.logger        = Logger().get_logger()
         self.builder       = gtk.Builder()
-        self.builder.add_from_file(self.popups_glade)
         self.builder.add_from_file(self.windows_glade)
 
         self.DEFAULT_ICONS = self.CONFIG_PATH   + "/icons"

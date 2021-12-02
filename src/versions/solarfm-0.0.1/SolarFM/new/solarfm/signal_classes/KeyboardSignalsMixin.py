@@ -35,6 +35,9 @@ class KeyboardSignalsMixin:
             if "alt" in keyname:
                 self.altDown     = False
 
+        if self.ctrlDown and self.shiftDown and keyname == "t":
+            self.trash_files()
+
         if self.ctrlDown and keyname == "q":
             self.tear_down()
         if (self.ctrlDown and keyname == "slash") or keyname == "home":
@@ -66,8 +69,7 @@ class KeyboardSignalsMixin:
         if self.ctrlDown and keyname == "n":
             self.show_new_file_menu()
 
-        if self.ctrlDown and self.shiftDown and keyname == "t":
-            self.trash_files()
+
         if keyname == "delete":
             self.delete_files()
         if keyname == "f2":
