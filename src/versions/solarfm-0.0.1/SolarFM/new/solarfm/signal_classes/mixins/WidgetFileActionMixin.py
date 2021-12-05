@@ -52,28 +52,6 @@ class WidgetFileActionMixin:
                 tab_label.set_label(view.get_end_of_path())
                 self.set_bottom_labels(view)
 
-
-
-
-    def create_file(self):
-        fname_field = self.builder.get_object("context_menu_fname")
-        file_name   = fname_field.get_text().strip()
-        type        = self.builder.get_object("context_menu_type_toggle").get_state()
-
-        wid, tid    = self.window_controller.get_active_data()
-        view        = self.get_fm_window(wid).get_view_by_id(tid)
-        target      = f"{view.get_current_directory()}"
-
-        if file_name:
-            file_name = "file://" + target + "/" + file_name
-            if type == True:     # Create File
-                self.handle_file([file_name], "create_file")
-            else:                # Create Folder
-                self.handle_file([file_name], "create_dir")
-
-        fname_field.set_text("")
-
-
     def get_current_state(self):
         wid, tid     = self.window_controller.get_active_data()
         view         = self.get_fm_window(wid).get_view_by_id(tid)
@@ -81,15 +59,7 @@ class WidgetFileActionMixin:
         store        = iconview.get_model()
         return wid, tid, view, iconview, store
 
-    def execute_files(self, in_terminal=False):
-        wid, tid, view, iconview, store = self.get_current_state()
-        paths       = self.format_to_uris(store, wid, tid, self.selected_files, True)
-        current_dir = view.get_current_directory()
-        command     = None
 
-        for path in paths:
-            command = f"sh -c '{path}'" if not in_terminal else f"{view.terminal_app} -e '{path}'"
-            self.execute(command, current_dir)
 
 
     def open_files(self):
@@ -106,6 +76,26 @@ class WidgetFileActionMixin:
         app_info  = appchooser_widget.get_app_info()
 
         app_info.launch([file], None)
+
+    def execute_files(self, in_terminal=False):
+        wid, tid, view, iconview, store = self.get_current_state()
+        paths       = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        current_dir = view.get_current_directory()
+        command     = None
+
+        for path in paths:
+            command = f"sh -c '{path}'" if not in_terminal else f"{view.terminal_app} -e '{path}'"
+            view.execute(command.split(), current_dir)
+
+
+
+
+
+    ##################################################################################################
+
+    # NOTE:  Everything below is trash and needs yet another rewrite because it doesn't work properly.
+
+    ##################################################################################################
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
@@ -143,21 +133,6 @@ class WidgetFileActionMixin:
         self.hide_new_file_menu()
         self.to_rename_files.clear()
 
-    def archive_files(self, archiver_dialogue):
-        wid, tid, view, iconview, store = self.get_current_state()
-        paths = self.format_to_uris(store, wid, tid, self.selected_files)
-
-        save_target        = archiver_dialogue.get_filename();
-        start_itr, end_itr = self.arc_command_buffer.get_bounds()
-        command            = self.arc_command_buffer.get_text(start_itr, end_itr, False)
-
-        command            = command.replace("%o", save_target)
-        command            = command.replace("%N", ' '.join(paths))
-        final_command      = f"terminator -e '{command}'"
-        self.execute(final_command, start_dir=None, use_os_system=True)
-
-
-
     def cut_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
@@ -180,11 +155,18 @@ class WidgetFileActionMixin:
         elif len(self.to_cut_files) > 0:
             self.handle_file(self.to_cut_files, "move", target)
 
+    def archive_files(self, archiver_dialogue):
+        wid, tid, view, iconview, store = self.get_current_state()
+        paths = self.format_to_uris(store, wid, tid, self.selected_files)
 
+        save_target        = archiver_dialogue.get_filename();
+        start_itr, end_itr = self.arc_command_buffer.get_bounds()
+        command            = self.arc_command_buffer.get_text(start_itr, end_itr, False)
 
-
-    def move_files(self, files, target):
-        self.handle_file(files, "move", target)
+        command            = command.replace("%o", save_target)
+        command            = command.replace("%N", ' '.join(paths))
+        final_command      = f"terminator -e '{command}'"
+        self.execute(final_command, start_dir=None, use_os_system=True)
 
     def delete_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
@@ -198,6 +180,27 @@ class WidgetFileActionMixin:
 
 
 
+
+    def create_file(self):
+        fname_field = self.builder.get_object("context_menu_fname")
+        file_name   = fname_field.get_text().strip()
+        type        = self.builder.get_object("context_menu_type_toggle").get_state()
+
+        wid, tid    = self.window_controller.get_active_data()
+        view        = self.get_fm_window(wid).get_view_by_id(tid)
+        target      = f"{view.get_current_directory()}"
+
+        if file_name:
+            file_name = "file://" + target + "/" + file_name
+            if type == True:     # Create File
+                self.handle_file([file_name], "create_file")
+            else:                # Create Folder
+                self.handle_file([file_name], "create_dir")
+
+        fname_field.set_text("")
+
+    def move_files(self, files, target):
+        self.handle_file(files, "move", target)
 
     # NOTE: While not fully race condition proof, we happy path it first
     #       and then handle anything after as a conflict for renaming before

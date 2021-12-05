@@ -4,11 +4,16 @@
 SolarFM is a Gtk+ Python file manager.
 
 # Notes
-```sudo apt-get install python3 wget ffmpegthumbnailer steamcmd```
+<b>Still Work in  progress! Use at own risk!</b>
+
+<h6>Install Setup</h6>
+```
+sudo apt-get install python3 wget ffmpegthumbnailer steamcmd
+```
 
 # TODO
 <ul>
-<li>Add prompt guards for actions.</li>
+<li><b>Fix the wonky file handler situation and add prompt guards for actions.</b></li>
 <li>Add path bar search dropdown.</li>
 <li>Add "clear trash", "restore from trash" options.</li>
 <li>Add drive size free and consumed info to bottom bar.</li>

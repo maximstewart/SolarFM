@@ -106,10 +106,10 @@ class ShowHideMixin:
             name = widget.get_name()
             if name == "rename":
                 self.builder.get_object("edit_file_menu").hide()
-
-            keyname = Gdk.keyval_name(eve.keyval).lower()
-            if "return" in keyname or "enter" in keyname:
-                self.builder.get_object("edit_file_menu").hide()
+            else:
+                keyname = Gdk.keyval_name(eve.keyval).lower()
+                if "return" in keyname or "enter" in keyname:
+                    self.builder.get_object("edit_file_menu").hide()
 
 
     def hide_edit_file_menu_skip(self, widget=None, eve=None):

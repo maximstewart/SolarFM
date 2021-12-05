@@ -78,4 +78,4 @@ class KeyboardSignalsMixin:
             wid, tid = self.window_controller.get_active_data()
             view     = self.get_fm_window(wid).get_view_by_id(tid)
             dir      = view.get_current_directory()
-            self.execute("terminator", dir)
+            view.execute(f"{view.terminal_app}", dir)

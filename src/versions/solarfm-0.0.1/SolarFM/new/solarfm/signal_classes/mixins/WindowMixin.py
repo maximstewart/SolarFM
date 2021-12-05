@@ -57,10 +57,10 @@ class WindowMixin(TabMixin):
         dir      = view.get_current_directory()
 
         for _notebook in self.notebooks:
-            ctx      = _notebook.get_style_context()
+            ctx = _notebook.get_style_context()
             ctx.remove_class("notebook-selected-focus")
 
-        ctx      = notebook.get_style_context()
+        ctx = notebook.get_style_context()
         ctx.add_class("notebook-selected-focus")
 
         self.window.set_title("SolarFM ~ " + dir)

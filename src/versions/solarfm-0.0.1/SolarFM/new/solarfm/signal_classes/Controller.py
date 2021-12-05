@@ -21,7 +21,7 @@ def threaded(fn):
 class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
                             WidgetFileActionMixin, PaneMixin, WindowMixin):
     def __init__(self, args, unknownargs, _settings):
-        sys.excepthook = self.my_except_hook
+        # sys.excepthook = self.custom_except_hook
         self.settings  = _settings
         self.setup_controller_data()
 
@@ -65,7 +65,7 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
                     print(repr(e))
 
 
-    def my_except_hook(self, exctype, value, _traceback):
+    def custom_except_hook(self, exctype, value, _traceback):
         trace     = ''.join(traceback.format_tb(_traceback))
         data      = f"Exectype:  {exctype}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"
         start_itr = self.message_buffer.get_start_iter()
@@ -104,22 +104,12 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
         save_location_prompt.destroy()
 
 
-    def do_edit_files(self, widget=None, eve=None):
-        self.to_rename_files = self.selected_files
-        self.rename_files()
-
     def set_arc_buffer_text(self, widget=None, eve=None):
         id = widget.get_active_id()
         self.arc_command_buffer.set_text(self.arc_commands[int(id)])
 
 
-    def execute(self, _command, start_dir=os.getenv("HOME"), use_os_system=None):
-        if use_os_system:
-            os.system(_command)
-        else:
-            DEVNULL = open(os.devnull, 'w')
-            command = _command.split()
-            subprocess.Popen(command, cwd=start_dir, shell=False, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL)
+
 
     def do_action_from_menu_controls(self, widget, eventbutton):
         action        = widget.get_name()
@@ -128,15 +118,14 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
         self.hide_new_file_menu()
         self.hide_edit_file_menu()
 
+        if action == "open":
+            self.open_files()
+        if action == "open_with":
+            self.show_appchooser_menu()
         if action == "execute":
             self.execute_files()
         if action == "execute_in_terminal":
             self.execute_files(in_terminal=True)
-        if action == "create":
-            self.create_file()
-            self.hide_new_file_menu()
-        if action == "open":
-            self.open_files()
         if action == "rename":
             self.to_rename_files = self.selected_files
             self.rename_files()
@@ -156,6 +145,11 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
             self.trash_files()
         if action == "go_to_trash":
             self.builder.get_object("path_entry").set_text(self.trash_files_path)
+
+
+        if action == "create":
+            self.create_file()
+            self.hide_new_file_menu()
 
         self.ctrlDown = False
 
