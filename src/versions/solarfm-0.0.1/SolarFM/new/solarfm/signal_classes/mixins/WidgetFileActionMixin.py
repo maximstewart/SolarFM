@@ -107,7 +107,7 @@ class WidgetFileActionMixin:
         pre_command = self.arc_command_buffer.get_text(sItr, eItr, False)
         pre_command = pre_command.replace("%o", save_target)
         pre_command = pre_command.replace("%N", ' '.join(paths))
-        command     = f"{view.terminal_app} -e '{command}'"
+        command     = f"{view.terminal_app} -e '{pre_command}'"
 
         view.execute(command, start_dir=None, use_os_system=True)
 
