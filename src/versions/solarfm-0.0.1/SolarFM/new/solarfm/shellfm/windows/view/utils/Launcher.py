@@ -35,16 +35,16 @@ class Launcher:
         else:
             command = ["xdg-open", file]
 
-        self.execute(command)
+        self.execute(command, use_shell=False)
 
 
-    def execute(self, command, start_dir=os.getenv("HOME"), use_os_system=None):
+    def execute(self, command, start_dir=os.getenv("HOME"), use_os_system=None, use_shell=True):
         self.logger.debug(command)
         if use_os_system:
             os.system(command)
         else:
             DEVNULL = open(os.devnull, 'w')
-            subprocess.Popen(command, cwd=start_dir, shell=True, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
+            subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
 
 
     def remux_video(self, hash, file):

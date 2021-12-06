@@ -110,7 +110,7 @@ class WindowMixin(TabMixin):
 
             fileName   = model[item][1]
             dir        = view.get_current_directory()
-            file       = dir + "/" + fileName
+            file       = f"{dir}/{fileName}"
 
             if isdir(file):
                 view.set_path(file)
@@ -120,7 +120,7 @@ class WindowMixin(TabMixin):
                 self.set_file_watcher(view)
                 self.set_bottom_labels(view)
             else:
-                view.open_file_locally(file)
+                self.open_files()
         except Exception as e:
             self.display_message(self.error, f"{repr(e)}")
 
