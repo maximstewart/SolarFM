@@ -106,14 +106,20 @@ class TabMixin(WidgetMixin):
         return notebook.get_children()[1].get_children()[0]
 
     def refresh_tab(data=None):
-        self, ids = data
-        wid, tid  = ids.split("|")
-        notebook  = self.builder.get_object(f"window_{wid}")
-        store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-
+        wid, tid, view, iconview, store = self.get_current_state()
         view.load_directory()
         self.load_store(view, store)
+
+    def update_view(self, tab_label, view, store, wid, tid):
+        self.load_store(view, store)
+        self.set_path_text(wid, tid)
+
+        char_width = len(view.get_end_of_path())
+        tab_label.set_width_chars(char_width)
+        tab_label.set_label(view.get_end_of_path())
+        self.set_window_title()
+        self.set_file_watcher(view)
+        self.window_controller.save_state()
 
     def do_action_from_bar_controls(self, widget, eve=None):
         action    = widget.get_name()
@@ -143,16 +149,7 @@ class TabMixin(WidgetMixin):
             if not traversed:
                 return
 
-
-        self.load_store(view, store)
-        self.set_path_text(wid, tid)
-
-        char_width = len(view.get_end_of_path())
-        tab_label.set_width_chars(char_width)
-        tab_label.set_label(view.get_end_of_path())
-        self.set_window_title()
-        self.set_file_watcher(view)
-        self.window_controller.save_state()
+        self.update_view(tab_label, view, store, wid, tid)
 
 
     def keyboard_close_tab(self):

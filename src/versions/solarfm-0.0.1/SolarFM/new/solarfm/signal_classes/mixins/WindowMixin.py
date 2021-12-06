@@ -15,6 +15,28 @@ from . import WidgetMixin
 
 class WindowMixin(TabMixin):
     """docstring for WindowMixin"""
+    def generate_windows(self, data = None):
+        if data:
+            for j, value in enumerate(data):
+                i = j + 1
+                isHidden = True if value[0]["window"]["isHidden"] == "True" else False
+                object   = self.builder.get_object(f"tggl_notebook_{i}")
+                views    = value[0]["window"]["views"]
+                self.window_controller.create_window()
+                object.set_active(True)
+
+                for view in views:
+                    self.create_new_view_notebook(None, i, view)
+
+                if isHidden:
+                    self.toggle_notebook_pane(object)
+        else:
+            for j in range(0, 4):
+                i = j + 1
+                self.window_controller.create_window()
+                self.create_new_view_notebook(None, i, None)
+
+
     def get_fm_window(self, wid):
         return self.window_controller.get_window_by_nickname(f"window_{wid}")
 
@@ -106,19 +128,15 @@ class WindowMixin(TabMixin):
             tab_label  = self.get_tab_label(notebook, iconview)
 
             view       = self.get_fm_window(wid).get_view_by_id(tid)
-            model      = iconview.get_model()
+            store      = iconview.get_model()
 
-            fileName   = model[item][1]
+            fileName   = store[item][1]
             dir        = view.get_current_directory()
             file       = f"{dir}/{fileName}"
 
             if isdir(file):
                 view.set_path(file)
-                self.load_store(view, model)
-                tab_label.set_label(view.get_end_of_path())
-                path_entry.set_text(view.get_current_directory())
-                self.set_file_watcher(view)
-                self.set_bottom_labels(view)
+                self.update_view(tab_label, view, store, wid, tid)
             else:
                 self.open_files()
         except Exception as e:

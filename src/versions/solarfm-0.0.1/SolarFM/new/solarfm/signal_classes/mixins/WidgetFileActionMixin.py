@@ -58,13 +58,6 @@ class WidgetFileActionMixin:
                 tab_label.set_label(view.get_end_of_path())
                 self.set_bottom_labels(view)
 
-    def get_current_state(self):
-        wid, tid     = self.window_controller.get_active_data()
-        view         = self.get_fm_window(wid).get_view_by_id(tid)
-        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store        = iconview.get_model()
-        return wid, tid, view, iconview, store
-
 
 
 
@@ -132,7 +125,7 @@ class WidgetFileActionMixin:
 
             rname_to = rename_input.get_text().strip()
             target   = f"file://{view.get_current_directory()}/{rname_to}"
-            self.handle_file([uri], "rename", target)
+            self.handle_files([uri], "rename", target)
 
 
         self.skip_edit   = False
@@ -156,9 +149,9 @@ class WidgetFileActionMixin:
         target    = f"file://{view.get_current_directory()}"
 
         if len(self.to_copy_files) > 0:
-            self.handle_file(self.to_copy_files, "copy", target)
+            self.handle_files(self.to_copy_files, "copy", target)
         elif len(self.to_cut_files) > 0:
-            self.handle_file(self.to_cut_files, "move", target)
+            self.handle_files(self.to_cut_files, "move", target)
 
     def delete_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
@@ -193,7 +186,7 @@ class WidgetFileActionMixin:
 
 
 
-    def create_file(self):
+    def create_files(self):
         fname_field = self.builder.get_object("context_menu_fname")
         file_name   = fname_field.get_text().strip()
         type        = self.builder.get_object("context_menu_type_toggle").get_state()
@@ -203,22 +196,22 @@ class WidgetFileActionMixin:
         target      = f"{view.get_current_directory()}"
 
         if file_name:
-            path = "file://{target}/{file_name}"
+            path = f"file://{target}/{file_name}"
 
             if type == True:     # Create File
-                self.handle_file([path], "create_file")
+                self.handle_files([path], "create_file")
             else:                # Create Folder
-                self.handle_file([path], "create_dir")
+                self.handle_files([path], "create_dir")
 
         fname_field.set_text("")
 
     def move_files(self, files, target):
-        self.handle_file(files, "move", target)
+        self.handle_files(files, "move", target)
 
     # NOTE: Gtk recommends using fail flow than pre check existence which is more
     #       race condition proof. They're right; but, they can't even delete
     #       directories properly. So... f**k them. I'll do it my way.
-    def handle_file(self, paths, action, _target_path=None):
+    def handle_files(self, paths, action, _target_path=None):
         target          = None
         _file           = None
         response        = None
@@ -261,9 +254,11 @@ class WidgetFileActionMixin:
                         _file = self.rename_proc(_file)
 
                     if response == "overwrite" or overwrite_all:
-                        type  = _file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
+                        type      = _file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
                         if type == Gio.FileType.DIRECTORY:
+                            wid, tid  = self.window_controller.get_active_data()
+                            view      = self.get_fm_window(wid).get_view_by_id(tid)
                             view.delete_file( _file.get_path() )
                         else:
                             _file.delete(cancellable=None)

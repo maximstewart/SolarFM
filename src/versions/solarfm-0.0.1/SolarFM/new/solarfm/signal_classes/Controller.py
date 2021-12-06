@@ -18,8 +18,8 @@ def threaded(fn):
     return wrapper
 
 
-class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
-                            WidgetFileActionMixin, PaneMixin, WindowMixin):
+class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
+                                        KeyboardSignalsMixin, Controller_Data):
     def __init__(self, args, unknownargs, _settings):
         # sys.excepthook = self.custom_except_hook
         self.settings  = _settings
@@ -109,7 +109,12 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
         self.arc_command_buffer.set_text(self.arc_commands[int(id)])
 
 
-
+    def get_current_state(self):
+        wid, tid     = self.window_controller.get_active_data()
+        view         = self.get_fm_window(wid).get_view_by_id(tid)
+        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store        = iconview.get_model()
+        return wid, tid, view, iconview, store
 
     def do_action_from_menu_controls(self, widget, eventbutton):
         action        = widget.get_name()
@@ -147,29 +152,7 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
 
 
         if action == "create":
-            self.create_file()
+            self.create_files()
             self.hide_new_file_menu()
 
         self.ctrlDown = False
-
-
-    def generate_windows(self, data = None):
-        if data:
-            for j, value in enumerate(data):
-                i = j + 1
-                isHidden = True if value[0]["window"]["isHidden"] == "True" else False
-                object   = self.builder.get_object(f"tggl_notebook_{i}")
-                views    = value[0]["window"]["views"]
-                self.window_controller.create_window()
-                object.set_active(True)
-
-                for view in views:
-                    self.create_new_view_notebook(None, i, view)
-
-                if isHidden:
-                    self.toggle_notebook_pane(object)
-        else:
-            for j in range(0, 4):
-                i = j + 1
-                self.window_controller.create_window()
-                self.create_new_view_notebook(None, i, None)
