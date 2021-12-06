@@ -73,7 +73,7 @@ class KeyboardSignalsMixin:
         if keyname == "delete":
             self.delete_files()
         if keyname == "f2":
-            self.do_edit_files()
+            self.rename_files()
         if keyname == "f4":
             wid, tid = self.window_controller.get_active_data()
             view     = self.get_fm_window(wid).get_view_by_id(tid)

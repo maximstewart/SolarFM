@@ -127,7 +127,6 @@ class Controller(Controller_Data, ShowHideMixin, KeyboardSignalsMixin, \
         if action == "execute_in_terminal":
             self.execute_files(in_terminal=True)
         if action == "rename":
-            self.to_rename_files = self.selected_files
             self.rename_files()
         if action == "cut":
             self.to_copy_files.clear()

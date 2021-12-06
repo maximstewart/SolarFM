@@ -39,6 +39,10 @@ notebook > header > tabs > tab:checked {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.alert-border {
+    border: 2px solid rgba(116, 0, 0, 0.64);
+}
+
 
 /* * {
     background: rgba(0, 0, 0, 0.14);

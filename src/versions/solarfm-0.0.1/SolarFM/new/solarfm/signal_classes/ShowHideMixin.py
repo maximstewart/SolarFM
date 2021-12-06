@@ -15,29 +15,32 @@ class ShowHideMixin:
 
 
     def show_exists_page(self, widget=None, eve=None):
-        # self.exists_alert       = self.builder.get_object("exists_alert")
-        # self.exists_from_label  = self.builder.get_object("exists_from_label")
-        # self.exists_to_label    = self.builder.get_object("exists_to_label")
-        # self.exists_file_field  = self.builder.get_object("exists_file_field")
+        response = self.file_exists_dialog.run()
+        self.file_exists_dialog.hide()
 
+        if response == Gtk.ResponseType.OK:
+            return "rename"
+        if response == Gtk.ResponseType.ACCEPT:
+            return "rename_auto"
+        if response == Gtk.ResponseType.CLOSE:
+            return "rename_auto_all"
+        if response == Gtk.ResponseType.YES:
+            return "overwrite"
+        if response == Gtk.ResponseType.APPLY:
+            return "overwrite_all"
+        if response == Gtk.ResponseType.NO:
+            return "skip"
+        if response == Gtk.ResponseType.REJECT:
+            return "skip_all"
 
-        response = self.exists_alert.run()
-        if response == Gtk.ResponseType.OK:      # Rename
-            print(response)
-            return "rename", Gio.FileCreateFlags.NONE
-        if response == Gtk.ResponseType.ACCEPT:  # Auto rename
-            return "rename_auto", Gio.FileCreateFlags.NONE
-        if response == Gtk.ResponseType.CLOSE:   # Auto rename all
-            return "rename_auto_all", Gio.FileCreateFlags.NONE
-        if response == Gtk.ResponseType.YES:     # Overwrite
-            return "overwrite", Gio.FileCreateFlags.OVERWRITE
-        if response == Gtk.ResponseType.APPLY:   # Overwrite all
-            return "overwrite_all", Gio.FileCreateFlags.OVERWRITE
-        if response == Gtk.ResponseType.NO:      # Skip
-            return "skip", Gio.FileCreateFlags.NONE
-        if response == Gtk.ResponseType.CANCEL:  # Skip all
-            return "skip_all", Gio.FileCreateFlags.NONE
+    def hide_exists_page_rename(self, widget=None, eve=None):
+        self.file_exists_dialog.response(Gtk.ResponseType.OK)
 
+    def hide_exists_page_auto_rename(self, widget=None, eve=None):
+        self.file_exists_dialog.response(Gtk.ResponseType.ACCEPT)
+
+    def hide_exists_page_auto_rename_all(self, widget=None, eve=None):
+        self.file_exists_dialog.response(Gtk.ResponseType.CLOSE)
 
 
     def show_about_page(self, widget=None, eve=None):
@@ -48,6 +51,7 @@ class ShowHideMixin:
 
     def hide_about_page(self, widget=None, eve=None):
         self.builder.get_object("about_page").hide()
+
 
     def show_archiver_dialogue(self, widget=None, eve=None):
         wid, tid          = self.window_controller.get_active_data()
@@ -68,6 +72,7 @@ class ShowHideMixin:
     def hide_archiver_dialogue(self, widget=None, eve=None):
         self.builder.get_object("archiver_dialogue").hide()
 
+
     def show_appchooser_menu(self, widget=None, eve=None):
         appchooser_menu   = self.builder.get_object("appchooser_menu")
         appchooser_widget = self.builder.get_object("appchooser_widget")
@@ -86,11 +91,13 @@ class ShowHideMixin:
         dialog = widget.get_parent().get_parent()
         dialog.response(Gtk.ResponseType.OK)
 
+
     def show_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu").run()
 
     def hide_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu").hide()
+
 
     def show_new_file_menu(self, widget=None, eve=None):
         self.builder.get_object("new_file_menu").run()
@@ -98,24 +105,24 @@ class ShowHideMixin:
     def hide_new_file_menu(self, widget=None, eve=None):
         self.builder.get_object("new_file_menu").hide()
 
+
     def show_edit_file_menu(self, widget=None, eve=None):
-        self.builder.get_object("edit_file_menu").run()
+        response = self.edit_file_menu.run()
+        if response == Gtk.ResponseType.CLOSE:
+            self.skip_edit   = True
+        if response == Gtk.ResponseType.CANCEL:
+            self.cancel_edit = True
 
     def hide_edit_file_menu(self, widget=None, eve=None):
-        if widget:
-            name = widget.get_name()
-            if name == "rename":
-                self.builder.get_object("edit_file_menu").hide()
-            else:
-                keyname = Gdk.keyval_name(eve.keyval).lower()
-                if "return" in keyname or "enter" in keyname:
-                    self.builder.get_object("edit_file_menu").hide()
+        self.builder.get_object("edit_file_menu").hide()
 
+    def hide_edit_file_menu_enter_key(self, widget=None, eve=None):
+        keyname = Gdk.keyval_name(eve.keyval).lower()
+        if "return" in keyname or "enter" in keyname:
+            self.builder.get_object("edit_file_menu").hide()
 
     def hide_edit_file_menu_skip(self, widget=None, eve=None):
-        self.skip_edit   = True
-        self.builder.get_object("edit_file_menu").hide()
+        self.edit_file_menu.response(Gtk.ResponseType.CLOSE)
 
     def hide_edit_file_menu_cancel(self, widget=None, eve=None):
-        self.cancel_edit = True
-        self.builder.get_object("edit_file_menu").hide()
+        self.edit_file_menu.response(Gtk.ResponseType.CANCEL)

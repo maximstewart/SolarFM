@@ -31,10 +31,11 @@ class Controller_Data:
         self.arc_command_buffer = self.builder.get_object("arc_command_buffer")
 
         self.warning_alert      = self.builder.get_object("warning_alert")
-        self.exists_alert       = self.builder.get_object("exists_alert")
-        self.exists_from_label  = self.builder.get_object("exists_from_label")
-        self.exists_to_label    = self.builder.get_object("exists_to_label")
+        self.edit_file_menu     = self.builder.get_object("edit_file_menu")
+        self.file_exists_dialog = self.builder.get_object("file_exists_dialog")
+        self.exists_file_label  = self.builder.get_object("exists_file_label")
         self.exists_file_field  = self.builder.get_object("exists_file_field")
+        self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
 
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")
         self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
@@ -72,7 +73,6 @@ class Controller_Data:
 
         self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files    = []
-        self.to_rename_files   = []
         self.to_copy_files     = []
         self.to_cut_files      = []
 
