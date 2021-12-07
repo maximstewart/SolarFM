@@ -55,6 +55,19 @@ class WidgetFileActionMixin:
 
 
 
+    def popup_search_files(self, wid, keyname):
+        entry = self.builder.get_object(f"win{wid}_search_field")
+        entry.set_text(keyname)
+        entry.grab_focus_without_selecting()
+        self.builder.get_object(f"win{wid}_search").popup()
+
+    def do_file_search(self, widget, eve=None):
+        query = widget.get_text()
+        self.search_iconview.unselect_all()
+        for i, file in enumerate(self.search_view.files):
+            if query and query in file.lower():
+                path = Gtk.TreePath().new_from_indices([i])
+                self.search_iconview.select_path(path)
 
     def open_files(self):
         wid, tid, view, iconview, store = self.get_current_state()

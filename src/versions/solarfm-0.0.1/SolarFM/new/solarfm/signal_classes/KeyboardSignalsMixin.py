@@ -1,4 +1,5 @@
 # Python imports
+import re
 
 # Lib imports
 import gi
@@ -9,6 +10,7 @@ from gi.repository import Gtk, Gdk
 # Application imports
 
 
+valid_fname_pat    = re.compile(r"[a-z0-9A-Z-_\[\]\(\)\| ]")
 
 
 class KeyboardSignalsMixin:
@@ -36,6 +38,16 @@ class KeyboardSignalsMixin:
                 self.shiftDown   = False
             if "alt" in keyname:
                 self.altDown     = False
+
+
+        if re.fullmatch(valid_fname_pat, keyname):
+            if not self.ctrlDown and not self.shiftDown and not self.altDown:
+                if not self.is_searching:
+                    self.is_searching = True
+                    wid, tid, self.search_view, self.search_iconview, store = self.get_current_state()
+                    self.popup_search_files(wid, keyname)
+                    return
+
 
         if self.ctrlDown and self.shiftDown and keyname == "t":
             self.trash_files()

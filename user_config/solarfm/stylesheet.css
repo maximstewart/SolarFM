@@ -35,6 +35,10 @@ notebook > header > tabs > tab:checked {
     border: 2px solid rgba(116, 0, 0, 0.64);
 }
 
+.search-border {
+    border: 2px solid rgba(136, 204, 39, 1);
+}
+
 .notebook-selected-focus {
     /* Neon Blue 00e8ff border */
     border: 2px solid rgba(0, 232, 255, 0.34);

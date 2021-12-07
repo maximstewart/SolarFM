@@ -13,6 +13,9 @@ class ShowHideMixin:
     def show_messages_popup(self, type, text, seconds=None):
         self.message_widget.popup()
 
+    def stop_file_searching(self, widget=None, eve=None):
+        self.is_searching = False
+
 
     def show_exists_page(self, widget=None, eve=None):
         response = self.file_exists_dialog.run()
