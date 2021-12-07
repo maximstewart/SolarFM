@@ -1,6 +1,6 @@
 # Python imports
 
-# Gtk imports
+# Lib imports
 from gi.repository import GLib
 
 # Application imports

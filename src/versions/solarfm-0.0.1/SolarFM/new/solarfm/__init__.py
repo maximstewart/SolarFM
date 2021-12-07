@@ -1,12 +1,14 @@
 # Python imports
 import os, inspect, time
 
-# Gtk imports
+# Lib imports
 
 # Application imports
 from utils import Settings
 from signal_classes import Controller
 from __builtins__ import Builtins
+
+
 
 
 class Main(Builtins):

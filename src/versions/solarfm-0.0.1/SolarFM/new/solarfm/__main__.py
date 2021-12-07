@@ -2,15 +2,15 @@
 
 
 # Python imports
-import argparse
+import argparse, faulthandler, traceback
 from setproctitle import setproctitle
 
 import tracemalloc
 tracemalloc.start()
 
 
-# Gtk imports
-import gi, faulthandler, traceback
+# Lib imports
+import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 

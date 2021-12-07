@@ -3,13 +3,14 @@ import copy
 from os.path import isdir, isfile
 
 
-# Gtk imports
+# Lib imports
 import gi
+gi.require_version('Gdk', '3.0')
 from gi.repository import Gdk
 
 # Application imports
-from . import TabMixin
-from . import WidgetMixin
+from . import TabMixin, WidgetMixin
+
 
 
 

@@ -1,7 +1,13 @@
+# Python imports
+
+# Lib imports
+
+# Application imports
 
 
 
-# # TODO: Should rewrite to try and support more windows more naturally
+
+# TODO: Should rewrite to try and support more windows more naturally
 class PaneMixin:
     """docstring for PaneMixin"""
 

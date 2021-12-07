@@ -1,11 +1,10 @@
 # Python imports
 import sys, traceback, threading, subprocess, signal, inspect, os, time
 
-# Gtk imports
+# Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-from gi.repository import GLib
+from gi.repository import Gtk, GLib
 
 # Application imports
 from .mixins import *
@@ -16,6 +15,8 @@ def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs).start()
     return wrapper
+
+
 
 
 class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \

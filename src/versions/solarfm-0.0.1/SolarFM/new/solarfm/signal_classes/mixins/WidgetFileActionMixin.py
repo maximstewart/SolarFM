@@ -1,5 +1,5 @@
 # Python imports
-import threading, os
+import os
 
 # Lib imports
 import gi
@@ -9,11 +9,6 @@ from gi.repository import Gtk, GObject, Gio
 # Application imports
 
 
-
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
-    return wrapper
 
 
 class WidgetFileActionMixin:
@@ -68,18 +63,12 @@ class WidgetFileActionMixin:
         for file in uris:
             view.open_file_locally(file)
 
-    @threaded
     def open_with_files(self, appchooser_widget):
         wid, tid, view, iconview, store = self.get_current_state()
         app_info  = appchooser_widget.get_app_info()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
-        files = []
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
 
-        for uri in uris:
-            gio_file = Gio.File.new_for_path(uri)
-            files.append(gio_file)
-
-        app_info.launch(files, None)
+        app_info.launch_uris_async(uris)
 
     def execute_files(self, in_terminal=False):
         wid, tid, view, iconview, store = self.get_current_state()
@@ -88,7 +77,7 @@ class WidgetFileActionMixin:
         command     = None
 
         for path in paths:
-            command = f"sh -c '{path}'" if not in_terminal else f"{view.terminal_app} -e '{path}'"
+            command = f"exec '{path}'" if not in_terminal else f"{view.terminal_app} -e '{path}'"
             view.execute(command, start_dir=view.get_current_directory(), use_os_system=False)
 
     def archive_files(self, archiver_dialogue):
