@@ -287,14 +287,12 @@ class WidgetFileActionMixin:
                     wid, tid  = self.window_controller.get_active_data()
                     view      = self.get_fm_window(wid).get_view_by_id(tid)
                     fPath     = file.get_path()
-                    tPath     = None
+                    tPath     = target.get_path()
                     state     = True
 
                     if action == "copy":
-                        tPath = target.get_path()
                         view.copy_file(fPath, tPath)
                     if action == "move" or action == "rename":
-                        tPath = target.get_parent().get_path()
                         view.move_file(fPath, tPath)
                 else:
                     if action == "copy":
