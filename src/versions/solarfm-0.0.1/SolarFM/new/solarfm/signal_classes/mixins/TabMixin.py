@@ -46,6 +46,8 @@ class TabMixin(WidgetMixin):
         notebook.show_all()
         notebook.set_current_page(index)
 
+        ctx = notebook.get_style_context()
+        ctx.add_class("notebook-unselected-focus")
         notebook.set_tab_reorderable(scroll, True)
         self.load_store(view, store)
         self.set_window_title()

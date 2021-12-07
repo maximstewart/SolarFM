@@ -44,6 +44,6 @@ class Main(Builtins):
                 methods = inspect.getmembers(c, predicate=inspect.ismethod)
                 handlers.update(methods)
             except Exception as e:
-                pass
+                print(repr(e))
 
         settings.builder.connect_signals(handlers)

@@ -25,23 +25,34 @@ notebook > header > tabs > tab:checked {
     font: 16px "Monospace";
 }
 
-.notebook-selected-focus {
-    /* Neon Blue 00e8ff border */
-    border: 2px solid rgba(0, 232, 255, 0.25);
-    /* Dark Bergundy */
-    /* border: 2px solid rgba(116, 0, 0, 0.64); */
-}
-
-
 .view:selected,
 .view:selected:hover {
-    box-shadow: inset 0 0 0 9999px rgba(21, 158, 167, 0.57);
+    box-shadow: inset 0 0 0 9999px rgba(21, 158, 167, 0.34);
     color: rgba(255, 255, 255, 0.5);
 }
 
 .alert-border {
     border: 2px solid rgba(116, 0, 0, 0.64);
 }
+
+.notebook-selected-focus {
+    /* Neon Blue 00e8ff border */
+    border: 2px solid rgba(0, 232, 255, 0.34);
+    /* Dark Bergundy */
+    /* border: 2px solid rgba(116, 0, 0, 0.64); */
+}
+
+.notebook-unselected-focus {
+    /* Neon Blue 00e8ff border */
+    /* border: 2px solid rgba(0, 232, 255, 0.25); */
+    /* Dark Bergundy */
+    /* border: 2px solid rgba(116, 0, 0, 0.64); */
+    /* Snow White */
+    border: 2px solid rgba(255, 255, 255, 0.24);
+}
+
+
+
 
 
 /* * {

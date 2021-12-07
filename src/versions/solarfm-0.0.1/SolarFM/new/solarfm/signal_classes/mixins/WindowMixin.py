@@ -23,13 +23,26 @@ class WindowMixin(TabMixin):
                 object   = self.builder.get_object(f"tggl_notebook_{i}")
                 views    = value[0]["window"]["views"]
                 self.window_controller.create_window()
-                object.set_active(True)
 
                 for view in views:
                     self.create_new_view_notebook(None, i, view)
 
                 if isHidden:
                     self.toggle_notebook_pane(object)
+
+            if not self.is_pane4_hidden:
+                widget = self.window4.get_children()[1].get_children()[0]
+                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+            elif not self.is_pane3_hidden:
+                widget = self.window3.get_children()[1].get_children()[0]
+                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+            elif not self.is_pane2_hidden:
+                widget = self.window2.get_children()[1].get_children()[0]
+                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+            elif not self.is_pane1_hidden:
+                widget = self.window1.get_children()[1].get_children()[0]
+                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+
         else:
             for j in range(0, 4):
                 i = j + 1
@@ -81,8 +94,10 @@ class WindowMixin(TabMixin):
         for _notebook in self.notebooks:
             ctx = _notebook.get_style_context()
             ctx.remove_class("notebook-selected-focus")
+            ctx.add_class("notebook-unselected-focus")
 
         ctx = notebook.get_style_context()
+        ctx.remove_class("notebook-unselected-focus")
         ctx.add_class("notebook-selected-focus")
 
         self.window.set_title("SolarFM ~ " + dir)
@@ -122,13 +137,10 @@ class WindowMixin(TabMixin):
                 self.execute_files()
                 return
 
-            wid, tid   = self.window_controller.get_active_data()
-            notebook   = self.builder.get_object(f"window_{wid}")
-            path_entry = self.builder.get_object(f"path_entry")
-            tab_label  = self.get_tab_label(notebook, iconview)
 
-            view       = self.get_fm_window(wid).get_view_by_id(tid)
-            store      = iconview.get_model()
+            wid, tid, view, _iconview, store = self.get_current_state()
+            notebook   = self.builder.get_object(f"window_{wid}")
+            tab_label  = self.get_tab_label(notebook, iconview)
 
             fileName   = store[item][1]
             dir        = view.get_current_directory()
