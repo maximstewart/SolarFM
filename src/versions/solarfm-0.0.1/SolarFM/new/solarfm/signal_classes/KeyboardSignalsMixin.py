@@ -10,7 +10,7 @@ from gi.repository import Gtk, Gdk
 # Application imports
 
 
-valid_fname_pat    = re.compile(r"[a-z0-9A-Z-_\[\]\(\)\| ]")
+valid_keyvalue_pat    = re.compile(r"[a-z0-9A-Z-_\[\]\(\)\| ]")
 
 
 class KeyboardSignalsMixin:
@@ -44,10 +44,11 @@ class KeyboardSignalsMixin:
             self.trash_files()
 
 
-        if re.fullmatch(valid_fname_pat, keyname):
-            if not self.ctrlDown and not self.shiftDown and not self.altDown:
-                focused_obj = self.window.get_focus()
-                if not self.is_searching and isinstance(focused_obj, Gtk.IconView):
+        if re.fullmatch(valid_keyvalue_pat, keyname):
+            if not self.is_searching and not self.ctrlDown \
+                and not self.shiftDown and not self.altDown:
+                    focused_obj = self.window.get_focus()
+                    if isinstance(focused_obj, Gtk.IconView):
                         self.is_searching = True
                         wid, tid, self.search_view, self.search_iconview, store = self.get_current_state()
                         self.popup_search_files(wid, keyname)

@@ -69,6 +69,11 @@ class WidgetFileActionMixin:
                 path = Gtk.TreePath().new_from_indices([i])
                 self.search_iconview.select_path(path)
 
+        items = self.search_iconview.get_selected_items()
+        if len(items) == 1:
+            self.search_iconview.scroll_to_path(items[0], True, 0.5, 0.5)
+
+
     def open_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
         uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
