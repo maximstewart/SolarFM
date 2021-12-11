@@ -57,9 +57,10 @@ class WidgetFileActionMixin:
 
     def popup_search_files(self, wid, keyname):
         entry = self.builder.get_object(f"win{wid}_search_field")
+        self.builder.get_object(f"win{wid}_search").popup()
         entry.set_text(keyname)
         entry.grab_focus_without_selecting()
-        self.builder.get_object(f"win{wid}_search").popup()
+        entry.set_position(-1)
 
     def do_file_search(self, widget, eve=None):
         query = widget.get_text()
