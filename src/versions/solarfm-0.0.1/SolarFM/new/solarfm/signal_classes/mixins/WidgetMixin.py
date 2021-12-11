@@ -38,14 +38,22 @@ class WidgetMixin:
     @threaded
     def create_icon(self, i, view, store, dir, file):
         icon  = view.create_icon(dir, file)
-        fpath = dir + "/" + file
+        fpath = f"{dir}/{file}"
         GLib.idle_add(self.update_store, (i, store, icon, view, fpath,))
 
     # NOTE: Might need to keep an eye on this throwing invalid iters when too
     #       many updates are happening to a folder. Example: /tmp
     def update_store(self, item):
         i, store, icon, view, fpath = item
-        itr = store.get_iter(i)
+        itr = None
+
+        try:
+            itr = store.get_iter(i)
+        except Exception as e:
+            print(":Invalid Itr detected: (Potential race condition...)")
+            print(f"Index Requested:  {i}")
+            print(f"Store Size:  {len(store)}")
+            return
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])

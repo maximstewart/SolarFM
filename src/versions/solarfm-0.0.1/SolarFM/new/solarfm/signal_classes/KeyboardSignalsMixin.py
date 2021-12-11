@@ -40,17 +40,18 @@ class KeyboardSignalsMixin:
                 self.altDown     = False
 
 
-        if re.fullmatch(valid_fname_pat, keyname):
-            if not self.ctrlDown and not self.shiftDown and not self.altDown:
-                if not self.is_searching:
-                    self.is_searching = True
-                    wid, tid, self.search_view, self.search_iconview, store = self.get_current_state()
-                    self.popup_search_files(wid, keyname)
-                    return
-
-
         if self.ctrlDown and self.shiftDown and keyname == "t":
             self.trash_files()
+
+
+        if re.fullmatch(valid_fname_pat, keyname):
+            if not self.ctrlDown and not self.shiftDown and not self.altDown:
+                focused_obj = self.window.get_focus()
+                if not self.is_searching and isinstance(focused_obj, Gtk.IconView):
+                        self.is_searching = True
+                        wid, tid, self.search_view, self.search_iconview, store = self.get_current_state()
+                        self.popup_search_files(wid, keyname)
+                        return
 
         if self.ctrlDown and keyname == "q":
             self.tear_down()
