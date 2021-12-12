@@ -13,7 +13,6 @@ sudo apt-get install python3 wget ffmpegthumbnailer steamcmd
 
 # TODO
 <ul>
-<li>Add path bar search dropdown.</li>
 <li>Add "clear trash", "restore from trash" options.</li>
 <li>Add drive size free and consumed info to bottom bar.</li>
 <li>Add simpleish plugin system to run bash/python scripts.</li>

@@ -35,6 +35,7 @@ class Controller_Data:
         self.file_exists_dialog = self.builder.get_object("file_exists_dialog")
         self.exists_file_label  = self.builder.get_object("exists_file_label")
         self.exists_file_field  = self.builder.get_object("exists_file_field")
+        self.path_menu          = self.builder.get_object("path_menu")
         self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
 
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")
@@ -43,7 +44,6 @@ class Controller_Data:
 
         self.trash_files_path        = GLib.get_user_data_dir() + "/Trash/files"
         self.trash_info_path         = GLib.get_user_data_dir() + "/Trash/info"
-
 
         # In compress commands:
         #    %n: First selected filename/dir to archive

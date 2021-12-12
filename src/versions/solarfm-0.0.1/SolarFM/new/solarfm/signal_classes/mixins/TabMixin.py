@@ -1,6 +1,11 @@
 # Python imports
+import os
 
 # Lib imports
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, Gdk
 
 # Application imports
 from . import WidgetMixin
@@ -144,9 +149,33 @@ class TabMixin(WidgetMixin):
             self.window_controller.save_state()
             return
         if action == "path_entry":
-            path = widget.get_text()
-            dir  = view.get_current_directory() + "/"
-            if path == dir :
+            focused_obj = self.window.get_focus()
+            dir         = f"{view.get_current_directory()}/"
+            path        = widget.get_text()
+
+            self.path_menu.popdown()
+            if isinstance(focused_obj, Gtk.Entry):
+                button_box  = self.path_menu.get_children()[0].get_children()[0].get_children()[0]
+                query       = widget.get_text().replace(dir, "")
+                files       = view.files + view.hidden
+
+                self.clear_children(button_box)
+                show_path_menu = False
+                for file in files:
+                    if query.lower() in file.lower() and os.path.isdir(f"{dir}{file}"):
+                        show_path_menu = True
+                        button = Gtk.Button(label=file)
+                        button.show()
+                        button.connect("clicked", self.set_path_entry)
+                        button_box.add(button)
+
+                if show_path_menu:
+                    self.path_menu.popup()
+                    widget.grab_focus_without_selecting()
+                    widget.set_position(-1)
+
+
+            if path == dir:
                 return
 
             traversed = view.set_path(path)
@@ -155,6 +184,20 @@ class TabMixin(WidgetMixin):
 
         self.update_view(tab_label, view, store, wid, tid)
 
+        try:
+            widget.grab_focus_without_selecting()
+            widget.set_position(-1)
+        except Exception as e:
+            pass
+
+    def set_path_entry(self, button=None, eve=None):
+        wid, tid, view, iconview, store = self.get_current_state()
+        path       = f"{view.get_current_directory()}/{button.get_label()}"
+        path_entry = self.builder.get_object("path_entry")
+        path_entry.set_text(path)
+        path_entry.grab_focus_without_selecting()
+        path_entry.set_position(-1)
+        self.path_menu.popdown()
 
     def keyboard_close_tab(self):
         wid, tid  = self.window_controller.get_active_data()

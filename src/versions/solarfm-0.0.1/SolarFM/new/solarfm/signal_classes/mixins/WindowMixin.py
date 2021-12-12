@@ -114,10 +114,12 @@ class WindowMixin(TabMixin):
 
     def grid_icon_single_left_click(self, iconview, eve):
         try:
+            self.path_menu.popdown()
             wid, tid = iconview.get_name().split("|")
             self.window_controller.set_active_data(wid, tid)
             self.set_path_text(wid, tid)
             self.set_window_title()
+
 
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
                 if self.single_click_open: # FIXME: need to find a way to pass the model index

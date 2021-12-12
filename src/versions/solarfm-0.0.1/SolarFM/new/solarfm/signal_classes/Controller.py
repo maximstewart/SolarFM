@@ -110,6 +110,10 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
         self.arc_command_buffer.set_text(self.arc_commands[int(id)])
 
 
+    def clear_children(self, widget):
+        for child in widget.get_children():
+            widget.remove(child)
+
     def get_current_state(self):
         wid, tid     = self.window_controller.get_active_data()
         view         = self.get_fm_window(wid).get_view_by_id(tid)
