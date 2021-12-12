@@ -153,7 +153,6 @@ class TabMixin(WidgetMixin):
             dir         = f"{view.get_current_directory()}/"
             path        = widget.get_text()
 
-            self.path_menu.popdown()
             if isinstance(focused_obj, Gtk.Entry):
                 button_box  = self.path_menu.get_children()[0].get_children()[0].get_children()[0]
                 query       = widget.get_text().replace(dir, "")
@@ -162,20 +161,22 @@ class TabMixin(WidgetMixin):
                 self.clear_children(button_box)
                 show_path_menu = False
                 for file in files:
-                    if query.lower() in file.lower() and os.path.isdir(f"{dir}{file}"):
-                        show_path_menu = True
-                        button = Gtk.Button(label=file)
-                        button.show()
-                        button.connect("clicked", self.set_path_entry)
-                        button_box.add(button)
+                    if os.path.isdir(f"{dir}{file}"):
+                        if query.lower() in file.lower():
+                            button = Gtk.Button(label=file)
+                            button.show()
+                            button.connect("clicked", self.set_path_entry)
+                            button_box.add(button)
+                            show_path_menu = True
 
-                if show_path_menu:
+                if not show_path_menu:
+                    self.path_menu.popdown()
+                else:
                     self.path_menu.popup()
                     widget.grab_focus_without_selecting()
                     widget.set_position(-1)
 
-
-            if path == dir:
+            if path.endswith(".") or path == dir:
                 return
 
             traversed = view.set_path(path)
