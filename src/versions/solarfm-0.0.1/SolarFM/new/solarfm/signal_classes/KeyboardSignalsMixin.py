@@ -54,6 +54,16 @@ class KeyboardSignalsMixin:
                         self.popup_search_files(wid, keyname)
                         return
 
+
+        if (self.ctrlDown and keyname in ["1", "kp_1"]):
+            self.builder.get_object("tggl_notebook_1").released()
+        if (self.ctrlDown and keyname in ["2", "kp_2"]):
+            self.builder.get_object("tggl_notebook_2").released()
+        if (self.ctrlDown and keyname in ["3", "kp_3"]):
+            self.builder.get_object("tggl_notebook_3").released()
+        if (self.ctrlDown and keyname in ["4", "kp_4"]):
+            self.builder.get_object("tggl_notebook_4").released()
+
         if self.ctrlDown and keyname == "q":
             self.tear_down()
         if (self.ctrlDown and keyname == "slash") or keyname == "home":
@@ -86,6 +96,13 @@ class KeyboardSignalsMixin:
             self.show_new_file_menu()
 
 
+
+        if keyname in ["alt_l", "alt_r"]:
+            top_main_menubar = self.builder.get_object("top_main_menubar")
+            if top_main_menubar.is_visible():
+                top_main_menubar.hide()
+            else:
+                top_main_menubar.show()
         if keyname == "delete":
             self.delete_files()
         if keyname == "f2":

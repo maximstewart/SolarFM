@@ -1888,16 +1888,17 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
   </object>
   <object class="GtkPopover" id="path_menu">
     <property name="width-request">240</property>
+    <property name="height-request">420</property>
     <property name="can-focus">False</property>
     <property name="relative-to">path_entry</property>
     <property name="position">bottom</property>
     <property name="modal">False</property>
     <child>
       <object class="GtkScrolledWindow">
-        <property name="height-request">320</property>
         <property name="visible">True</property>
         <property name="can-focus">True</property>
         <property name="shadow-type">in</property>
+        <property name="overlay-scrolling">False</property>
         <child>
           <object class="GtkViewport">
             <property name="visible">True</property>
