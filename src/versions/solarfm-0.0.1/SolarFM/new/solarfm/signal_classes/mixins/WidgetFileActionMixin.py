@@ -123,7 +123,7 @@ class WidgetFileActionMixin:
             rename_label.set_label(entry)
             rename_input.set_text(entry)
 
-            self.show_edit_file_menu()
+            self.show_edit_file_menu(rename_input)
             if self.skip_edit:
                 self.skip_edit   = False
                 continue

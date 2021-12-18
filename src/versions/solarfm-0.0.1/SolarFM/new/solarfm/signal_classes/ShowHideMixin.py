@@ -110,6 +110,9 @@ class ShowHideMixin:
 
 
     def show_edit_file_menu(self, widget=None, eve=None):
+        if widget:
+            widget.grab_focus()
+
         response = self.edit_file_menu.run()
         if response == Gtk.ResponseType.CLOSE:
             self.skip_edit   = True
