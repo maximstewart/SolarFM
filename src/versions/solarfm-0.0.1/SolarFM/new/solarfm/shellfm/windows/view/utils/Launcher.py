@@ -43,8 +43,9 @@ class Launcher:
         if use_os_system:
             os.system(command)
         else:
-            DEVNULL = open(os.devnull, 'w')
-            subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
+            # DEVNULL = open(os.devnull, 'w')
+            # subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
+            subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=None, stderr=None, close_fds=True)
 
 
     def remux_video(self, hash, file):
