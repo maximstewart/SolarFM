@@ -34,7 +34,7 @@ class WidgetFileActionMixin:
             watcher = None
             return
 
-        dir_watcher  = Gio.File.new_for_path(cur_dir)
+        dir_watcher  = Gio.File.new_for_path(cur_dir) \
                                 .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, Gio.Cancellable())
 
         wid = view.get_wid()
