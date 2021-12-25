@@ -45,7 +45,6 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
 
 
     def tear_down(self, widget=None, eve=None):
-        event_system.monitor_events  = False
         event_system.send_ipc_message("close server")
         self.window_controller.save_state()
         time.sleep(event_sleep_time)

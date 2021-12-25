@@ -12,6 +12,14 @@ from gi.repository import Gtk, GObject, Gio
 
 
 class WidgetFileActionMixin:
+    def sizeof_fmt(self, num, suffix="B"):
+        for unit in ["", "K", "M", "G", "T", "Pi", "Ei", "Zi"]:
+            if abs(num) < 1024.0:
+                return f"{num:3.1f} {unit}{suffix}"
+            num /= 1024.0
+        return f"{num:.1f} Yi{suffix}"
+
+
     def set_file_watcher(self, view):
         if view.get_dir_watcher():
             watcher = view.get_dir_watcher()
@@ -21,12 +29,12 @@ class WidgetFileActionMixin:
 
         cur_dir = view.get_current_directory()
         # Temp updating too much with current events we are checking for.
-        # Causes invalid iter errors in WidbetMixin > update_store
+        # Seems to cause invalid iter errors in WidbetMixin > update_store
         if cur_dir == "/tmp":
             watcher = None
             return
 
-        dir_watcher  = Gio.File.new_for_path(cur_dir) \
+        dir_watcher  = Gio.File.new_for_path(cur_dir)
                                 .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, Gio.Cancellable())
 
         wid = view.get_wid()

@@ -6,7 +6,7 @@ from os.path import isdir, isfile
 # Lib imports
 import gi
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gdk
+from gi.repository import Gdk, Gio
 
 # Application imports
 from . import TabMixin, WidgetMixin
@@ -79,7 +79,35 @@ class WindowMixin(TabMixin):
 
 
     def set_bottom_labels(self, view):
-        self.bottom_size_label.set_label("TBD")
+        _wid, _tid, _view, iconview, store = self.get_current_state()
+        selected_files       = iconview.get_selected_items()
+        path_file            = Gio.File.new_for_path( view.get_current_directory())
+        mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
+        formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
+        formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
+
+        # If something selected
+        self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")
+        self.bottom_path_label.set_label(view.get_current_directory())
+        if len(selected_files) > 0:
+            uris          = self.format_to_uris(store, _wid, _tid, selected_files)
+            combined_size = 0
+            for uri in uris:
+                file = Gio.File.new_for_uri(uri).query_info(attributes="standard::size",
+                                                flags=Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+                                                cancellable=None)
+                file_size = file.get_size()
+                combined_size += file_size
+
+            formatted_size = self.sizeof_fmt(combined_size)
+            if view.hide_hidden:
+                self.bottom_path_label.set_label(f" {len(uris)} / {view.get_files_count()} ({formatted_size})")
+            else:
+                self.bottom_path_label.set_label(f" {len(uris)} / {view.get_not_hidden_count()} ({formatted_size})")
+
+            return
+
+        # If nothing selected
         if view.hide_hidden:
             if view.get_hidden_count() > 0:
                 self.bottom_file_count_label.set_label(f"{view.get_not_hidden_count()} visible ({view.get_hidden_count()} hidden)")
@@ -87,7 +115,7 @@ class WindowMixin(TabMixin):
                 self.bottom_file_count_label.set_label(f"{view.get_files_count()} items")
         else:
             self.bottom_file_count_label.set_label(f"{view.get_files_count()} items")
-        self.bottom_path_label.set_label(view.get_current_directory())
+
 
 
     def set_window_title(self):
