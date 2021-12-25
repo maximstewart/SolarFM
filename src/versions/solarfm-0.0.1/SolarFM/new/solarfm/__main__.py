@@ -33,7 +33,5 @@ if __name__ == "__main__":
         Main(args, unknownargs)
         Gtk.main()
     except Exception as e:
-        print(repr(e))
-        event_system.keep_ipc_alive = False
-        if debug:
-            traceback.print_exc()
+        traceback.print_exc()
+        quit()

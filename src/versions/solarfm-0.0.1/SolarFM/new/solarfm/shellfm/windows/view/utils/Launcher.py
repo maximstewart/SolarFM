@@ -1,11 +1,17 @@
 # System import
-import os, subprocess, threading
+import os, threading, subprocess
 
 
 # Lib imports
 
 
 # Apoplication imports
+
+
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+    return wrapper
 
 
 class Launcher:
@@ -43,10 +49,15 @@ class Launcher:
         if use_os_system:
             os.system(command)
         else:
-            # DEVNULL = open(os.devnull, 'w')
-            # subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
             subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=None, stderr=None, close_fds=True)
 
+    def execute_and_return_thread_handler(self, command, start_dir=os.getenv("HOME"), use_shell=True):
+        DEVNULL = open(os.devnull, 'w')
+        return subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
+
+    @threaded
+    def app_chooser_exec(self, app_info, uris):
+        app_info.launch_uris_async(uris)
 
     def remux_video(self, hash, file):
         remux_vid_pth = self.REMUX_FOLDER + "/" + hash + ".mp4"

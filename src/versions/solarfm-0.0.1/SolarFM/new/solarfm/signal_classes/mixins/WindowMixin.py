@@ -32,19 +32,22 @@ class WindowMixin(TabMixin):
                 if isHidden:
                     self.toggle_notebook_pane(object)
 
-            if not self.is_pane4_hidden:
-                widget = self.window4.get_children()[1].get_children()[0]
-                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
-            elif not self.is_pane3_hidden:
-                widget = self.window3.get_children()[1].get_children()[0]
-                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
-            elif not self.is_pane2_hidden:
-                widget = self.window2.get_children()[1].get_children()[0]
-                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
-            elif not self.is_pane1_hidden:
-                widget = self.window1.get_children()[1].get_children()[0]
-                widget.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
-
+            try:
+                if not self.is_pane4_hidden:
+                    icon_view = self.window4.get_children()[1].get_children()[0]
+                    icon_view.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+                elif not self.is_pane3_hidden:
+                    icon_view = self.window3.get_children()[1].get_children()[0]
+                    icon_view.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+                elif not self.is_pane2_hidden:
+                    icon_view = self.window2.get_children()[1].get_children()[0]
+                    icon_view.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+                elif not self.is_pane1_hidden:
+                    icon_view = self.window1.get_children()[1].get_children()[0]
+                    icon_view.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+            except Exception as e:
+                print("\n:  The saved session might be missing window data!  :\nLocation: ~/.config/solarfm/session.json\nFix: Back it up and delete it to reset.\n")
+                print(repr(e))
         else:
             for j in range(0, 4):
                 i = j + 1
@@ -150,8 +153,8 @@ class WindowMixin(TabMixin):
             dir        = view.get_current_directory()
             file       = f"{dir}/{fileName}"
 
-            if isdir(file):
-                view.set_path(file)
+            if isdir(f"{file}/"):
+                view.set_path(f"{file}/")
                 self.update_view(tab_label, view, store, wid, tid)
             else:
                 self.open_files()

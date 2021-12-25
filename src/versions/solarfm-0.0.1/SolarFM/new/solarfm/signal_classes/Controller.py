@@ -13,7 +13,7 @@ from . import ShowHideMixin, KeyboardSignalsMixin, Controller_Data
 
 def threaded(fn):
     def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
 
@@ -54,7 +54,7 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
 
     @threaded
     def gui_event_observer(self):
-        while event_system.monitor_events:
+        while True:
             time.sleep(event_sleep_time)
             event = event_system.consume_gui_event()
             if event:

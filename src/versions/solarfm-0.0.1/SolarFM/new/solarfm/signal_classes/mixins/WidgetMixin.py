@@ -13,7 +13,7 @@ from gi.repository import Gtk, Gdk, GLib, Gio, GdkPixbuf
 
 def threaded(fn):
     def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
 

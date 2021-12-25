@@ -9,7 +9,7 @@ from multiprocessing.connection import Listener, Client
 
 def threaded(fn):
     def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
 
@@ -21,7 +21,7 @@ class DBusControllerMixin:
     def create_ipc_server(self):
         listener          = Listener(('127.0.0.1', 4848), authkey=b'solarfm-ipc')
         self.is_ipc_alive = True
-        while event_system.keep_ipc_alive:
+        while True:
             conn       = listener.accept()
             start_time = time.time()
 
@@ -45,7 +45,6 @@ class DBusControllerMixin:
                     break
                 if msg == 'close server':
                     conn.close()
-                    event_system.keep_ipc_alive = False
                     break
 
                 # NOTE: Not perfect but insures we don't lockup the connection for too long.

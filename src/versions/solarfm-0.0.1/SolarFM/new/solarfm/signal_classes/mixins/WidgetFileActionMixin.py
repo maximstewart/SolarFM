@@ -87,7 +87,7 @@ class WidgetFileActionMixin:
         app_info  = appchooser_widget.get_app_info()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
 
-        app_info.launch_uris_async(uris)
+        view.app_chooser_exec(app_info, uris)
 
     def execute_files(self, in_terminal=False):
         wid, tid, view, iconview, store = self.get_current_state()

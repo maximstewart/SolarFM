@@ -17,8 +17,6 @@ class Builtins(DBusControllerMixin):
         #       Where data may be any kind of data
         self._gui_events    = []
         self._fm_events     = []
-        self.monitor_events = True
-        self.keep_ipc_alive = True
         self.is_ipc_alive   = False
 
     # Makeshift fake "events" type system FIFO
