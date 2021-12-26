@@ -14,6 +14,12 @@ valid_keyvalue_pat    = re.compile(r"[a-z0-9A-Z-_\[\]\(\)\| ]")
 
 
 class KeyboardSignalsMixin:
+    def unset_keys_and_data(self, widget=None, eve=None):
+        self.ctrlDown     = False
+        self.shiftDown    = False
+        self.altDown      = False
+        self.is_searching = False
+
     def global_key_press_controller(self, eve, user_data):
         keyname = Gdk.keyval_name(user_data.keyval).lower()
         if "control" in keyname or "alt" in keyname or "shift" in keyname:

@@ -179,11 +179,7 @@ class WindowMixin(TabMixin):
 
             fileName   = store[item][1]
             dir        = view.get_current_directory()
-            file       = ""
-            if fileName.endswith("/"):
-                file = f"{dir}/{fileName}"
-            else:
-                file = f"{dir}/{fileName}/"
+            file       = f"{dir}/{fileName}"
 
             if isdir(file):
                 view.set_path(file)
