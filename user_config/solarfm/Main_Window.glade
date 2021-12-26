@@ -1277,6 +1277,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="default-width">1670</property>
     <property name="default-height">830</property>
     <property name="gravity">center</property>
+    <signal name="focus-out-event" handler="unset_keys_and_data" swapped="no"/>
     <signal name="key-press-event" handler="global_key_press_controller" swapped="no"/>
     <signal name="key-release-event" handler="global_key_release_controller" swapped="no"/>
     <child>
