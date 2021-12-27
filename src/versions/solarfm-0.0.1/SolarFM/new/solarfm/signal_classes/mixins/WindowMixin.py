@@ -211,10 +211,14 @@ class WindowMixin(TabMixin):
             store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
             view      = self.get_fm_window(wid).get_view_by_id(tid)
 
-            uris  = data.get_uris()
-            dest  = f"file://{view.get_current_directory()}"
+            _uris = data.get_uris()
+            dest  = f"{view.get_current_directory()}"
 
-            if len(uris) > 0:
+            if len(_uris) > 0:
+                uris = []
+                for uri in _uris:
+                    uris.append(uri.split("file://")[1])
+
                 self.move_files(uris, dest)
 
 
