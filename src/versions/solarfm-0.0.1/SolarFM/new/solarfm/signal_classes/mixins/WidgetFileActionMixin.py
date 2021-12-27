@@ -236,8 +236,10 @@ class WidgetFileActionMixin:
 
         for path in paths:
             try:
-                file = Gio.File.new_for_path(path)
+                if "file://" in path:
+                    path = path.split("file://")[1]
 
+                file = Gio.File.new_for_path(path)
                 if _target_path:
                     if os.path.isdir(_target_path):
                         info    = file.query_info("standard::display-name", 0, cancellable=None)

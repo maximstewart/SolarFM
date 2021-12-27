@@ -196,7 +196,9 @@ class WindowMixin(TabMixin):
         wid, tid  = action.split("|")
         store     = iconview.get_model()
         treePaths = iconview.get_selected_items()
-        uris      = self.format_to_uris(store, wid, tid, treePaths, True)
+        # NOTE: Need URIs as URI format for DnD to work. Will strip 'file://'
+        # further down call chain when doing internal fm stuff.
+        uris      = self.format_to_uris(store, wid, tid, treePaths)
         uris_text = '\n'.join(uris)
 
         data.set_uris(uris)
