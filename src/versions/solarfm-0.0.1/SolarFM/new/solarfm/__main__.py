@@ -20,6 +20,9 @@ from __init__ import Main
 
 if __name__ == "__main__":
     try:
+        # import web_pdb
+        # web_pdb.set_trace()
+
         setproctitle('solarfm')
         faulthandler.enable()  # For better debug info
         parser = argparse.ArgumentParser()

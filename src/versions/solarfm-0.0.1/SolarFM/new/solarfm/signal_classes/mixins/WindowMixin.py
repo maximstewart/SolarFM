@@ -196,9 +196,11 @@ class WindowMixin(TabMixin):
         wid, tid  = action.split("|")
         store     = iconview.get_model()
         treePaths = iconview.get_selected_items()
-        uris      = self.format_to_uris(store, wid, tid, treePaths)
+        uris      = self.format_to_uris(store, wid, tid, treePaths, True)
+        uris_text = '\n'.join(uris)
 
         data.set_uris(uris)
+        data.set_text(uris_text, -1)
 
     def grid_on_drag_motion(self, iconview, drag_context, x, y, data):
         wid, tid = iconview.get_name().split("|")
@@ -211,16 +213,13 @@ class WindowMixin(TabMixin):
             store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
             view      = self.get_fm_window(wid).get_view_by_id(tid)
 
-            _uris = data.get_uris()
+            uris = data.get_uris()
             dest  = f"{view.get_current_directory()}"
-
-            if len(_uris) > 0:
-                uris = []
-                for uri in _uris:
-                    uris.append(uri.split("file://")[1])
-
+            if len(uris) > 0:
                 self.move_files(uris, dest)
-
+            else:
+                uris = data.get_text().split("\n")
+                self.move_files(uris, dest)
 
     def create_new_view_notebook(self, widget=None, wid=None, path=None):
         self.create_tab(wid, path)
