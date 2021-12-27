@@ -129,8 +129,8 @@ class WidgetMixin:
         grid.set_spacing(12)
         grid.set_column_spacing(18)
 
-        grid.connect("button_release_event", self.grid_icon_single_left_click)
-        grid.connect("item-activated", self.grid_icon_double_left_click)
+        grid.connect("button_release_event", self.grid_icon_single_click)
+        grid.connect("item-activated", self.grid_icon_double_click)
         grid.connect("selection-changed", self.grid_set_selected_items)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
@@ -178,8 +178,8 @@ class WidgetMixin:
         grid.set_headers_visible(False)
         grid.set_enable_tree_lines(False)
 
-        grid.connect("button_release_event", self.grid_icon_single_left_click)
-        grid.connect("row-activated", self.grid_icon_double_left_click)
+        grid.connect("button_release_event", self.grid_icon_single_click)
+        grid.connect("row-activated", self.grid_icon_double_click)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
         grid.connect("drag-motion", self.grid_on_drag_motion)

@@ -93,7 +93,7 @@ class WidgetFileActionMixin:
     def open_with_files(self, appchooser_widget):
         wid, tid, view, iconview, store = self.get_current_state()
         app_info  = appchooser_widget.get_app_info()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
 
         view.app_chooser_exec(app_info, uris)
 
@@ -124,7 +124,7 @@ class WidgetFileActionMixin:
         rename_label = self.builder.get_object("file_to_rename_label")
         rename_input = self.builder.get_object("new_rename_fname")
         wid, tid, view, iconview, store = self.get_current_state()
-        uris         = self.format_to_uris(store, wid, tid, self.selected_files)
+        uris         = self.format_to_uris(store, wid, tid, self.selected_files, True)
 
         for uri in uris:
             entry = uri.split("/")[-1]
@@ -140,7 +140,7 @@ class WidgetFileActionMixin:
                 break
 
             rname_to = rename_input.get_text().strip()
-            target   = f"file://{view.get_current_directory()}/{rname_to}"
+            target   = f"{view.get_current_directory()}/{rname_to}"
             self.handle_files([uri], "rename", target)
 
 
@@ -151,18 +151,18 @@ class WidgetFileActionMixin:
 
     def cut_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
-        uris = self.format_to_uris(store, wid, tid, self.selected_files)
+        uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
         self.to_cut_files = uris
 
     def copy_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
-        uris = self.format_to_uris(store, wid, tid, self.selected_files)
+        uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
         self.to_copy_files = uris
 
     def paste_files(self):
         wid, tid  = self.window_controller.get_active_data()
         view      = self.get_fm_window(wid).get_view_by_id(tid)
-        target    = f"file://{view.get_current_directory()}"
+        target    = f"{view.get_current_directory()}"
 
         if len(self.to_copy_files) > 0:
             self.handle_files(self.to_copy_files, "copy", target)
@@ -171,12 +171,12 @@ class WidgetFileActionMixin:
 
     def delete_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
-        uris     = self.format_to_uris(store, wid, tid, self.selected_files)
+        uris     = self.format_to_uris(store, wid, tid, self.selected_files, True)
         response = None
 
         self.warning_alert.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
         for uri in uris:
-            file = Gio.File.new_for_uri(uri)
+            file = Gio.File.new_for_path(uri)
 
             if not response:
                 response = self.warning_alert.run()
@@ -194,9 +194,9 @@ class WidgetFileActionMixin:
 
     def trash_files(self):
         wid, tid, view, iconview, store = self.get_current_state()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
         for uri in uris:
-            file = Gio.File.new_for_uri(uri)
+            file = Gio.File.new_for_path(uri)
             file.trash(cancellable=None)
 
 
@@ -212,7 +212,7 @@ class WidgetFileActionMixin:
         target      = f"{view.get_current_directory()}"
 
         if file_name:
-            path = f"file://{target}/{file_name}"
+            path = f"{target}/{file_name}"
 
             if type == True:     # Create File
                 self.handle_files([path], "create_file")
@@ -236,17 +236,17 @@ class WidgetFileActionMixin:
 
         for path in paths:
             try:
-                file = Gio.File.new_for_uri(path)
+                file = Gio.File.new_for_path(path)
 
                 if _target_path:
-                    if os.path.isdir(_target_path.split("file://")[1]):
+                    if os.path.isdir(_target_path):
                         info    = file.query_info("standard::display-name", 0, cancellable=None)
                         _target = f"{_target_path}/{info.get_display_name()}"
-                        _file   = Gio.File.new_for_uri(_target)
+                        _file   = Gio.File.new_for_path(_target)
                     else:
-                        _file   = Gio.File.new_for_uri(_target_path)
+                        _file   = Gio.File.new_for_path(_target_path)
                 else:
-                    _file = Gio.File.new_for_uri(path)
+                    _file = Gio.File.new_for_path(path)
 
 
                 if _file.query_exists():

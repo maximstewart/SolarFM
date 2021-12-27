@@ -90,13 +90,13 @@ class WindowMixin(TabMixin):
         self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")
         self.bottom_path_label.set_label(view.get_current_directory())
         if len(selected_files) > 0:
-            uris          = self.format_to_uris(store, _wid, _tid, selected_files)
+            uris          = self.format_to_uris(store, _wid, _tid, selected_files, True)
             combined_size = 0
             for uri in uris:
-                file = Gio.File.new_for_uri(uri).query_info(attributes="standard::size",
-                                                flags=Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
-                                                cancellable=None)
-                file_size = file.get_size()
+                file_info = Gio.File.new_for_path(uri).query_info(attributes="standard::size",
+                                                    flags=Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+                                                    cancellable=None)
+                file_size = file_info.get_size()
                 combined_size += file_size
 
             formatted_size = self.sizeof_fmt(combined_size)
@@ -144,7 +144,7 @@ class WindowMixin(TabMixin):
     def grid_set_selected_items(self, iconview):
         self.selected_files = iconview.get_selected_items()
 
-    def grid_icon_single_left_click(self, iconview, eve):
+    def grid_icon_single_click(self, iconview, eve):
         try:
             self.path_menu.popdown()
             wid, tid = iconview.get_name().split("|")
@@ -155,7 +155,7 @@ class WindowMixin(TabMixin):
 
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
-                    self.grid_icon_double_left_click(iconview)
+                    self.grid_icon_double_click(iconview)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
                 self.show_context_menu()
 
@@ -163,7 +163,7 @@ class WindowMixin(TabMixin):
             print(repr(e))
             self.display_message(self.error, f"{repr(e)}")
 
-    def grid_icon_double_left_click(self, iconview, item, data=None):
+    def grid_icon_double_click(self, iconview, item, data=None):
         try:
             if self.ctrlDown and self.shiftDown:
                 self.execute_files(in_terminal=True)
