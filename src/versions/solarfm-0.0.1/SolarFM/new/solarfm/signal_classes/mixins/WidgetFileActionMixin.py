@@ -331,6 +331,7 @@ class WidgetFileActionMixin:
         file_name = os.path.splitext(gio_file.get_basename())[0]
         extension = os.path.splitext(full_path)[-1]
         target    = Gio.File.new_for_path(full_path)
+        start     = "-copy"
 
         if debug:
             print(f"Path:  {full_path}")
@@ -340,6 +341,13 @@ class WidgetFileActionMixin:
 
         i = 2
         while target.query_exists():
+            try:
+                value     = file_name[(file_name.find(start)+len(start)):]
+                int(value)
+                file_name = file_name.split(start)[0]
+            except Exception as e:
+                pass
+
             target = Gio.File.new_for_path(f"{base_path}/{file_name}-copy{i}{extension}")
             i += 1
 
