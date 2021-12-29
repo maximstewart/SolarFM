@@ -17,21 +17,30 @@ from . import Logger
 
 class Settings:
     def __init__(self):
-        self.SCRIPT_PTH    = os.path.dirname(os.path.realpath(__file__))
-        self.USER_HOME     = path.expanduser('~')
-        self.CONFIG_PATH   = self.USER_HOME   + "/.config/solarfm"
-
-        self.cssFile       = self.CONFIG_PATH + '/stylesheet.css'
-        self.windows_glade = self.CONFIG_PATH + "/Main_Window.glade"
-
         self.logger        = Logger().get_logger()
         self.builder       = gtk.Builder()
-        self.builder.add_from_file(self.windows_glade)
 
-        self.DEFAULT_ICONS = self.CONFIG_PATH   + "/icons"
-        self.window_icon   = self.DEFAULT_ICONS + "/solarfm.png"
+        self.SCRIPT_PTH    = os.path.dirname(os.path.realpath(__file__))
+        self.USER_HOME     = path.expanduser('~')
+        self.CONFIG_PATH   = f"{self.USER_HOME}/.config/solarfm"
+        self.USR_SOLARFM   = "/usr/share/solarfm"
+
+        self.cssFile       = f"{self.CONFIG_PATH}/stylesheet.css"
+        self.windows_glade = f"{self.CONFIG_PATH}/Main_Window.glade"
+        self.DEFAULT_ICONS = f"{self.CONFIG_PATH}/icons"
+        self.window_icon   = f"{self.DEFAULT_ICONS}/solarfm.png"
         self.main_window   = None
 
+        if not os.path.exists(self.windows_glade):
+            self.windows_glade = f"{self.USR_SOLARFM}/Main_Window.glade"
+        if not os.path.exists(self.cssFile):
+            self.cssFile       = f"{self.USR_SOLARFM}/stylesheet.css"
+        if not os.path.exists(self.window_icon):
+            self.window_icon   = f"{self.USR_SOLARFM}/icons/solarfm.png"
+        if not os.path.exists(self.DEFAULT_ICONS):
+            self.DEFAULT_ICONS = f"{self.USR_SOLARFM}/icons"
+
+        self.builder.add_from_file(self.windows_glade)
 
 
 

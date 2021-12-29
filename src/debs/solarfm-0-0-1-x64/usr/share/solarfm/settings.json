@@ -1,0 +1,20 @@
+{
+    "settings": {
+        "base_of_home": "",
+        "hide_hidden_files": "true",
+        "thumbnailer_path": "ffmpegthumbnailer",
+        "go_past_home": "true",
+        "lock_folder": "false",
+        "locked_folders": "venv::::flasks",
+        "mplayer_options": "-quiet -really-quiet -xy 1600 -geometry 50%:50%",
+        "music_app": "/opt/deadbeef/bin/deadbeef",
+        "media_app": "mpv",
+        "image_app": "mirage",
+        "office_app": "libreoffice",
+        "pdf_app": "evince",
+        "text_app": "leafpad",
+        "file_manager_app": "solarfm",
+        "terminal_app": "terminator",
+        "remux_folder_max_disk_usage": "8589934592"
+    }
+}

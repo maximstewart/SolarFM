@@ -1,8 +1,8 @@
-Package: pytop64
+Package: solarfm64
 Version: 0.0-1
 Section: python
 Priority: optional
 Architecture: amd64
-Depends: ffmpegthumbnailer (>= 2.0.10-0.1)
+Depends: python3.8, wget, ffmpegthumbnailer, python3-setproctitle, python3-gi, steamcmd
 Maintainer: Maxim Stewart <1itdominator@gmail.com>
 Description: SolarFM is a Gtk + Python file manager.

@@ -160,6 +160,7 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
         images    = self.hash_set(self.images),
         desktops  = self.hash_set(self.desktop),
         ungrouped = self.hash_set(self.ungrouped)
+        hidden    = self.hash_set(self.hidden)
 
         return {
             'path_head': self.get_path(),
@@ -169,7 +170,8 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
                 'videos': videos,
                 'images': images,
                 'desktops': desktops,
-                'ungrouped': ungrouped
+                'ungrouped': ungrouped,
+                'hidden': hidden
             }
         }
 

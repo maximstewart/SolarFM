@@ -6,19 +6,16 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GLib
-from gi.repository import Gio
-from gi.repository import GdkPixbuf
+from gi.repository import Gtk, Gdk, GLib, Gio, GdkPixbuf
 
 # Application imports
 
 
 def threaded(fn):
     def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
+
 
 
 
@@ -41,12 +38,22 @@ class WidgetMixin:
     @threaded
     def create_icon(self, i, view, store, dir, file):
         icon  = view.create_icon(dir, file)
-        fpath = dir + "/" + file
+        fpath = f"{dir}/{file}"
         GLib.idle_add(self.update_store, (i, store, icon, view, fpath,))
 
+    # NOTE: Might need to keep an eye on this throwing invalid iters when too
+    #       many updates are happening to a folder. Example: /tmp
     def update_store(self, item):
         i, store, icon, view, fpath = item
-        itr  = store.get_iter(i)
+        itr = None
+
+        try:
+            itr = store.get_iter(i)
+        except Exception as e:
+            print(":Invalid Itr detected: (Potential race condition...)")
+            print(f"Index Requested:  {i}")
+            print(f"Store Size:  {len(store)}")
+            return
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])
@@ -76,14 +83,13 @@ class WidgetMixin:
                 return None
         except Exception as e:
             print("System icon generation issue:")
-            print( repr(e) )
             return None
 
 
 
 
     def create_tab_widget(self, view):
-        tab   = Gtk.Box()
+        tab   = Gtk.ButtonBox()
         label = Gtk.Label()
         tid   = Gtk.Label()
         close = Gtk.Button()
@@ -91,10 +97,7 @@ class WidgetMixin:
 
         label.set_label(f"{view.get_end_of_path()}")
         label.set_width_chars(len(view.get_end_of_path()))
-        label.set_margin_start(5)
-        label.set_margin_end(15)
         label.set_xalign(0.0)
-        # label.set_ellipsize(2)  #PANGO_ELLIPSIZE_MIDDLE
         tid.set_label(f"{view.id}")
 
         close.add(icon)
@@ -126,8 +129,8 @@ class WidgetMixin:
         grid.set_spacing(12)
         grid.set_column_spacing(18)
 
-        grid.connect("button_release_event", self.grid_icon_single_left_click)
-        grid.connect("item-activated", self.grid_icon_double_left_click)
+        grid.connect("button_release_event", self.grid_icon_single_click)
+        grid.connect("item-activated", self.grid_icon_double_click)
         grid.connect("selection-changed", self.grid_set_selected_items)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
@@ -175,8 +178,8 @@ class WidgetMixin:
         grid.set_headers_visible(False)
         grid.set_enable_tree_lines(False)
 
-        grid.connect("button_release_event", self.grid_icon_single_left_click)
-        grid.connect("row-activated", self.grid_icon_double_left_click)
+        grid.connect("button_release_event", self.grid_icon_single_click)
+        grid.connect("row-activated", self.grid_icon_double_click)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
         grid.connect("drag-motion", self.grid_on_drag_motion)

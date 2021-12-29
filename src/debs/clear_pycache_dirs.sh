@@ -6,7 +6,7 @@
 
 
 function main() {
-    # GTK_DEBUG=interactive python3 ./PyFM.py
-    python3 ./PyFM.py
+    find . -name "__pycache__" -exec rm -rf $1 {} \;
+    find . -name "*.pyc" -exec rm -rf $1 {} \;
 }
-main $@;
+main

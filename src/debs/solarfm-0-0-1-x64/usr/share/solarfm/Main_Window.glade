@@ -398,7 +398,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="can-focus">False</property>
             <property name="layout-style">end</property>
             <child>
-              <object class="GtkButton" id="button1">
+              <object class="GtkButton" id="button31">
                 <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -448,9 +448,173 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
       </object>
     </child>
     <action-widgets>
-      <action-widget response="-6">button1</action-widget>
+      <action-widget response="-6">button31</action-widget>
       <action-widget response="-5">appchooser_select_btn</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkTextBuffer" id="arc_command_buffer">
+    <property name="text" translatable="yes">$(which 7za || echo 7zr) a %o %N</property>
+  </object>
+  <object class="GtkFileChooserDialog" id="archiver_dialogue">
+    <property name="can-focus">False</property>
+    <property name="modal">True</property>
+    <property name="window-position">center</property>
+    <property name="type-hint">dialog</property>
+    <property name="gravity">center</property>
+    <property name="do-overwrite-confirmation">True</property>
+    <property name="select-multiple">True</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
+            <child>
+              <object class="GtkButton" id="button21">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button22">
+                <property name="label">gtk-ok</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Compress Commands:</property>
+                    <property name="xalign">0.20000000298023224</property>
+                    <attributes>
+                      <attribute name="gravity" value="west"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Archive Format:</property>
+                    <property name="xalign">1</property>
+                    <attributes>
+                      <attribute name="gravity" value="east"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="active">0</property>
+                    <property name="active-id">0</property>
+                    <items>
+                      <item id="0" translatable="yes">7Zip (*.7z)</item>
+                      <item id="1" translatable="yes">Zip (*.zip *.ZIP)</item>
+                      <item id="2" translatable="yes">RAR (*.rar *.RAR)</item>
+                      <item id="3" translatable="yes">Tar (*.tar)</item>
+                      <item id="4" translatable="yes">Tar bzip2 (*.tar.bz2)</item>
+                      <item id="5" translatable="yes">Tar Gzip (*.tar.gz *.tgz)</item>
+                      <item id="6" translatable="yes">Tar xz (*.tar.xz *.txz)</item>
+                      <item id="7" translatable="yes">Gzip (*.gz)</item>
+                      <item id="8" translatable="yes">XZ (*.xz)</item>
+                    </items>
+                    <signal name="changed" handler="set_arc_buffer_text" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkTextView" id="arc_command">
+                <property name="height-request">72</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="buffer">arc_command_buffer</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-6">button21</action-widget>
+      <action-widget response="-5">button22</action-widget>
+    </action-widgets>
+  </object>
+  <object class="GtkImage" id="archive_img">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-save-as</property>
   </object>
   <object class="GtkImage" id="createImage">
     <property name="visible">True</property>
@@ -459,8 +623,15 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
   </object>
   <object class="GtkDialog" id="new_file_menu">
     <property name="can-focus">False</property>
+    <property name="type">popup</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
     <property name="window-position">center</property>
+    <property name="destroy-with-parent">True</property>
     <property name="type-hint">splashscreen</property>
+    <property name="skip-taskbar-hint">True</property>
+    <property name="skip-pager-hint">True</property>
+    <property name="deletable">False</property>
     <property name="gravity">center</property>
     <signal name="focus-out-event" handler="hide_new_file_menu" swapped="no"/>
     <child internal-child="vbox">
@@ -496,6 +667,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <property name="height-request">26</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <property name="has-focus">True</property>
                 <property name="primary-icon-stock">gtk-edit</property>
                 <property name="placeholder-text" translatable="yes">New File/Dir Name...</property>
               </object>
@@ -564,7 +736,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
+                    <property name="fill">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -603,12 +775,309 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="exec_in_term_img">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-execute</property>
+  </object>
+  <object class="GtkDialog" id="file_exists_dialog">
+    <property name="height-request">120</property>
+    <property name="can-focus">False</property>
+    <property name="type">popup</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window-position">center</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">splashscreen</property>
+    <property name="skip-taskbar-hint">True</property>
+    <property name="skip-pager-hint">True</property>
+    <property name="urgency-hint">True</property>
+    <property name="deletable">False</property>
+    <property name="gravity">center</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="margin-left">5</property>
+        <property name="margin-right">5</property>
+        <property name="margin-top">5</property>
+        <property name="margin-bottom">5</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
+            <child>
+              <object class="GtkButton" id="button5">
+                <property name="label" translatable="yes">Overwrite</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button6">
+                <property name="label" translatable="yes">Overwrite (All)</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button7">
+                <property name="label" translatable="yes">Skip</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button8">
+                <property name="label" translatable="yes">Skip (All)</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Filename already exists. Please rename or select an action.</property>
+                <property name="xalign">0.10000000149011612</property>
+                <attributes>
+                  <attribute name="scale" value="1.5"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Filename:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="exists_file_label">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkEntry" id="exists_file_field">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <signal name="changed" handler="exists_rename_field_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButtonBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="spacing">20</property>
+                <property name="baseline-position">top</property>
+                <property name="layout-style">start</property>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <object class="GtkButton" id="exists_file_rename_bttn">
+                    <property name="label" translatable="yes">Rename</property>
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="button-release-event" handler="hide_exists_page_rename" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                    <property name="secondary">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Auto Rename</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="button-release-event" handler="hide_exists_page_auto_rename" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                    <property name="secondary">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Auto Rename All</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="button-release-event" handler="hide_exists_page_auto_rename_all" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                    <property name="secondary">True</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-8">button5</action-widget>
+      <action-widget response="-10">button6</action-widget>
+      <action-widget response="-9">button7</action-widget>
+      <action-widget response="-2">button8</action-widget>
+    </action-widgets>
+    <style>
+      <class name="alert-border"/>
+    </style>
+  </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="stock">gtk-justify-center</property>
   </object>
   <object class="GtkTextBuffer" id="message_buffer"/>
+  <object class="GtkPopover" id="message_widget">
+    <property name="width-request">320</property>
+    <property name="can-focus">False</property>
+    <property name="hexpand">True</property>
+    <property name="position">bottom</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkButton">
+            <property name="label">gtk-save-as</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="use-stock">True</property>
+            <signal name="button-release-event" handler="save_debug_alerts" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="height-request">600</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="shadow-type">in</property>
+            <property name="overlay-scrolling">False</property>
+            <child>
+              <object class="GtkTextView" id="message_view">
+                <property name="name">message_view</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="editable">False</property>
+                <property name="cursor-visible">False</property>
+                <property name="buffer">message_buffer</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkImage" id="open_with_img">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -632,12 +1101,16 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
   </object>
   <object class="GtkDialog" id="edit_file_menu">
     <property name="can-focus">False</property>
+    <property name="type">popup</property>
+    <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window-position">center</property>
+    <property name="destroy-with-parent">True</property>
     <property name="type-hint">splashscreen</property>
+    <property name="skip-taskbar-hint">True</property>
     <property name="skip-pager-hint">True</property>
+    <property name="deletable">False</property>
     <property name="gravity">center</property>
-    <signal name="focus-out-event" handler="hide_edit_file_menu_cancel" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>
@@ -648,14 +1121,14 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="can-focus">False</property>
             <property name="layout-style">end</property>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="button1">
                 <property name="label" translatable="yes">Skip</property>
+                <property name="name">skip_renames</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="image">skip_img</property>
                 <property name="always-show-image">True</property>
-                <signal name="button-release-event" handler="hide_edit_file_menu_skip" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -664,13 +1137,13 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="button2">
                 <property name="label">gtk-cancel</property>
+                <property name="name">cancel_renames</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="use-stock">True</property>
-                <signal name="button-release-event" handler="hide_edit_file_menu_cancel" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -730,8 +1203,10 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <property name="height-request">26</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <property name="has-focus">True</property>
                 <property name="primary-icon-stock">gtk-edit</property>
                 <property name="placeholder-text" translatable="yes">To:</property>
+                <signal name="key-release-event" handler="hide_edit_file_menu_enter_key" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -765,6 +1240,10 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
         </child>
       </object>
     </child>
+    <action-widgets>
+      <action-widget response="-7">button1</action-widget>
+      <action-widget response="-6">button2</action-widget>
+    </action-widgets>
   </object>
   <object class="GtkImage" id="tggl_notebook_1_img">
     <property name="visible">True</property>
@@ -797,8 +1276,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="window-position">center</property>
     <property name="default-width">1670</property>
     <property name="default-height">830</property>
-    <property name="icon">solarfm.png</property>
     <property name="gravity">center</property>
+    <signal name="focus-out-event" handler="unset_keys_and_data" swapped="no"/>
     <signal name="key-press-event" handler="global_key_press_controller" swapped="no"/>
     <signal name="key-release-event" handler="global_key_release_controller" swapped="no"/>
     <child>
@@ -808,7 +1287,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
         <property name="orientation">vertical</property>
         <property name="baseline-position">top</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="top_main_menubar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
@@ -1137,7 +1616,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <property name="can-focus">True</property>
                 <property name="hexpand">True</property>
                 <property name="placeholder-text" translatable="yes">Path...</property>
-                <signal name="key-release-event" handler="do_action_from_bar_controls" swapped="no"/>
+                <signal name="changed" handler="do_action_from_bar_controls" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1190,7 +1669,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="name">notebook1</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="has-focus">True</property>
+                    <property name="can-default">True</property>
                     <property name="margin-left">5</property>
                     <property name="margin-right">5</property>
                     <property name="margin-top">5</property>
@@ -1228,6 +1707,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="name">notebook2</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="can-default">True</property>
                     <property name="margin-left">5</property>
                     <property name="margin-right">5</property>
                     <property name="margin-top">5</property>
@@ -1279,6 +1759,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="name">notebook3</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="can-default">True</property>
                     <property name="margin-left">5</property>
                     <property name="margin-right">5</property>
                     <property name="margin-top">5</property>
@@ -1316,6 +1797,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="name">notebook4</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="can-default">True</property>
                     <property name="margin-right">5</property>
                     <property name="margin-top">5</property>
                     <property name="margin-bottom">5</property>
@@ -1415,35 +1897,131 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
       </object>
     </child>
   </object>
-  <object class="GtkPopover" id="message_widget">
-    <property name="width-request">320</property>
+  <object class="GtkPopover" id="path_menu">
+    <property name="width-request">240</property>
+    <property name="height-request">420</property>
     <property name="can-focus">False</property>
-    <property name="hexpand">True</property>
-    <property name="relative-to">controll_box</property>
+    <property name="relative-to">path_entry</property>
     <property name="position">bottom</property>
+    <property name="modal">False</property>
     <child>
       <object class="GtkScrolledWindow">
-        <property name="height-request">600</property>
         <property name="visible">True</property>
         <property name="can-focus">True</property>
-        <property name="hexpand">True</property>
         <property name="shadow-type">in</property>
         <property name="overlay-scrolling">False</property>
         <child>
-          <object class="GtkTextView" id="message_view">
-            <property name="name">message_view</property>
+          <object class="GtkViewport">
             <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="editable">False</property>
-            <property name="cursor-visible">False</property>
-            <property name="buffer">message_buffer</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkButtonBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="orientation">vertical</property>
+                <property name="layout-style">start</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>
     </child>
   </object>
+  <object class="GtkPopover" id="win1_search">
+    <property name="can-focus">False</property>
+    <property name="margin-start">5</property>
+    <property name="margin-end">5</property>
+    <property name="margin-top">5</property>
+    <property name="margin-bottom">5</property>
+    <property name="relative-to">window_1</property>
+    <property name="position">bottom</property>
+    <property name="constrain-to">none</property>
+    <signal name="closed" handler="stop_file_searching" swapped="no"/>
+    <child>
+      <object class="GtkEntry" id="win1_search_field">
+        <property name="width-request">52</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <signal name="changed" handler="do_file_search" swapped="no"/>
+      </object>
+    </child>
+    <style>
+      <class name="search-border"/>
+    </style>
+  </object>
+  <object class="GtkPopover" id="win2_search">
+    <property name="can-focus">False</property>
+    <property name="margin-start">5</property>
+    <property name="margin-end">5</property>
+    <property name="margin-top">5</property>
+    <property name="margin-bottom">5</property>
+    <property name="relative-to">window_2</property>
+    <property name="position">bottom</property>
+    <property name="constrain-to">none</property>
+    <signal name="closed" handler="stop_file_searching" swapped="no"/>
+    <child>
+      <object class="GtkEntry" id="win2_search_field">
+        <property name="width-request">96</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <signal name="changed" handler="do_file_search" swapped="no"/>
+      </object>
+    </child>
+    <style>
+      <class name="search-border"/>
+    </style>
+  </object>
+  <object class="GtkPopover" id="win3_search">
+    <property name="can-focus">False</property>
+    <property name="margin-start">5</property>
+    <property name="margin-end">5</property>
+    <property name="margin-top">5</property>
+    <property name="margin-bottom">5</property>
+    <property name="relative-to">window_3</property>
+    <property name="constrain-to">none</property>
+    <signal name="closed" handler="stop_file_searching" swapped="no"/>
+    <child>
+      <object class="GtkEntry" id="win3_search_field">
+        <property name="width-request">96</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <signal name="changed" handler="do_file_search" swapped="no"/>
+      </object>
+    </child>
+    <style>
+      <class name="search-border"/>
+    </style>
+  </object>
+  <object class="GtkPopover" id="win4_search">
+    <property name="can-focus">False</property>
+    <property name="margin-start">5</property>
+    <property name="margin-end">5</property>
+    <property name="margin-top">5</property>
+    <property name="margin-bottom">5</property>
+    <property name="relative-to">window_4</property>
+    <property name="constrain-to">none</property>
+    <signal name="closed" handler="stop_file_searching" swapped="no"/>
+    <child>
+      <object class="GtkEntry" id="win4_search_field">
+        <property name="width-request">96</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <signal name="changed" handler="do_file_search" swapped="no"/>
+      </object>
+    </child>
+    <style>
+      <class name="search-border"/>
+    </style>
+  </object>
   <object class="GtkImage" id="trash_img">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">user-trash</property>
+  </object>
+  <object class="GtkImage" id="trash_img2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">user-trash</property>
@@ -1506,7 +2084,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
                 <child>
@@ -1529,17 +2107,50 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <child>
                   <object class="GtkButton">
                     <property name="label" translatable="yes">Open With</property>
+                    <property name="name">open_with</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="image">open_with_img</property>
                     <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="show_appchooser_menu" swapped="no"/>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">gtk-execute</property>
+                    <property name="name">execute</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="use-stock">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Execute in Terminal</property>
+                    <property name="name">execute_in_terminal</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="image">exec_in_term_img</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -1550,14 +2161,106 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Rename...</property>
+                    <property name="margin-top">20</property>
                     <property name="image">rename_img2</property>
                     <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="do_edit_files" swapped="no"/>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">gtk-cut</property>
+                    <property name="name">cut</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Cut...</property>
+                    <property name="use-stock">True</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">gtk-copy</property>
+                    <property name="name">copy</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Copy...</property>
+                    <property name="use-stock">True</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">gtk-paste</property>
+                    <property name="name">paste</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Paste...</property>
+                    <property name="use-stock">True</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Go To Trash</property>
+                    <property name="name">go_to_trash</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Go To Trash...</property>
+                    <property name="image">trash_img2</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="pack-type">end</property>
+                    <property name="position">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Archive</property>
+                    <property name="name">archive</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Archive...</property>
+                    <property name="image">archive_img</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -1576,61 +2279,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="pack-type">end</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label">gtk-cut</property>
-                    <property name="name">cut</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Cut...</property>
-                    <property name="use-stock">True</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label">gtk-copy</property>
-                    <property name="name">copy</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Copy...</property>
-                    <property name="use-stock">True</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">5</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label">gtk-paste</property>
-                    <property name="name">paste</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Paste...</property>
-                    <property name="use-stock">True</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">6</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
               </object>
@@ -1649,5 +2298,80 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkMessageDialog" id="warning_alert">
+    <property name="can-focus">False</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window-position">center</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">dialog</property>
+    <property name="skip-taskbar-hint">True</property>
+    <property name="skip-pager-hint">True</property>
+    <property name="urgency-hint">True</property>
+    <property name="decorated">False</property>
+    <property name="deletable">False</property>
+    <property name="gravity">center</property>
+    <property name="message-type">warning</property>
+    <property name="text" translatable="yes">Warning!</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="margin-left">5</property>
+        <property name="margin-right">5</property>
+        <property name="margin-top">5</property>
+        <property name="margin-bottom">5</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="homogeneous">True</property>
+            <property name="layout-style">end</property>
+            <child>
+              <object class="GtkButton" id="button4">
+                <property name="label">gtk-no</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button3">
+                <property name="label">gtk-yes</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="has-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-9">button4</action-widget>
+      <action-widget response="-8">button3</action-widget>
+    </action-widgets>
+    <style>
+      <class name="alert-border"/>
+    </style>
   </object>
 </interface>

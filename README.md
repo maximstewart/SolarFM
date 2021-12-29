@@ -8,7 +8,7 @@ SolarFM is a Gtk+ Python file manager.
 
 <h6>Install Setup</h6>
 ```
-sudo apt-get install python3 wget ffmpegthumbnailer steamcmd
+sudo apt-get install python3.8 wget python3-setproctitle python3-gi ffmpegthumbnailer steamcmd
 ```
 
 # TODO

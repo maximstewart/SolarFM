@@ -1,5 +1,11 @@
-
+# Python imports
 import os, shutil, subprocess, threading
+
+# Lib imports
+
+# Application imports
+
+
 
 
 class FileHandler:
@@ -51,7 +57,7 @@ class FileHandler:
     def move_file(self, fFile, tFile):
         try:
             print(f"Moving:  {fFile}  -->  {tFile}")
-            if os.path.exists(fFile) and os.path.exists(tFile):
+            if os.path.exists(fFile) and not os.path.exists(tFile):
                 if not tFile.endswith("/"):
                     tFile += "/"
 

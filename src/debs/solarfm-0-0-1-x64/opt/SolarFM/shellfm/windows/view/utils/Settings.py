@@ -13,22 +13,23 @@ from os import path
 class Settings:
     logger            = None
 
+    USR_SOLARFM       = "/usr/share/solarfm"
     USER_HOME         = path.expanduser('~')
-    CONFIG_PATH       = USER_HOME   + "/.config/solarfm"
-    CONFIG_FILE       = CONFIG_PATH + "/settings.json"
+    CONFIG_PATH       = f"{USER_HOME}/.config/solarfm"
+    CONFIG_FILE       = f"{CONFIG_PATH}/settings.json"
     HIDE_HIDDEN_FILES = True
 
     GTK_ORIENTATION   = 1      # HORIZONTAL (0) VERTICAL (1)
-    DEFAULT_ICONS     = CONFIG_PATH   + "/icons"
-    DEFAULT_ICON      = DEFAULT_ICONS + "/text.png"
-    FFMPG_THUMBNLR    = CONFIG_PATH   + "/ffmpegthumbnailer"   # Thumbnail generator binary
-    REMUX_FOLDER      = USER_HOME     + "/.remuxs"             # Remuxed files folder
+    DEFAULT_ICONS     = f"{CONFIG_PATH}/icons"
+    DEFAULT_ICON      = f"{DEFAULT_ICONS}/text.png"
+    FFMPG_THUMBNLR    = f"{CONFIG_PATH}/ffmpegthumbnailer" # Thumbnail generator binary
+    REMUX_FOLDER      = f"{USER_HOME}/.remuxs"             # Remuxed files folder
 
     STEAM_BASE_URL    = "https://steamcdn-a.akamaihd.net/steam/apps/"
-    ICON_DIRS         = ["/usr/share/pixmaps", "/usr/share/icons", USER_HOME + "/.icons" ,]
-    BASE_THUMBS_PTH   = USER_HOME       + "/.thumbnails"       # Used for thumbnail generation
-    ABS_THUMBS_PTH    = BASE_THUMBS_PTH + "/normal"            # Used for thumbnail generation
-    STEAM_ICONS_PTH   = BASE_THUMBS_PTH + "/steam_icons"
+    ICON_DIRS         = ["/usr/share/pixmaps", "/usr/share/icons", f"{USER_HOME}/.icons" ,]
+    BASE_THUMBS_PTH   = f"{USER_HOME}/.thumbnails"         # Used for thumbnail generation
+    ABS_THUMBS_PTH    = f"{BASE_THUMBS_PTH}/normal"        # Used for thumbnail generation
+    STEAM_ICONS_PTH   = f"{BASE_THUMBS_PTH}/steam_icons"
     CONTAINER_ICON_WH = [128, 128]
     VIDEO_ICON_WH     = [128, 64]
     SYS_ICON_WH       = [56, 56]
@@ -69,6 +70,7 @@ class Settings:
             pdf_app           = settings["pdf_app"]
             text_app          = settings["text_app"]
             file_manager_app  = settings["file_manager_app"]
+            terminal_app      = settings["terminal_app"]
             remux_folder_max_disk_usage = settings["remux_folder_max_disk_usage"]
 
     # Filters
@@ -81,14 +83,18 @@ class Settings:
 
 
     # Dir structure check
-    if path.isdir(REMUX_FOLDER) == False:
+    if not path.isdir(REMUX_FOLDER):
         os.mkdir(REMUX_FOLDER)
 
-    if path.isdir(BASE_THUMBS_PTH) == False:
+    if not path.isdir(BASE_THUMBS_PTH):
         os.mkdir(BASE_THUMBS_PTH)
 
-    if path.isdir(ABS_THUMBS_PTH) == False:
+    if not path.isdir(ABS_THUMBS_PTH):
         os.mkdir(ABS_THUMBS_PTH)
 
-    if path.isdir(STEAM_ICONS_PTH) == False:
+    if not path.isdir(STEAM_ICONS_PTH):
         os.mkdir(STEAM_ICONS_PTH)
+
+    if not os.path.exists(DEFAULT_ICONS):
+        DEFAULT_ICONS = f"{USR_SOLARFM}/icons"
+        DEFAULT_ICON  = f"{DEFAULT_ICONS}/text.png"
