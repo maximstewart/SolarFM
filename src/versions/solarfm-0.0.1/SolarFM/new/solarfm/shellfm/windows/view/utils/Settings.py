@@ -25,7 +25,7 @@ class Settings:
     REMUX_FOLDER      = USER_HOME     + "/.remuxs"             # Remuxed files folder
 
     STEAM_BASE_URL    = "https://steamcdn-a.akamaihd.net/steam/apps/"
-    ICON_DIRS         = ["/usr/share/pixmaps", "/usr/share/icons", USER_HOME + "/.icons" ,]
+    ICON_DIRS         = ["/usr/share/pixmaps", "/usr/share/icons", f"{USER_HOME}/.icons" ,]
     BASE_THUMBS_PTH   = USER_HOME       + "/.thumbnails"       # Used for thumbnail generation
     ABS_THUMBS_PTH    = BASE_THUMBS_PTH + "/normal"            # Used for thumbnail generation
     STEAM_ICONS_PTH   = BASE_THUMBS_PTH + "/steam_icons"

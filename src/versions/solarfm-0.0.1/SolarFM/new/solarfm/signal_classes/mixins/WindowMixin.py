@@ -81,10 +81,18 @@ class WindowMixin(TabMixin):
     def set_bottom_labels(self, view):
         _wid, _tid, _view, iconview, store = self.get_current_state()
         selected_files       = iconview.get_selected_items()
-        path_file            = Gio.File.new_for_path( view.get_current_directory())
+        current_directory    = view.get_current_directory()
+        path_file            = Gio.File.new_for_path( current_directory)
         mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
         formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
         formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
+
+        if self.trash_files_path == current_directory:
+            self.builder.get_object("restore_from_trash").show()
+            self.builder.get_object("empty_trash").show()
+        else:
+            self.builder.get_object("restore_from_trash").hide()
+            self.builder.get_object("empty_trash").hide()
 
         # If something selected
         self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")
@@ -94,7 +102,7 @@ class WindowMixin(TabMixin):
             combined_size = 0
             for uri in uris:
                 file_info = Gio.File.new_for_path(uri).query_info(attributes="standard::size",
-                                                    flags=Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+                                                    flags=Gio.FileQueryInfoFlags.NONE,
                                                     cancellable=None)
                 file_size = file_info.get_size()
                 combined_size += file_size

@@ -13,7 +13,6 @@ sudo apt-get install python3 wget ffmpegthumbnailer steamcmd
 
 # TODO
 <ul>
-<li>Add "clear trash", "restore from trash" options.</li>
 <li>Add simpleish plugin system to run bash/python scripts.</li>
 <li>Add DnD context awareness for over folder drop.</li>
 </ul>

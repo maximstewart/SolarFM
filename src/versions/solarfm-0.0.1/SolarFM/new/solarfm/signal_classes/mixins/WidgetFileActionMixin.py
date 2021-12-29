@@ -19,6 +19,20 @@ class WidgetFileActionMixin:
             num /= 1024.0
         return f"{num:.1f} Yi{suffix}"
 
+    def get_dir_size(self, sdir):
+        """Get the size of a directory.  Based on code found online."""
+        size = os.path.getsize(sdir)
+
+        for item in os.listdir(sdir):
+            item = os.path.join(sdir, item)
+
+            if os.path.isfile(item):
+                size = size + os.path.getsize(item)
+            elif os.path.isdir(item):
+                size = size + self.get_dir_size(item)
+
+        return size
+
 
     def set_file_watcher(self, view):
         if view.get_dir_watcher():
@@ -196,10 +210,16 @@ class WidgetFileActionMixin:
         wid, tid, view, iconview, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
         for uri in uris:
-            file = Gio.File.new_for_path(uri)
-            file.trash(cancellable=None)
+            self.trashman.trash(uri, False)
 
+    def restore_trash_files(self):
+        wid, tid, view, iconview, store = self.get_current_state()
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        for uri in uris:
+            self.trashman.restore(filename=uri.split("/")[-1], verbose=False)
 
+    def empty_trash(self):
+        self.trashman.empty(verbose=False)
 
 
     def create_files(self):

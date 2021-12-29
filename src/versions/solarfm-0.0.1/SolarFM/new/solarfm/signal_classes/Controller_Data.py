@@ -5,6 +5,7 @@ from gi.repository import GLib
 
 # Application imports
 from shellfm import WindowController
+from trasher.xdgtrash import XDGTrash
 
 
 
@@ -15,8 +16,10 @@ class Controller_Data:
 
     def setup_controller_data(self):
         self.window_controller  = WindowController()
-        self.state              = self.window_controller.load_state()
+        self.trashman           = XDGTrash()
+        self.trashman.regenerate()
 
+        self.state              = self.window_controller.load_state()
         self.builder            = self.settings.builder
         self.logger             = self.settings.logger
 

@@ -1,5 +1,5 @@
 # Python imports
-import sys, traceback, threading, subprocess, signal, inspect, os, time
+import sys, traceback, threading, signal, inspect, os, time
 
 # Lib imports
 import gi
@@ -153,6 +153,10 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
             self.trash_files()
         if action == "go_to_trash":
             self.builder.get_object("path_entry").set_text(self.trash_files_path)
+        if action == "restore_from_trash":
+            self.restore_trash_files()
+        if action == "empty_trash":
+            self.empty_trash()
 
 
         if action == "create":
