@@ -4,8 +4,8 @@ from os import path
 
 # Gtk imports
 import gi, cairo
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '4.0')
+gi.require_version('Gdk', '4.0')
 
 from gi.repository import Gtk as gtk
 from gi.repository import Gdk as gdk

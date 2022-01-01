@@ -4,7 +4,7 @@ from os.path import isfile
 
 # Gtk imports
 import gi
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
 # Application imports
@@ -21,7 +21,7 @@ class DesktopIconMixin:
             if "steam" in icon:
                 name         = xdgObj.getName()
                 file_hash    = hashlib.sha256(str.encode(name)).hexdigest()
-                hash_img_pth = self.STEAM_ICONS_PTH + "/" + file_hash + ".jpg"
+                hash_img_pth = f"{self.STEAM_ICONS_PTH}/{file_hash}.jpg"
 
                 if isfile(hash_img_pth) == True:
                     # Use video sizes since headers are bigger
@@ -30,7 +30,7 @@ class DesktopIconMixin:
                 exec_str  = xdgObj.getExec()
                 parts     = exec_str.split("steam://rungameid/")
                 id        = parts[len(parts) - 1]
-                imageLink = self.STEAM_BASE_URL + id + "/header.jpg"
+                imageLink = f"{self.STEAM_BASE_URL}{id}/header.jpg"
                 proc      = subprocess.Popen(["wget", "-O", hash_img_pth, imageLink])
                 proc.wait()
 
@@ -57,9 +57,9 @@ class DesktopIconMixin:
 
         for (dirpath, dirnames, filenames) in os.walk(path):
             for file in filenames:
-                appNM = "application-x-" + icon
+                appNM = f"application-x-{icon}"
                 if icon in file or appNM in file:
-                    alt_icon_path = dirpath + "/" + file
+                    alt_icon_path = "{dirpath}/{file}"
                     break
 
         return alt_icon_path

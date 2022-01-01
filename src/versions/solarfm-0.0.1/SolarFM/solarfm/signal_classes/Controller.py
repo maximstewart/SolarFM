@@ -3,7 +3,7 @@ import sys, traceback, threading, signal, inspect, os, time
 
 # Lib imports
 import gi
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
 
 # Application imports

@@ -5,7 +5,7 @@ from os.path import isdir, isfile
 
 # Lib imports
 import gi
-gi.require_version('Gdk', '3.0')
+gi.require_version('Gdk', '4.0')
 from gi.repository import Gdk, Gio
 
 # Application imports
