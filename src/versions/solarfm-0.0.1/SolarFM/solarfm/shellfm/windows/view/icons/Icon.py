@@ -56,9 +56,7 @@ class Icon(DesktopIconMixin, VideoIconMixin):
 
     def create_scaled_image(self, path, wxh):
         try:
-            pixbuf        = GdkPixbuf.Pixbuf.new_from_file(path)
-            scaled_pixbuf = pixbuf.scale_simple(wxh[0], wxh[1], 2)  # 2 = BILINEAR and is best by default
-            return scaled_pixbuf
+             return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, wxh[0], wxh[1], True)
         except Exception as e:
             print("Image Scaling Issue:")
             print( repr(e) )

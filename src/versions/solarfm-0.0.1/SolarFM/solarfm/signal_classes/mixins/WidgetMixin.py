@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, subprocess
+import os, threading, subprocess, time
 
 # Lib imports
 import gi
@@ -26,7 +26,7 @@ class WidgetMixin:
         dir   = view.get_current_directory()
         files = view.get_files()
 
-        icon = GdkPixbuf.Pixbuf.new_from_file(view.DEFAULT_ICON)
+        icon = GdkPixbuf.Pixbuf()
         for i, file in enumerate(files):
             store.append([icon, file[0]])
             self.create_icon(i, view, store, dir, file[0])
@@ -50,10 +50,14 @@ class WidgetMixin:
         try:
             itr = store.get_iter(i)
         except Exception as e:
-            print(":Invalid Itr detected: (Potential race condition...)")
-            print(f"Index Requested:  {i}")
-            print(f"Store Size:  {len(store)}")
-            return
+            try:
+                time.sleep(0.2)
+                itr = store.get_iter(i)
+            except Exception as e:
+                print(":Invalid Itr detected: (Potential race condition...)")
+                print(f"Index Requested:  {i}")
+                print(f"Store Size:  {len(store)}")
+                return
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])
