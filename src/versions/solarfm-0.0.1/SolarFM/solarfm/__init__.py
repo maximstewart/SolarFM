@@ -14,7 +14,7 @@ from __builtins__ import Builtins
 class Main(Builtins):
     def __init__(self, args, unknownargs):
         event_system.create_ipc_server()
-        time.sleep(0.5)
+        time.sleep(0.2)
         if not event_system.is_ipc_alive:
             if unknownargs:
                 for arg in unknownargs:

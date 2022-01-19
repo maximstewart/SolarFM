@@ -17,7 +17,7 @@ def threaded(fn):
 
 class Icon(DesktopIconMixin, VideoIconMixin):
     def create_icon(self, dir, file):
-        full_path = dir + "/" + file
+        full_path = f"{dir}/{file}"
         return self.get_icon_image(dir, file, full_path)
 
     def get_icon_image(self, dir, file, full_path):
@@ -36,22 +36,22 @@ class Icon(DesktopIconMixin, VideoIconMixin):
             return None
 
     def create_thumbnail(self, dir, file):
-        full_path = dir + "/" + file
+        full_path = f"{dir}/{file}"
         try:
             file_hash    = hashlib.sha256(str.encode(full_path)).hexdigest()
-            hash_img_pth = self.ABS_THUMBS_PTH + "/" + file_hash + ".jpg"
+            hash_img_pth = f"{self.ABS_THUMBS_PTH}/{file_hash}.jpg"
             if isfile(hash_img_pth) == False:
                 self.generate_video_thumbnail(full_path, hash_img_pth)
 
             thumbnl = self.create_scaled_image(hash_img_pth, self.VIDEO_ICON_WH)
             if thumbnl == None: # If no icon whatsoever, return internal default
-                thumbnl = GdkPixbuf.Pixbuf.new_from_file(self.DEFAULT_ICONS + "/video.png")
+                thumbnl = GdkPixbuf.Pixbuf.new_from_file(f"{self.DEFAULT_ICONS}/video.png")
 
             return thumbnl
         except Exception as e:
             print("Thumbnail generation issue:")
             print( repr(e) )
-            return GdkPixbuf.Pixbuf.new_from_file(self.DEFAULT_ICONS + "/video.png")
+            return GdkPixbuf.Pixbuf.new_from_file(f"{self.DEFAULT_ICONS}/video.png")
 
 
     def create_scaled_image(self, path, wxh):

@@ -107,7 +107,7 @@ class WidgetFileActionMixin:
     def open_with_files(self, appchooser_widget):
         wid, tid, view, iconview, store = self.get_current_state()
         app_info  = appchooser_widget.get_app_info()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
 
         view.app_chooser_exec(app_info, uris)
 

@@ -20,15 +20,13 @@ def threaded(fn):
 
 
 class WidgetMixin:
-
     def load_store(self, view, store, save_state=False):
         store.clear()
         dir   = view.get_current_directory()
         files = view.get_files()
 
-        icon = GdkPixbuf.Pixbuf()
         for i, file in enumerate(files):
-            store.append([icon, file[0]])
+            store.append([None, file[0]])
             self.create_icon(i, view, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
@@ -117,7 +115,7 @@ class WidgetMixin:
     def create_grid_iconview_widget(self, view, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.IconView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf, str)
+        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or None, str)
 
         grid.set_model(store)
         grid.set_pixbuf_column(0)
@@ -158,8 +156,8 @@ class WidgetMixin:
     def create_grid_treeview_widget(self, view, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.TreeView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf, str)
-        # store  = Gtk.TreeStore(GdkPixbuf.Pixbuf, str)
+        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or None, str)
+        # store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or None, str)
         column = Gtk.TreeViewColumn("Icons")
         icon   = Gtk.CellRendererPixbuf()
         name   = Gtk.CellRendererText()
