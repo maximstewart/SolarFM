@@ -64,3 +64,4 @@ class Builtins(IPCServerMixin):
 builtins.event_system      = Builtins()
 builtins.event_sleep_time  = 0.2
 builtins.debug             = False
+builtins.trace_debug       = False

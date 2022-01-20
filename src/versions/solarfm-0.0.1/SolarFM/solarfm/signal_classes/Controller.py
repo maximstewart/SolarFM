@@ -31,17 +31,19 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
 
         self.window.connect("delete-event", self.tear_down)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
-        self.gui_event_observer()
 
-        if unknownargs:
-            for arg in unknownargs:
-                if os.path.isdir(arg):
-                    message = f"FILE|{arg}"
-                    event_system.send_ipc_message(message)
+        if not trace_debug:
+            self.gui_event_observer()
 
-        if args.new_tab and os.path.isdir(args.new_tab):
-            message = f"FILE|{args.new_tab}"
-            event_system.send_ipc_message(message)
+            if unknownargs:
+                for arg in unknownargs:
+                    if os.path.isdir(arg):
+                        message = f"FILE|{arg}"
+                        event_system.send_ipc_message(message)
+
+            if args.new_tab and os.path.isdir(args.new_tab):
+                message = f"FILE|{args.new_tab}"
+                event_system.send_ipc_message(message)
 
 
     def tear_down(self, widget=None, eve=None):
