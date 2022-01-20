@@ -4,12 +4,12 @@ import builtins
 # Lib imports
 
 # Application imports
-from signal_classes.DBusControllerMixin import DBusControllerMixin
+from signal_classes import IPCServerMixin
 
 
 
 
-class Builtins(DBusControllerMixin):
+class Builtins(IPCServerMixin):
     """Docstring for __builtins__ extender"""
 
     def __init__(self):

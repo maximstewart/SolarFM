@@ -15,7 +15,7 @@ def threaded(fn):
 
 
 
-class DBusControllerMixin:
+class IPCServerMixin:
 
     @threaded
     def create_ipc_server(self):
