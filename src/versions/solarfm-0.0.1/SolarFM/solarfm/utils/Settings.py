@@ -72,7 +72,9 @@ class Settings:
         cr.paint()
         cr.set_operator(cairo.OPERATOR_OVER)
 
-    def getMainWindow(self):  return self.main_window
+    def get_builder(self):  return self.builder
+    def get_logger(self):  return self.logger
+    def get_main_window(self):  return self.main_window
 
 
     def getMonitorData(self):

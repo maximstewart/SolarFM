@@ -24,14 +24,14 @@ class Path:
         self.load_directory()
 
     def pop_from_path(self):
-        if self.path:
+        if len(self.path) > 1:
             self.path.pop()
 
             if not self.go_past_home:
                 if self.get_home() not in self.get_path():
                     self.set_to_home()
 
-        self.load_directory()
+            self.load_directory()
 
     def set_path(self, path):
         if path == self.get_path():

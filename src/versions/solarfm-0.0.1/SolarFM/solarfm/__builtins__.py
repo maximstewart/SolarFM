@@ -18,6 +18,11 @@ class Builtins(IPCServerMixin):
         self._gui_events    = []
         self._fm_events     = []
         self.is_ipc_alive   = False
+        self.ipc_authkey    = b'solarfm-ipc'
+        self.ipc_address    = '127.0.0.1'
+        self.ipc_port       = 4848
+        self.ipc_timeout    = 15.0
+
 
     # Makeshift fake "events" type system FIFO
     def _pop_gui_event(self):

@@ -82,7 +82,7 @@ class WindowMixin(TabMixin):
         _wid, _tid, _view, iconview, store = self.get_current_state()
         selected_files       = iconview.get_selected_items()
         current_directory    = view.get_current_directory()
-        path_file            = Gio.File.new_for_path( current_directory)
+        path_file            = Gio.File.new_for_path(current_directory)
         mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
         formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
         formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
@@ -101,11 +101,16 @@ class WindowMixin(TabMixin):
             uris          = self.format_to_uris(store, _wid, _tid, selected_files, True)
             combined_size = 0
             for uri in uris:
-                file_info = Gio.File.new_for_path(uri).query_info(attributes="standard::size",
-                                                    flags=Gio.FileQueryInfoFlags.NONE,
-                                                    cancellable=None)
-                file_size = file_info.get_size()
-                combined_size += file_size
+                try:
+                    file_info = Gio.File.new_for_path(uri).query_info(attributes="standard::size",
+                                                        flags=Gio.FileQueryInfoFlags.NONE,
+                                                        cancellable=None)
+                    file_size = file_info.get_size()
+                    combined_size += file_size
+                except Exception as e:
+                    if debug:
+                        print(repr(e))
+
 
             formatted_size = self.sizeof_fmt(combined_size)
             if view.hide_hidden:

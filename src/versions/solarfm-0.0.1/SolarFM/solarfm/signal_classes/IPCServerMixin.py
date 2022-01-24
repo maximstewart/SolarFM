@@ -19,7 +19,7 @@ class IPCServerMixin:
 
     @threaded
     def create_ipc_server(self):
-        listener          = Listener(('127.0.0.1', 4848), authkey=b'solarfm-ipc')
+        listener          = Listener((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
         self.is_ipc_alive = True
         while True:
             conn       = listener.accept()
@@ -49,7 +49,7 @@ class IPCServerMixin:
 
                 # NOTE: Not perfect but insures we don't lockup the connection for too long.
                 end_time = time.time()
-                if (end - start) > 15.0:
+                if (end - start) > self.ipc_timeout:
                     conn.close()
 
         listener.close()
@@ -57,7 +57,7 @@ class IPCServerMixin:
 
     def send_ipc_message(self, message="Empty Data..."):
         try:
-            conn = Client(('127.0.0.1', 4848), authkey=b'solarfm-ipc')
+            conn = Client((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
             conn.send(message)
             conn.send('close connection')
         except Exception as e:

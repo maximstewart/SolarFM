@@ -1,5 +1,5 @@
 # Python imports
-import sys, traceback, threading, signal, inspect, os, time
+import sys, traceback, threading, inspect, os, time
 
 # Lib imports
 import gi
@@ -23,14 +23,9 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
                                         KeyboardSignalsMixin, Controller_Data):
     def __init__(self, args, unknownargs, _settings):
         # sys.excepthook = self.custom_except_hook
-        self.settings  = _settings
-        self.setup_controller_data()
-
+        self.setup_controller_data(_settings)
         self.window.show()
         self.generate_windows(self.state)
-
-        self.window.connect("delete-event", self.tear_down)
-        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
 
         if not trace_debug:
             self.gui_event_observer()

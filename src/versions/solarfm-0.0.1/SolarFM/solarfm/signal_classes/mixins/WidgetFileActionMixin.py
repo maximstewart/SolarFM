@@ -232,10 +232,7 @@ class WidgetFileActionMixin:
         target      = f"{view.get_current_directory()}"
 
         if file_name:
-            if len(target) == 1:
-                path = f"{target}{file_name}"
-            else:
-                path = f"{target}/{file_name}"
+            path = f"{target}/{file_name}"
 
             if type == True:     # Create File
                 self.handle_files([path], "create_file")
