@@ -1,1 +1,2 @@
-from .PluginMixin  import PluginMixin
+from .KeyboardSignalsMixin import KeyboardSignalsMixin
+from .ShowHideMixin import ShowHideMixin

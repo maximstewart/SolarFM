@@ -7,6 +7,7 @@ from gi.repository import GLib
 # Application imports
 from shellfm import WindowController
 from trasher.xdgtrash import XDGTrash
+from . import Plugins
 
 
 
@@ -18,6 +19,7 @@ class Controller_Data:
     def setup_controller_data(self, _settings):
         self.trashman           = XDGTrash()
         self.window_controller  = WindowController()
+        self.plugins            = Plugins(_settings)
         self.state              = self.window_controller.load_state()
         self.trashman.regenerate()
 
@@ -90,7 +92,6 @@ class Controller_Data:
         self.is_searching      = False
         self.search_iconview   = None
         self.search_view       = None
-
 
         self.skip_edit         = False
         self.cancel_edit       = False

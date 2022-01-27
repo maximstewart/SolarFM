@@ -8,8 +8,8 @@ from gi.repository import Gtk, GLib
 
 # Application imports
 from .mixins.ui import *
-from .mixins import PluginMixin
-from . import ShowHideMixin, KeyboardSignalsMixin, Controller_Data
+from .mixins import ShowHideMixin, KeyboardSignalsMixin
+from . import Controller_Data
 
 
 def threaded(fn):
@@ -21,13 +21,13 @@ def threaded(fn):
 
 
 class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
-                            KeyboardSignalsMixin, PluginMixin, Controller_Data):
+                                        KeyboardSignalsMixin, Controller_Data):
     def __init__(self, args, unknownargs, _settings):
         # sys.excepthook = self.custom_except_hook
         self.setup_controller_data(_settings)
         self.window.show()
         self.generate_windows(self.state)
-        self.load_plugins()
+        self.plugins.launch_plugins()
 
         if not trace_debug:
             self.gui_event_observer()

@@ -33,7 +33,7 @@ class Main(Builtins):
 
 
         settings = Settings()
-        settings.createWindow()
+        settings.create_window()
 
         controller = Controller(args, unknownargs, settings)
         if not controller:

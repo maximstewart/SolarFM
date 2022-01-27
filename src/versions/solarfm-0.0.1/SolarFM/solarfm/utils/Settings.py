@@ -50,12 +50,12 @@ class Settings:
 
 
 
-    def createWindow(self):
+    def create_window(self):
         # Get window and connect signals
         self.main_window = self.builder.get_object("Main_Window")
-        self.setWindowData()
+        self._set_window_data()
 
-    def setWindowData(self):
+    def _set_window_data(self):
         self.main_window.set_icon_from_file(self.window_icon)
         screen = self.main_window.get_screen()
         visual = screen.get_rgba_visual()
@@ -63,7 +63,7 @@ class Settings:
         if visual != None and screen.is_composited():
             self.main_window.set_visual(visual)
             self.main_window.set_app_paintable(True)
-            self.main_window.connect("draw", self.area_draw)
+            self.main_window.connect("draw", self._area_draw)
 
         # bind css file
         cssProvider  = gtk.CssProvider()
@@ -72,18 +72,13 @@ class Settings:
         styleContext = gtk.StyleContext()
         styleContext.add_provider_for_screen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER)
 
-    def area_draw(self, widget, cr):
+    def _area_draw(self, widget, cr):
         cr.set_source_rgba(0, 0, 0, 0.54)
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         cr.set_operator(cairo.OPERATOR_OVER)
 
-    def get_builder(self):  return self.builder
-    def get_logger(self):  return self.logger
-    def get_main_window(self):  return self.main_window
-
-
-    def getMonitorData(self):
+    def get_monitor_data(self):
         screen = self.builder.get_object("Main_Window").get_screen()
         monitors = []
         for m in range(screen.get_n_monitors()):
@@ -93,3 +88,8 @@ class Settings:
             print("{}x{}+{}+{}".format(monitor.width, monitor.height, monitor.x, monitor.y))
 
         return monitors
+
+    def get_builder(self):       return self.builder
+    def get_logger(self):        return self.logger
+    def get_main_window(self):   return self.main_window
+    def get_plugins_path(self):  return self.PLUGINS_PATH
