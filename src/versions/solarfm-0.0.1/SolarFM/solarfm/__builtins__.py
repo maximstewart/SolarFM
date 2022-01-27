@@ -66,6 +66,7 @@ class Builtins(IPCServerMixin):
 
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
+builtins.app_name          = "SolarFM" 
 builtins.event_system      = Builtins()
 builtins.event_sleep_time  = 0.2
 builtins.debug             = False
