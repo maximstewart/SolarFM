@@ -115,7 +115,7 @@ class WidgetMixin:
     def create_grid_iconview_widget(self, view, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.IconView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or None, str)
+        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
 
         grid.set_model(store)
         grid.set_pixbuf_column(0)
@@ -156,7 +156,7 @@ class WidgetMixin:
     def create_grid_treeview_widget(self, view, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.TreeView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or None, str)
+        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
         # store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or None, str)
         column = Gtk.TreeViewColumn("Icons")
         icon   = Gtk.CellRendererPixbuf()
