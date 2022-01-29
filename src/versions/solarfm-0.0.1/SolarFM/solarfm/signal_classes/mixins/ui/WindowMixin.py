@@ -229,12 +229,17 @@ class WindowMixin(TabMixin):
             view      = self.get_fm_window(wid).get_view_by_id(tid)
 
             uris = data.get_uris()
-            dest  = f"{view.get_current_directory()}"
-            if len(uris) > 0:
-                self.move_files(uris, dest)
-            else:
+            # TODO: add an onhover in and out event on the icons that sets an override destination.
+            # This will then be used to drag items into hovered over folders
+            # dest = f"{view.get_current_directory()}" if not self.override_dest else self.override_dest
+            dest = f"{view.get_current_directory()}"
+            if len(uris) == 0:
                 uris = data.get_text().split("\n")
+
+            from_uri = '/'.join(uris[0].replace("file://", "").split("/")[:-1])
+            if from_uri != dest:
                 self.move_files(uris, dest)
+
 
     def create_new_view_notebook(self, widget=None, wid=None, path=None):
         self.create_tab(wid, path)
