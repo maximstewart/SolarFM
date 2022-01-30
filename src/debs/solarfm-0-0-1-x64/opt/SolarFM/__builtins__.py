@@ -4,12 +4,12 @@ import builtins
 # Lib imports
 
 # Application imports
-from signal_classes.DBusControllerMixin import DBusControllerMixin
+from signal_classes import IPCServerMixin
 
 
 
 
-class Builtins(DBusControllerMixin):
+class Builtins(IPCServerMixin):
     """Docstring for __builtins__ extender"""
 
     def __init__(self):
@@ -18,6 +18,11 @@ class Builtins(DBusControllerMixin):
         self._gui_events    = []
         self._fm_events     = []
         self.is_ipc_alive   = False
+        self.ipc_authkey    = b'solarfm-ipc'
+        self.ipc_address    = '127.0.0.1'
+        self.ipc_port       = 4848
+        self.ipc_timeout    = 15.0
+
 
     # Makeshift fake "events" type system FIFO
     def _pop_gui_event(self):
@@ -61,6 +66,8 @@ class Builtins(DBusControllerMixin):
 
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
+builtins.app_name          = "SolarFM" 
 builtins.event_system      = Builtins()
-builtins.event_sleep_time  = 0.5
+builtins.event_sleep_time  = 0.2
 builtins.debug             = False
+builtins.trace_debug       = False

@@ -5,8 +5,8 @@ import os, logging
 
 
 class Logger:
-    def __init__(self):
-        pass
+    def __init__(self, config_path):
+        self._CONFIG_PATH = config_path
 
     def get_logger(self, loggerName = "NO_LOGGER_NAME_PASSED", createFile = True):
         """
@@ -42,8 +42,8 @@ class Logger:
         log.addHandler(ch)
 
         if createFile:
-            folder = "logs"
-            file   = folder + "/application.log"
+            folder = self._CONFIG_PATH
+            file   = f"{folder}/application.log"
 
             if not os.path.exists(folder):
                 os.mkdir(folder)

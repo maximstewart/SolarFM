@@ -14,7 +14,6 @@ sudo apt-get install python3.8 wget python3-setproctitle python3-gi ffmpegthumbn
 # TODO
 <ul>
 <li>Add simpleish plugin system to run bash/python scripts.</li>
-<li>Add DnD context awareness for over folder drop.</li>
 </ul>
 
 # Images

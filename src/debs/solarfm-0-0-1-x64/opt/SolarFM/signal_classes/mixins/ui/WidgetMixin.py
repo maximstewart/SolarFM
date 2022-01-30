@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, subprocess
+import os, threading, subprocess, time
 
 # Lib imports
 import gi
@@ -20,15 +20,13 @@ def threaded(fn):
 
 
 class WidgetMixin:
-
     def load_store(self, view, store, save_state=False):
         store.clear()
         dir   = view.get_current_directory()
         files = view.get_files()
 
-        icon = GdkPixbuf.Pixbuf.new_from_file(view.DEFAULT_ICON)
         for i, file in enumerate(files):
-            store.append([icon, file[0]])
+            store.append([None, file[0]])
             self.create_icon(i, view, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
@@ -50,10 +48,14 @@ class WidgetMixin:
         try:
             itr = store.get_iter(i)
         except Exception as e:
-            print(":Invalid Itr detected: (Potential race condition...)")
-            print(f"Index Requested:  {i}")
-            print(f"Store Size:  {len(store)}")
-            return
+            try:
+                time.sleep(0.2)
+                itr = store.get_iter(i)
+            except Exception as e:
+                print(":Invalid Itr detected: (Potential race condition...)")
+                print(f"Index Requested:  {i}")
+                print(f"Store Size:  {len(store)}")
+                return
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])
@@ -113,7 +115,7 @@ class WidgetMixin:
     def create_grid_iconview_widget(self, view, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.IconView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf, str)
+        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
 
         grid.set_model(store)
         grid.set_pixbuf_column(0)
@@ -131,10 +133,13 @@ class WidgetMixin:
 
         grid.connect("button_release_event", self.grid_icon_single_click)
         grid.connect("item-activated", self.grid_icon_double_click)
+        # grid.connect("toggle-cursor-item", self.grid_cursor_toggled)
+        # grid.connect("notify", self.grid_cursor_toggled)
         grid.connect("selection-changed", self.grid_set_selected_items)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
         grid.connect("drag-motion", self.grid_on_drag_motion)
+
 
         URI_TARGET_TYPE  = 80
         uri_target       = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags(0), URI_TARGET_TYPE)
@@ -154,8 +159,8 @@ class WidgetMixin:
     def create_grid_treeview_widget(self, view, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.TreeView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf, str)
-        # store  = Gtk.TreeStore(GdkPixbuf.Pixbuf, str)
+        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
+        # store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or None, str)
         column = Gtk.TreeViewColumn("Icons")
         icon   = Gtk.CellRendererPixbuf()
         name   = Gtk.CellRendererText()

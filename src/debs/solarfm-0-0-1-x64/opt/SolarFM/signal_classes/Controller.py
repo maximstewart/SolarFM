@@ -1,5 +1,5 @@
 # Python imports
-import sys, traceback, threading, signal, inspect, os, time
+import sys, traceback, threading, inspect, os, time
 
 # Lib imports
 import gi
@@ -7,8 +7,9 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
 # Application imports
-from .mixins import *
-from . import ShowHideMixin, KeyboardSignalsMixin, Controller_Data
+from .mixins.ui import *
+from .mixins import ShowHideMixin, KeyboardSignalsMixin
+from . import Controller_Data
 
 
 def threaded(fn):
@@ -23,25 +24,23 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
                                         KeyboardSignalsMixin, Controller_Data):
     def __init__(self, args, unknownargs, _settings):
         # sys.excepthook = self.custom_except_hook
-        self.settings  = _settings
-        self.setup_controller_data()
-
+        self.setup_controller_data(_settings)
         self.window.show()
         self.generate_windows(self.state)
+        self.plugins.launch_plugins()
 
-        self.window.connect("delete-event", self.tear_down)
-        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
-        self.gui_event_observer()
+        if not trace_debug:
+            self.gui_event_observer()
 
-        if unknownargs:
-            for arg in unknownargs:
-                if os.path.isdir(arg):
-                    message = f"FILE|{arg}"
-                    event_system.send_ipc_message(message)
+            if unknownargs:
+                for arg in unknownargs:
+                    if os.path.isdir(arg):
+                        message = f"FILE|{arg}"
+                        event_system.send_ipc_message(message)
 
-        if args.new_tab and os.path.isdir(args.new_tab):
-            message = f"FILE|{args.new_tab}"
-            event_system.send_ipc_message(message)
+            if args.new_tab and os.path.isdir(args.new_tab):
+                message = f"FILE|{args.new_tab}"
+                event_system.send_ipc_message(message)
 
 
     def tear_down(self, widget=None, eve=None):
