@@ -239,7 +239,7 @@ class WidgetFileActionMixin:
             else:                # Create Folder
                 self.handle_files([path], "create_dir")
 
-        fname_field.set_text("")
+        self.hide_new_file_menu()
 
     def move_files(self, files, target):
         self.handle_files(files, "move", target)

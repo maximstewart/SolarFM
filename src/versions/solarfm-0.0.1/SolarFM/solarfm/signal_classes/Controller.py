@@ -157,9 +157,7 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
         if action == "empty_trash":
             self.empty_trash()
 
-
         if action == "create":
             self.create_files()
-            self.hide_new_file_menu()
 
         self.ctrlDown = False

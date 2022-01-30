@@ -16,7 +16,6 @@ class ShowHideMixin:
     def stop_file_searching(self, widget=None, eve=None):
         self.is_searching = False
 
-
     def show_exists_page(self, widget=None, eve=None):
         response = self.file_exists_dialog.run()
         self.file_exists_dialog.hide()
@@ -81,11 +80,13 @@ class ShowHideMixin:
         appchooser_widget = self.builder.get_object("appchooser_widget")
         response          = appchooser_menu.run()
 
-        if response == Gtk.ResponseType.CANCEL:
-            self.hide_appchooser_menu()
         if response == Gtk.ResponseType.OK:
             self.open_with_files(appchooser_widget)
             self.hide_appchooser_menu()
+
+        if response == Gtk.ResponseType.CANCEL:
+            self.hide_appchooser_menu()
+
 
     def hide_appchooser_menu(self, widget=None, eve=None):
         self.builder.get_object("appchooser_menu").hide()
@@ -103,11 +104,17 @@ class ShowHideMixin:
 
 
     def show_new_file_menu(self, widget=None, eve=None):
-        self.builder.get_object("new_file_menu").run()
+        self.builder.get_object("context_menu_fname").set_text("")
+
+        new_file_menu = self.builder.get_object("new_file_menu")
+        response      = new_file_menu.run()
+        if response == Gtk.ResponseType.APPLY:
+            self.create_files()
+        if response == Gtk.ResponseType.CANCEL:
+            self.hide_new_file_menu()
 
     def hide_new_file_menu(self, widget=None, eve=None):
         self.builder.get_object("new_file_menu").hide()
-
 
     def show_edit_file_menu(self, widget=None, eve=None):
         if widget:
