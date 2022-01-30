@@ -199,7 +199,7 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
 
     def get_current_sub_path(self):
         path = self.get_path()
-        home = self.get_home() + "/"
+        home = f"{self.get_home()}/"
         return path.replace(home, "")
 
     def get_end_of_path(self):

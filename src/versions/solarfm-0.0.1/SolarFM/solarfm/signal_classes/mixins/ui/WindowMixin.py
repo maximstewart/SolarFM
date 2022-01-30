@@ -157,6 +157,9 @@ class WindowMixin(TabMixin):
     def grid_set_selected_items(self, iconview):
         self.selected_files = iconview.get_selected_items()
 
+    def grid_cursor_toggled(self, iconview):
+        print("wat...")
+
     def grid_icon_single_click(self, iconview, eve):
         try:
             self.path_menu.popdown()
@@ -218,8 +221,19 @@ class WindowMixin(TabMixin):
         data.set_text(uris_text, -1)
 
     def grid_on_drag_motion(self, iconview, drag_context, x, y, data):
-        wid, tid = iconview.get_name().split("|")
-        self.window_controller.set_active_data(wid, tid)
+        current   = '|'.join(self.window_controller.get_active_data())
+        target    = iconview.get_name()
+        wid, tid  = target.split("|")
+        store     = iconview.get_model()
+        treePath  = iconview.get_drag_dest_item().path
+
+        if treePath:
+            uri = self.format_to_uris(store, wid, tid, treePath)[0].replace("file://", "")
+            self.override_drop_dest = uri if isdir(uri) else None
+
+        if target not in current:
+            self.window_controller.set_active_data(wid, tid)
+
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
         if info == 80:
@@ -229,10 +243,7 @@ class WindowMixin(TabMixin):
             view      = self.get_fm_window(wid).get_view_by_id(tid)
 
             uris = data.get_uris()
-            # TODO: add an onhover in and out event on the icons that sets an override destination.
-            # This will then be used to drag items into hovered over folders
-            # dest = f"{view.get_current_directory()}" if not self.override_dest else self.override_dest
-            dest = f"{view.get_current_directory()}"
+            dest = f"{view.get_current_directory()}" if not self.override_drop_dest else self.override_drop_dest
             if len(uris) == 0:
                 uris = data.get_text().split("\n")
 

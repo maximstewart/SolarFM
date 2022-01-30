@@ -11,7 +11,7 @@ class Path:
         return os.path.expanduser("~") + self.subpath
 
     def get_path(self):
-        return "/" + "/".join(self.path)
+        return f"/{'/'.join(self.path)}" if self.path else f"/{''.join(self.path)}"
 
     def get_path_list(self):
         return self.path
@@ -21,7 +21,7 @@ class Path:
         self.load_directory()
 
     def pop_from_path(self):
-        if len(self.path) > 1:
+        try:
             self.path.pop()
 
             if not self.go_past_home:
@@ -29,6 +29,8 @@ class Path:
                     self.set_to_home()
 
             self.load_directory()
+        except Exception as e:
+            pass
 
     def set_path(self, path):
         if path == self.get_path():

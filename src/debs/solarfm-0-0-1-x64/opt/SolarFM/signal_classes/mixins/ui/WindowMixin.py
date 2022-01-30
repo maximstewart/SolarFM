@@ -82,7 +82,7 @@ class WindowMixin(TabMixin):
         _wid, _tid, _view, iconview, store = self.get_current_state()
         selected_files       = iconview.get_selected_items()
         current_directory    = view.get_current_directory()
-        path_file            = Gio.File.new_for_path( current_directory)
+        path_file            = Gio.File.new_for_path(current_directory)
         mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
         formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
         formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
@@ -101,11 +101,16 @@ class WindowMixin(TabMixin):
             uris          = self.format_to_uris(store, _wid, _tid, selected_files, True)
             combined_size = 0
             for uri in uris:
-                file_info = Gio.File.new_for_path(uri).query_info(attributes="standard::size",
-                                                    flags=Gio.FileQueryInfoFlags.NONE,
-                                                    cancellable=None)
-                file_size = file_info.get_size()
-                combined_size += file_size
+                try:
+                    file_info = Gio.File.new_for_path(uri).query_info(attributes="standard::size",
+                                                        flags=Gio.FileQueryInfoFlags.NONE,
+                                                        cancellable=None)
+                    file_size = file_info.get_size()
+                    combined_size += file_size
+                except Exception as e:
+                    if debug:
+                        print(repr(e))
+
 
             formatted_size = self.sizeof_fmt(combined_size)
             if view.hide_hidden:
@@ -151,6 +156,9 @@ class WindowMixin(TabMixin):
 
     def grid_set_selected_items(self, iconview):
         self.selected_files = iconview.get_selected_items()
+
+    def grid_cursor_toggled(self, iconview):
+        print("wat...")
 
     def grid_icon_single_click(self, iconview, eve):
         try:
@@ -213,8 +221,19 @@ class WindowMixin(TabMixin):
         data.set_text(uris_text, -1)
 
     def grid_on_drag_motion(self, iconview, drag_context, x, y, data):
-        wid, tid = iconview.get_name().split("|")
-        self.window_controller.set_active_data(wid, tid)
+        current   = '|'.join(self.window_controller.get_active_data())
+        target    = iconview.get_name()
+        wid, tid  = target.split("|")
+        store     = iconview.get_model()
+        treePath  = iconview.get_drag_dest_item().path
+
+        if treePath:
+            uri = self.format_to_uris(store, wid, tid, treePath)[0].replace("file://", "")
+            self.override_drop_dest = uri if isdir(uri) else None
+
+        if target not in current:
+            self.window_controller.set_active_data(wid, tid)
+
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
         if info == 80:
@@ -224,12 +243,14 @@ class WindowMixin(TabMixin):
             view      = self.get_fm_window(wid).get_view_by_id(tid)
 
             uris = data.get_uris()
-            dest  = f"{view.get_current_directory()}"
-            if len(uris) > 0:
-                self.move_files(uris, dest)
-            else:
+            dest = f"{view.get_current_directory()}" if not self.override_drop_dest else self.override_drop_dest
+            if len(uris) == 0:
                 uris = data.get_text().split("\n")
+
+            from_uri = '/'.join(uris[0].replace("file://", "").split("/")[:-1])
+            if from_uri != dest:
                 self.move_files(uris, dest)
+
 
     def create_new_view_notebook(self, widget=None, wid=None, path=None):
         self.create_tab(wid, path)

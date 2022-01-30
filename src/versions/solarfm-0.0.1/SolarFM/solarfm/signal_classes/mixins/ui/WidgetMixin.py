@@ -133,10 +133,13 @@ class WidgetMixin:
 
         grid.connect("button_release_event", self.grid_icon_single_click)
         grid.connect("item-activated", self.grid_icon_double_click)
+        # grid.connect("toggle-cursor-item", self.grid_cursor_toggled)
+        # grid.connect("notify", self.grid_cursor_toggled)
         grid.connect("selection-changed", self.grid_set_selected_items)
         grid.connect("drag-data-get", self.grid_on_drag_set)
         grid.connect("drag-data-received", self.grid_on_drag_data_received)
         grid.connect("drag-motion", self.grid_on_drag_motion)
+
 
         URI_TARGET_TYPE  = 80
         uri_target       = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags(0), URI_TARGET_TYPE)

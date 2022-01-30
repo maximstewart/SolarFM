@@ -24,7 +24,9 @@ class WindowController:
         self.active_window_id  = ""
         self.active_tab_id     = ""
         self.windows           = []
-        self.fm_event_observer()
+
+        if not trace_debug:
+            self.fm_event_observer()
 
     @threaded
     def fm_event_observer(self):

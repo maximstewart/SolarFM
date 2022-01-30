@@ -89,9 +89,10 @@ class Controller_Data:
         self.is_pane3_hidden   = False
         self.is_pane4_hidden   = False
 
-        self.is_searching      = False
-        self.search_iconview   = None
-        self.search_view       = None
+        self.override_drop_dest = None
+        self.is_searching       = False
+        self.search_iconview    = None
+        self.search_view        = None
 
         self.skip_edit         = False
         self.cancel_edit       = False

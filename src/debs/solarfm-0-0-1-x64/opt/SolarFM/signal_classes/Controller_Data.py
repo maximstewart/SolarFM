@@ -1,4 +1,5 @@
 # Python imports
+import signal
 
 # Lib imports
 from gi.repository import GLib
@@ -6,6 +7,7 @@ from gi.repository import GLib
 # Application imports
 from shellfm import WindowController
 from trasher.xdgtrash import XDGTrash
+from . import Plugins
 
 
 
@@ -14,16 +16,18 @@ class Controller_Data:
     def has_method(self, o, name):
         return callable(getattr(o, name, None))
 
-    def setup_controller_data(self):
-        self.window_controller  = WindowController()
+    def setup_controller_data(self, _settings):
         self.trashman           = XDGTrash()
+        self.window_controller  = WindowController()
+        self.plugins            = Plugins(_settings)
+        self.state              = self.window_controller.load_state()
         self.trashman.regenerate()
 
-        self.state              = self.window_controller.load_state()
-        self.builder            = self.settings.builder
-        self.logger             = self.settings.logger
+        self.settings           = _settings
+        self.builder            = self.settings.get_builder()
+        self.logger             = self.settings.get_logger()
 
-        self.window             = self.settings.getMainWindow()
+        self.window             = self.settings.get_main_window()
         self.window1            = self.builder.get_object("window_1")
         self.window2            = self.builder.get_object("window_2")
         self.window3            = self.builder.get_object("window_3")
@@ -85,10 +89,10 @@ class Controller_Data:
         self.is_pane3_hidden   = False
         self.is_pane4_hidden   = False
 
-        self.is_searching      = False
-        self.search_iconview   = None
-        self.search_view       = None
-
+        self.override_drop_dest = None
+        self.is_searching       = False
+        self.search_iconview    = None
+        self.search_view        = None
 
         self.skip_edit         = False
         self.cancel_edit       = False
@@ -99,3 +103,7 @@ class Controller_Data:
         self.success           = "#88cc27"
         self.warning           = "#ffa800"
         self.error             = "#ff0000"
+
+
+        self.window.connect("delete-event", self.tear_down)
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)

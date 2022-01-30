@@ -23,7 +23,7 @@ if __name__ == "__main__":
         # import web_pdb
         # web_pdb.set_trace()
 
-        setproctitle('solarfm')
+        setproctitle('SolarFM')
         faulthandler.enable()  # For better debug info
         parser = argparse.ArgumentParser()
         # Add long and short arguments
