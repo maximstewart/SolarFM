@@ -22,7 +22,7 @@ def threaded(fn):
 
 class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, Controller_Data):
     def __init__(self, args, unknownargs, _settings):
-        # sys.excepthook = self.custom_except_hook
+        sys.excepthook = self.custom_except_hook
         self.setup_controller_data(_settings)
         self.window.show()
         self.generate_windows(self.state)
@@ -58,7 +58,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, Controller_Data
                 try:
                     type, target, data = event
                     method = getattr(self.__class__, target)
-                    GLib.idle_add(method, *(self, data,))
+                    GLib.idle_add(method, *(self, *data,))
                 except Exception as e:
                     print(repr(e))
 

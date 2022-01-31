@@ -17,14 +17,14 @@ class Plugins:
     def __init__(self, settings):
         self._settings            = settings
         self._plugins_path        = self._settings.get_plugins_path()
-        self._socket              = Gtk.Socket().new()
+        self.gtk_socket           = Gtk.Socket().new()
         self._plugins_dir_watcher = None
-        self._socket_id           = None
+        self.gtk_socket_id        = None
         self._plugin_collection   = []
 
-        self._settings.get_main_window().add(self._socket)
-        self._socket.show()
-        self._socket_id = self._socket.get_id()
+        self._settings.get_main_window().add(self.gtk_socket)
+        self.gtk_socket.show()
+        self.gtk_socket_id = self.gtk_socket.get_id()
 
 
     def launch_plugins(self):
@@ -49,20 +49,15 @@ class Plugins:
             if isdir(path):
                 spec   = importlib.util.spec_from_file_location(file, join(path, "__main__.py"))
                 module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
                 self._plugin_collection.append([file, module])
-                # module.set_socket_id(self._socket_id)
-                # print(f"\n\n\n {event_system} \n\n\n")
-                # module.set_event_system(event_system)
-                # module.main()
-                # module.start_loop(event_system)
 
-        print(self._plugin_collection)
+                spec.loader.exec_module(module)
+                module.Main(self.gtk_socket_id, event_system)
 
     def reload_plugins(self, file=None):
         print(f"Reloading plugins...")
-        if self._plugin_collection:
-            to_unload = []
-            for dir in self._plugin_collection:
-                if not os.path.isdir(os.path.join(self._plugins_path, dir)):
-                    to_unload.append(dir)
+        # if self._plugin_collection:
+        #     to_unload = []
+        #     for dir in self._plugin_collection:
+        #         if not os.path.isdir(os.path.join(self._plugins_path, dir)):
+        #             to_unload.append(dir)
