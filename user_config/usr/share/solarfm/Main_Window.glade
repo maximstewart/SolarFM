@@ -1130,60 +1130,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="stock">gtk-justify-center</property>
   </object>
   <object class="GtkTextBuffer" id="message_buffer"/>
-  <object class="GtkPopover" id="message_widget">
-    <property name="width-request">320</property>
-    <property name="can-focus">False</property>
-    <property name="hexpand">True</property>
-    <property name="position">bottom</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkButton">
-            <property name="label">gtk-save-as</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="use-stock">True</property>
-            <signal name="button-release-event" handler="save_debug_alerts" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow">
-            <property name="height-request">600</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="shadow-type">in</property>
-            <property name="overlay-scrolling">False</property>
-            <child>
-              <object class="GtkTextView" id="message_view">
-                <property name="name">message_view</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="editable">False</property>
-                <property name="cursor-visible">False</property>
-                <property name="buffer">message_buffer</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </object>
   <object class="GtkImage" id="open_with_img">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -1397,7 +1343,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkMenuBar">
+              <object class="GtkMenuBar" id="menubar1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <child>
@@ -2004,6 +1950,61 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="message_widget">
+    <property name="width-request">320</property>
+    <property name="can-focus">False</property>
+    <property name="hexpand">True</property>
+    <property name="relative-to">top_main_menubar</property>
+    <property name="position">bottom</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkButton">
+            <property name="label">gtk-save-as</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="use-stock">True</property>
+            <signal name="button-release-event" handler="save_debug_alerts" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="height-request">600</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="shadow-type">in</property>
+            <property name="overlay-scrolling">False</property>
+            <child>
+              <object class="GtkTextView" id="message_view">
+                <property name="name">message_view</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="editable">False</property>
+                <property name="cursor-visible">False</property>
+                <property name="buffer">message_buffer</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>
