@@ -16,24 +16,6 @@ from . import WidgetMixin
 class TabMixin(WidgetMixin):
     """docstring for TabMixin"""
 
-    def create_tab_from_ipc(data):
-        self, path = data
-        wid, tid   = self.window_controller.get_active_data()
-        notebook   = self.builder.get_object(f"window_{wid}")
-        if notebook.is_visible():
-            self.create_tab(wid, path)
-            return
-
-        if not self.is_pane4_hidden:
-            self.create_tab(4, path)
-        elif not self.is_pane3_hidden:
-            self.create_tab(3, path)
-        elif not self.is_pane2_hidden:
-            self.create_tab(2, path)
-        elif not self.is_pane1_hidden:
-            self.create_tab(1, path)
-
-
     def create_tab(self, wid, path=None):
         notebook    = self.builder.get_object(f"window_{wid}")
         path_entry  = self.builder.get_object(f"path_entry")

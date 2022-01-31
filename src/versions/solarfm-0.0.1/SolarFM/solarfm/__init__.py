@@ -5,7 +5,7 @@ import os, inspect, time
 
 # Application imports
 from utils import Settings
-from signal_classes import Controller
+from controller import Controller
 from __builtins__ import Builtins
 
 

@@ -7,8 +7,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
 # Application imports
-from .mixins.ui import *
-from .mixins import ShowHideMixin, KeyboardSignalsMixin
+from .mixins import UIMixin
+from .signals import IPCSignalsMixin, KeyboardSignalsMixin
 from . import Controller_Data
 
 
@@ -20,10 +20,9 @@ def threaded(fn):
 
 
 
-class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
-                                        KeyboardSignalsMixin, Controller_Data):
+class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, Controller_Data):
     def __init__(self, args, unknownargs, _settings):
-        # sys.excepthook = self.custom_except_hook
+        sys.excepthook = self.custom_except_hook
         self.setup_controller_data(_settings)
         self.window.show()
         self.generate_windows(self.state)
@@ -58,8 +57,8 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
             if event:
                 try:
                     type, target, data = event
-                    method = getattr(self.__class__, type)
-                    GLib.idle_add(method, (self, data,))
+                    method = getattr(self.__class__, target)
+                    GLib.idle_add(method, *(self, *data,))
                 except Exception as e:
                     print(repr(e))
 
@@ -157,9 +156,7 @@ class Controller(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin, \
         if action == "empty_trash":
             self.empty_trash()
 
-
         if action == "create":
             self.create_files()
-            self.hide_new_file_menu()
 
         self.ctrlDown = False
