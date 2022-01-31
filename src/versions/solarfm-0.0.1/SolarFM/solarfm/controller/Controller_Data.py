@@ -5,9 +5,9 @@ import signal
 from gi.repository import GLib
 
 # Application imports
-from shellfm import WindowController
 from trasher.xdgtrash import XDGTrash
-from . import Plugins
+from shellfm import WindowController
+from plugins import Plugins
 
 
 

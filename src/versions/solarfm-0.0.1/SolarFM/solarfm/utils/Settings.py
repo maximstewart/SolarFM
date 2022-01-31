@@ -25,10 +25,10 @@ class Settings:
         self.PLUGINS_PATH  = f"{self.CONFIG_PATH}/plugins"
         self.USR_SOLARFM   = f"/usr/share/{app_name.lower()}"
 
-        self.cssFile       = f"{self.CONFIG_PATH}/stylesheet.css"
-        self.windows_glade = f"{self.CONFIG_PATH}/Main_Window.glade"
+        self.CSS_FILE      = f"{self.CONFIG_PATH}/stylesheet.css"
+        self.WINDOWS_GLADE = f"{self.CONFIG_PATH}/Main_Window.glade"
         self.DEFAULT_ICONS = f"{self.CONFIG_PATH}/icons"
-        self.window_icon   = f"{self.DEFAULT_ICONS}/{app_name.lower()}.png"
+        self.WINDOW_ICON   = f"{self.DEFAULT_ICONS}/{app_name.lower()}.png"
         self.main_window   = None
 
         if not os.path.exists(self.CONFIG_PATH):
@@ -36,17 +36,17 @@ class Settings:
         if not os.path.exists(self.PLUGINS_PATH):
             os.mkdir(self.PLUGINS_PATH)
 
-        if not os.path.exists(self.windows_glade):
-            self.windows_glade = f"{self.USR_SOLARFM}/Main_Window.glade"
-        if not os.path.exists(self.cssFile):
-            self.cssFile       = f"{self.USR_SOLARFM}/stylesheet.css"
-        if not os.path.exists(self.window_icon):
-            self.window_icon   = f"{self.USR_SOLARFM}/icons/{app_name.lower()}.png"
+        if not os.path.exists(self.WINDOWS_GLADE):
+            self.WINDOWS_GLADE = f"{self.USR_SOLARFM}/Main_Window.glade"
+        if not os.path.exists(self.CSS_FILE):
+            self.CSS_FILE      = f"{self.USR_SOLARFM}/stylesheet.css"
+        if not os.path.exists(self.WINDOW_ICON):
+            self.WINDOW_ICON   = f"{self.USR_SOLARFM}/icons/{app_name.lower()}.png"
         if not os.path.exists(self.DEFAULT_ICONS):
             self.DEFAULT_ICONS = f"{self.USR_SOLARFM}/icons"
 
         self.logger = Logger(self.CONFIG_PATH).get_logger()
-        self.builder.add_from_file(self.windows_glade)
+        self.builder.add_from_file(self.WINDOWS_GLADE)
 
 
 
@@ -56,7 +56,7 @@ class Settings:
         self._set_window_data()
 
     def _set_window_data(self):
-        self.main_window.set_icon_from_file(self.window_icon)
+        self.main_window.set_icon_from_file(self.WINDOW_ICON)
         screen = self.main_window.get_screen()
         visual = screen.get_rgba_visual()
 
@@ -67,7 +67,7 @@ class Settings:
 
         # bind css file
         cssProvider  = gtk.CssProvider()
-        cssProvider.load_from_path(self.cssFile)
+        cssProvider.load_from_path(self.CSS_FILE)
         screen       = gdk.Screen.get_default()
         styleContext = gtk.StyleContext()
         styleContext.add_provider_for_screen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER)

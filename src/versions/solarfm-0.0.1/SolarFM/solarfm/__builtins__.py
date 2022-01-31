@@ -13,7 +13,10 @@ class Builtins(IPCServerMixin):
     """Docstring for __builtins__ extender"""
 
     def __init__(self):
-        # NOTE: The format used is list of [type, target, data]
+        # NOTE: The format used is list of [type, target, data] Where:
+        #             type is useful context for control flow,
+        #             target is the method to call,
+        #             data is the method parameters to give
         #       Where data may be any kind of data
         self._gui_events    = []
         self._fm_events     = []
@@ -66,7 +69,7 @@ class Builtins(IPCServerMixin):
 
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
-builtins.app_name          = "SolarFM" 
+builtins.app_name          = "SolarFM"
 builtins.event_system      = Builtins()
 builtins.event_sleep_time  = 0.2
 builtins.debug             = False

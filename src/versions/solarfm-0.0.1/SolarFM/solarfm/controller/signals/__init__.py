@@ -1,2 +1,2 @@
 from .KeyboardSignalsMixin import KeyboardSignalsMixin
-from .ShowHideMixin import ShowHideMixin
+from .IPCSignalsMixin import IPCSignalsMixin

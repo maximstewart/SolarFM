@@ -34,7 +34,7 @@ class IPCServerMixin:
                 if "FILE|" in msg:
                     file = msg.split("FILE|")[1].strip()
                     if file:
-                        event_system.push_gui_event(["create_tab_from_ipc", None, file])
+                        event_system.push_gui_event([None, "handle_file_from_ipc", file])
 
                     conn.close()
                     break
