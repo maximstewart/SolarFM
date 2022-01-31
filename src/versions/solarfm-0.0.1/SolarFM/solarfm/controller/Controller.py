@@ -62,7 +62,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, Controller_Data
                 except Exception as e:
                     print(repr(e))
 
-
     def custom_except_hook(self, exctype, value, _traceback):
         trace     = ''.join(traceback.format_tb(_traceback))
         data      = f"Exectype:  {exctype}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"

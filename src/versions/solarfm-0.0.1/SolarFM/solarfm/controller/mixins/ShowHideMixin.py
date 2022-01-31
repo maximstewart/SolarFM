@@ -96,6 +96,12 @@ class ShowHideMixin:
         dialog.response(Gtk.ResponseType.OK)
 
 
+    def show_plugins_popup(self, widget=None, eve=None):
+        self.builder.get_object("plugin_list").popup()
+
+    def hide_plugins_popup(self, widget=None, eve=None):
+        self.builder.get_object("plugin_list").hide()
+
     def show_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu").run()
 

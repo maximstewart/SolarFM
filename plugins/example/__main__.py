@@ -20,18 +20,17 @@ class Main:
         self._socket_id    = socket_id
         self._event_system = event_system
         self._gtk_plug     = Gtk.Plug.new(self._socket_id)
-        self.start_loop()
 
-    @threaded
-    def start_loop(self):
-        i      = 0
-        cycles = 5
-        alive  = True
-        while alive:
-            if i == cycles:
-                alive = False
+        button = Gtk.Button(label="Click Me!")
+        button.connect("button-release-event", self._do_action)
+        self._gtk_plug.add(button)
+        self._gtk_plug.show_all()
 
-            self._event_system.push_gui_event(["some_type", "display_message", ("warning", str(i), None)])
-            i += 1
 
-            time.sleep(1)
+    def _do_action(self, widget=None, eve=None):
+        message = "Hello, World!"
+        self._event_system.push_gui_event(["some_type", "display_message", ("warning", message, None)])
+
+
+    def get_socket_id(self):
+        return self._socket_id

@@ -16,15 +16,18 @@ class Plugins:
     """docstring for Plugins"""
     def __init__(self, settings):
         self._settings            = settings
+        self._plugin_list_widget  = self._settings.get_builder().get_object("plugin_list")
+        self._plugin_list_socket  = self._settings.get_builder().get_object("plugin_socket")
         self._plugins_path        = self._settings.get_plugins_path()
-        self.gtk_socket           = Gtk.Socket().new()
+        self._gtk_socket          = Gtk.Socket().new()
         self._plugins_dir_watcher = None
-        self.gtk_socket_id        = None
         self._plugin_collection   = []
 
-        self._settings.get_main_window().add(self.gtk_socket)
-        self.gtk_socket.show()
-        self.gtk_socket_id = self.gtk_socket.get_id()
+        self._plugin_list_socket.add(self._gtk_socket)
+
+        # NOTE: Must get ID after adding socket to window. Else issues....
+        self._gtk_socket_id       = self._gtk_socket.get_id()
+        self._plugin_list_widget.show_all()
 
 
     def launch_plugins(self):
@@ -49,10 +52,10 @@ class Plugins:
             if isdir(path):
                 spec   = importlib.util.spec_from_file_location(file, join(path, "__main__.py"))
                 module = importlib.util.module_from_spec(spec)
-                self._plugin_collection.append([file, module])
 
                 spec.loader.exec_module(module)
-                module.Main(self.gtk_socket_id, event_system)
+                plugin = module.Main(self._gtk_socket_id, event_system)
+                self._plugin_collection.append([file, plugin])
 
     def reload_plugins(self, file=None):
         print(f"Reloading plugins...")
