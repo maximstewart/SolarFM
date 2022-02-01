@@ -57,10 +57,19 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, Controller_Data
             if event:
                 try:
                     type, target, data = event
-                    method = getattr(self.__class__, target)
-                    GLib.idle_add(method, *(self, *data,))
+                    if type:
+                        method = getattr(self.__class__, "handle_gui_event_and_set_message")
+                        GLib.idle_add(method, *(self, type, target, data))
+                    else:
+                        method = getattr(self.__class__, target)
+                        GLib.idle_add(method, *(self, *data,))
                 except Exception as e:
                     print(repr(e))
+
+    def handle_gui_event_and_set_message(self, type, target, parameters):
+        method = getattr(self.__class__, f"{target}")
+        data   = method(*(self, *parameters))
+        self.plugins.set_message_on_plugin(type, data)
 
     def custom_except_hook(self, exctype, value, _traceback):
         trace     = ''.join(traceback.format_tb(_traceback))

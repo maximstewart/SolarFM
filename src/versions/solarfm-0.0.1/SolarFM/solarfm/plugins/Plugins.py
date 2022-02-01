@@ -10,6 +10,12 @@ from gi.repository import Gtk, Gio
 # Application imports
 
 
+class Plugin:
+    name          = None
+    module        = None
+    gtk_socket_id = None
+    gtk_socket    = None
+    reference     = None
 
 
 class Plugins:
@@ -19,15 +25,8 @@ class Plugins:
         self._plugin_list_widget  = self._settings.get_builder().get_object("plugin_list")
         self._plugin_list_socket  = self._settings.get_builder().get_object("plugin_socket")
         self._plugins_path        = self._settings.get_plugins_path()
-        self._gtk_socket          = Gtk.Socket().new()
         self._plugins_dir_watcher = None
         self._plugin_collection   = []
-
-        self._plugin_list_socket.add(self._gtk_socket)
-
-        # NOTE: Must get ID after adding socket to window. Else issues....
-        self._gtk_socket_id       = self._gtk_socket.get_id()
-        self._plugin_list_widget.show_all()
 
 
     def launch_plugins(self):
@@ -45,17 +44,36 @@ class Plugins:
                                                     Gio.FileMonitorEvent.MOVED_OUT]:
             self.reload_plugins(file)
 
+    # @threaded
     def load_plugins(self, file=None):
         print(f"Loading plugins...")
         for file in os.listdir(self._plugins_path):
-            path = join(self._plugins_path, file)
-            if isdir(path):
-                spec   = importlib.util.spec_from_file_location(file, join(path, "__main__.py"))
-                module = importlib.util.module_from_spec(spec)
+            try:
+                path = join(self._plugins_path, file)
+                if isdir(path):
+                    gtk_socket    = Gtk.Socket().new()
+                    self._plugin_list_socket.add(gtk_socket)
+                    # NOTE: Must get ID after adding socket to window. Else issues....
+                    gtk_socket_id = gtk_socket.get_id()
 
-                spec.loader.exec_module(module)
-                plugin = module.Main(self._gtk_socket_id, event_system)
-                self._plugin_collection.append([file, plugin])
+                    spec          = importlib.util.spec_from_file_location(file, join(path, "__main__.py"))
+                    module        = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+
+                    ref                  = module.Main(gtk_socket_id, event_system)
+                    plugin               = Plugin()
+                    plugin.name          = ref.get_plugin_name()
+                    plugin.module        = path
+                    plugin.gtk_socket_id = gtk_socket_id
+                    plugin.gtk_socket    = gtk_socket
+                    plugin.reference     = ref
+
+                    self._plugin_collection.append(plugin)
+                    gtk_socket.show_all()
+            except Exception as e:
+                print("Malformed plugin! Not loading!")
+                print(repr(e))
+
 
     def reload_plugins(self, file=None):
         print(f"Reloading plugins...")
@@ -64,3 +82,10 @@ class Plugins:
         #     for dir in self._plugin_collection:
         #         if not os.path.isdir(os.path.join(self._plugins_path, dir)):
         #             to_unload.append(dir)
+
+    def set_message_on_plugin(self, type, data):
+        print("Trying to send message to plugin...")
+        for plugin in self._plugin_collection:
+            if type in plugin.name:
+                print('Found plugin; posting message...')
+                plugin.reference.set_message(data)

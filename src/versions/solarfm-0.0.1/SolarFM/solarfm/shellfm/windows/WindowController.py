@@ -32,7 +32,7 @@ class WindowController:
     def fm_event_observer(self):
         while True:
             time.sleep(event_sleep_time)
-            event = event_system.consume_fm_event()
+            event = event_system.consume_module_event()
             if event:
                 print(event)
 
