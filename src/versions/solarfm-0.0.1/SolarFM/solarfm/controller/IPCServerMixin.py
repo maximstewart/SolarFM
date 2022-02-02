@@ -16,6 +16,7 @@ def threaded(fn):
 
 
 class IPCServerMixin:
+    ''' Create a listener so that other SolarFM instances send requests back to existing instance. '''
 
     @threaded
     def create_ipc_server(self):

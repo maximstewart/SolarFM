@@ -1,5 +1,5 @@
 # Python imports
-import signal
+import sys, os, signal
 
 # Lib imports
 from gi.repository import GLib
@@ -13,8 +13,7 @@ from plugins import Plugins
 
 
 class Controller_Data:
-    def has_method(self, o, name):
-        return callable(getattr(o, name, None))
+    ''' Controller_Data contains most of the state of the app at ay given time. It also has some support methods. '''
 
     def setup_controller_data(self, _settings):
         self.trashman           = XDGTrash()
@@ -104,6 +103,53 @@ class Controller_Data:
         self.warning           = "#ffa800"
         self.error             = "#ff0000"
 
-
+        sys.excepthook = self.custom_except_hook
         self.window.connect("delete-event", self.tear_down)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
+
+    def get_current_state(self):
+        '''
+        Returns the state info most useful for any given context and action intent.
+
+                Parameters:
+                        a (obj): self
+
+                Returns:
+                        wid, tid, view, iconview, store
+        '''
+        wid, tid     = self.window_controller.get_active_data()
+        view         = self.get_fm_window(wid).get_view_by_id(tid)
+        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store        = iconview.get_model()
+        return wid, tid, view, iconview, store
+
+
+    def clear_console(self):
+        ''' Clears the terminal screen. '''
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+    def call_method(self, _method_name, data = None):
+        '''
+        Calls a method from scope of class.
+
+                Parameters:
+                        a (obj): self
+                        b (str): method name to be called
+                        c (*): Data (if any) to be passed to the method.
+                                Note: It must be structured according to the given methods requirements.
+
+                Returns:
+                        Return data is that which the calling method gives.
+        '''
+        method_name = str(_method_name)
+        method      = getattr(self, method_name, lambda data: f"No valid key passed...\nkey={method_name}\nargs={data}")
+        return method(data) if data else method()
+
+    def has_method(self, obj, name):
+        ''' Checks if a given method exists. '''
+        return callable(getattr(obj, name, None))
+
+    def clear_children(self, widget):
+        ''' Clear children of a gtk widget. '''
+        for child in widget.get_children():
+            widget.remove(child)

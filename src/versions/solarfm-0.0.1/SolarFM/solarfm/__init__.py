@@ -12,6 +12,8 @@ from __builtins__ import Builtins
 
 
 class Main(Builtins):
+    ''' Create Settings and Controller classes. Bind signal to Builder. Inherit from Builtins to bind global methods and classes.'''
+
     def __init__(self, args, unknownargs):
         if not debug:
             event_system.create_ipc_server()

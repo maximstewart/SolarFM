@@ -10,7 +10,7 @@ from controller import IPCServerMixin
 
 
 class Builtins(IPCServerMixin):
-    """Docstring for __builtins__ extender"""
+    """ Inheret IPCServerMixin. Create an pub/sub systems. """
 
     def __init__(self):
         # NOTE: The format used is list of [type, target, (data,)] Where:

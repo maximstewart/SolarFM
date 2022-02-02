@@ -1,5 +1,5 @@
 # Python imports
-import sys, traceback, threading, inspect, os, time
+import traceback, threading, inspect, os, time
 
 # Lib imports
 import gi
@@ -7,7 +7,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
 # Application imports
-from .mixins import UIMixin
+from .mixins import ExceptionHookMixin, UIMixin
 from .signals import IPCSignalsMixin, KeyboardSignalsMixin
 from . import Controller_Data
 
@@ -20,9 +20,9 @@ def threaded(fn):
 
 
 
-class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, Controller_Data):
+class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMixin, Controller_Data):
+    ''' Controller coordinates the mixins and is somewhat the root hub of it all. '''
     def __init__(self, args, unknownargs, _settings):
-        sys.excepthook = self.custom_except_hook
         self.setup_controller_data(_settings)
         self.window.show()
         self.generate_windows(self.state)
@@ -71,60 +71,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, Controller_Data
         data   = method(*(self, *parameters))
         self.plugins.set_message_on_plugin(type, data)
 
-    def custom_except_hook(self, exctype, value, _traceback):
-        trace     = ''.join(traceback.format_tb(_traceback))
-        data      = f"Exectype:  {exctype}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"
-        start_itr = self.message_buffer.get_start_iter()
-        self.message_buffer.place_cursor(start_itr)
-        self.display_message(self.error, data)
-
-    def display_message(self, type, text, seconds=None):
-        self.message_buffer.insert_at_cursor(text)
-        self.message_widget.popup()
-        if seconds:
-            self.hide_message_timeout(seconds)
-
-    @threaded
-    def hide_message_timeout(self, seconds=3):
-        time.sleep(seconds)
-        GLib.idle_add(self.message_widget.popdown)
-
-    def save_debug_alerts(self, widget=None, eve=None):
-        start_itr, end_itr   = self.message_buffer.get_bounds()
-        save_location_prompt = Gtk.FileChooserDialog("Choose Save Folder", self.window, \
-                                                        action  = Gtk.FileChooserAction.SAVE, \
-                                                        buttons = (Gtk.STOCK_CANCEL, \
-                                                                    Gtk.ResponseType.CANCEL, \
-                                                                    Gtk.STOCK_SAVE, \
-                                                                    Gtk.ResponseType.OK))
-
-        text = self.message_buffer.get_text(start_itr, end_itr, False)
-        resp = save_location_prompt.run()
-        if (resp == Gtk.ResponseType.CANCEL) or (resp == Gtk.ResponseType.DELETE_EVENT):
-            pass
-        elif resp == Gtk.ResponseType.OK:
-            target = save_location_prompt.get_filename();
-            with open(target, "w") as f:
-                f.write(text)
-
-        save_location_prompt.destroy()
-
-
-    def set_arc_buffer_text(self, widget=None, eve=None):
-        id = widget.get_active_id()
-        self.arc_command_buffer.set_text(self.arc_commands[int(id)])
-
-
-    def clear_children(self, widget):
-        for child in widget.get_children():
-            widget.remove(child)
-
-    def get_current_state(self):
-        wid, tid     = self.window_controller.get_active_data()
-        view         = self.get_fm_window(wid).get_view_by_id(tid)
-        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store        = iconview.get_model()
-        return wid, tid, view, iconview, store
 
     def do_action_from_menu_controls(self, widget, eventbutton):
         action        = widget.get_name()
