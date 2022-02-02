@@ -151,7 +151,10 @@ class WindowController:
 
 
 
-    def save_state(self):
+    def save_state(self, session_file = None):
+        if not session_file:
+            session_file = self.session_file
+
         windows = []
         for window in self.windows:
             views = []
@@ -172,10 +175,13 @@ class WindowController:
                 ]
             )
 
-        with open(self.session_file, 'w') as outfile:
+        with open(session_file, 'w') as outfile:
             json.dump(windows, outfile, separators=(',', ':'), indent=4)
 
-    def load_state(self):
-        if path.isfile(self.session_file):
-            with open(self.session_file) as infile:
+    def load_state(self, session_file = None):
+        if not session_file:
+            session_file = self.session_file
+
+        if path.isfile(session_file):
+            with open(session_file) as infile:
                 return json.load(infile)

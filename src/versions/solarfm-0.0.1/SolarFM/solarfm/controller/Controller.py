@@ -72,6 +72,34 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         self.plugins.set_message_on_plugin(type, data)
 
 
+    def save_load_session(self, action="save_session"):
+        wid, tid          = self.window_controller.get_active_data()
+        view              = self.get_fm_window(wid).get_view_by_id(tid)
+        save_load_dialog  = self.builder.get_object("save_load_dialog")
+        save_load_dialog.set_current_folder(view.get_current_directory())
+        save_load_dialog.set_current_name("session.json")
+
+        if action == "save_session":
+            save_load_dialog.set_action(Gtk.FileChooserAction.SAVE)
+        elif action == "load_session":
+            save_load_dialog.set_action(Gtk.FileChooserAction.OPEN)
+
+
+        response = save_load_dialog.run()
+        if response == Gtk.ResponseType.OK:
+            path = f"{save_load_dialog.get_current_folder()}/{save_load_dialog.get_current_name()}"
+
+            if action == "save_session":
+                self.window_controller.save_state(path)
+            elif action == "load_session":
+                session_json = self.window_controller.load_state(path)
+                print(session_json)
+        if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
+            pass
+
+        save_load_dialog.hide()
+
+
     def do_action_from_menu_controls(self, widget, eventbutton):
         action        = widget.get_name()
         self.ctrlDown = True
@@ -104,7 +132,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         if action == "trash":
             self.trash_files()
         if action == "go_to_trash":
-            self.builder.get_object("path_entry").set_text(self.trash_files_path)
+            self.path_entry.set_text(self.trash_files_path)
         if action == "restore_from_trash":
             self.restore_trash_files()
         if action == "empty_trash":
@@ -112,5 +140,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
         if action == "create":
             self.create_files()
+        if action in ["save_session", "load_session"]:
+            self.save_load_session(action)
 
         self.ctrlDown = False

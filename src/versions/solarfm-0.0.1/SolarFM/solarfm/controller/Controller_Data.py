@@ -36,13 +36,14 @@ class Controller_Data:
         self.message_buffer     = self.builder.get_object("message_buffer")
         self.arc_command_buffer = self.builder.get_object("arc_command_buffer")
 
+        self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
         self.warning_alert      = self.builder.get_object("warning_alert")
         self.edit_file_menu     = self.builder.get_object("edit_file_menu")
         self.file_exists_dialog = self.builder.get_object("file_exists_dialog")
         self.exists_file_label  = self.builder.get_object("exists_file_label")
         self.exists_file_field  = self.builder.get_object("exists_file_field")
         self.path_menu          = self.builder.get_object("path_menu")
-        self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
+        self.path_entry         = self.builder.get_object("path_entry")
 
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")
         self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
