@@ -16,9 +16,9 @@ from . import TabMixin, WidgetMixin
 
 class WindowMixin(TabMixin):
     """docstring for WindowMixin"""
-    def generate_windows(self, data = None):
-        if data:
-            for j, value in enumerate(data):
+    def generate_windows(self, session_json = None):
+        if session_json:
+            for j, value in enumerate(session_json):
                 i = j + 1
                 isHidden = True if value[0]["window"]["isHidden"] == "True" else False
                 object   = self.builder.get_object(f"tggl_notebook_{i}")

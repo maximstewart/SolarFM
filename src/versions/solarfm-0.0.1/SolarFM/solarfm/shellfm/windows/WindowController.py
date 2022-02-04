@@ -151,32 +151,41 @@ class WindowController:
 
 
 
+    def unload_views_and_windows(self):
+        for window in self.windows:
+            window.views.clear()
+
+        self.windows.clear()
+
     def save_state(self, session_file = None):
         if not session_file:
             session_file = self.session_file
 
-        windows = []
-        for window in self.windows:
-            views = []
-            for view in window.views:
-                views.append(view.get_current_directory())
+        if len(self.windows) > 0:
+            windows = []
+            for window in self.windows:
+                views = []
+                for view in window.views:
+                    views.append(view.get_current_directory())
 
-            windows.append(
-                [
-                    {
-                        'window':{
-                            "ID": window.id,
-                            "Name": window.name,
-                            "Nickname": window.nickname,
-                            "isHidden": f"{window.isHidden}",
-                            'views': views
+                windows.append(
+                    [
+                        {
+                            'window':{
+                                "ID": window.id,
+                                "Name": window.name,
+                                "Nickname": window.nickname,
+                                "isHidden": f"{window.isHidden}",
+                                'views': views
+                            }
                         }
-                    }
-                ]
-            )
+                    ]
+                )
 
-        with open(session_file, 'w') as outfile:
-            json.dump(windows, outfile, separators=(',', ':'), indent=4)
+            with open(session_file, 'w') as outfile:
+                json.dump(windows, outfile, separators=(',', ':'), indent=4)
+        else:
+            raise Exception("Window dara corrupted! Can not save session!")
 
     def load_state(self, session_file = None):
         if not session_file:

@@ -1,5 +1,5 @@
 # Python imports
-import traceback, threading, inspect, os, time
+import traceback, threading, inspect, os, gc, time
 
 # Lib imports
 import gi
@@ -76,28 +76,42 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         wid, tid          = self.window_controller.get_active_data()
         view              = self.get_fm_window(wid).get_view_by_id(tid)
         save_load_dialog  = self.builder.get_object("save_load_dialog")
-        save_load_dialog.set_current_folder(view.get_current_directory())
-        save_load_dialog.set_current_name("session.json")
 
         if action == "save_session":
             save_load_dialog.set_action(Gtk.FileChooserAction.SAVE)
         elif action == "load_session":
             save_load_dialog.set_action(Gtk.FileChooserAction.OPEN)
 
-
+        save_load_dialog.set_current_folder(view.get_current_directory())
+        save_load_dialog.set_current_name("session.json")
         response = save_load_dialog.run()
         if response == Gtk.ResponseType.OK:
-            path = f"{save_load_dialog.get_current_folder()}/{save_load_dialog.get_current_name()}"
-
             if action == "save_session":
+                path = f"{save_load_dialog.get_current_folder()}/{save_load_dialog.get_current_name()}"
                 self.window_controller.save_state(path)
             elif action == "load_session":
+                path         = f"{save_load_dialog.get_file().get_path()}"
                 session_json = self.window_controller.load_state(path)
-                print(session_json)
+                self.load_session(session_json)
         if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
             pass
 
         save_load_dialog.hide()
+
+
+    def load_session(self, session_json):
+        if debug:
+            print(f"Session Data: {session_json}")
+
+        self.ctrlDown          = False
+        self.shiftDown         = False
+        self.altDown           = False
+        for notebook in self.notebooks:
+            self.clear_children(notebook)
+
+        self.window_controller.unload_views_and_windows()
+        self.generate_windows(session_json)
+        gc.collect()
 
 
     def do_action_from_menu_controls(self, widget, eventbutton):
