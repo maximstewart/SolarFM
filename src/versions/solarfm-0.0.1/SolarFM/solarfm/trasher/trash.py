@@ -21,7 +21,7 @@ class Trash(object):
             if os.path.isfile(item):
                 size = size + os.path.getsize(item)
             elif os.path.isdir(item):
-                size = size + size_dir(item)
+                size = size + self.size_dir(item)
 
         return size
 

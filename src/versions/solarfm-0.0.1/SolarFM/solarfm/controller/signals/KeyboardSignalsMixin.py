@@ -89,7 +89,7 @@ class KeyboardSignalsMixin:
         if self.ctrlDown and keyname == "h":
             self.show_hide_hidden_files()
         if (self.ctrlDown and keyname == "e"):
-            self.edit_files()
+            self.rename_files()
         if self.ctrlDown and keyname == "c":
             self.to_cut_files.clear()
             self.copy_files()
