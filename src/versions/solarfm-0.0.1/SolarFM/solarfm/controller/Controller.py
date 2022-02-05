@@ -78,9 +78,14 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         save_load_dialog  = self.builder.get_object("save_load_dialog")
 
         if action == "save_session":
+            self.window_controller.save_state()
+            return
+        elif action == "save_session_as":
             save_load_dialog.set_action(Gtk.FileChooserAction.SAVE)
         elif action == "load_session":
             save_load_dialog.set_action(Gtk.FileChooserAction.OPEN)
+        else:
+            raise Exception(f"Unknown action given:  {action}")
 
         save_load_dialog.set_current_folder(view.get_current_directory())
         save_load_dialog.set_current_name("session.json")
@@ -154,7 +159,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
         if action == "create":
             self.create_files()
-        if action in ["save_session", "load_session"]:
+        if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
 
         self.ctrlDown = False

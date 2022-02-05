@@ -1139,6 +1139,11 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="can-focus">False</property>
     <property name="stock">gtk-justify-center</property>
   </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-save</property>
+  </object>
   <object class="GtkTextBuffer" id="message_buffer"/>
   <object class="GtkImage" id="open_with_img">
     <property name="visible">True</property>
@@ -1455,27 +1460,52 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                           </object>
                         </child>
                         <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">Save Session</property>
-                            <property name="name">save_session</property>
+                          <object class="GtkMenuItem">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="tooltip-text" translatable="yes">New File/Folder...</property>
-                            <property name="image">image1</property>
-                            <property name="use-stock">False</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">Load Session</property>
-                            <property name="name">load_session</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="tooltip-text" translatable="yes">New File/Folder...</property>
-                            <property name="image">image2</property>
-                            <property name="use-stock">False</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                            <property name="label" translatable="yes">Session</property>
+                            <child type="submenu">
+                              <object class="GtkMenu">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <child>
+                                  <object class="GtkImageMenuItem">
+                                    <property name="label">Save Session</property>
+                                    <property name="name">save_session</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="tooltip-text" translatable="yes">New File/Folder...</property>
+                                    <property name="image">image4</property>
+                                    <property name="use-stock">False</property>
+                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkImageMenuItem">
+                                    <property name="label">Save Session As</property>
+                                    <property name="name">save_session_as</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="tooltip-text" translatable="yes">New File/Folder...</property>
+                                    <property name="image">image1</property>
+                                    <property name="use-stock">False</property>
+                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkImageMenuItem">
+                                    <property name="label">Load Session</property>
+                                    <property name="name">load_session</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="tooltip-text" translatable="yes">New File/Folder...</property>
+                                    <property name="image">image2</property>
+                                    <property name="use-stock">False</property>
+                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>
@@ -2459,25 +2489,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="label">gtk-delete</property>
-                    <property name="name">delete</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Delete...</property>
-                    <property name="margin-top">20</property>
-                    <property name="use-stock">True</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">9</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton" id="restore_from_trash">
                     <property name="label" translatable="yes">Restore From Trash</property>
                     <property name="name">restore_from_trash</property>
@@ -2491,7 +2502,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">10</property>
+                    <property name="position">9</property>
                   </packing>
                 </child>
                 <child>
@@ -2502,13 +2513,12 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Empty Trash...</property>
-                    <property name="margin-bottom">20</property>
                     <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">11</property>
+                    <property name="position">10</property>
                   </packing>
                 </child>
                 <child>
@@ -2519,6 +2529,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Move to Trash...</property>
+                    <property name="margin-top">20</property>
                     <property name="image">trash_img</property>
                     <property name="always-show-image">True</property>
                     <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
@@ -2526,7 +2537,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">12</property>
+                    <property name="position">11</property>
                   </packing>
                 </child>
                 <child>
@@ -2538,6 +2549,25 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Go To Trash...</property>
                     <property name="image">trash_img2</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">gtk-delete</property>
+                    <property name="name">delete</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Delete...</property>
+                    <property name="margin-top">20</property>
+                    <property name="use-stock">True</property>
                     <property name="always-show-image">True</property>
                     <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                   </object>
