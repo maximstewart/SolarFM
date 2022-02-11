@@ -3,10 +3,13 @@ import os, subprocess, threading, hashlib
 from os.path import isfile
 
 # Gtk imports
+import gi
+gi.require_version('GdkPixbuf', '2.0')
 from gi.repository import GdkPixbuf
 
 # Application imports
-from .mixins import *
+from .mixins.desktopiconmixin import DesktopIconMixin
+from .mixins.videoiconmixin import VideoIconMixin
 
 
 def threaded(fn):

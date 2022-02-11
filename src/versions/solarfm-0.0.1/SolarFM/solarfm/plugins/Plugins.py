@@ -1,5 +1,5 @@
 # Python imports
-import os, importlib
+import os, sys, importlib, traceback
 from os.path import join, isdir
 
 # Lib imports
@@ -47,15 +47,20 @@ class Plugins:
     # @threaded
     def load_plugins(self, file=None):
         print(f"Loading plugins...")
+        parent_path = os.getcwd()
+
         for file in os.listdir(self._plugins_path):
             try:
                 path = join(self._plugins_path, file)
                 if isdir(path):
+                    os.chdir(path)
+
                     gtk_socket    = Gtk.Socket().new()
                     self._plugin_list_socket.add(gtk_socket)
                     # NOTE: Must get ID after adding socket to window. Else issues....
                     gtk_socket_id = gtk_socket.get_id()
 
+                    sys.path.insert(0, path)
                     spec          = importlib.util.spec_from_file_location(file, join(path, "__main__.py"))
                     module        = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
@@ -72,7 +77,9 @@ class Plugins:
                     gtk_socket.show_all()
             except Exception as e:
                 print("Malformed plugin! Not loading!")
-                print(repr(e))
+                traceback.print_exc()
+
+        os.chdir(parent_path)
 
 
     def reload_plugins(self, file=None):

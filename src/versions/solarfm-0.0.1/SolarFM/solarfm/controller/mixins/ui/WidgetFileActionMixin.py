@@ -52,7 +52,7 @@ class WidgetFileActionMixin:
                                 .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, Gio.Cancellable())
 
         wid = view.get_wid()
-        tid = view.get_tab_id()
+        tid = view.get_id()
         dir_watcher.connect("changed", self.dir_watch_updates, (f"{wid}|{tid}",))
         view.set_dir_watcher(dir_watcher)
 
@@ -174,7 +174,7 @@ class WidgetFileActionMixin:
         self.to_copy_files = uris
 
     def paste_files(self):
-        wid, tid  = self.window_controller.get_active_data()
+        wid, tid  = self.window_controller.get_active_wid_and_tid()
         view      = self.get_fm_window(wid).get_view_by_id(tid)
         target    = f"{view.get_current_directory()}"
 
@@ -227,7 +227,7 @@ class WidgetFileActionMixin:
         file_name   = fname_field.get_text().strip()
         type        = self.builder.get_object("context_menu_type_toggle").get_state()
 
-        wid, tid    = self.window_controller.get_active_data()
+        wid, tid    = self.window_controller.get_active_wid_and_tid()
         view        = self.get_fm_window(wid).get_view_by_id(tid)
         target      = f"{view.get_current_directory()}"
 
@@ -294,7 +294,7 @@ class WidgetFileActionMixin:
                         type      = _file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
                         if type == Gio.FileType.DIRECTORY:
-                            wid, tid  = self.window_controller.get_active_data()
+                            wid, tid  = self.window_controller.get_active_wid_and_tid()
                             view      = self.get_fm_window(wid).get_view_by_id(tid)
                             view.delete_file( _file.get_path() )
                         else:
@@ -321,7 +321,7 @@ class WidgetFileActionMixin:
 
                 type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
                 if type == Gio.FileType.DIRECTORY:
-                    wid, tid  = self.window_controller.get_active_data()
+                    wid, tid  = self.window_controller.get_active_wid_and_tid()
                     view      = self.get_fm_window(wid).get_view_by_id(tid)
                     fPath     = file.get_path()
                     tPath     = target.get_path()

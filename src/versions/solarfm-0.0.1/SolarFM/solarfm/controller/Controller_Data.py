@@ -6,7 +6,7 @@ from gi.repository import GLib
 
 # Application imports
 from trasher.xdgtrash import XDGTrash
-from shellfm import WindowController
+from shellfm.windows.controller import WindowController
 from plugins import Plugins
 
 
@@ -118,7 +118,7 @@ class Controller_Data:
                 Returns:
                         wid, tid, view, iconview, store
         '''
-        wid, tid     = self.window_controller.get_active_data()
+        wid, tid     = self.window_controller.get_active_wid_and_tid()
         view         = self.get_fm_window(wid).get_view_by_id(tid)
         iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
         store        = iconview.get_model()

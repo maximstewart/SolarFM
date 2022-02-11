@@ -114,7 +114,7 @@ class KeyboardSignalsMixin:
         if keyname == "f2":
             self.rename_files()
         if keyname == "f4":
-            wid, tid = self.window_controller.get_active_data()
+            wid, tid = self.window_controller.get_active_wid_and_tid()
             view     = self.get_fm_window(wid).get_view_by_id(tid)
             dir      = view.get_current_directory()
             view.execute(f"{view.terminal_app}", dir)

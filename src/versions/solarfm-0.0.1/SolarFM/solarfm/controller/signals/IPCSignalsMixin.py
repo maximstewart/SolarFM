@@ -11,7 +11,7 @@ class IPCSignalsMixin:
         print(message)
 
     def handle_file_from_ipc(self, path):
-        wid, tid   = self.window_controller.get_active_data()
+        wid, tid   = self.window_controller.get_active_wid_and_tid()
         notebook   = self.builder.get_object(f"window_{wid}")
         if notebook.is_visible():
             self.create_tab(wid, path)

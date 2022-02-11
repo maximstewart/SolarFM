@@ -30,7 +30,7 @@ class TabMixin(WidgetMixin):
         # scroll, store = self.create_grid_treeview_widget(view, wid)
         index         = notebook.append_page(scroll, tab)
 
-        self.window_controller.set_active_data(wid, view.get_tab_id())
+        self.window_controller.set__wid_and_tid(wid, view.get_id())
         path_entry.set_text(view.get_current_directory())
         notebook.show_all()
         notebook.set_current_page(index)
@@ -47,7 +47,7 @@ class TabMixin(WidgetMixin):
 
     def close_tab(self, button, eve=None):
         notebook = button.get_parent().get_parent()
-        tid      = self.get_tab_id_from_tab_box(button.get_parent())
+        tid      = self.get_id_from_tab_box(button.get_parent())
         wid      = int(notebook.get_name()[-1])
         scroll   = self.builder.get_object(f"{wid}|{tid}")
         page     = notebook.page_num(scroll)
@@ -65,12 +65,12 @@ class TabMixin(WidgetMixin):
         window   = self.get_fm_window(wid)
         view     = None
 
-        for i, view in enumerate(window.views):
-            if view.id == tid:
+        for i, view in enumerate(window.get_all_views()):
+            if view.get_id() == tid:
                 _view   = window.get_view_by_id(tid)
                 watcher = _view.get_dir_watcher()
                 watcher.cancel()
-                window.views.insert(new_index, window.views.pop(i))
+                window.get_all_views().insert(new_index, window.get_all_views().pop(i))
 
         view = window.get_view_by_id(tid)
         self.set_file_watcher(view)
@@ -79,11 +79,11 @@ class TabMixin(WidgetMixin):
     def on_tab_switch_update(self, notebook, content=None, index=None):
         self.selected_files.clear()
         wid, tid = content.get_children()[0].get_name().split("|")
-        self.window_controller.set_active_data(wid, tid)
+        self.window_controller.set__wid_and_tid(wid, tid)
         self.set_path_text(wid, tid)
         self.set_window_title()
 
-    def get_tab_id_from_tab_box(self, tab_box):
+    def get_id_from_tab_box(self, tab_box):
         tid = tab_box.get_children()[2]
         return tid.get_text()
 
@@ -114,7 +114,7 @@ class TabMixin(WidgetMixin):
 
     def do_action_from_bar_controls(self, widget, eve=None):
         action    = widget.get_name()
-        wid, tid  = self.window_controller.get_active_data()
+        wid, tid  = self.window_controller.get_active_wid_and_tid()
         notebook  = self.builder.get_object(f"window_{wid}")
         store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
         view      = self.get_fm_window(wid).get_view_by_id(tid)
@@ -138,11 +138,11 @@ class TabMixin(WidgetMixin):
             if isinstance(focused_obj, Gtk.Entry):
                 button_box  = self.path_menu.get_children()[0].get_children()[0].get_children()[0]
                 query       = widget.get_text().replace(dir, "")
-                files       = view.files + view.hidden
+                files       = view.get_files() + view.get_hidden()
 
                 self.clear_children(button_box)
                 show_path_menu = False
-                for file in files:
+                for file, hash in files:
                     if os.path.isdir(f"{dir}{file}"):
                         if query.lower() in file.lower():
                             button = Gtk.Button(label=file)
@@ -183,7 +183,7 @@ class TabMixin(WidgetMixin):
         self.path_menu.popdown()
 
     def keyboard_close_tab(self):
-        wid, tid  = self.window_controller.get_active_data()
+        wid, tid  = self.window_controller.get_active_wid_and_tid()
         notebook  = self.builder.get_object(f"window_{wid}")
         scroll    = self.builder.get_object(f"{wid}|{tid}")
         page      = notebook.page_num(scroll)
@@ -198,8 +198,8 @@ class TabMixin(WidgetMixin):
 
     # File control events
     def show_hide_hidden_files(self):
-        wid, tid = self.window_controller.get_active_data()
+        wid, tid = self.window_controller.get_active_wid_and_tid()
         view     = self.get_fm_window(wid).get_view_by_id(tid)
-        view.hide_hidden = not view.hide_hidden
+        view.set_is_hidden(not view.is_hidden())
         view.load_directory()
         self.builder.get_object("refresh_view").released()

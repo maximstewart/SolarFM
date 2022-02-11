@@ -100,7 +100,7 @@ class WidgetMixin:
         label.set_label(f"{view.get_end_of_path()}")
         label.set_width_chars(len(view.get_end_of_path()))
         label.set_xalign(0.0)
-        tid.set_label(f"{view.id}")
+        tid.set_label(f"{view.get_id()}")
 
         close.add(icon)
         tab.add(label)
@@ -148,10 +148,10 @@ class WidgetMixin:
 
         grid.show_all()
         scroll.add(grid)
-        grid.set_name(f"{wid}|{view.id}")
-        scroll.set_name(f"{wid}|{view.id}")
-        self.builder.expose_object(f"{wid}|{view.id}|iconview", grid)
-        self.builder.expose_object(f"{wid}|{view.id}", scroll)
+        grid.set_name(f"{wid}|{view.get_id()}")
+        scroll.set_name(f"{wid}|{view.get_id()}")
+        self.builder.expose_object(f"{wid}|{view.get_id()}|iconview", grid)
+        self.builder.expose_object(f"{wid}|{view.get_id()}", scroll)
         return scroll, store
 
     def create_grid_treeview_widget(self, view, wid):
@@ -197,10 +197,10 @@ class WidgetMixin:
 
         grid.show_all()
         scroll.add(grid)
-        grid.set_name(f"{wid}|{view.id}")
-        scroll.set_name(f"{wid}|{view.id}")
+        grid.set_name(f"{wid}|{view.get_id()}")
+        scroll.set_name(f"{wid}|{view.get_id()}")
         grid.columns_autosize()
-        self.builder.expose_object(f"{wid}|{view.id}", scroll)
+        self.builder.expose_object(f"{wid}|{view.get_id()}", scroll)
         return scroll, store
 
 

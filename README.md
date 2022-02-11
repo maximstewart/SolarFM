@@ -1,6 +1,4 @@
 # SolarFM
-
-# SolarFM
 SolarFM is a Gtk+ Python file manager.
 
 # Notes
@@ -14,6 +12,8 @@ sudo apt-get install python3.8 wget python3-setproctitle python3-gi ffmpegthumbn
 # TODO
 <ul>
 <li>Add simpleish plugin system to run bash/python scripts.</li>
+<li>Add simpleish search plugin to do recursive search and show.</li>
+<li>Add simpleish bulk-renamer.</li>
 </ul>
 
 # Images

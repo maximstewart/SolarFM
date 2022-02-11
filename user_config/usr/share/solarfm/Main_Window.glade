@@ -644,6 +644,21 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="can-focus">False</property>
             <property name="layout-style">end</property>
             <child>
+              <object class="GtkButton" id="button9">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="button10">
                 <property name="label" translatable="yes">Create</property>
                 <property name="name">create</property>
@@ -656,21 +671,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button9">
-                <property name="label">gtk-cancel</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
-                <property name="always-show-image">True</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -783,8 +783,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
       </object>
     </child>
     <action-widgets>
-      <action-widget response="-10">button10</action-widget>
       <action-widget response="-6">button9</action-widget>
+      <action-widget response="-10">button10</action-widget>
     </action-widgets>
   </object>
   <object class="GtkImage" id="exec_in_term_img">
@@ -1246,14 +1246,13 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="can-focus">False</property>
             <property name="layout-style">end</property>
             <child>
-              <object class="GtkButton" id="button1">
-                <property name="label" translatable="yes">Skip</property>
-                <property name="name">skip_renames</property>
+              <object class="GtkButton" id="button2">
+                <property name="label">gtk-cancel</property>
+                <property name="name">cancel_renames</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="image">skip_img</property>
-                <property name="always-show-image">True</property>
+                <property name="use-stock">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1262,13 +1261,14 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button2">
-                <property name="label">gtk-cancel</property>
-                <property name="name">cancel_renames</property>
+              <object class="GtkButton" id="button1">
+                <property name="label" translatable="yes">Skip</property>
+                <property name="name">skip_renames</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
+                <property name="image">skip_img</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1366,8 +1366,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
       </object>
     </child>
     <action-widgets>
-      <action-widget response="-7">button1</action-widget>
       <action-widget response="-6">button2</action-widget>
+      <action-widget response="-7">button1</action-widget>
     </action-widgets>
   </object>
   <object class="GtkImage" id="tggl_notebook_1_img">

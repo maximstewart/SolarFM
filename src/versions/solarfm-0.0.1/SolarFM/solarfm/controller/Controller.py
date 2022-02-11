@@ -25,8 +25,12 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
     def __init__(self, args, unknownargs, _settings):
         self.setup_controller_data(_settings)
         self.window.show()
+
         self.generate_windows(self.state)
         self.plugins.launch_plugins()
+
+        if debug:
+            self.window.set_interactive_debugging(True)
 
         if not trace_debug:
             self.gui_event_observer()
@@ -73,7 +77,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
 
     def save_load_session(self, action="save_session"):
-        wid, tid          = self.window_controller.get_active_data()
+        wid, tid          = self.window_controller.get_active_wid_and_tid()
         view              = self.get_fm_window(wid).get_view_by_id(tid)
         save_load_dialog  = self.builder.get_object("save_load_dialog")
 

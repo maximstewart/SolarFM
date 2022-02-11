@@ -56,7 +56,7 @@ class ShowHideMixin:
 
 
     def show_archiver_dialogue(self, widget=None, eve=None):
-        wid, tid          = self.window_controller.get_active_data()
+        wid, tid          = self.window_controller.get_active_wid_and_tid()
         view              = self.get_fm_window(wid).get_view_by_id(tid)
         archiver_dialogue = self.builder.get_object("archiver_dialogue")
         archiver_dialogue.set_action(Gtk.FileChooserAction.SAVE)

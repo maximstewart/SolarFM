@@ -113,7 +113,7 @@ class WindowMixin(TabMixin):
 
 
             formatted_size = self.sizeof_fmt(combined_size)
-            if view.hide_hidden:
+            if view.get_hidden():
                 self.bottom_path_label.set_label(f" {len(uris)} / {view.get_files_count()} ({formatted_size})")
             else:
                 self.bottom_path_label.set_label(f" {len(uris)} / {view.get_not_hidden_count()} ({formatted_size})")
@@ -121,7 +121,7 @@ class WindowMixin(TabMixin):
             return
 
         # If nothing selected
-        if view.hide_hidden:
+        if view.get_hidden():
             if view.get_hidden_count() > 0:
                 self.bottom_file_count_label.set_label(f"{view.get_not_hidden_count()} visible ({view.get_hidden_count()} hidden)")
             else:
@@ -132,7 +132,7 @@ class WindowMixin(TabMixin):
 
 
     def set_window_title(self):
-        wid, tid = self.window_controller.get_active_data()
+        wid, tid = self.window_controller.get_active_wid_and_tid()
         notebook = self.builder.get_object(f"window_{wid}")
         view     = self.get_fm_window(wid).get_view_by_id(tid)
         dir      = view.get_current_directory()
@@ -164,7 +164,7 @@ class WindowMixin(TabMixin):
         try:
             self.path_menu.popdown()
             wid, tid = iconview.get_name().split("|")
-            self.window_controller.set_active_data(wid, tid)
+            self.window_controller.set__wid_and_tid(wid, tid)
             self.set_path_text(wid, tid)
             self.set_window_title()
 
@@ -221,7 +221,7 @@ class WindowMixin(TabMixin):
         data.set_text(uris_text, -1)
 
     def grid_on_drag_motion(self, iconview, drag_context, x, y, data):
-        current   = '|'.join(self.window_controller.get_active_data())
+        current   = '|'.join(self.window_controller.get_active_wid_and_tid())
         target    = iconview.get_name()
         wid, tid  = target.split("|")
         store     = iconview.get_model()
@@ -232,12 +232,12 @@ class WindowMixin(TabMixin):
             self.override_drop_dest = uri if isdir(uri) else None
 
         if target not in current:
-            self.window_controller.set_active_data(wid, tid)
+            self.window_controller.set__wid_and_tid(wid, tid)
 
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
         if info == 80:
-            wid, tid  = self.window_controller.get_active_data()
+            wid, tid  = self.window_controller.get_active_wid_and_tid()
             notebook  = self.builder.get_object(f"window_{wid}")
             store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
             view      = self.get_fm_window(wid).get_view_by_id(tid)
