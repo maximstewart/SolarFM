@@ -47,6 +47,7 @@ class KeyboardSignalsMixin:
 
 
         if self.ctrlDown and self.shiftDown and keyname == "t":
+            self.unset_keys_and_data()
             self.trash_files()
 
 
@@ -57,6 +58,7 @@ class KeyboardSignalsMixin:
                     if isinstance(focused_obj, Gtk.IconView):
                         self.is_searching = True
                         wid, tid, self.search_view, self.search_iconview, store = self.get_current_state()
+                        self.unset_keys_and_data()
                         self.popup_search_files(wid, keyname)
                         return
 
@@ -79,26 +81,30 @@ class KeyboardSignalsMixin:
         if (self.ctrlDown and keyname == "up") or (self.ctrlDown and keyname == "u"):
             self.builder.get_object("go_up").released()
         if self.ctrlDown and keyname == "l":
+            self.unset_keys_and_data()
             self.builder.get_object("path_entry").grab_focus()
         if self.ctrlDown and keyname == "t":
             self.builder.get_object("create_tab").released()
         if self.ctrlDown and keyname == "o":
+            self.unset_keys_and_data()
             self.open_files()
         if self.ctrlDown and keyname == "w":
             self.keyboard_close_tab()
         if self.ctrlDown and keyname == "h":
             self.show_hide_hidden_files()
         if (self.ctrlDown and keyname == "e"):
+            self.unset_keys_and_data()
             self.rename_files()
         if self.ctrlDown and keyname == "c":
-            self.to_cut_files.clear()
             self.copy_files()
+            self.to_cut_files.clear()
         if self.ctrlDown and keyname == "x":
             self.to_copy_files.clear()
             self.cut_files()
         if self.ctrlDown and keyname == "v":
             self.paste_files()
         if self.ctrlDown and keyname == "n":
+            self.unset_keys_and_data()
             self.show_new_file_menu()
 
 
@@ -110,11 +116,11 @@ class KeyboardSignalsMixin:
             else:
                 top_main_menubar.show()
         if keyname == "delete":
+            self.unset_keys_and_data()
             self.delete_files()
         if keyname == "f2":
+            self.unset_keys_and_data()
             self.rename_files()
         if keyname == "f4":
-            wid, tid = self.window_controller.get_active_wid_and_tid()
-            view     = self.get_fm_window(wid).get_view_by_id(tid)
-            dir      = view.get_current_directory()
-            view.execute(f"{view.terminal_app}", dir)
+            self.unset_keys_and_data()
+            self.open_terminal()

@@ -87,8 +87,8 @@ class WidgetFileActionMixin:
     def do_file_search(self, widget, eve=None):
         query = widget.get_text()
         self.search_iconview.unselect_all()
-        for i, file in enumerate(self.search_view.files):
-            if query and query in file.lower():
+        for i, file in enumerate(self.search_view.get_files()):
+            if query and query in file[0].lower():
                 path = Gtk.TreePath().new_from_indices([i])
                 self.search_iconview.select_path(path)
 

@@ -75,6 +75,11 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         data   = method(*(self, *parameters))
         self.plugins.set_message_on_plugin(type, data)
 
+    def open_terminal(self, widget=None, eve=None):
+        wid, tid = self.window_controller.get_active_wid_and_tid()
+        view     = self.get_fm_window(wid).get_view_by_id(tid)
+        dir      = view.get_current_directory()
+        view.execute(f"{view.terminal_app}", dir)
 
     def save_load_session(self, action="save_session"):
         wid, tid          = self.window_controller.get_active_wid_and_tid()
@@ -106,7 +111,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             pass
 
         save_load_dialog.hide()
-
 
     def load_session(self, session_json):
         if debug:
@@ -162,8 +166,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             self.empty_trash()
 
         if action == "create":
-            self.create_files()
+            self.show_new_file_menu()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
-
-        self.ctrlDown = False

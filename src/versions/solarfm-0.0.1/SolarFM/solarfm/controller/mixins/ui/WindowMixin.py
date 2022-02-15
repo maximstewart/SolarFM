@@ -182,9 +182,11 @@ class WindowMixin(TabMixin):
     def grid_icon_double_click(self, iconview, item, data=None):
         try:
             if self.ctrlDown and self.shiftDown:
+                self.unset_keys_and_data()
                 self.execute_files(in_terminal=True)
                 return
             elif self.ctrlDown:
+                self.unset_keys_and_data()
                 self.execute_files()
                 return
 
