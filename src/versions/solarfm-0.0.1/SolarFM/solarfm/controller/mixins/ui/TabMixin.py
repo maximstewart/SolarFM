@@ -200,6 +200,6 @@ class TabMixin(WidgetMixin):
     def show_hide_hidden_files(self):
         wid, tid = self.window_controller.get_active_wid_and_tid()
         view     = self.get_fm_window(wid).get_view_by_id(tid)
-        view.set_is_hidden(not view.is_hidden())
+        view.set_hiding_hidden(not view.is_hiding_hidden())
         view.load_directory()
         self.builder.get_object("refresh_view").released()

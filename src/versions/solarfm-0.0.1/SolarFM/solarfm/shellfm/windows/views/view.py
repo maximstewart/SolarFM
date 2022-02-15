@@ -177,6 +177,8 @@ class View(Settings, FileHandler, Launcher, Icon, Path):
         return parts[size - 1]
 
 
+    def set_hiding_hidden(self, state):
+        self._hide_hidden = state
 
     def is_hiding_hidden(self):
         return self._hide_hidden
