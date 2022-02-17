@@ -146,7 +146,7 @@ class WindowMixin(TabMixin):
         ctx.remove_class("notebook-unselected-focus")
         ctx.add_class("notebook-selected-focus")
 
-        self.window.set_title("SolarFM ~ " + dir)
+        self.window.set_title(f"SolarFM ~ {dir}")
         self.set_bottom_labels(view)
 
     def set_path_text(self, wid, tid):

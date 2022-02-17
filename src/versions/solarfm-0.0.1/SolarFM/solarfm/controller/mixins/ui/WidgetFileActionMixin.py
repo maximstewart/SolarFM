@@ -1,5 +1,5 @@
 # Python imports
-import os
+import os, time, threading
 
 # Lib imports
 import gi
@@ -9,6 +9,10 @@ from gi.repository import Gtk, GObject, GLib, Gio
 # Application imports
 
 
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
+    return wrapper
 
 
 class WidgetFileActionMixin:
@@ -56,25 +60,56 @@ class WidgetFileActionMixin:
         dir_watcher.connect("changed", self.dir_watch_updates, (f"{wid}|{tid}",))
         view.set_dir_watcher(dir_watcher)
 
+    # NOTE: Too lazy to impliment a proper update handler and so just regen store and update view.
+    #       Use a lock system to prevent too many update calls for certain instances but user can manually refresh if they have urgency
     def dir_watch_updates(self, file_monitor, file, other_file=None, eve_type=None, data=None):
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
-                                                    Gio.FileMonitorEvent.MOVED_OUT]:
+                        Gio.FileMonitorEvent.MOVED_OUT, Gio.FileMonitorEvent.CHANGES_DONE_HINT]:
                 if debug:
                     print(eve_type)
 
-                wid, tid  = data[0].split("|")
-                notebook  = self.builder.get_object(f"window_{wid}")
-                view      = self.get_fm_window(wid).get_view_by_id(tid)
-                iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-                store     = iconview.get_model()
-                _store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
+                if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
+                    self.update_on_end_soft_lock(data[0])
+                elif data[0] in self.soft_update_lock.keys():
+                    self.soft_update_lock[data[0]]["last_update_time"] = time.time()
+                else:
+                    self.soft_lock_countdown(data[0])
 
-                view.load_directory()
-                self.load_store(view, store)
-                tab_label.set_label(view.get_end_of_path())
-                self.set_bottom_labels(view)
+    @threaded
+    def soft_lock_countdown(self, tab):
+        self.soft_update_lock[tab] = { "last_update_time": time.time()}
 
+        lock = True
+        while lock:
+            time.sleep(0.6)
+            last_update_time = self.soft_update_lock[tab]["last_update_time"]
+            current_time     = time.time()
+            if (current_time - last_update_time) > 0.6:
+                lock = False
+
+
+        self.soft_update_lock.pop(tab, None)
+        GLib.idle_add(self.update_on_end_soft_lock, *(tab,))
+
+
+    def update_on_end_soft_lock(self, tab):
+        wid, tid  = tab.split("|")
+        notebook  = self.builder.get_object(f"window_{wid}")
+        view      = self.get_fm_window(wid).get_view_by_id(tid)
+        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
+        store     = iconview.get_model()
+        _store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
+
+        view.load_directory()
+        self.load_store(view, store)
+
+        tab_label.set_label(view.get_end_of_path())
+
+        _wid, _tid, _view, _iconview, _store = self.get_current_state()
+
+        if [wid, tid] in [_wid, _tid]:
+            self.set_bottom_labels(view)
 
 
     def popup_search_files(self, wid, keyname):

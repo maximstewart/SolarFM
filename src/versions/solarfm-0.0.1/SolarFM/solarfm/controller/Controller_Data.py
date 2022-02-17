@@ -82,6 +82,7 @@ class Controller_Data:
         self.selected_files    = []
         self.to_copy_files     = []
         self.to_cut_files      = []
+        self.soft_update_lock  = {}
 
         self.single_click_open = False
         self.is_pane1_hidden   = False
