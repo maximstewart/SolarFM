@@ -19,6 +19,8 @@ from __init__ import Main
 
 
 if __name__ == "__main__":
+    """ Set process title, get arguments, and create GTK main thread. """
+
     try:
         # import web_pdb
         # web_pdb.set_trace()

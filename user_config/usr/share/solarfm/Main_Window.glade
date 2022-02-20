@@ -1785,6 +1785,21 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
               </packing>
             </child>
             <child>
+              <object class="GtkEntry" id="path_entry">
+                <property name="name">path_entry</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="placeholder-text" translatable="yes">Path...</property>
+                <signal name="changed" handler="do_action_from_bar_controls" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="refresh_view">
                 <property name="label">gtk-refresh</property>
                 <property name="name">refresh_view</property>
@@ -1798,7 +1813,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -1814,21 +1829,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="path_entry">
-                <property name="name">path_entry</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="placeholder-text" translatable="yes">Path...</property>
-                <signal name="changed" handler="do_action_from_bar_controls" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
@@ -1907,7 +1907,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     </child>
                   </object>
                   <packing>
-                    <property name="resize">True</property>
+                    <property name="resize">False</property>
                     <property name="shrink">True</property>
                   </packing>
                 </child>
@@ -1945,7 +1945,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     </child>
                   </object>
                   <packing>
-                    <property name="resize">True</property>
+                    <property name="resize">False</property>
                     <property name="shrink">True</property>
                   </packing>
                 </child>
@@ -1997,7 +1997,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     </child>
                   </object>
                   <packing>
-                    <property name="resize">True</property>
+                    <property name="resize">False</property>
                     <property name="shrink">True</property>
                   </packing>
                 </child>
@@ -2034,7 +2034,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     </child>
                   </object>
                   <packing>
-                    <property name="resize">True</property>
+                    <property name="resize">False</property>
                     <property name="shrink">True</property>
                   </packing>
                 </child>

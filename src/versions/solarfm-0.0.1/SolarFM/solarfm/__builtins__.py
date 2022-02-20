@@ -4,7 +4,7 @@ import builtins
 # Lib imports
 
 # Application imports
-from controller import IPCServerMixin
+from context.ipc_server_mixin import IPCServerMixin
 
 
 

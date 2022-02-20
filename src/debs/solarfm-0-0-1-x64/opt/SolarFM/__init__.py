@@ -4,20 +4,22 @@ import os, inspect, time
 # Lib imports
 
 # Application imports
-from utils import Settings
-from signal_classes import Controller
+from utils.settings import Settings
+from context.controller import Controller
 from __builtins__ import Builtins
 
 
 
 
 class Main(Builtins):
+    """ Create Settings and Controller classes. Bind signal to Builder. Inherit from Builtins to bind global methods and classes. """
+
     def __init__(self, args, unknownargs):
         if not debug:
             event_system.create_ipc_server()
 
         time.sleep(0.2)
-        if not trace_debug:
+        if not trace_debug and not debug:
             if not event_system.is_ipc_alive:
                 if unknownargs:
                     for arg in unknownargs:
