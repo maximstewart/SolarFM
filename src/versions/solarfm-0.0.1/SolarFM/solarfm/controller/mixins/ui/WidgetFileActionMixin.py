@@ -65,7 +65,7 @@ class WidgetFileActionMixin:
     def dir_watch_updates(self, file_monitor, file, other_file=None, eve_type=None, data=None):
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
-                        Gio.FileMonitorEvent.MOVED_OUT, Gio.FileMonitorEvent.CHANGES_DONE_HINT]:
+                        Gio.FileMonitorEvent.MOVED_OUT]:
                 if debug:
                     print(eve_type)
 

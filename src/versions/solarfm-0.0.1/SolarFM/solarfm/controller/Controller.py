@@ -128,8 +128,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
 
     def do_action_from_menu_controls(self, widget, eventbutton):
-        action        = widget.get_name()
-        self.ctrlDown = True
+        action = widget.get_name()
         self.hide_context_menu()
         self.hide_new_file_menu()
         self.hide_edit_file_menu()

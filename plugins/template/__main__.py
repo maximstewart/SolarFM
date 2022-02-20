@@ -21,7 +21,7 @@ class Main:
         self._event_system = event_system
         self._socket_id    = socket_id
         self._gtk_plug     = Gtk.Plug.new(self._socket_id)
-        button             = Gtk.Button(label=label=self._plugin_name)
+        button             = Gtk.Button(label=self._plugin_name)
         self._message      = None
         self._time_out     = 5
 
