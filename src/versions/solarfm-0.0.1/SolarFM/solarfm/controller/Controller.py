@@ -1,5 +1,5 @@
 # Python imports
-import traceback, threading, inspect, os, gc, time
+import os, gc, threading, time
 
 # Lib imports
 import gi

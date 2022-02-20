@@ -1,5 +1,5 @@
 # Python imports
-import threading, socket, time
+import threading, time
 from multiprocessing.connection import Listener, Client
 
 # Lib imports
