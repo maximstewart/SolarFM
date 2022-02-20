@@ -79,8 +79,8 @@ class WindowMixin(TabMixin):
 
 
     def set_bottom_labels(self, view):
-        _wid, _tid, _view, iconview, store = self.get_current_state()
-        selected_files       = iconview.get_selected_items()
+        _wid, _tid, _view, icon_view, store = self.get_current_state()
+        selected_files       = icon_view.get_selected_items()
         current_directory    = view.get_current_directory()
         path_file            = Gio.File.new_for_path(current_directory)
         mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)

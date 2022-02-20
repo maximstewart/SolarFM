@@ -3,9 +3,6 @@ import os, subprocess, hashlib
 from os.path import isfile
 
 # Gtk imports
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
 # Application imports
 from .xdg.DesktopEntry import DesktopEntry

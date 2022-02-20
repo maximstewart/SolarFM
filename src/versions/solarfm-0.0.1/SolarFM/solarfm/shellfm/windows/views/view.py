@@ -1,5 +1,5 @@
 # Python imports
-import os, hashlib, re
+import hashlib, re
 from os import listdir
 from os.path import isdir, isfile, join
 

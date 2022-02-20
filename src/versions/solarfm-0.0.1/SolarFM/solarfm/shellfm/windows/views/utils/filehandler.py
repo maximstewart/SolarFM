@@ -1,5 +1,5 @@
 # Python imports
-import os, shutil, subprocess, threading
+import os, shutil
 
 # Lib imports
 

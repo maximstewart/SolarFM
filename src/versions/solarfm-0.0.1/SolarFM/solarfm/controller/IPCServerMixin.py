@@ -48,7 +48,7 @@ class IPCServerMixin:
                     conn.close()
                     break
 
-                # NOTE: Not perfect but insures we don't lockup the connection for too long.
+                # NOTE: Not perfect but insures we don't lock up the connection for too long.
                 end_time = time.time()
                 if (end - start) > self.ipc_timeout:
                     conn.close()

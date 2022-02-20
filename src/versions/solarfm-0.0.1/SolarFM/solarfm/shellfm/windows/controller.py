@@ -1,5 +1,5 @@
 # Python imports
-import threading, subprocess, time, json
+import threading, json
 from os import path
 
 # Lib imports

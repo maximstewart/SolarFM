@@ -18,9 +18,9 @@ def threaded(fn):
 class ExceptionHookMixin:
     ''' ExceptionHookMixin custom exception hook to reroute to a Gtk text area. '''
 
-    def custom_except_hook(self, exctype, value, _traceback):
+    def custom_except_hook(self, exec_type, value, _traceback):
         trace     = ''.join(traceback.format_tb(_traceback))
-        data      = f"Exectype:  {exctype}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"
+        data      = f"Exec Type:  {exec_type}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"
         start_itr = self.message_buffer.get_start_iter()
         self.message_buffer.place_cursor(start_itr)
         self.display_message(self.error, data)
@@ -58,5 +58,5 @@ class ExceptionHookMixin:
 
 
     def set_arc_buffer_text(self, widget=None, eve=None):
-        id = widget.get_active_id()
-        self.arc_command_buffer.set_text(self.arc_commands[int(id)])
+        sid = widget.get_active_id()
+        self.arc_command_buffer.set_text(self.arc_commands[int(sid)])
