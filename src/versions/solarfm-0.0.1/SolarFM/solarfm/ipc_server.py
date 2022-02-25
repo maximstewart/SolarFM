@@ -15,8 +15,15 @@ def threaded(fn):
 
 
 
-class IPCServerMixin:
+class IPCServer:
     """ Create a listener so that other SolarFM instances send requests back to existing instance. """
+    def __init__(self):
+        self.is_ipc_alive   = False
+        self.ipc_authkey    = b'solarfm-ipc'
+        self.ipc_address    = '127.0.0.1'
+        self.ipc_port       = 4848
+        self.ipc_timeout    = 15.0
+
 
     @threaded
     def create_ipc_server(self):

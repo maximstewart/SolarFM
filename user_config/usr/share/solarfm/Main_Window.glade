@@ -616,7 +616,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="can-focus">False</property>
     <property name="stock">gtk-save-as</property>
   </object>
-  <object class="GtkImage" id="createImage">
+  <object class="GtkImage" id="create_img">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="stock">gtk-new</property>
@@ -666,7 +666,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Create File/Folder...</property>
-                <property name="image">createImage</property>
+                <property name="image">create_img</property>
                 <property name="always-show-image">True</property>
               </object>
               <packing>
@@ -1417,11 +1417,11 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
         <property name="orientation">vertical</property>
         <property name="baseline-position">top</property>
         <child>
-          <object class="GtkBox" id="top_main_menubar">
+          <object class="GtkBox" id="app_menu_bar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkMenuBar" id="menubar1">
+              <object class="GtkMenuBar">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <child>
@@ -1834,7 +1834,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="refresh_view">
+              <object class="GtkButton" id="refresh_tab">
                 <property name="label">gtk-refresh</property>
                 <property name="name">refresh_view</property>
                 <property name="visible">True</property>
@@ -2052,7 +2052,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
           </packing>
         </child>
         <child>
-          <object class="GtkStatusbar">
+          <object class="GtkStatusbar" id="bottom_status_info">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="margin-left">10</property>
@@ -2106,11 +2106,11 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
       </object>
     </child>
   </object>
-  <object class="GtkPopover" id="message_widget">
+  <object class="GtkPopover" id="message_popup_widget">
     <property name="width-request">320</property>
     <property name="can-focus">False</property>
     <property name="hexpand">True</property>
-    <property name="relative-to">top_main_menubar</property>
+    <property name="relative-to">app_menu_bar</property>
     <property name="position">bottom</property>
     <child>
       <object class="GtkBox">
@@ -2141,7 +2141,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="shadow-type">in</property>
             <property name="overlay-scrolling">False</property>
             <child>
-              <object class="GtkTextView" id="message_view">
+              <object class="GtkTextView" id="message_text_view">
                 <property name="name">message_view</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -2179,7 +2179,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkButtonBox">
+              <object class="GtkButtonBox" id="path_menu_buttons">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>

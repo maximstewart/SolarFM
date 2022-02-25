@@ -39,8 +39,6 @@ class PaneMixin:
     def toggle_notebook_pane(self, widget, eve=None):
         name        = widget.get_name()
         pane_index  = int(name[-1])
-        pane        = None
-
         master_pane = self.builder.get_object("pane_master")
         pane        = self.builder.get_object("pane_top") if pane_index in [1, 2] else self.builder.get_object("pane_bottom")
 
@@ -50,16 +48,12 @@ class PaneMixin:
             self._save_state(state, pane_index)
             return
 
-        child = None
-        if pane_index in [1, 3]:
-            child = pane.get_child1()
-        elif pane_index in [2, 4]:
-            child = pane.get_child2()
+        child = pane.get_child1() if pane_index in [1, 3] else pane.get_child2()
 
         self.toggle_pane(child)
         self._save_state(state, pane_index)
 
     def _save_state(self, state, pane_index):
-        window = self.window_controller.get_window_by_index(pane_index - 1)
+        window = self.fm_controller.get_window_by_index(pane_index - 1)
         window.set_is_hidden(state)
-        self.window_controller.save_state()
+        self.fm_controller.save_state()

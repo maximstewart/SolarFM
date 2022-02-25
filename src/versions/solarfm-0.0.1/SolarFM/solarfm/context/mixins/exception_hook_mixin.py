@@ -27,14 +27,14 @@ class ExceptionHookMixin:
 
     def display_message(self, type, text, seconds=None):
         self.message_buffer.insert_at_cursor(text)
-        self.message_widget.popup()
+        self.message_popup_widget.popup()
         if seconds:
             self.hide_message_timeout(seconds)
 
     @threaded
     def hide_message_timeout(self, seconds=3):
         time.sleep(seconds)
-        GLib.idle_add(self.message_widget.popdown)
+        GLib.idle_add(self.message_popup_widget.popdown)
 
     def save_debug_alerts(self, widget=None, eve=None):
         start_itr, end_itr   = self.message_buffer.get_bounds()

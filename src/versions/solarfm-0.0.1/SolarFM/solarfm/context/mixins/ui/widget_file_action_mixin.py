@@ -40,29 +40,24 @@ class WidgetFileActionMixin:
         return size
 
 
-    def set_file_watcher(self, view):
-        if view.get_dir_watcher():
-            watcher = view.get_dir_watcher()
+    def set_file_watcher(self, tab):
+        if tab.get_dir_watcher():
+            watcher = tab.get_dir_watcher()
             watcher.cancel()
             if debug:
                 print(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
 
-        cur_dir = view.get_current_directory()
-        # Temp updating too much with current events we are checking for.
-        # Seems to cause invalid iter errors in WidbetMixin > update_store
-        if cur_dir == "/tmp":
-            watcher = None
-            return
+        cur_dir = tab.get_current_directory()
 
         dir_watcher  = Gio.File.new_for_path(cur_dir) \
                                 .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, Gio.Cancellable())
 
-        wid = view.get_wid()
-        tid = view.get_id()
+        wid = tab.get_wid()
+        tid = tab.get_id()
         dir_watcher.connect("changed", self.dir_watch_updates, (f"{wid}|{tid}",))
-        view.set_dir_watcher(dir_watcher)
+        tab.set_dir_watcher(dir_watcher)
 
-    # NOTE: Too lazy to impliment a proper update handler and so just regen store and update view.
+    # NOTE: Too lazy to impliment a proper update handler and so just regen store and update tab.
     #       Use a lock system to prevent too many update calls for certain instances but user can manually refresh if they have urgency
     def dir_watch_updates(self, file_monitor, file, other_file=None, eve_type=None, data=None):
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
@@ -72,46 +67,46 @@ class WidgetFileActionMixin:
                     print(eve_type)
 
                 if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
-                    self.update_on_end_soft_lock(data[0])
+                    self.update_on_soft_lock_end(data[0])
                 elif data[0] in self.soft_update_lock.keys():
                     self.soft_update_lock[data[0]]["last_update_time"] = time.time()
                 else:
                     self.soft_lock_countdown(data[0])
 
     @threaded
-    def soft_lock_countdown(self, tab):
-        self.soft_update_lock[tab] = { "last_update_time": time.time()}
+    def soft_lock_countdown(self, tab_widget):
+        self.soft_update_lock[tab_widget] = { "last_update_time": time.time()}
 
         lock = True
         while lock:
             time.sleep(0.6)
-            last_update_time = self.soft_update_lock[tab]["last_update_time"]
+            last_update_time = self.soft_update_lock[tab_widget]["last_update_time"]
             current_time     = time.time()
             if (current_time - last_update_time) > 0.6:
                 lock = False
 
 
-        self.soft_update_lock.pop(tab, None)
-        GLib.idle_add(self.update_on_end_soft_lock, *(tab,))
+        self.soft_update_lock.pop(tab_widget, None)
+        GLib.idle_add(self.update_on_soft_lock_end, *(tab_widget,))
 
 
-    def update_on_end_soft_lock(self, tab):
-        wid, tid  = tab.split("|")
+    def update_on_soft_lock_end(self, tab_widget):
+        wid, tid  = tab_widget.split("|")
         notebook  = self.builder.get_object(f"window_{wid}")
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        iconview  = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store     = iconview.get_model()
-        _store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
+        tab       = self.get_fm_window(wid).get_tab_by_id(tid)
+        icon_grid = self.builder.get_object(f"{wid}|{tid}|icon_grid")
+        store     = icon_grid.get_model()
+        _store, tab_widget_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
 
-        view.load_directory()
-        self.load_store(view, store)
+        tab.load_directory()
+        self.load_store(tab, store)
 
-        tab_label.set_label(view.get_end_of_path())
+        tab_widget_label.set_label(tab.get_end_of_path())
 
-        _wid, _tid, _view, _iconview, _store = self.get_current_state()
+        _wid, _tid, _tab, _icon_grid, _store = self.get_current_state()
 
         if [wid, tid] in [_wid, _tid]:
-            self.set_bottom_labels(view)
+            self.set_bottom_labels(tab)
 
 
     def popup_search_files(self, wid, keyname):
@@ -123,43 +118,43 @@ class WidgetFileActionMixin:
 
     def do_file_search(self, widget, eve=None):
         query = widget.get_text()
-        self.search_iconview.unselect_all()
-        for i, file in enumerate(self.search_view.get_files()):
+        self.search_icon_grid.unselect_all()
+        for i, file in enumerate(self.search_tab.get_files()):
             if query and query in file[0].lower():
                 path = Gtk.TreePath().new_from_indices([i])
-                self.search_iconview.select_path(path)
+                self.search_icon_grid.select_path(path)
 
-        items = self.search_iconview.get_selected_items()
+        items = self.search_icon_grid.get_selected_items()
         if len(items) == 1:
-            self.search_iconview.scroll_to_path(items[0], True, 0.5, 0.5)
+            self.search_icon_grid.scroll_to_path(items[0], True, 0.5, 0.5)
 
 
     def open_files(self):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
 
         for file in uris:
-            view.open_file_locally(file)
+            tab.open_file_locally(file)
 
     def open_with_files(self, appchooser_widget):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         app_info  = appchooser_widget.get_app_info()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files)
 
-        view.app_chooser_exec(app_info, uris)
+        tab.app_chooser_exec(app_info, uris)
 
     def execute_files(self, in_terminal=False):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         paths       = self.format_to_uris(store, wid, tid, self.selected_files, True)
-        current_dir = view.get_current_directory()
+        current_dir = tab.get_current_directory()
         command     = None
 
         for path in paths:
-            command = f"exec '{path}'" if not in_terminal else f"{view.terminal_app} -e '{path}'"
-            view.execute(command, start_dir=view.get_current_directory(), use_os_system=False)
+            command = f"exec '{path}'" if not in_terminal else f"{tab.terminal_app} -e '{path}'"
+            tab.execute(command, start_dir=tab.get_current_directory(), use_os_system=False)
 
     def archive_files(self, archiver_dialogue):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         paths = self.format_to_uris(store, wid, tid, self.selected_files, True)
 
         save_target = archiver_dialogue.get_filename();
@@ -167,14 +162,14 @@ class WidgetFileActionMixin:
         pre_command = self.arc_command_buffer.get_text(sItr, eItr, False)
         pre_command = pre_command.replace("%o", save_target)
         pre_command = pre_command.replace("%N", ' '.join(paths))
-        command     = f"{view.terminal_app} -e '{pre_command}'"
+        command     = f"{tab.terminal_app} -e '{pre_command}'"
 
-        view.execute(command, start_dir=None, use_os_system=True)
+        tab.execute(command, start_dir=None, use_os_system=True)
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
         rename_input = self.builder.get_object("new_rename_fname")
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         uris         = self.format_to_uris(store, wid, tid, self.selected_files, True)
 
         for uri in uris:
@@ -191,7 +186,7 @@ class WidgetFileActionMixin:
                 break
 
             rname_to = rename_input.get_text().strip()
-            target   = f"{view.get_current_directory()}/{rname_to}"
+            target   = f"{tab.get_current_directory()}/{rname_to}"
             self.handle_files([uri], "rename", target)
 
 
@@ -201,19 +196,19 @@ class WidgetFileActionMixin:
         self.selected_files.clear()
 
     def cut_files(self):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
         self.to_cut_files = uris
 
     def copy_files(self):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
         self.to_copy_files = uris
 
     def paste_files(self):
-        wid, tid  = self.window_controller.get_active_wid_and_tid()
-        view      = self.get_fm_window(wid).get_view_by_id(tid)
-        target    = f"{view.get_current_directory()}"
+        wid, tid  = self.fm_controller.get_active_wid_and_tid()
+        tab       = self.get_fm_window(wid).get_tab_by_id(tid)
+        target    = f"{tab.get_current_directory()}"
 
         if len(self.to_copy_files) > 0:
             self.handle_files(self.to_copy_files, "copy", target)
@@ -221,7 +216,7 @@ class WidgetFileActionMixin:
             self.handle_files(self.to_cut_files, "move", target)
 
     def delete_files(self):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         uris     = self.format_to_uris(store, wid, tid, self.selected_files, True)
         response = None
 
@@ -236,7 +231,7 @@ class WidgetFileActionMixin:
                 type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
                 if type == Gio.FileType.DIRECTORY:
-                    view.delete_file( file.get_path() )
+                    tab.delete_file( file.get_path() )
                 else:
                     file.delete(cancellable=None)
             else:
@@ -244,13 +239,13 @@ class WidgetFileActionMixin:
 
 
     def trash_files(self):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
         for uri in uris:
             self.trashman.trash(uri, False)
 
     def restore_trash_files(self):
-        wid, tid, view, iconview, store = self.get_current_state()
+        wid, tid, tab, icon_grid, store = self.get_current_state()
         uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
         for uri in uris:
             self.trashman.restore(filename=uri.split("/")[-1], verbose=False)
@@ -264,9 +259,9 @@ class WidgetFileActionMixin:
         file_name   = fname_field.get_text().strip()
         type        = self.builder.get_object("context_menu_type_toggle").get_state()
 
-        wid, tid    = self.window_controller.get_active_wid_and_tid()
-        view        = self.get_fm_window(wid).get_view_by_id(tid)
-        target      = f"{view.get_current_directory()}"
+        wid, tid    = self.fm_controller.get_active_wid_and_tid()
+        tab         = self.get_fm_window(wid).get_tab_by_id(tid)
+        target      = f"{tab.get_current_directory()}"
 
         if file_name:
             path = f"{target}/{file_name}"
@@ -331,9 +326,9 @@ class WidgetFileActionMixin:
                         type      = _file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
                         if type == Gio.FileType.DIRECTORY:
-                            wid, tid  = self.window_controller.get_active_wid_and_tid()
-                            view      = self.get_fm_window(wid).get_view_by_id(tid)
-                            view.delete_file( _file.get_path() )
+                            wid, tid = self.fm_controller.get_active_wid_and_tid()
+                            tab      = self.get_fm_window(wid).get_tab_by_id(tid)
+                            tab.delete_file( _file.get_path() )
                         else:
                             _file.delete(cancellable=None)
 
@@ -358,16 +353,16 @@ class WidgetFileActionMixin:
 
                 type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
                 if type == Gio.FileType.DIRECTORY:
-                    wid, tid  = self.window_controller.get_active_wid_and_tid()
-                    view      = self.get_fm_window(wid).get_view_by_id(tid)
+                    wid, tid  = self.fm_controller.get_active_wid_and_tid()
+                    tab       = self.get_fm_window(wid).get_tab_by_id(tid)
                     fPath     = file.get_path()
                     tPath     = target.get_path()
                     state     = True
 
                     if action == "copy":
-                        view.copy_file(fPath, tPath)
+                        tab.copy_file(fPath, tPath)
                     if action == "move" or action == "rename":
-                        view.move_file(fPath, tPath)
+                        tab.move_file(fPath, tPath)
                 else:
                     if action == "copy":
                         file.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)

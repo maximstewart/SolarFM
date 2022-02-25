@@ -22,29 +22,29 @@ def threaded(fn):
 class WidgetMixin:
     """docstring for WidgetMixin"""
 
-    def load_store(self, view, store, save_state=False):
+    def load_store(self, tab, store, save_state=False):
         store.clear()
-        dir   = view.get_current_directory()
-        files = view.get_files()
+        dir   = tab.get_current_directory()
+        files = tab.get_files()
 
         for i, file in enumerate(files):
             store.append([None, file[0]])
-            self.create_icon(i, view, store, dir, file[0])
+            self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state:
-            self.window_controller.save_state()
+            self.fm_controller.save_state()
 
     @threaded
-    def create_icon(self, i, view, store, dir, file):
-        icon  = view.create_icon(dir, file)
+    def create_icon(self, i, tab, store, dir, file):
+        icon  = tab.create_icon(dir, file)
         fpath = f"{dir}/{file}"
-        GLib.idle_add(self.update_store, (i, store, icon, view, fpath,))
+        GLib.idle_add(self.update_store, (i, store, icon, tab, fpath,))
 
     # NOTE: Might need to keep an eye on this throwing invalid iters when too
     #       many updates are happening to a folder. Example: /tmp
     def update_store(self, item):
-        i, store, icon, view, fpath = item
+        i, store, icon, tab, fpath = item
         itr = None
 
         try:
@@ -60,12 +60,12 @@ class WidgetMixin:
                 return
 
         if not icon:
-            icon = self.get_system_thumbnail(fpath, view.SYS_ICON_WH[0])
+            icon = self.get_system_thumbnail(fpath, tab.SYS_ICON_WH[0])
             if not icon:
                 if fpath.endswith(".gif"):
                     icon = GdkPixbuf.PixbufAnimation.get_static_image(fpath)
                 else:
-                    icon = GdkPixbuf.Pixbuf.new_from_file(view.DEFAULT_ICON)
+                    icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
 
         store.set_value(itr, 0, icon)
 
@@ -90,31 +90,29 @@ class WidgetMixin:
             return None
 
 
-
-
-    def create_tab_widget(self, view):
-        tab   = Gtk.ButtonBox()
+    def create_tab_widget(self, tab):
+        tab_widget = Gtk.ButtonBox()
         label = Gtk.Label()
         tid   = Gtk.Label()
         close = Gtk.Button()
         icon  = Gtk.Image(stock=Gtk.STOCK_CLOSE)
 
-        label.set_label(f"{view.get_end_of_path()}")
-        label.set_width_chars(len(view.get_end_of_path()))
+        label.set_label(f"{tab.get_end_of_path()}")
+        label.set_width_chars(len(tab.get_end_of_path()))
         label.set_xalign(0.0)
-        tid.set_label(f"{view.get_id()}")
+        tid.set_label(f"{tab.get_id()}")
 
         close.add(icon)
-        tab.add(label)
-        tab.add(close)
-        tab.add(tid)
+        tab_widget.add(label)
+        tab_widget.add(close)
+        tab_widget.add(tid)
 
         close.connect("released", self.close_tab)
-        tab.show_all()
+        tab_widget.show_all()
         tid.hide()
-        return tab
+        return tab_widget
 
-    def create_grid_iconview_widget(self, view, wid):
+    def create_icon_grid_widget(self, tab, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.IconView()
         store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
@@ -134,11 +132,11 @@ class WidgetMixin:
         grid.set_column_spacing(18)
 
         grid.connect("button_release_event", self.grid_icon_single_click)
-        grid.connect("item-activated", self.grid_icon_double_click)
-        grid.connect("selection-changed", self.grid_set_selected_items)
-        grid.connect("drag-data-get", self.grid_on_drag_set)
-        grid.connect("drag-data-received", self.grid_on_drag_data_received)
-        grid.connect("drag-motion", self.grid_on_drag_motion)
+        grid.connect("item-activated",       self.grid_icon_double_click)
+        grid.connect("selection-changed",    self.grid_set_selected_items)
+        grid.connect("drag-data-get",        self.grid_on_drag_set)
+        grid.connect("drag-data-received",   self.grid_on_drag_data_received)
+        grid.connect("drag-motion",          self.grid_on_drag_motion)
 
 
         URI_TARGET_TYPE  = 80
@@ -150,17 +148,16 @@ class WidgetMixin:
 
         grid.show_all()
         scroll.add(grid)
-        grid.set_name(f"{wid}|{view.get_id()}")
-        scroll.set_name(f"{wid}|{view.get_id()}")
-        self.builder.expose_object(f"{wid}|{view.get_id()}|iconview", grid)
-        self.builder.expose_object(f"{wid}|{view.get_id()}", scroll)
+        grid.set_name(f"{wid}|{tab.get_id()}")
+        scroll.set_name(f"{wid}|{tab.get_id()}")
+        self.builder.expose_object(f"{wid}|{tab.get_id()}|icon_grid", grid)
+        self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
         return scroll, store
 
-    def create_grid_treeview_widget(self, view, wid):
+    def create_icon_tree_widget(self, tab, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.TreeView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
-        # store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or None, str)
+        store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
         column = Gtk.TreeViewColumn("Icons")
         icon   = Gtk.CellRendererPixbuf()
         name   = Gtk.CellRendererText()
@@ -184,10 +181,10 @@ class WidgetMixin:
         grid.set_enable_tree_lines(False)
 
         grid.connect("button_release_event", self.grid_icon_single_click)
-        grid.connect("row-activated", self.grid_icon_double_click)
-        grid.connect("drag-data-get", self.grid_on_drag_set)
-        grid.connect("drag-data-received", self.grid_on_drag_data_received)
-        grid.connect("drag-motion", self.grid_on_drag_motion)
+        grid.connect("row-activated",        self.grid_icon_double_click)
+        grid.connect("drag-data-get",        self.grid_on_drag_set)
+        grid.connect("drag-data-received",   self.grid_on_drag_data_received)
+        grid.connect("drag-motion",          self.grid_on_drag_motion)
 
         URI_TARGET_TYPE  = 80
         uri_target       = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags(0), URI_TARGET_TYPE)
@@ -199,23 +196,23 @@ class WidgetMixin:
 
         grid.show_all()
         scroll.add(grid)
-        grid.set_name(f"{wid}|{view.get_id()}")
-        scroll.set_name(f"{wid}|{view.get_id()}")
+        grid.set_name(f"{wid}|{tab.get_id()}")
+        scroll.set_name(f"{wid}|{tab.get_id()}")
         grid.columns_autosize()
-        self.builder.expose_object(f"{wid}|{view.get_id()}", scroll)
+        self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
         return scroll, store
 
 
     def get_store_and_label_from_notebook(self, notebook, _name):
-        icon_view = None
+        icon_grid = None
         tab_label = None
         store     = None
 
         for obj in notebook.get_children():
-            icon_view = obj.get_children()[0]
-            name      =  icon_view.get_name()
+            icon_grid = obj.get_children()[0]
+            name      = icon_grid.get_name()
             if name == _name:
-                store = icon_view.get_model()
+                store     = icon_grid.get_model()
                 tab_label = notebook.get_tab_label(obj).get_children()[0]
 
         return store, tab_label
