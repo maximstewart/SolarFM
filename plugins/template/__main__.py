@@ -15,19 +15,20 @@ def threaded(fn):
     return wrapper
 
 
-class Main:
-    def __init__(self, socket_id, event_system):
+class Plugin:
+    def __init__(self, builder, event_system):
         self._plugin_name  = "Example Plugin"
+        self._builder      = builder
         self._event_system = event_system
-        self._socket_id    = socket_id
-        self._gtk_plug     = Gtk.Plug.new(self._socket_id)
-        button             = Gtk.Button(label=self._plugin_name)
         self._message      = None
         self._time_out     = 5
 
+        button             = Gtk.Button(label=self._plugin_name)
         button.connect("button-release-event", self._do_action)
-        self._gtk_plug.add(button)
-        self._gtk_plug.show_all()
+
+        plugin_list  = self._builder.get_object("plugin_socket")
+        plugin_list.add(button)
+        plugin_list.show_all()
 
 
     @threaded

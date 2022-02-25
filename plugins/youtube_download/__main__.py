@@ -15,20 +15,22 @@ def threaded(fn):
     return wrapper
 
 
-class Main:
-    def __init__(self, socket_id, event_system):
-        self.SCRIPT_PTH    = os.path.dirname(os.path.realpath(__file__))
+class Plugin:
+    def __init__(self, builder, event_system):
         self._plugin_name  = "Youtube Download"
+        self._builder      = builder
         self._event_system = event_system
-        self._socket_id    = socket_id
-        self._gtk_plug     = Gtk.Plug.new(self._socket_id)
-        button             = Gtk.Button(label=self._plugin_name)
         self._message      = None
         self._time_out     = 5
 
+        self.SCRIPT_PTH    = os.path.dirname(os.path.realpath(__file__))
+
+        button             = Gtk.Button(label=self._plugin_name)
         button.connect("button-release-event", self._do_download)
-        self._gtk_plug.add(button)
-        self._gtk_plug.show_all()
+
+        plugin_list  = self._builder.get_object("plugin_socket")
+        plugin_list.add(button)
+        plugin_list.show_all()
 
 
     @threaded
@@ -47,9 +49,6 @@ class Main:
 
     def get_plugin_name(self):
         return self._plugin_name
-
-    def get_socket_id(self):
-        return self._socket_id
 
     def _run_timeout(self):
         timeout = 0
