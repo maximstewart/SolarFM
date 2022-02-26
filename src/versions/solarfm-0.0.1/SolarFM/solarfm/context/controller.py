@@ -75,7 +75,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
     def handle_gui_event_and_set_message(self, type, target, parameters):
         method = getattr(self.__class__, f"{target}")
         data   = method(*(self, *parameters))
-        self.plugins.set_message_on_plugin(type, data)
+        self.plugins.send_message_to_plugin(type, data)
 
     def open_terminal(self, widget=None, eve=None):
         wid, tid = self.fm_controller.get_active_wid_and_tid()

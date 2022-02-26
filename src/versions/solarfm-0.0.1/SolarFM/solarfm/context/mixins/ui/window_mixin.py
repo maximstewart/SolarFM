@@ -95,7 +95,7 @@ class WindowMixin(TabMixin):
         # If something selected
         self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")
         self.bottom_path_label.set_label(tab.get_current_directory())
-        if len(selected_files) > 0:
+        if selected_files:
             uris          = self.format_to_uris(store, _wid, _tid, selected_files, True)
             combined_size = 0
             for uri in uris:

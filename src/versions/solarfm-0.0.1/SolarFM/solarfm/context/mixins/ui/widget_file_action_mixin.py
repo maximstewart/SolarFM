@@ -210,9 +210,9 @@ class WidgetFileActionMixin:
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
         target    = f"{tab.get_current_directory()}"
 
-        if len(self.to_copy_files) > 0:
+        if self.to_copy_files:
             self.handle_files(self.to_copy_files, "copy", target)
-        elif len(self.to_cut_files) > 0:
+        elif self.to_cut_files:
             self.handle_files(self.to_cut_files, "move", target)
 
     def delete_files(self):
