@@ -102,7 +102,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         save_load_dialog.set_current_name("session.json")
         response = save_load_dialog.run()
         if response == Gtk.ResponseType.OK:
-            if action == "save_session":
+            if action == "save_session_as":
                 path = f"{save_load_dialog.get_current_folder()}/{save_load_dialog.get_current_name()}"
                 self.fm_controller.save_state(path)
             elif action == "load_session":
