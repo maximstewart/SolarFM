@@ -17,9 +17,9 @@ class Controller_Data:
 
     def setup_controller_data(self, _settings):
         self.trashman           = XDGTrash()
-        self.window_controller  = WindowController()
+        self.fm_controller      = WindowController()
         self.plugins            = Plugins(_settings)
-        self.state              = self.window_controller.load_state()
+        self.state              = self.fm_controller.load_state()
         self.trashman.regenerate()
 
         self.settings           = _settings
@@ -31,8 +31,8 @@ class Controller_Data:
         self.window2            = self.builder.get_object("window_2")
         self.window3            = self.builder.get_object("window_3")
         self.window4            = self.builder.get_object("window_4")
-        self.message_widget     = self.builder.get_object("message_widget")
-        self.message_view       = self.builder.get_object("message_view")
+        self.message_popup_widget = self.builder.get_object("message_popup_widget")
+        self.message_text_view  = self.builder.get_object("message_text_view")
         self.message_buffer     = self.builder.get_object("message_buffer")
         self.arc_command_buffer = self.builder.get_object("arc_command_buffer")
 
@@ -78,32 +78,32 @@ class Controller_Data:
                                                                 'xz -cz %N > %O'
                                         ]
 
-        self.notebooks         = [self.window1, self.window2, self.window3, self.window4]
-        self.selected_files    = []
-        self.to_copy_files     = []
-        self.to_cut_files      = []
-        self.soft_update_lock  = {}
+        self.notebooks          = [self.window1, self.window2, self.window3, self.window4]
+        self.selected_files     = []
+        self.to_copy_files      = []
+        self.to_cut_files       = []
+        self.soft_update_lock   = {}
 
-        self.single_click_open = False
-        self.is_pane1_hidden   = False
-        self.is_pane2_hidden   = False
-        self.is_pane3_hidden   = False
-        self.is_pane4_hidden   = False
+        self.single_click_open  = False
+        self.is_pane1_hidden    = False
+        self.is_pane2_hidden    = False
+        self.is_pane3_hidden    = False
+        self.is_pane4_hidden    = False
 
         self.override_drop_dest = None
         self.is_searching       = False
-        self.search_iconview    = None
-        self.search_view        = None
+        self.search_icon_grid   = None
+        self.search_tab         = None
 
-        self.skip_edit         = False
-        self.cancel_edit       = False
-        self.ctrlDown          = False
-        self.shiftDown         = False
-        self.altDown           = False
+        self.skip_edit          = False
+        self.cancel_edit        = False
+        self.ctrl_down          = False
+        self.shift_down         = False
+        self.alt_down           = False
 
-        self.success           = "#88cc27"
-        self.warning           = "#ffa800"
-        self.error             = "#ff0000"
+        self.success_color      = self.settings.get_success_color()
+        self.warning_color      = self.settings.get_warning_color()
+        self.error_color        = self.settings.get_error_color()
 
         sys.excepthook = self.custom_except_hook
         self.window.connect("delete-event", self.tear_down)
@@ -117,13 +117,13 @@ class Controller_Data:
                         a (obj): self
 
                 Returns:
-                        wid, tid, view, iconview, store
+                        wid, tid, tab, icon_grid, store
         '''
-        wid, tid     = self.window_controller.get_active_wid_and_tid()
-        view         = self.get_fm_window(wid).get_view_by_id(tid)
-        iconview     = self.builder.get_object(f"{wid}|{tid}|iconview")
-        store        = iconview.get_model()
-        return wid, tid, view, iconview, store
+        wid, tid     = self.fm_controller.get_active_wid_and_tid()
+        tab          = self.get_fm_window(wid).get_tab_by_id(tid)
+        icon_grid    = self.builder.get_object(f"{wid}|{tid}|icon_grid")
+        store        = icon_grid.get_model()
+        return wid, tid, tab, icon_grid, store
 
 
     def clear_console(self):

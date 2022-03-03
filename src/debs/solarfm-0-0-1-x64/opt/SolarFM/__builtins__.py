@@ -4,15 +4,17 @@ import builtins
 # Lib imports
 
 # Application imports
-from context.ipc_server_mixin import IPCServerMixin
+from ipc_server import IPCServer
 
 
 
 
-class Builtins(IPCServerMixin):
+class EventSystem(IPCServer):
     """ Inheret IPCServerMixin. Create an pub/sub systems. """
 
     def __init__(self):
+        super(EventSystem, self).__init__()
+
         # NOTE: The format used is list of [type, target, (data,)] Where:
         #             type is useful context for control flow,
         #             target is the method to call,
@@ -20,11 +22,7 @@ class Builtins(IPCServerMixin):
         #       Where data may be any kind of data
         self._gui_events    = []
         self._module_events = []
-        self.is_ipc_alive   = False
-        self.ipc_authkey    = b'solarfm-ipc'
-        self.ipc_address    = '127.0.0.1'
-        self.ipc_port       = 4848
-        self.ipc_timeout    = 15.0
+
 
 
     # Makeshift fake "events" type system FIFO
@@ -70,7 +68,7 @@ class Builtins(IPCServerMixin):
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
 builtins.app_name          = "SolarFM"
-builtins.event_system      = Builtins()
+builtins.event_system      = EventSystem()
 builtins.event_sleep_time  = 0.2
 builtins.debug             = False
 builtins.trace_debug       = False

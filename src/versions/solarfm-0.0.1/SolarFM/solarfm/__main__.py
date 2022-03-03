@@ -15,7 +15,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 # Application imports
-from main import Main
+from app import Application
 
 
 if __name__ == "__main__":
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         # Read arguments (If any...)
         args, unknownargs = parser.parse_known_args()
 
-        Main(args, unknownargs)
+        Application(args, unknownargs)
         Gtk.main()
     except Exception as e:
         traceback.print_exc()

@@ -11,7 +11,7 @@ from gi.repository import Gtk, Gdk
 
 class ShowHideMixin:
     def show_messages_popup(self, type, text, seconds=None):
-        self.message_widget.popup()
+        self.message_popup_widget.popup()
 
     def stop_file_searching(self, widget=None, eve=None):
         self.is_searching = False
@@ -48,7 +48,7 @@ class ShowHideMixin:
     def show_about_page(self, widget=None, eve=None):
         about_page = self.builder.get_object("about_page")
         response   = about_page.run()
-        if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
+        if response in [Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT]:
             self.hide_about_page()
 
     def hide_about_page(self, widget=None, eve=None):
@@ -56,11 +56,11 @@ class ShowHideMixin:
 
 
     def show_archiver_dialogue(self, widget=None, eve=None):
-        wid, tid          = self.window_controller.get_active_wid_and_tid()
-        view              = self.get_fm_window(wid).get_view_by_id(tid)
+        wid, tid          = self.fm_controller.get_active_wid_and_tid()
+        tab               = self.get_fm_window(wid).get_tab_by_id(tid)
         archiver_dialogue = self.builder.get_object("archiver_dialogue")
         archiver_dialogue.set_action(Gtk.FileChooserAction.SAVE)
-        archiver_dialogue.set_current_folder(view.get_current_directory())
+        archiver_dialogue.set_current_folder(tab.get_current_directory())
         archiver_dialogue.set_current_name("arc.7z")
 
         response = archiver_dialogue.run()
@@ -137,7 +137,7 @@ class ShowHideMixin:
 
     def hide_edit_file_menu_enter_key(self, widget=None, eve=None):
         keyname = Gdk.keyval_name(eve.keyval).lower()
-        if "return" in keyname or "enter" in keyname:
+        if keyname in ["return", "enter"]:
             self.builder.get_object("edit_file_menu").hide()
 
     def hide_edit_file_menu_skip(self, widget=None, eve=None):

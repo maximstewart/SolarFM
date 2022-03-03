@@ -18,7 +18,7 @@ from .icons.icon import Icon
 from .path import Path
 
 
-class View(Settings, FileHandler, Launcher, Icon, Path):
+class Tab(Settings, FileHandler, Launcher, Icon, Path):
     def __init__(self):
         self.logger      = None
         self._id_length   = 10

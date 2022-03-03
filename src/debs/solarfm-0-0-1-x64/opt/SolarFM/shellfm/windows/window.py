@@ -6,7 +6,7 @@ from random import randint
 
 
 # Application imports
-from .views.view import View
+from .tabs.tab import Tab
 
 
 class Window:
@@ -16,45 +16,40 @@ class Window:
         self._name      = ""
         self._nickname  = ""
         self._isHidden  = False
-        self._views     = []
+        self._tabs      = []
 
         self._generate_id()
         self._set_name()
 
 
-    def create_view(self):
-        view = View()
-        self._views.append(view)
-        return view
+    def create_tab(self):
+        tab = Tab()
+        self._tabs.append(tab)
+        return tab
 
-    def pop_view(self):
-        self._views.pop()
+    def pop_tab(self):
+        self._tabs.pop()
 
-    def delete_view_by_id(self, vid):
-        for view in self._views:
-            if view.get_id() == vid:
-                self._views.remove(view)
+    def delete_tab_by_id(self, vid):
+        for tab in self._tabs:
+            if tab.get_id() == vid:
+                self._tabs.remove(tab)
                 break
 
 
-    def get_view_by_id(self, vid):
-        for view in self._views:
-            if view.get_id() == vid:
-                return view
+    def get_tab_by_id(self, vid):
+        for tab in self._tabs:
+            if tab.get_id() == vid:
+                return tab
 
-    def get_view_by_index(self, index):
-        return self._views[index]
+    def get_tab_by_index(self, index):
+        return self._tabs[index]
 
-    def get_views_count(self):
-        return len(self._views)
+    def get_tabs_count(self):
+        return len(self._tabs)
 
-    def get_all_views(self):
-        return self._views
-
-    def list_files_from_views(self):
-        for view in self._views:
-            print(view.get_files())
-
+    def get_all_tabs(self):
+        return self._tabs
 
     def get_id(self):
         return self._id
@@ -68,7 +63,9 @@ class Window:
     def is_hidden(self):
         return self._isHidden
 
-
+    def list_files_from_tabs(self):
+        for tab in self._tabs:
+            print(tab.get_files())
 
 
     def set_nickname(self, nickname):
@@ -79,6 +76,7 @@ class Window:
 
     def _set_name(self):
         self._name = "window_" + self.get_id()
+
 
     def _random_with_N_digits(self, n):
         range_start = 10**(n-1)

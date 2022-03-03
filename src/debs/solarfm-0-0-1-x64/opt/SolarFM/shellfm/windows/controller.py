@@ -40,20 +40,20 @@ class WindowController:
         return window
 
 
-    def add_view_for_window(self, win_id):
+    def add_tab_for_window(self, win_id):
         for window in self._windows:
             if window.get_id() == win_id:
-                return window.create_view()
+                return window.create_tab()
 
-    def add_view_for_window_by_name(self, name):
+    def add_tab_for_window_by_name(self, name):
         for window in self._windows:
             if window.get_name() == name:
-                return window.create_view()
+                return window.create_tab()
 
-    def add_view_for_window_by_nickname(self, nickname):
+    def add_tab_for_window_by_nickname(self, nickname):
         for window in self._windows:
             if window.get_nickname() == nickname:
-                return window.create_view()
+                return window.create_tab()
 
     def pop_window(self):
         self._windows.pop()
@@ -116,33 +116,33 @@ class WindowController:
             print(f"Name: {window.get_name()}")
             print(f"Nickname: {window.get_nickname()}")
             print(f"Is Hidden: {window.is_hidden()}")
-            print(f"View Count: {window.get_views_count()}")
+            print(f"Tab Count: {window.get_tabs_count()}")
         print("\n-------------------------\n")
 
 
 
-    def list_files_from_views_of_window(self, win_id):
+    def list_files_from_tabs_of_window(self, win_id):
         for window in self._windows:
             if window.get_id() == win_id:
-                window.list_files_from_views()
+                window.list_files_from_tabs()
                 break
 
-    def get_views_count(self, win_id):
+    def get_tabs_count(self, win_id):
         for window in self._windows:
             if window.get_id() == win_id:
-                return window.get_views_count()
+                return window.get_tabs_count()
 
-    def get_views_from_window(self, win_id):
+    def get_tabs_from_window(self, win_id):
         for window in self._windows:
             if window.get_id() == win_id:
-                return window.get_all_views()
+                return window.get_all_tabs()
 
 
 
 
-    def unload_views_and_windows(self):
+    def unload_tabs_and_windows(self):
         for window in self._windows:
-            window.get_all_views().clear()
+            window.get_all_tabs().clear()
 
         self._windows.clear()
 
@@ -153,9 +153,9 @@ class WindowController:
         if len(self._windows) > 0:
             windows = []
             for window in self._windows:
-                views = []
-                for view in window.get_all_views():
-                    views.append(view.get_current_directory())
+                tabs = []
+                for tab in window.get_all_tabs():
+                    tabs.append(tab.get_current_directory())
 
                 windows.append(
                     [
@@ -165,7 +165,7 @@ class WindowController:
                                 "Name": window.get_name(),
                                 "Nickname": window.get_nickname(),
                                 "isHidden": f"{window.is_hidden()}",
-                                'views': views
+                                'tabs': tabs
                             }
                         }
                     ]

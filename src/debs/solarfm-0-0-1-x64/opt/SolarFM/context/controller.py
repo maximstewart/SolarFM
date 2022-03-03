@@ -50,7 +50,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
     def tear_down(self, widget=None, eve=None):
         event_system.send_ipc_message("close server")
-        self.window_controller.save_state()
+        self.fm_controller.save_state()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 
@@ -75,21 +75,21 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
     def handle_gui_event_and_set_message(self, type, target, parameters):
         method = getattr(self.__class__, f"{target}")
         data   = method(*(self, *parameters))
-        self.plugins.set_message_on_plugin(type, data)
+        self.plugins.send_message_to_plugin(type, data)
 
     def open_terminal(self, widget=None, eve=None):
-        wid, tid = self.window_controller.get_active_wid_and_tid()
-        view     = self.get_fm_window(wid).get_view_by_id(tid)
-        dir      = view.get_current_directory()
-        view.execute(f"{view.terminal_app}", dir)
+        wid, tid = self.fm_controller.get_active_wid_and_tid()
+        tab      = self.get_fm_window(wid).get_tab_by_id(tid)
+        dir      = tab.get_current_directory()
+        tab.execute(f"{tab.terminal_app}", dir)
 
     def save_load_session(self, action="save_session"):
-        wid, tid          = self.window_controller.get_active_wid_and_tid()
-        view              = self.get_fm_window(wid).get_view_by_id(tid)
+        wid, tid          = self.fm_controller.get_active_wid_and_tid()
+        tab               = self.get_fm_window(wid).get_tab_by_id(tid)
         save_load_dialog  = self.builder.get_object("save_load_dialog")
 
         if action == "save_session":
-            self.window_controller.save_state()
+            self.fm_controller.save_state()
             return
         elif action == "save_session_as":
             save_load_dialog.set_action(Gtk.FileChooserAction.SAVE)
@@ -98,16 +98,16 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         else:
             raise Exception(f"Unknown action given:  {action}")
 
-        save_load_dialog.set_current_folder(view.get_current_directory())
+        save_load_dialog.set_current_folder(tab.get_current_directory())
         save_load_dialog.set_current_name("session.json")
         response = save_load_dialog.run()
         if response == Gtk.ResponseType.OK:
-            if action == "save_session":
+            if action == "save_session_as":
                 path = f"{save_load_dialog.get_current_folder()}/{save_load_dialog.get_current_name()}"
-                self.window_controller.save_state(path)
+                self.fm_controller.save_state(path)
             elif action == "load_session":
                 path         = f"{save_load_dialog.get_file().get_path()}"
-                session_json = self.window_controller.load_state(path)
+                session_json = self.fm_controller.load_state(path)
                 self.load_session(session_json)
         if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
             pass
@@ -118,13 +118,13 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         if debug:
             print(f"Session Data: {session_json}")
 
-        self.ctrlDown          = False
-        self.shiftDown         = False
-        self.altDown           = False
+        self.ctrl_down  = False
+        self.shift_down = False
+        self.alt_down   = False
         for notebook in self.notebooks:
             self.clear_children(notebook)
 
-        self.window_controller.unload_views_and_windows()
+        self.fm_controller.unload_tabs_and_windows()
         self.generate_windows(session_json)
         gc.collect()
 
@@ -165,7 +165,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             self.restore_trash_files()
         if action == "empty_trash":
             self.empty_trash()
-
         if action == "create":
             self.show_new_file_menu()
         if action in ["save_session", "save_session_as", "load_session"]:

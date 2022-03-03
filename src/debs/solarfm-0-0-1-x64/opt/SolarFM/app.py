@@ -11,7 +11,7 @@ from __builtins__ import EventSystem
 
 
 
-class Main(EventSystem):
+class Application(EventSystem):
     """ Create Settings and Controller classes. Bind signal to Builder. Inherit from Builtins to bind global methods and classes. """
 
     def __init__(self, args, unknownargs):

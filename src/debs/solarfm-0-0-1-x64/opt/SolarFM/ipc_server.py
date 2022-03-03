@@ -1,5 +1,5 @@
 # Python imports
-import threading, time
+import os, threading, time
 from multiprocessing.connection import Listener, Client
 
 # Lib imports
@@ -15,12 +15,32 @@ def threaded(fn):
 
 
 
-class IPCServerMixin:
+class IPCServer:
     """ Create a listener so that other SolarFM instances send requests back to existing instance. """
+    def __init__(self, conn_type="socket"):
+        self.is_ipc_alive   = False
+        self._conn_type     = conn_type
+        self.ipc_authkey    = b'solarfm-ipc'
+        self.ipc_timeout    = 15.0
+
+        if conn_type == "socket":
+            self.ipc_address    = '/tmp/solarfm-ipc.sock'
+        else:
+            self.ipc_address    = '127.0.0.1'
+            self.ipc_port       = 4848
+
 
     @threaded
     def create_ipc_server(self):
-        listener          = Listener((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
+        if self._conn_type == "socket":
+            if os.path.exists(self.ipc_address):
+                return
+
+            listener = Listener(address=self.ipc_address, family="AF_UNIX", authkey=self.ipc_authkey)
+        else:
+            listener = Listener((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
+
+
         self.is_ipc_alive = True
         while True:
             conn       = listener.accept()
@@ -58,7 +78,12 @@ class IPCServerMixin:
 
     def send_ipc_message(self, message="Empty Data..."):
         try:
-            conn = Client((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
+            if self._conn_type == "socket":
+                conn = Client(address=self.ipc_address, family="AF_UNIX", authkey=self.ipc_authkey)
+            else:
+                conn = Client((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
+
+
             conn.send(message)
             conn.send('close connection')
         except Exception as e:
