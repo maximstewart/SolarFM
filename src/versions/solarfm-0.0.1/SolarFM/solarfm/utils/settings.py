@@ -1,5 +1,5 @@
 # Python imports
-import os
+import os, json
 from os import path
 
 # Gtk imports
@@ -18,36 +18,6 @@ from .keybindings import Keybindings
 
 
 
-DEFAULTS = {
-        'keybindings': {
-            'help'                   : 'F1',
-            'rename_files'           : 'F2',
-            'open_terminal'          : 'F4',
-            'refresh_tab'            : 'F5',
-            'delete_files'           : 'Delete',
-            # 'tggl_top_main_menubar'  : '<Alt>',
-            'trash_files'            : '<Shift><Control>t',
-            'tear_down'              : '<Control>q',
-            'go_home'                : '<Control>slash',
-            'refresh_tab'            : '<Control>r',
-            'go_up'                  : '<Control>Up',
-            'grab_focus_path_entry'  : '<Control>l',
-            'open_files'             : '<Control>o',
-            'show_hide_hidden_files' : '<Control>h',
-            'rename_files'           : '<Control>e',
-            'keyboard_create_tab'    : '<Control>t',
-            'keyboard_close_tab'     : '<Control>w',
-            'keyboard_copy_files'    : '<Control>c',
-            'keyboard_cut_files'     : '<Control>x',
-            'paste_files'            : '<Control>v',
-            'show_new_file_menu'     : '<Control>n',
-        },
-}
-
-
-
-
-
 class Settings:
     def __init__(self):
         self._SCRIPT_PTH    = os.path.dirname(os.path.realpath(__file__))
@@ -57,7 +27,8 @@ class Settings:
         self._USR_SOLARFM   = f"/usr/share/{app_name.lower()}"
 
         self._CSS_FILE      = f"{self._CONFIG_PATH}/stylesheet.css"
-        self._WINDOWS_GLADE = f"{self._CONFIG_PATH}/Main_Window.glade"
+        self._GLADE_FILE    = f"{self._CONFIG_PATH}/Main_Window.glade"
+        self._KEY_BINDINGS  = f"{self._CONFIG_PATH}/key-bindings.json"
         self._DEFAULT_ICONS = f"{self._CONFIG_PATH}/icons"
         self._WINDOW_ICON   = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
 
@@ -66,8 +37,10 @@ class Settings:
         if not os.path.exists(self._PLUGINS_PATH):
             os.mkdir(self._PLUGINS_PATH)
 
-        if not os.path.exists(self._WINDOWS_GLADE):
-            self._WINDOWS_GLADE = f"{self._USR_SOLARFM}/Main_Window.glade"
+        if not os.path.exists(self._GLADE_FILE):
+            self._GLADE_FILE    = f"{self._USR_SOLARFM}/Main_Window.glade"
+        if not os.path.exists(self._KEY_BINDINGS):
+            self._KEY_BINDINGS  = f"{self._USR_SOLARFM}/key-bindings.json"
         if not os.path.exists(self._CSS_FILE):
             self._CSS_FILE      = f"{self._USR_SOLARFM}/stylesheet.css"
         if not os.path.exists(self._WINDOW_ICON):
@@ -79,29 +52,31 @@ class Settings:
         self._warning_color = "#ffa800"
         self._error_color   = "#ff0000"
 
-        self.keybindings    = Keybindings()
-        self.main_window    = None
-        self.logger         = Logger(self._CONFIG_PATH).get_logger()
-        self.builder        = Gtk.Builder()
-        self.keybindings.configure(DEFAULTS['keybindings'])
-        self.builder.add_from_file(self._WINDOWS_GLADE)
+        self._keybindings = Keybindings()
+        with open(self._KEY_BINDINGS) as file:
+            keybindings = json.load(file)["keybindings"]
+            self._keybindings.configure(keybindings)
 
+        self._main_window    = None
+        self._logger         = Logger(self._CONFIG_PATH).get_logger()
+        self._builder        = Gtk.Builder()
+        self._builder.add_from_file(self._GLADE_FILE)
 
 
     def create_window(self):
         # Get window and connect signals
-        self.main_window = self.builder.get_object("Main_Window")
+        self._main_window = self._builder.get_object("Main_Window")
         self._set_window_data()
 
     def _set_window_data(self):
-        self.main_window.set_icon_from_file(self._WINDOW_ICON)
-        screen = self.main_window.get_screen()
+        self._main_window.set_icon_from_file(self._WINDOW_ICON)
+        screen = self._main_window.get_screen()
         visual = screen.get_rgba_visual()
 
         if visual != None and screen.is_composited():
-            self.main_window.set_visual(visual)
-            self.main_window.set_app_paintable(True)
-            self.main_window.connect("draw", self._area_draw)
+            self._main_window.set_visual(visual)
+            self._main_window.set_app_paintable(True)
+            self._main_window.connect("draw", self._area_draw)
 
         # bind css file
         cssProvider  = Gtk.CssProvider()
@@ -117,7 +92,7 @@ class Settings:
         cr.set_operator(cairo.OPERATOR_OVER)
 
     def get_monitor_data(self):
-        screen = self.builder.get_object("Main_Window").get_screen()
+        screen = self._builder.get_object("Main_Window").get_screen()
         monitors = []
         for m in range(screen.get_n_monitors()):
             monitors.append(screen.get_monitor_geometry(m))
@@ -127,11 +102,11 @@ class Settings:
 
         return monitors
 
-    def get_builder(self):       return self.builder
-    def get_logger(self):        return self.logger
-    def get_keybindings(self):   return self.keybindings
-    def get_main_window(self):   return self.main_window
-    def get_plugins_path(self):  return self._PLUGINS_PATH
+    def get_builder(self):        return self._builder
+    def get_logger(self):         return self._logger
+    def get_keybindings(self):    return self._keybindings
+    def get_main_window(self):    return self._main_window
+    def get_plugins_path(self):   return self._PLUGINS_PATH
 
     def get_success_color(self):  return self._success_color
     def get_warning_color(self):  return self._warning_color

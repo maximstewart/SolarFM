@@ -53,8 +53,11 @@ class Keybindings:
         self._masks  = 0
 
         for action, bindings in list(self.keys.items()):
-            if not isinstance(bindings, tuple):
+            if isinstance(bindings, list):
+                bindings = (*bindings,)
+            elif not isinstance(bindings, tuple):
                 bindings = (bindings,)
+
 
             for binding in bindings:
                 if not binding or binding == "None":

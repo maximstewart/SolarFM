@@ -39,8 +39,8 @@ class Plugin:
         self._run_timeout()
 
         if self._message:
-            wid, tid, view, iconview, store = self._message
-            subprocess.Popen([f'{self.SCRIPT_PTH}/download.sh' , view.get_current_directory()])
+            state = self._message
+            subprocess.Popen([f'{self.SCRIPT_PTH}/download.sh' , state.tab.get_current_directory()])
             self._message = None
 
 

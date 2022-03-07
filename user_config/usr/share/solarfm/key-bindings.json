@@ -1,0 +1,23 @@
+{
+    "keybindings": {
+        "help"                   : "F1",
+        "rename_files"           : ["F2", "<Control>e"],
+        "open_terminal"          : "F4",
+        "refresh_tab"            : ["F5", "<Control>r"],
+        "delete_files"           : "Delete",
+        "tggl_top_main_menubar"  : "<Alt>",
+        "trash_files"            : "<Shift><Control>t",
+        "tear_down"              : "<Control>q",
+        "go_up"                  : "<Control>Up",
+        "go_home"                : "<Control>slash",
+        "grab_focus_path_entry"  : "<Control>l",
+        "open_files"             : "<Control>o",
+        "show_hide_hidden_files" : "<Control>h",
+        "keyboard_create_tab"    : "<Control>t",
+        "keyboard_close_tab"     : "<Control>w",
+        "keyboard_copy_files"    : "<Control>c",
+        "keyboard_cut_files"     : "<Control>x",
+        "paste_files"            : "<Control>v",
+        "show_new_file_menu"     : "<Control>n"
+    }
+}

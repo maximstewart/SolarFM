@@ -122,7 +122,7 @@ class WindowMixin(TabMixin):
             return
 
         # If nothing selected
-        if tab.get_hidden():
+        if tab.is_hiding_hidden():
             if tab.get_hidden_count() > 0:
                 self.bottom_file_count_label.set_label(f"{tab.get_not_hidden_count()} visible ({tab.get_hidden_count()} hidden)")
             else:

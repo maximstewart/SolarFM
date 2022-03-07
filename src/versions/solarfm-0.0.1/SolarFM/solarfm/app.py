@@ -52,4 +52,4 @@ class Application(EventSystem):
             except Exception as e:
                 print(repr(e))
 
-        settings.builder.connect_signals(handlers)
+        settings.get_builder().connect_signals(handlers)
