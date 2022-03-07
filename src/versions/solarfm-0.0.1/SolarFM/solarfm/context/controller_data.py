@@ -10,21 +10,28 @@ from shellfm.windows.controller import WindowController
 from plugins.plugins import Plugins
 
 
+class State:
+    wid       = None
+    tid       = None
+    tab       = None
+    icon_grid = None
+    store     = None
 
 
 class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
 
     def setup_controller_data(self, _settings):
+        self.settings           = _settings
+        self.builder            = self.settings.get_builder()
+        self.logger             = self.settings.get_logger()
+        self.keybindings        = self.settings.get_keybindings()
+
         self.trashman           = XDGTrash()
         self.fm_controller      = WindowController()
         self.plugins            = Plugins(_settings)
         self.state              = self.fm_controller.load_state()
         self.trashman.regenerate()
-
-        self.settings           = _settings
-        self.builder            = self.settings.get_builder()
-        self.logger             = self.settings.get_logger()
 
         self.window             = self.settings.get_main_window()
         self.window1            = self.builder.get_object("window_1")
@@ -109,6 +116,7 @@ class Controller_Data:
         self.window.connect("delete-event", self.tear_down)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
 
+
     def get_current_state(self):
         '''
         Returns the state info most useful for any given context and action intent.
@@ -117,13 +125,15 @@ class Controller_Data:
                         a (obj): self
 
                 Returns:
-                        wid, tid, tab, icon_grid, store
+                        state (obj): State
         '''
-        wid, tid     = self.fm_controller.get_active_wid_and_tid()
-        tab          = self.get_fm_window(wid).get_tab_by_id(tid)
-        icon_grid    = self.builder.get_object(f"{wid}|{tid}|icon_grid")
-        store        = icon_grid.get_model()
-        return wid, tid, tab, icon_grid, store
+        state                =  State()
+        wid, tid             = self.fm_controller.get_active_wid_and_tid()
+        state.wid, state.tid = self.fm_controller.get_active_wid_and_tid()
+        state.tab            = self.get_fm_window(wid).get_tab_by_id(tid)
+        state.icon_grid      = self.builder.get_object(f"{wid}|{tid}|icon_grid")
+        state.store          = state.icon_grid.get_model()
+        return state
 
 
     def clear_console(self):

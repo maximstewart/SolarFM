@@ -13,6 +13,39 @@ from gi.repository import Gdk
 
 # Application imports
 from .logger import Logger
+from .keybindings import Keybindings
+
+
+
+
+DEFAULTS = {
+        'keybindings': {
+            'help'                   : 'F1',
+            'rename_files'           : 'F2',
+            'open_terminal'          : 'F4',
+            'refresh_tab'            : 'F5',
+            'delete_files'           : 'Delete',
+            # 'tggl_top_main_menubar'  : '<Alt>',
+            'trash_files'            : '<Shift><Control>t',
+            'tear_down'              : '<Control>q',
+            'go_home'                : '<Control>slash',
+            'refresh_tab'            : '<Control>r',
+            'go_up'                  : '<Control>Up',
+            'grab_focus_path_entry'  : '<Control>l',
+            'open_files'             : '<Control>o',
+            'show_hide_hidden_files' : '<Control>h',
+            'rename_files'           : '<Control>e',
+            'keyboard_create_tab'    : '<Control>t',
+            'keyboard_close_tab'     : '<Control>w',
+            'keyboard_copy_files'    : '<Control>c',
+            'keyboard_cut_files'     : '<Control>x',
+            'paste_files'            : '<Control>v',
+            'show_new_file_menu'     : '<Control>n',
+        },
+}
+
+
+
 
 
 class Settings:
@@ -46,9 +79,11 @@ class Settings:
         self._warning_color = "#ffa800"
         self._error_color   = "#ff0000"
 
+        self.keybindings    = Keybindings()
         self.main_window    = None
         self.logger         = Logger(self._CONFIG_PATH).get_logger()
         self.builder        = Gtk.Builder()
+        self.keybindings.configure(DEFAULTS['keybindings'])
         self.builder.add_from_file(self._WINDOWS_GLADE)
 
 
@@ -94,6 +129,7 @@ class Settings:
 
     def get_builder(self):       return self.builder
     def get_logger(self):        return self.logger
+    def get_keybindings(self):   return self.keybindings
     def get_main_window(self):   return self.main_window
     def get_plugins_path(self):  return self._PLUGINS_PATH
 

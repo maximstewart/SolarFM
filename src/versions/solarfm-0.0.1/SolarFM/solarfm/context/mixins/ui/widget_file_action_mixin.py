@@ -102,10 +102,8 @@ class WidgetFileActionMixin:
         self.load_store(tab, store)
 
         tab_widget_label.set_label(tab.get_end_of_path())
-
-        _wid, _tid, _tab, _icon_grid, _store = self.get_current_state()
-
-        if [wid, tid] in [_wid, _tid]:
+        state = self.get_current_state()
+        if [wid, tid] in [state.wid, state.tid]:
             self.set_bottom_labels(tab)
 
 
@@ -130,47 +128,44 @@ class WidgetFileActionMixin:
 
 
     def open_files(self):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
-
+        state = self.get_current_state()
+        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         for file in uris:
-            tab.open_file_locally(file)
+            state.tab.open_file_locally(file)
 
     def open_with_files(self, appchooser_widget):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
+        state     = self.get_current_state()
         app_info  = appchooser_widget.get_app_info()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files)
-
-        tab.app_chooser_exec(app_info, uris)
+        uris      = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files)
+        state.tab.app_chooser_exec(app_info, uris)
 
     def execute_files(self, in_terminal=False):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        paths       = self.format_to_uris(store, wid, tid, self.selected_files, True)
-        current_dir = tab.get_current_directory()
+        state       = self.get_current_state()
+        paths       = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
+        current_dir = state.tab.get_current_directory()
         command     = None
-
         for path in paths:
-            command = f"exec '{path}'" if not in_terminal else f"{tab.terminal_app} -e '{path}'"
-            tab.execute(command, start_dir=tab.get_current_directory(), use_os_system=False)
+            command = f"exec '{path}'" if not in_terminal else f"{state.tab.terminal_app} -e '{path}'"
+            state.tab.execute(command, start_dir=state.tab.get_current_directory(), use_os_system=False)
 
     def archive_files(self, archiver_dialogue):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        paths = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        state       = self.get_current_state()
+        paths       = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
 
         save_target = archiver_dialogue.get_filename();
         sItr, eItr  = self.arc_command_buffer.get_bounds()
         pre_command = self.arc_command_buffer.get_text(sItr, eItr, False)
         pre_command = pre_command.replace("%o", save_target)
         pre_command = pre_command.replace("%N", ' '.join(paths))
-        command     = f"{tab.terminal_app} -e '{pre_command}'"
+        command     = f"{state.tab.terminal_app} -e '{pre_command}'"
 
-        tab.execute(command, start_dir=None, use_os_system=True)
+        state.tab.execute(command, start_dir=None, use_os_system=True)
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
         rename_input = self.builder.get_object("new_rename_fname")
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        uris         = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        state        = self.get_current_state()
+        uris         = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
 
         for uri in uris:
             entry = uri.split("/")[-1]
@@ -186,7 +181,7 @@ class WidgetFileActionMixin:
                 break
 
             rname_to = rename_input.get_text().strip()
-            target   = f"{tab.get_current_directory()}/{rname_to}"
+            target   = f"{state.tab.get_current_directory()}/{rname_to}"
             self.handle_files([uri], "rename", target)
 
 
@@ -196,13 +191,13 @@ class WidgetFileActionMixin:
         self.selected_files.clear()
 
     def cut_files(self):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        state = self.get_current_state()
+        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         self.to_cut_files = uris
 
     def copy_files(self):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        uris = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        state = self.get_current_state()
+        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         self.to_copy_files = uris
 
     def paste_files(self):
@@ -216,8 +211,8 @@ class WidgetFileActionMixin:
             self.handle_files(self.to_cut_files, "move", target)
 
     def delete_files(self):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        uris     = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        state    = self.get_current_state()
+        uris     = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         response = None
 
         self.warning_alert.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
@@ -231,7 +226,7 @@ class WidgetFileActionMixin:
                 type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
                 if type == Gio.FileType.DIRECTORY:
-                    tab.delete_file( file.get_path() )
+                    state.tab.delete_file( file.get_path() )
                 else:
                     file.delete(cancellable=None)
             else:
@@ -239,14 +234,14 @@ class WidgetFileActionMixin:
 
 
     def trash_files(self):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        state = self.get_current_state()
+        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         for uri in uris:
             self.trashman.trash(uri, False)
 
     def restore_trash_files(self):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        uris      = self.format_to_uris(store, wid, tid, self.selected_files, True)
+        state = self.get_current_state()
+        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         for uri in uris:
             self.trashman.restore(filename=uri.split("/")[-1], verbose=False)
 

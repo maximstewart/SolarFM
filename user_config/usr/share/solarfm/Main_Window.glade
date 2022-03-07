@@ -1182,6 +1182,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <child>
               <object class="GtkButton" id="button11">
                 <property name="label">gtk-cancel</property>
+                <property name="use-action-appearance">True</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -1196,6 +1197,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <child>
               <object class="GtkButton" id="button12">
                 <property name="label">gtk-ok</property>
+                <property name="use-action-appearance">True</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -1408,8 +1410,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="default-height">830</property>
     <property name="gravity">center</property>
     <signal name="focus-out-event" handler="unset_keys_and_data" swapped="no"/>
-    <signal name="key-press-event" handler="global_key_press_controller" swapped="no"/>
-    <signal name="key-release-event" handler="global_key_release_controller" swapped="no"/>
+    <signal name="key-press-event" handler="on_global_key_press_controller" swapped="no"/>
+    <signal name="key-release-event" handler="on_global_key_release_controller" swapped="no"/>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>

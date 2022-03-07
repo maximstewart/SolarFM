@@ -77,12 +77,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         data   = method(*(self, *parameters))
         self.plugins.send_message_to_plugin(type, data)
 
-    def open_terminal(self, widget=None, eve=None):
-        wid, tid = self.fm_controller.get_active_wid_and_tid()
-        tab      = self.get_fm_window(wid).get_tab_by_id(tid)
-        dir      = tab.get_current_directory()
-        tab.execute(f"{tab.terminal_app}", dir)
-
     def save_load_session(self, action="save_session"):
         wid, tid          = self.fm_controller.get_active_wid_and_tid()
         tab               = self.get_fm_window(wid).get_tab_by_id(tid)
@@ -169,3 +163,30 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             self.show_new_file_menu()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
+
+
+
+
+
+
+    def go_home(self, widget=None, eve=None):
+        self.builder.get_object("go_home").released()
+
+    def refresh_tab(self, widget=None, eve=None):
+        self.builder.get_object("refresh_tab").released()
+
+    def go_up(self, widget=None, eve=None):
+        self.builder.get_object("go_up").released()
+
+    def grab_focus_path_entry(self, widget=None, eve=None):
+        self.builder.get_object("path_entry").grab_focus()
+
+    def tggl_top_main_menubar(self, widget=None, eve=None):
+        top_main_menubar = self.builder.get_object("top_main_menubar")
+        top_main_menubar.hide() if top_main_menubar.is_visible() else top_main_menubar.show()
+
+    def open_terminal(self, widget=None, eve=None):
+        wid, tid = self.fm_controller.get_active_wid_and_tid()
+        tab      = self.get_fm_window(wid).get_tab_by_id(tid)
+        dir      = tab.get_current_directory()
+        tab.execute(f"{tab.terminal_app}", dir)

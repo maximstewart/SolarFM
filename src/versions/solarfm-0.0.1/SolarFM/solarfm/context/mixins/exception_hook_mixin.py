@@ -23,7 +23,7 @@ class ExceptionHookMixin:
         data      = f"Exec Type:  {exec_type}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"
         start_itr = self.message_buffer.get_start_iter()
         self.message_buffer.place_cursor(start_itr)
-        self.display_message(self.error, data)
+        self.display_message(self.error_color, data)
 
     def display_message(self, type, text, seconds=None):
         self.message_buffer.insert_at_cursor(text)

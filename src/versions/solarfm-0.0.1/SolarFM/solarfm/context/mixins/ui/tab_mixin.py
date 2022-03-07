@@ -96,9 +96,9 @@ class TabMixin(WidgetMixin):
         return notebook.get_children()[1].get_children()[0]
 
     def refresh_tab(data=None):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        tab.load_directory()
-        self.load_store(tab, store)
+        state = self.get_current_state()
+        state.tab.load_directory()
+        self.load_store(state.tab, state.store)
 
     def update_tab(self, tab_label, tab, store, wid, tid):
         self.load_store(tab, store)
@@ -172,27 +172,13 @@ class TabMixin(WidgetMixin):
             pass
 
     def set_path_entry(self, button=None, eve=None):
-        wid, tid, tab, icon_grid, store = self.get_current_state()
-        path       = f"{tab.get_current_directory()}/{button.get_label()}"
+        state      = self.get_current_state()
+        path       = f"{state.tab.get_current_directory()}/{button.get_label()}"
         path_entry = self.builder.get_object("path_entry")
         path_entry.set_text(path)
         path_entry.grab_focus_without_selecting()
         path_entry.set_position(-1)
         self.path_menu.popdown()
-
-    def keyboard_close_tab(self):
-        wid, tid  = self.fm_controller.get_active_wid_and_tid()
-        notebook  = self.builder.get_object(f"window_{wid}")
-        scroll    = self.builder.get_object(f"{wid}|{tid}")
-        page      = notebook.page_num(scroll)
-        tab       = self.get_fm_window(wid).get_tab_by_id(tid)
-        watcher   = tab.get_dir_watcher()
-        watcher.cancel()
-
-        self.get_fm_window(wid).delete_tab_by_id(tid)
-        notebook.remove_page(page)
-        self.fm_controller.save_state()
-        self.set_window_title()
 
     def show_hide_hidden_files(self):
         wid, tid = self.fm_controller.get_active_wid_and_tid()

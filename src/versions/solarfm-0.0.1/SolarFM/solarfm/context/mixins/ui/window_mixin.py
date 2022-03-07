@@ -25,8 +25,11 @@ class WindowMixin(TabMixin):
                 self.fm_controller.create_window()
                 notebook_tggl_button.set_active(True)
 
-                for tab in tabs:
-                    self.create_new_tab_notebook(None, i, tab)
+                if tabs:
+                    for tab in tabs:
+                        self.create_new_tab_notebook(None, i, tab)
+                else:
+                    self.create_new_tab_notebook(None, i, None)
 
                 if is_hidden:
                     self.toggle_notebook_pane(notebook_tggl_button)
@@ -77,8 +80,8 @@ class WindowMixin(TabMixin):
 
 
     def set_bottom_labels(self, tab):
-        _wid, _tid, _tab, icon_grid, store = self.get_current_state()
-        selected_files       = icon_grid.get_selected_items()
+        state                = self.get_current_state()
+        selected_files       = state.icon_grid.get_selected_items()
         current_directory    = tab.get_current_directory()
         path_file            = Gio.File.new_for_path(current_directory)
         mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
@@ -96,7 +99,7 @@ class WindowMixin(TabMixin):
         self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")
         self.bottom_path_label.set_label(tab.get_current_directory())
         if selected_files:
-            uris          = self.format_to_uris(store, _wid, _tid, selected_files, True)
+            uris          = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
             combined_size = 0
             for uri in uris:
                 try:
@@ -189,17 +192,17 @@ class WindowMixin(TabMixin):
                 return
 
 
-            wid, tid, tab, _icons_grid, store = self.get_current_state()
-            notebook   = self.builder.get_object(f"window_{wid}")
+            state      = self.get_current_state()
+            notebook   = self.builder.get_object(f"window_{state.wid}")
             tab_label  = self.get_tab_label(notebook, icons_grid)
 
-            fileName   = store[item][1]
-            dir        = tab.get_current_directory()
+            fileName   = state.store[item][1]
+            dir        = state.tab.get_current_directory()
             file       = f"{dir}/{fileName}"
 
             if isdir(file):
-                tab.set_path(file)
-                self.update_tab(tab_label, tab, store, wid, tid)
+                state.tab.set_path(file)
+                self.update_tab(tab_label, state.tab, state.store, state.wid, state.tid)
             else:
                 self.open_files()
         except Exception as e:
