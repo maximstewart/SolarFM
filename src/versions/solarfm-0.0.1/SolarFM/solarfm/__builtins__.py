@@ -4,7 +4,7 @@ import builtins
 # Lib imports
 
 # Application imports
-from ipc_server import IPCServer
+from utils.ipc_server import IPCServer
 
 
 

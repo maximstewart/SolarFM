@@ -16,7 +16,7 @@ valid_keyvalue_pat    = re.compile(r"[a-z0-9A-Z-_\[\]\(\)\| ]")
 class KeyboardSignalsMixin:
     """ KeyboardSignalsMixin keyboard hooks controller. """
 
-    # TODO: Need to set methods that use this to somehow check the keybindings state instead. 
+    # TODO: Need to set methods that use this to somehow check the keybindings state instead.
     def unset_keys_and_data(self, widget=None, eve=None):
         self.ctrl_down    = False
         self.shift_down   = False
@@ -72,10 +72,6 @@ class KeyboardSignalsMixin:
                             return True
 
 
-
-    def keyboard_create_tab(self, widget=None, eve=None):
-        self.builder.get_object("create_tab").released()
-
     def keyboard_close_tab(self):
         wid, tid  = self.fm_controller.get_active_wid_and_tid()
         notebook  = self.builder.get_object(f"window_{wid}")
@@ -89,11 +85,3 @@ class KeyboardSignalsMixin:
         notebook.remove_page(page)
         self.fm_controller.save_state()
         self.set_window_title()
-
-    def keyboard_copy_files(self, widget=None, eve=None):
-        self.to_cut_files.clear()
-        self.copy_files()
-
-    def keyboard_cut_files(self, widget=None, eve=None):
-        self.to_copy_files.clear()
-        self.cut_files()

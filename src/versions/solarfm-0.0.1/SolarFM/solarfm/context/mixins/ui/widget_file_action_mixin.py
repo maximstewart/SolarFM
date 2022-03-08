@@ -191,11 +191,13 @@ class WidgetFileActionMixin:
         self.selected_files.clear()
 
     def cut_files(self):
+        self.to_copy_files.clear()
         state = self.get_current_state()
         uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         self.to_cut_files = uris
 
     def copy_files(self):
+        self.to_cut_files.clear()
         state = self.get_current_state()
         uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         self.to_copy_files = uris

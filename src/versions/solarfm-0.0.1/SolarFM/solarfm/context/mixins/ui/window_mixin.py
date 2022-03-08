@@ -165,7 +165,7 @@ class WindowMixin(TabMixin):
         try:
             self.path_menu.popdown()
             wid, tid = icons_grid.get_name().split("|")
-            self.fm_controller.set__wid_and_tid(wid, tid)
+            self.fm_controller.set_wid_and_tid(wid, tid)
             self.set_path_text(wid, tid)
             self.set_window_title()
 
@@ -235,7 +235,7 @@ class WindowMixin(TabMixin):
             self.override_drop_dest = uri if isdir(uri) else None
 
         if target not in current:
-            self.fm_controller.set__wid_and_tid(wid, tid)
+            self.fm_controller.set_wid_and_tid(wid, tid)
 
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):

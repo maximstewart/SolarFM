@@ -28,7 +28,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         self.setup_controller_data(_settings)
         self.window.show()
 
-        self.generate_windows(self.state)
+        self.generate_windows(self.fm_controller_data)
         self.plugins.launch_plugins()
 
         if debug:
@@ -140,10 +140,8 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         if action == "rename":
             self.rename_files()
         if action == "cut":
-            self.to_copy_files.clear()
             self.cut_files()
         if action == "copy":
-            self.to_cut_files.clear()
             self.copy_files()
         if action == "paste":
             self.paste_files()

@@ -22,15 +22,15 @@ class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
 
     def setup_controller_data(self, _settings):
-        self.settings           = _settings
-        self.builder            = self.settings.get_builder()
-        self.logger             = self.settings.get_logger()
-        self.keybindings        = self.settings.get_keybindings()
+        self.settings            = _settings
+        self.builder             = self.settings.get_builder()
+        self.logger              = self.settings.get_logger()
+        self.keybindings         = self.settings.get_keybindings()
 
-        self.trashman           = XDGTrash()
-        self.fm_controller      = WindowController()
-        self.plugins            = Plugins(_settings)
-        self.state              = self.fm_controller.load_state()
+        self.trashman            = XDGTrash()
+        self.fm_controller       = WindowController()
+        self.plugins             = Plugins(_settings)
+        self.fm_controller_data  = self.fm_controller.get_state_from_file()
         self.trashman.regenerate()
 
         self.window             = self.settings.get_main_window()
@@ -127,11 +127,10 @@ class Controller_Data:
                 Returns:
                         state (obj): State
         '''
-        state                =  State()
-        wid, tid             = self.fm_controller.get_active_wid_and_tid()
+        state                = State()
         state.wid, state.tid = self.fm_controller.get_active_wid_and_tid()
-        state.tab            = self.get_fm_window(wid).get_tab_by_id(tid)
-        state.icon_grid      = self.builder.get_object(f"{wid}|{tid}|icon_grid")
+        state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
+        state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
         state.store          = state.icon_grid.get_model()
         return state
 

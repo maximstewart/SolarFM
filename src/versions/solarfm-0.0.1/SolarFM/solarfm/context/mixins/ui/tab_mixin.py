@@ -15,7 +15,10 @@ from .widget_mixin import WidgetMixin
 class TabMixin(WidgetMixin):
     """docstring for TabMixin"""
 
-    def create_tab(self, wid, path=None):
+    def create_tab(self, wid=None, path=None):
+        if not wid:
+            wid, _tid = self.fm_controller.get_active_wid_and_tid()
+
         notebook    = self.builder.get_object(f"window_{wid}")
         path_entry  = self.builder.get_object(f"path_entry")
         tab         = self.fm_controller.add_tab_for_window_by_nickname(f"window_{wid}")
@@ -30,7 +33,7 @@ class TabMixin(WidgetMixin):
         # scroll, store = self.create_icon_tree_widget(tab, wid)
         index         = notebook.append_page(scroll, tab_widget)
 
-        self.fm_controller.set__wid_and_tid(wid, tab.get_id())
+        self.fm_controller.set_wid_and_tid(wid, tab.get_id())
         path_entry.set_text(tab.get_current_directory())
         notebook.show_all()
         notebook.set_current_page(index)
@@ -79,7 +82,7 @@ class TabMixin(WidgetMixin):
     def on_tab_switch_update(self, notebook, content=None, index=None):
         self.selected_files.clear()
         wid, tid = content.get_children()[0].get_name().split("|")
-        self.fm_controller.set__wid_and_tid(wid, tid)
+        self.fm_controller.set_wid_and_tid(wid, tid)
         self.set_path_text(wid, tid)
         self.set_window_title()
 
