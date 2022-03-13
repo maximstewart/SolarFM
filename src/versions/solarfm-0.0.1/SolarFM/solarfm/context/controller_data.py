@@ -56,8 +56,8 @@ class Controller_Data:
         self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
         self.bottom_path_label       = self.builder.get_object("bottom_path_label")
 
-        self.trash_files_path        = GLib.get_user_data_dir() + "/Trash/files"
-        self.trash_info_path         = GLib.get_user_data_dir() + "/Trash/info"
+        self.trash_files_path        = f"{GLib.get_user_data_dir()}/Trash/files"
+        self.trash_info_path         = f"{GLib.get_user_data_dir()}/Trash/info"
 
         # In compress commands:
         #    %n: First selected filename/dir to archive

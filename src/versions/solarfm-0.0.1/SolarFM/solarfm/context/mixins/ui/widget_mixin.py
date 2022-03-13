@@ -27,8 +27,14 @@ class WidgetMixin:
         dir   = tab.get_current_directory()
         files = tab.get_files()
 
-        for i, file in enumerate(files):
+        # NOTE: We insure all indecies exist before calling threads that update
+        #       icon positions. In addition, adding the name allows us to see
+        #       the "file" during long or heavy number of icon updates.
+        for file in files:
             store.append([None, file[0]])
+
+        # Now we update as fast as possible the icons.
+        for i, file in enumerate(files):
             self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
@@ -37,27 +43,12 @@ class WidgetMixin:
 
     @threaded
     def create_icon(self, i, tab, store, dir, file):
-        icon  = tab.create_icon(dir, file)
+        icon = tab.create_icon(dir, file)
+        GLib.idle_add(self.update_store, *(i, store, icon, tab, dir, file,))
+
+    def update_store(self, i, store, icon, tab, dir, file):
         fpath = f"{dir}/{file}"
-        GLib.idle_add(self.update_store, (i, store, icon, tab, fpath,))
-
-    # NOTE: Might need to keep an eye on this throwing invalid iters when too
-    #       many updates are happening to a folder. Example: /tmp
-    def update_store(self, item):
-        i, store, icon, tab, fpath = item
-        itr = None
-
-        try:
-            itr = store.get_iter(i)
-        except Exception as e:
-            try:
-                time.sleep(0.2)
-                itr = store.get_iter(i)
-            except Exception as e:
-                print(":Invalid Itr detected: (Potential race condition...)")
-                print(f"Index Requested:  {i}")
-                print(f"Store Size:  {len(store)}")
-                return
+        itr   = store.get_iter(i)
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, tab.SYS_ICON_WH[0])
@@ -68,7 +59,6 @@ class WidgetMixin:
                     icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
 
         store.set_value(itr, 0, icon)
-
 
     def get_system_thumbnail(self, filename, size):
         try:
@@ -115,7 +105,7 @@ class WidgetMixin:
     def create_icon_grid_widget(self, tab, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.IconView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
+        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
 
         grid.set_model(store)
         grid.set_pixbuf_column(0)
@@ -157,7 +147,7 @@ class WidgetMixin:
     def create_icon_tree_widget(self, tab, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.TreeView()
-        store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str)
+        store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
         column = Gtk.TreeViewColumn("Icons")
         icon   = Gtk.CellRendererPixbuf()
         name   = Gtk.CellRendererText()

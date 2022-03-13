@@ -256,4 +256,4 @@ class WindowMixin(TabMixin):
 
 
     def create_new_tab_notebook(self, widget=None, wid=None, path=None):
-        self.create_tab(wid, path)
+        self.create_tab(wid, None, path)

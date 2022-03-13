@@ -101,7 +101,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
                 self.fm_controller.save_state(path)
             elif action == "load_session":
                 path         = f"{save_load_dialog.get_file().get_path()}"
-                session_json = self.fm_controller.load_state(path)
+                session_json = self.fm_controller.get_state_from_file(path)
                 self.load_session(session_json)
         if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
             pass

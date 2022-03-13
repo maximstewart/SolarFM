@@ -15,9 +15,9 @@ from .widget_mixin import WidgetMixin
 class TabMixin(WidgetMixin):
     """docstring for TabMixin"""
 
-    def create_tab(self, wid=None, path=None):
+    def create_tab(self, wid=None, tid=None, path=None):
         if not wid:
-            wid, _tid = self.fm_controller.get_active_wid_and_tid()
+            wid, tid = self.fm_controller.get_active_wid_and_tid()
 
         notebook    = self.builder.get_object(f"window_{wid}")
         path_entry  = self.builder.get_object(f"path_entry")
@@ -25,7 +25,12 @@ class TabMixin(WidgetMixin):
         tab.logger  = self.logger
 
         tab.set_wid(wid)
-        if path: tab.set_path(path)
+        if not path:
+            if wid and tid:
+                _tab = self.get_fm_window(wid).get_tab_by_id(tid)
+                tab.set_path(_tab.get_current_directory())
+        else:
+            tab.set_path(path)
 
         tab_widget    = self.create_tab_widget(tab)
         scroll, store = self.create_icon_grid_widget(tab, wid)
@@ -123,7 +128,7 @@ class TabMixin(WidgetMixin):
 
         if action == "create_tab":
             dir = tab.get_current_directory()
-            self.create_tab(wid, dir)
+            self.create_tab(wid, None, dir)
             self.fm_controller.save_state()
             return
         if action == "go_up":
