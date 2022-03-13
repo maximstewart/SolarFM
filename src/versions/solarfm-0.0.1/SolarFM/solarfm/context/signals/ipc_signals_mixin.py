@@ -13,17 +13,17 @@ class IPCSignalsMixin:
         print(message)
 
     def handle_file_from_ipc(self, path):
-        wid, tid   = self.fm_controller.get_active_wid_and_tid()
-        notebook   = self.builder.get_object(f"window_{wid}")
+        wid, tid = self.fm_controller.get_active_wid_and_tid()
+        notebook = self.builder.get_object(f"window_{wid}")
         if notebook.is_visible():
-            self.create_tab(wid, path)
+            self.create_tab(wid, None, path)
             return
 
         if not self.is_pane4_hidden:
-            self.create_tab(4, path)
+            self.create_tab(4, None, path)
         elif not self.is_pane3_hidden:
-            self.create_tab(3, path)
+            self.create_tab(3, None, path)
         elif not self.is_pane2_hidden:
-            self.create_tab(2, path)
+            self.create_tab(2, None, path)
         elif not self.is_pane1_hidden:
-            self.create_tab(1, path)
+            self.create_tab(1, None, path)
