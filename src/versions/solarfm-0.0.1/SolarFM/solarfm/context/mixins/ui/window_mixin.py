@@ -36,13 +36,13 @@ class WindowMixin(TabMixin):
 
             try:
                 if not self.is_pane4_hidden:
-                    icon_grid = self.window4.get_children()[1].get_children()[0]
+                    icon_grid = self.window4.get_children()[-1].get_children()[0]
                 elif not self.is_pane3_hidden:
-                    icon_grid = self.window3.get_children()[1].get_children()[0]
+                    icon_grid = self.window3.get_children()[-1].get_children()[0]
                 elif not self.is_pane2_hidden:
-                    icon_grid = self.window2.get_children()[1].get_children()[0]
+                    icon_grid = self.window2.get_children()[-1].get_children()[0]
                 elif not self.is_pane1_hidden:
-                    icon_grid = self.window1.get_children()[1].get_children()[0]
+                    icon_grid = self.window1.get_children()[-1].get_children()[0]
 
                 icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
                 icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))

@@ -30,16 +30,16 @@ class Window:
     def pop_tab(self):
         self._tabs.pop()
 
-    def delete_tab_by_id(self, vid):
+    def delete_tab_by_id(self, tid):
         for tab in self._tabs:
-            if tab.get_id() == vid:
+            if tab.get_id() == tid:
                 self._tabs.remove(tab)
                 break
 
 
-    def get_tab_by_id(self, vid):
+    def get_tab_by_id(self, tid):
         for tab in self._tabs:
-            if tab.get_id() == vid:
+            if tab.get_id() == tid:
                 return tab
 
     def get_tab_by_index(self, index):
