@@ -59,12 +59,12 @@ class Icon(DesktopIconMixin, VideoIconMixin):
 
     def create_scaled_image(self, path, wxh):
         try:
-                if path.lower().endswith(".gif"):
-                    return  GdkPixbuf.PixbufAnimation.new_from_file(path) \
-                                                        .get_static_image() \
-                                                        .scale_simple(wxh[0], wxh[1], GdkPixbuf.InterpType.BILINEAR)
-                else:
-                    return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, wxh[0], wxh[1], True)
+            if path.lower().endswith(".gif"):
+                return  GdkPixbuf.PixbufAnimation.new_from_file(path) \
+                                                    .get_static_image() \
+                                                    .scale_simple(wxh[0], wxh[1], GdkPixbuf.InterpType.BILINEAR)
+            else:
+                return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, wxh[0], wxh[1], True)
         except Exception as e:
             print("Image Scaling Issue:")
             print( repr(e) )

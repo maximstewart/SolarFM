@@ -7,12 +7,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 # Application imports
-from .widget_mixin import WidgetMixin
+from .grid_mixin import GridMixin
 
 
 
 
-class TabMixin(WidgetMixin):
+class TabMixin(GridMixin):
     """docstring for TabMixin"""
 
     def create_tab(self, wid=None, tid=None, path=None):

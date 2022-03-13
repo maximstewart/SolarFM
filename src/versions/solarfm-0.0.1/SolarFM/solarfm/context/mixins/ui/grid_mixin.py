@@ -19,7 +19,7 @@ def threaded(fn):
 
 
 
-class WidgetMixin:
+class GridMixin:
     """docstring for WidgetMixin"""
 
     def load_store(self, tab, store, save_state=False):
@@ -27,14 +27,8 @@ class WidgetMixin:
         dir   = tab.get_current_directory()
         files = tab.get_files()
 
-        # NOTE: We insure all indecies exist before calling threads that update
-        #       icon positions. In addition, adding the name allows us to see
-        #       the "file" during long or heavy number of icon updates.
-        for file in files:
-            store.append([None, file[0]])
-
-        # Now we update as fast as possible the icons.
         for i, file in enumerate(files):
+            store.append([None, file[0]])
             self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
@@ -48,15 +42,12 @@ class WidgetMixin:
 
     def update_store(self, i, store, icon, tab, dir, file):
         fpath = f"{dir}/{file}"
-        itr   = store.get_iter(i)
+        itr = store.get_iter(i)
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, tab.SYS_ICON_WH[0])
             if not icon:
-                if fpath.endswith(".gif"):
-                    icon = GdkPixbuf.PixbufAnimation.get_static_image(fpath)
-                else:
-                    icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
+                icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
 
         store.set_value(itr, 0, icon)
 
