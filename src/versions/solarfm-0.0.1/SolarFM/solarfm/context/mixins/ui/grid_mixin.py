@@ -42,7 +42,14 @@ class GridMixin:
 
     def update_store(self, i, store, icon, tab, dir, file):
         fpath = f"{dir}/{file}"
-        itr = store.get_iter(i)
+
+        loop = True
+        while loop:
+            try:
+                itr  = store.get_iter(i)
+                loop = False
+            except:
+                pass
 
         if not icon:
             icon = self.get_system_thumbnail(fpath, tab.SYS_ICON_WH[0])

@@ -110,7 +110,9 @@ class ShowHideMixin:
 
 
     def show_new_file_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu_fname").set_text("")
+        context_menu_fname = self.builder.get_object("context_menu_fname")
+        context_menu_fname.set_text("")
+        context_menu_fname.grab_focus()
 
         new_file_menu = self.builder.get_object("new_file_menu")
         response      = new_file_menu.run()

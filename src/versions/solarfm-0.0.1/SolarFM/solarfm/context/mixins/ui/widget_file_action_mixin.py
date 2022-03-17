@@ -115,7 +115,7 @@ class WidgetFileActionMixin:
         entry.set_position(-1)
 
     def do_file_search(self, widget, eve=None):
-        query = widget.get_text()
+        query = widget.get_text().lower()
         self.search_icon_grid.unselect_all()
         for i, file in enumerate(self.search_tab.get_files()):
             if query and query in file[0].lower():
@@ -123,8 +123,8 @@ class WidgetFileActionMixin:
                 self.search_icon_grid.select_path(path)
 
         items = self.search_icon_grid.get_selected_items()
-        if len(items) == 1:
-            self.search_icon_grid.scroll_to_path(items[0], True, 0.5, 0.5)
+        if len(items) > 0:
+            self.search_icon_grid.scroll_to_path(items[-1], True, 0.5, 0.5)
 
 
     def open_files(self):
@@ -290,6 +290,9 @@ class WidgetFileActionMixin:
 
                 file = Gio.File.new_for_path(path)
                 if _target_path:
+                    if file.get_parent().get_path() == _target_path:
+                        raise Exception("Parent dir of target and file locations are the same! Won't copy or move!")
+
                     if os.path.isdir(_target_path):
                         info    = file.query_info("standard::display-name", 0, cancellable=None)
                         _target = f"{_target_path}/{info.get_display_name()}"
