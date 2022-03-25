@@ -5,10 +5,10 @@ import os, logging
 
 
 class Logger:
-    def __init__(self, config_path):
+    def __init__(self, config_path: str):
         self._CONFIG_PATH = config_path
 
-    def get_logger(self, loggerName = "NO_LOGGER_NAME_PASSED", createFile = True):
+    def get_logger(self, loggerName: str = "NO_LOGGER_NAME_PASSED", createFile: bool = True) -> logging.Logger:
         """
             Create a new logging object and return it.
             :note:

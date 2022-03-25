@@ -26,41 +26,41 @@ class EventSystem(IPCServer):
 
 
     # Makeshift fake "events" type system FIFO
-    def _pop_gui_event(self):
+    def _pop_gui_event(self) -> None:
         if len(self._gui_events) > 0:
             return self._gui_events.pop(0)
         return None
 
-    def _pop_module_event(self):
+    def _pop_module_event(self) -> None:
         if len(self._module_events) > 0:
             return self._module_events.pop(0)
         return None
 
 
-    def push_gui_event(self, event):
+    def push_gui_event(self, eventevent: list) -> None:
         if len(event) == 3:
             self._gui_events.append(event)
             return None
 
         raise Exception("Invald event format! Please do:  [type, target, (data,)]")
 
-    def push_module_event(self, event):
+    def push_module_event(self, event: list) -> None:
         if len(event) == 3:
             self._module_events.append(event)
             return None
 
         raise Exception("Invald event format! Please do:  [type, target, (data,)]")
 
-    def read_gui_event(self):
+    def read_gui_event(self) -> list:
         return self._gui_events[0]
 
-    def read_module_event(self):
+    def read_module_event(self) -> list:
         return self._module_events[0]
 
-    def consume_gui_event(self):
+    def consume_gui_event(self) -> list:
         return self._pop_gui_event()
 
-    def consume_module_event(self):
+    def consume_module_event(self) -> list:
         return self._pop_module_event()
 
 
@@ -70,5 +70,5 @@ class EventSystem(IPCServer):
 builtins.app_name          = "SolarFM"
 builtins.event_system      = EventSystem()
 builtins.event_sleep_time  = 0.2
-builtins.debug             = False
 builtins.trace_debug       = False
+builtins.debug             = False

@@ -11,15 +11,15 @@ from gi.repository import Gtk, Gio
 
 
 class Plugin:
-    name          = None
-    module        = None
-    reference     = None
+    name: str       = None
+    module: str     = None
+    reference: type = None
 
 
 class Plugins:
     """Plugins controller"""
 
-    def __init__(self, settings):
+    def __init__(self, settings: type):
         self._settings            = settings
         self._builder             = self._settings.get_builder()
         self._plugins_path        = self._settings.get_plugins_path()
@@ -27,11 +27,11 @@ class Plugins:
         self._plugin_collection   = []
 
 
-    def launch_plugins(self):
+    def launch_plugins(self) -> None:
         self._set_plugins_watcher()
         self.load_plugins()
 
-    def _set_plugins_watcher(self):
+    def _set_plugins_watcher(self) -> None:
         self._plugins_dir_watcher  = Gio.File.new_for_path(self._plugins_path) \
                                             .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, Gio.Cancellable())
         self._plugins_dir_watcher.connect("changed", self._on_plugins_changed, ())
@@ -43,7 +43,7 @@ class Plugins:
             self.reload_plugins(file)
 
     # @threaded
-    def load_plugins(self, file=None):
+    def load_plugins(self, file: str = None) -> None:
         print(f"Loading plugins...")
         parent_path = os.getcwd()
 
@@ -72,12 +72,12 @@ class Plugins:
         os.chdir(parent_path)
 
 
-    def reload_plugins(self, file=None):
+    def reload_plugins(self, file: str = None) -> None:
         print(f"Reloading plugins... stub.")
 
-    def send_message_to_plugin(self, type, data):
+    def send_message_to_plugin(self, target: str , data: type) -> None:
         print("Trying to send message to plugin...")
         for plugin in self._plugin_collection:
-            if type in plugin.name:
+            if target in plugin.name:
                 print('Found plugin; posting message...')
                 plugin.reference.set_message(data)

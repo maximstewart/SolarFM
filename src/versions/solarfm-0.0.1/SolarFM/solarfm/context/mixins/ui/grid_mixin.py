@@ -27,8 +27,10 @@ class GridMixin:
         dir   = tab.get_current_directory()
         files = tab.get_files()
 
-        for i, file in enumerate(files):
+        for file in files:
             store.append([None, file[0]])
+
+        for i, file in enumerate(files):
             self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
@@ -41,40 +43,30 @@ class GridMixin:
         GLib.idle_add(self.update_store, *(i, store, icon, tab, dir, file,))
 
     def update_store(self, i, store, icon, tab, dir, file):
-        fpath = f"{dir}/{file}"
-
-        loop = True
-        while loop:
+        while True:
             try:
-                itr  = store.get_iter(i)
-                loop = False
+                itr = store.get_iter(i)
+                break
             except:
                 pass
 
         if not icon:
-            icon = self.get_system_thumbnail(fpath, tab.SYS_ICON_WH[0])
-            if not icon:
-                icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
+            path = f"{dir}/{file}"
+            icon = self.get_system_thumbnail(path, tab.SYS_ICON_WH[0])
+
+        if not icon:
+            icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
 
         store.set_value(itr, 0, icon)
 
     def get_system_thumbnail(self, filename, size):
         try:
-            if os.path.exists(filename):
-                gioFile   = Gio.File.new_for_path(filename)
-                info      = gioFile.query_info('standard::icon' , 0, Gio.Cancellable())
-                icon      = info.get_icon().get_names()[0]
-                iconTheme = Gtk.IconTheme.get_default()
-                iconData  = iconTheme.lookup_icon(icon , size , 0)
-                if iconData:
-                    iconPath  = iconData.get_filename()
-                    return GdkPixbuf.Pixbuf.new_from_file(iconPath)
-                else:
-                    return None
-            else:
-                return None
+            gio_file  = Gio.File.new_for_path(filename)
+            info      = gio_file.query_info('standard::icon' , 0, None)
+            icon      = info.get_icon().get_names()[0]
+            icon_path = self.icon_theme.lookup_icon(icon , size , 0).get_filename()
+            return GdkPixbuf.Pixbuf.new_from_file(icon_path)
         except Exception as e:
-            print("System icon generation issue:")
             return None
 
 

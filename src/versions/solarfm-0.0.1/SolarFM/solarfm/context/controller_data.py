@@ -2,6 +2,7 @@
 import sys, os, signal
 
 # Lib imports
+import gi
 from gi.repository import GLib
 
 # Application imports
@@ -11,17 +12,17 @@ from plugins.plugins import Plugins
 
 
 class State:
-    wid       = None
-    tid       = None
-    tab       = None
-    icon_grid = None
-    store     = None
+    wid: int  = None
+    tid: int  = None
+    tab: type = None
+    icon_grid: gi.overrides.Gtk.IconView  = None
+    store: gi.overrides.Gtk.ListStore     = None
 
 
 class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
 
-    def setup_controller_data(self, _settings):
+    def setup_controller_data(self, _settings: type) -> None:
         self.settings            = _settings
         self.builder             = self.settings.get_builder()
         self.logger              = self.settings.get_logger()
@@ -58,6 +59,7 @@ class Controller_Data:
 
         self.trash_files_path        = f"{GLib.get_user_data_dir()}/Trash/files"
         self.trash_info_path         = f"{GLib.get_user_data_dir()}/Trash/info"
+        self.icon_theme              = self.settings.get_icon_theme()
 
         # In compress commands:
         #    %n: First selected filename/dir to archive
@@ -117,7 +119,7 @@ class Controller_Data:
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
 
 
-    def get_current_state(self):
+    def get_current_state(self) -> State:
         '''
         Returns the state info most useful for any given context and action intent.
 
@@ -132,14 +134,15 @@ class Controller_Data:
         state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
         state.store          = state.icon_grid.get_model()
+
         return state
 
 
-    def clear_console(self):
+    def clear_console(self) -> None:
         ''' Clears the terminal screen. '''
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    def call_method(self, _method_name, data = None):
+    def call_method(self, _method_name: str, data: type = None) -> type:
         '''
         Calls a method from scope of class.
 
@@ -156,11 +159,11 @@ class Controller_Data:
         method      = getattr(self, method_name, lambda data: f"No valid key passed...\nkey={method_name}\nargs={data}")
         return method(data) if data else method()
 
-    def has_method(self, obj, name):
+    def has_method(self, obj, name) -> type:
         ''' Checks if a given method exists. '''
         return callable(getattr(obj, name, None))
 
-    def clear_children(self, widget):
+    def clear_children(self, widget: type) -> None:
         ''' Clear children of a gtk widget. '''
         for child in widget.get_children():
             widget.remove(child)

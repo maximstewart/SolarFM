@@ -59,7 +59,7 @@ class Settings:
             subpath           = settings["base_of_home"]
             HIDE_HIDDEN_FILES = True if settings["hide_hidden_files"] == "true" else False
             FFMPG_THUMBNLR    = FFMPG_THUMBNLR if settings["thumbnailer_path"] == "" else settings["thumbnailer_path"]
-            go_past_home      = True if settings["go_past_home"] == "" else settings["go_past_home"] 
+            go_past_home      = True if settings["go_past_home"] == "" else settings["go_past_home"]
             lock_folder       = True if settings["lock_folder"] == "true" else False
             locked_folders    = settings["locked_folders"].split("::::")
             mplayer_options   = settings["mplayer_options"].split()
@@ -76,7 +76,7 @@ class Settings:
     # Filters
     fvideos = ('.mkv', '.avi', '.flv', '.mov', '.m4v', '.mpg', '.wmv', '.mpeg', '.mp4', '.webm')
     foffice = ('.doc', '.docx', '.xls', '.xlsx', '.xlt', '.xltx', '.xlm', '.ppt', 'pptx', '.pps', '.ppsx', '.odt', '.rtf')
-    fimages = ('.png', '.jpg', '.jpeg', '.gif', '.ico', '.tga')
+    fimages = ('.png', '.jpg', '.jpeg', '.gif', '.ico', '.tga', '.webp')
     ftext   = ('.txt', '.text', '.sh', '.cfg', '.conf')
     fmusic  = ('.psf', '.mp3', '.ogg', '.flac', '.m4a')
     fpdf    = ('.pdf')

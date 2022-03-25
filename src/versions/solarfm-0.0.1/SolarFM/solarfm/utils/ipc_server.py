@@ -17,7 +17,7 @@ def threaded(fn):
 
 class IPCServer:
     """ Create a listener so that other SolarFM instances send requests back to existing instance. """
-    def __init__(self, conn_type="socket"):
+    def __init__(self, conn_type: str = "socket"):
         self.is_ipc_alive   = False
         self._conn_type     = conn_type
         self.ipc_authkey    = b'solarfm-ipc'
@@ -31,7 +31,7 @@ class IPCServer:
 
 
     @threaded
-    def create_ipc_server(self):
+    def create_ipc_server(self) -> None:
         if self._conn_type == "socket":
             if os.path.exists(self.ipc_address):
                 return
@@ -44,7 +44,7 @@ class IPCServer:
         self.is_ipc_alive = True
         while True:
             conn       = listener.accept()
-            start_time = time.time()
+            start_time = time.perf_counter()
 
             print(f"New Connection: {listener.last_accepted}")
             while True:
@@ -69,14 +69,14 @@ class IPCServer:
                     break
 
                 # NOTE: Not perfect but insures we don't lock up the connection for too long.
-                end_time = time.time()
+                end_time = time.perf_counter()
                 if (end - start) > self.ipc_timeout:
                     conn.close()
 
         listener.close()
 
 
-    def send_ipc_message(self, message="Empty Data..."):
+    def send_ipc_message(self, message: str = "Empty Data...") -> None:
         try:
             if self._conn_type == "socket":
                 conn = Client(address=self.ipc_address, family="AF_UNIX", authkey=self.ipc_authkey)
@@ -86,5 +86,6 @@ class IPCServer:
 
             conn.send(message)
             conn.send('close connection')
+            conn.close()
         except Exception as e:
             print(repr(e))
