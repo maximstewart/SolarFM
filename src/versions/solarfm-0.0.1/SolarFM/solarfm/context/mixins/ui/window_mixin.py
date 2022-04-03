@@ -1,7 +1,7 @@
 # Python imports
 import copy
-from os.path import isdir, isfile
-
+import traceback
+from os.path import isdir
 
 # Lib imports
 import gi
@@ -206,6 +206,7 @@ class WindowMixin(TabMixin):
             else:
                 self.open_files()
         except Exception as e:
+            traceback.print_exc()
             self.display_message(self.error_color, f"{repr(e)}")
 
 

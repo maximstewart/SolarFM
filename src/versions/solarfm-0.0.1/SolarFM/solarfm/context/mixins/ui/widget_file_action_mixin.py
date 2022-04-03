@@ -1,5 +1,5 @@
 # Python imports
-import os, time, threading
+import os, time, threading, shlex
 
 # Lib imports
 import gi
@@ -145,21 +145,24 @@ class WidgetFileActionMixin:
         current_dir = state.tab.get_current_directory()
         command     = None
         for path in paths:
-            command = f"exec '{path}'" if not in_terminal else f"{state.tab.terminal_app} -e '{path}'"
-            state.tab.execute(command, start_dir=state.tab.get_current_directory(), use_os_system=False)
+            command = f"{shlex.quote(path)}" if not in_terminal else f"{state.tab.terminal_app} -e {shlex.quote(path)}"
+            state.tab.execute(shlex.split(command), start_dir=state.tab.get_current_directory())
 
     def archive_files(self, archiver_dialogue):
         state       = self.get_current_state()
-        paths       = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
+        _paths      = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
+        paths       = []
+        for p in _paths:
+            paths.append(shlex.quote(p))
 
         save_target = archiver_dialogue.get_filename();
         sItr, eItr  = self.arc_command_buffer.get_bounds()
         pre_command = self.arc_command_buffer.get_text(sItr, eItr, False)
-        pre_command = pre_command.replace("%o", save_target)
+        pre_command = pre_command.replace("%o", shlex.quote(save_target))
         pre_command = pre_command.replace("%N", ' '.join(paths))
-        command     = f"{state.tab.terminal_app} -e '{pre_command}'"
+        command     = f"{state.tab.terminal_app} -e {shlex.quote(pre_command)}"
 
-        state.tab.execute(command, start_dir=None, use_os_system=True)
+        state.tab.execute(shlex.split(command), start_dir=shlex.quote(state.tab.get_current_directory()))
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")

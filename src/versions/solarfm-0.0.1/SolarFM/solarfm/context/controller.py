@@ -1,5 +1,5 @@
 # Python imports
-import os, gc, threading, time
+import os, gc, threading, time, shlex
 
 # Lib imports
 import gi
@@ -187,4 +187,4 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         dir      = tab.get_current_directory()
-        tab.execute(f"{tab.terminal_app}", dir)
+        tab.execute([f"{tab.terminal_app}"], start_dir=shlex.quote(dir))

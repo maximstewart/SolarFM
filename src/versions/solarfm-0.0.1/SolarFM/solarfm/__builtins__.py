@@ -37,7 +37,7 @@ class EventSystem(IPCServer):
         return None
 
 
-    def push_gui_event(self, eventevent: list) -> None:
+    def push_gui_event(self, event: list) -> None:
         if len(event) == 3:
             self._gui_events.append(event)
             return None

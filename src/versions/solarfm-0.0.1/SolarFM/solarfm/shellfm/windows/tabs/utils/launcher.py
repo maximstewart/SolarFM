@@ -1,6 +1,5 @@
 # System import
-import os, threading, subprocess
-
+import os, threading, subprocess, shlex
 
 # Lib imports
 
@@ -41,19 +40,17 @@ class Launcher:
         else:
             command = ["xdg-open", file]
 
-        self.execute(command, use_shell=False)
+        self.execute(command)
 
 
-    def execute(self, command, start_dir=os.getenv("HOME"), use_os_system=None, use_shell=True):
+    def execute(self, command, start_dir=os.getenv("HOME"), use_shell=False):
         self.logger.debug(command)
-        if use_os_system:
-            os.system(command)
-        else:
-            subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=None, stderr=None, close_fds=True)
+        subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=None, stderr=None, close_fds=True)
 
-    def execute_and_return_thread_handler(self, command, start_dir=os.getenv("HOME"), use_shell=True):
+    # TODO: Return stdout and in handlers along with subprocess instead of sinking to null
+    def execute_and_return_thread_handler(self, command, start_dir=os.getenv("HOME"), use_shell=False):
         DEVNULL = open(os.devnull, 'w')
-        return subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
+        return subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=False, stdout=DEVNULL, stderr=DEVNULL, close_fds=False)
 
     @threaded
     def app_chooser_exec(self, app_info, uris):
