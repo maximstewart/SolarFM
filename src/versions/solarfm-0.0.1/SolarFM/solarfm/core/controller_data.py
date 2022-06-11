@@ -1,5 +1,6 @@
 # Python imports
 import sys, os, signal
+from dataclasses import dataclass
 
 # Lib imports
 import gi
@@ -11,6 +12,7 @@ from shellfm.windows.controller import WindowController
 from plugins.plugins import Plugins
 
 
+@dataclass(slots=True)
 class State:
     wid: int  = None
     tid: int  = None
@@ -21,6 +23,7 @@ class State:
 
 class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
+    __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
     def setup_controller_data(self, _settings: type) -> None:
         self.settings            = _settings

@@ -1,3 +1,0 @@
-"""
-    Gtk Bound Signal Module
-"""

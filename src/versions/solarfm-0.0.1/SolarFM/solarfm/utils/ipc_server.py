@@ -20,14 +20,20 @@ class IPCServer:
     def __init__(self, conn_type: str = "socket"):
         self.is_ipc_alive   = False
         self._conn_type     = conn_type
+        self.ipc_port       = 4848
+        self.ipc_address    = '127.0.0.1'
         self.ipc_authkey    = b'solarfm-ipc'
         self.ipc_timeout    = 15.0
 
         if conn_type == "socket":
             self.ipc_address    = '/tmp/solarfm-ipc.sock'
-        else:
-            self.ipc_address    = '127.0.0.1'
-            self.ipc_port       = 4848
+        elif conn_type == "full_network":
+            self.ipc_address    = '0.0.0.0'
+        elif conn_type == "full_network_unsecured":
+            self.ipc_authkey    = None
+            self.ipc_address    = '0.0.0.0'
+        elif conn_type == "local_network_unsecured":
+            self.ipc_authkey    = None
 
 
     @threaded
@@ -37,8 +43,10 @@ class IPCServer:
                 return
 
             listener = Listener(address=self.ipc_address, family="AF_UNIX", authkey=self.ipc_authkey)
-        else:
+        elif "unsecured" not in conn_type:
             listener = Listener((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
+        else:
+            listener = Listener((self.ipc_address, self.ipc_port))
 
 
         self.is_ipc_alive = True
@@ -80,9 +88,10 @@ class IPCServer:
         try:
             if self._conn_type == "socket":
                 conn = Client(address=self.ipc_address, family="AF_UNIX", authkey=self.ipc_authkey)
-            else:
+            elif "unsecured" not in conn_type:
                 conn = Client((self.ipc_address, self.ipc_port), authkey=self.ipc_authkey)
-
+            else:
+                conn = Client((self.ipc_address, self.ipc_port))
 
             conn.send(message)
             conn.send('close connection')

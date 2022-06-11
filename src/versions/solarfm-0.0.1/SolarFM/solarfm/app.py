@@ -5,7 +5,7 @@ import os, inspect, time
 
 # Application imports
 from utils.settings import Settings
-from context.controller import Controller
+from core.controller import Controller
 from __builtins__ import EventSystem
 
 
