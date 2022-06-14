@@ -19,68 +19,16 @@ class Settings:
     CONFIG_FILE       = f"{CONFIG_PATH}/settings.json"
     HIDE_HIDDEN_FILES = True
 
-    GTK_ORIENTATION   = 1      # HORIZONTAL (0) VERTICAL (1)
+    GTK_ORIENTATION   = 1    # HORIZONTAL (0) VERTICAL (1)
     DEFAULT_ICONS     = f"{CONFIG_PATH}/icons"
     DEFAULT_ICON      = f"{DEFAULT_ICONS}/text.png"
     FFMPG_THUMBNLR    = f"{CONFIG_PATH}/ffmpegthumbnailer" # Thumbnail generator binary
     REMUX_FOLDER      = f"{USER_HOME}/.remuxs"             # Remuxed files folder
 
-    STEAM_BASE_URL    = "https://steamcdn-a.akamaihd.net/steam/apps/"
     ICON_DIRS         = ["/usr/share/pixmaps", "/usr/share/icons", f"{USER_HOME}/.icons" ,]
     BASE_THUMBS_PTH   = f"{USER_HOME}/.thumbnails"         # Used for thumbnail generation
     ABS_THUMBS_PTH    = f"{BASE_THUMBS_PTH}/normal"        # Used for thumbnail generation
     STEAM_ICONS_PTH   = f"{BASE_THUMBS_PTH}/steam_icons"
-    CONTAINER_ICON_WH = [128, 128]
-    VIDEO_ICON_WH     = [128, 64]
-    SYS_ICON_WH       = [56, 56]
-
-    # CONTAINER_ICON_WH = [128, 128]
-    # VIDEO_ICON_WH     = [96, 48]
-    # SYS_ICON_WH       = [96, 96]
-
-    subpath           = ""
-    go_past_home      = None
-    lock_folder       = None
-    locked_folders    = None
-    mplayer_options   = None
-    music_app         = None
-    media_app         = None
-    image_app         = None
-    office_app        = None
-    pdf_app           = None
-    text_app          = None
-    file_manager_app  = None
-    remux_folder_max_disk_usage = None
-
-    if path.isfile(CONFIG_FILE):
-        with open(CONFIG_FILE) as infile:
-            settings          = json.load(infile)["settings"]
-
-            subpath           = settings["base_of_home"]
-            HIDE_HIDDEN_FILES = True if settings["hide_hidden_files"] == "true" else False
-            FFMPG_THUMBNLR    = FFMPG_THUMBNLR if settings["thumbnailer_path"] == "" else settings["thumbnailer_path"]
-            go_past_home      = True if settings["go_past_home"] == "" else settings["go_past_home"]
-            lock_folder       = True if settings["lock_folder"] == "true" else False
-            locked_folders    = settings["locked_folders"].split("::::")
-            mplayer_options   = settings["mplayer_options"].split()
-            music_app         = settings["music_app"]
-            media_app         = settings["media_app"]
-            image_app         = settings["image_app"]
-            office_app        = settings["office_app"]
-            pdf_app           = settings["pdf_app"]
-            text_app          = settings["text_app"]
-            file_manager_app  = settings["file_manager_app"]
-            terminal_app      = settings["terminal_app"]
-            remux_folder_max_disk_usage = settings["remux_folder_max_disk_usage"]
-
-    # Filters
-    fvideos = ('.mkv', '.avi', '.flv', '.mov', '.m4v', '.mpg', '.wmv', '.mpeg', '.mp4', '.webm')
-    foffice = ('.doc', '.docx', '.xls', '.xlsx', '.xlt', '.xltx', '.xlm', '.ppt', 'pptx', '.pps', '.ppsx', '.odt', '.rtf')
-    fimages = ('.png', '.jpg', '.jpeg', '.gif', '.ico', '.tga', '.webp')
-    ftext   = ('.txt', '.text', '.sh', '.cfg', '.conf')
-    fmusic  = ('.psf', '.mp3', '.ogg', '.flac', '.m4a')
-    fpdf    = ('.pdf')
-
 
     # Dir structure check
     if not path.isdir(REMUX_FOLDER):
@@ -98,3 +46,39 @@ class Settings:
     if not os.path.exists(DEFAULT_ICONS):
         DEFAULT_ICONS = f"{USR_SOLARFM}/icons"
         DEFAULT_ICON  = f"{DEFAULT_ICONS}/text.png"
+
+    with open(CONFIG_FILE) as f:
+        settings          = json.load(f)
+        config            = settings["config"]
+
+        subpath           = config["base_of_home"]
+        STEAM_CDN_URL     = config["steam_cdn_url"]
+        FFMPG_THUMBNLR    = FFMPG_THUMBNLR if config["thumbnailer_path"] == "" else config["thumbnailer_path"]
+        HIDE_HIDDEN_FILES = True if config["hide_hidden_files"] == "true" else False
+        go_past_home      = True if config["go_past_home"] == "" else config["go_past_home"]
+        lock_folder       = True if config["lock_folder"] == "true" else False
+        locked_folders    = config["locked_folders"].split("::::")
+        mplayer_options   = config["mplayer_options"].split()
+        music_app         = config["music_app"]
+        media_app         = config["media_app"]
+        image_app         = config["image_app"]
+        office_app        = config["office_app"]
+        pdf_app           = config["pdf_app"]
+        code_app          = config["code_app"]
+        text_app          = config["text_app"]
+        terminal_app      = config["terminal_app"]
+        container_icon_wh = config["container_icon_wh"]
+        video_icon_wh     = config["video_icon_wh"]
+        sys_icon_wh       = config["sys_icon_wh"]
+        file_manager_app  = config["file_manager_app"]
+        remux_folder_max_disk_usage = config["remux_folder_max_disk_usage"]
+
+        # Filters
+        filters = settings["filters"]
+        fcode   = tuple(filters["code"])
+        fvideos = tuple(filters["videos"])
+        foffice = tuple(filters["office"])
+        fimages = tuple(filters["images"])
+        ftext   = tuple(filters["text"])
+        fmusic  = tuple(filters["music"])
+        fpdf    = tuple(filters["pdf"])

@@ -18,23 +18,23 @@ class DesktopIconMixin:
             if "steam" in icon:
                 name         = xdgObj.getName()
                 file_hash    = hashlib.sha256(str.encode(name)).hexdigest()
-                hash_img_pth = self.STEAM_ICONS_PTH + "/" + file_hash + ".jpg"
+                hash_img_pth = f"{self.STEAM_ICONS_PTH}/{file_hash}.jpg"
 
                 if isfile(hash_img_pth) == True:
                     # Use video sizes since headers are bigger
-                    return self.create_scaled_image(hash_img_pth, self.VIDEO_ICON_WH)
+                    return self.create_scaled_image(hash_img_pth, self.video_icon_wh)
 
                 exec_str  = xdgObj.getExec()
                 parts     = exec_str.split("steam://rungameid/")
                 id        = parts[len(parts) - 1]
-                imageLink = self.STEAM_BASE_URL + id + "/header.jpg"
+                imageLink = f"{self.STEAM_CDN_URL}{id}/header.jpg"
                 proc      = subprocess.Popen(["wget", "-O", hash_img_pth, imageLink])
                 proc.wait()
 
                 # Use video thumbnail sizes since headers are bigger
-                return self.create_scaled_image(hash_img_pth, self.VIDEO_ICON_WH)
+                return self.create_scaled_image(hash_img_pth, self.video_icon_wh)
             elif os.path.exists(icon):
-                return self.create_scaled_image(icon, self.SYS_ICON_WH)
+                return self.create_scaled_image(icon, self.sys_icon_wh)
             else:
                 alt_icon_path = ""
 
@@ -43,7 +43,7 @@ class DesktopIconMixin:
                     if alt_icon_path != "":
                         break
 
-                return self.create_scaled_image(alt_icon_path, self.SYS_ICON_WH)
+                return self.create_scaled_image(alt_icon_path, self.sys_icon_wh)
         except Exception as e:
             print(".desktop icon generation issue:")
             print( repr(e) )

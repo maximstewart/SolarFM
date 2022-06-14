@@ -52,7 +52,7 @@ class GridMixin:
 
         if not icon:
             path = f"{dir}/{file}"
-            icon = self.get_system_thumbnail(path, tab.SYS_ICON_WH[0])
+            icon = self.get_system_thumbnail(path, tab.sys_icon_wh[0])
 
         if not icon:
             icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)

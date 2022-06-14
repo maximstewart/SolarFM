@@ -31,6 +31,8 @@ class Launcher:
             command = [self.music_app, file]
         elif lowerName.endswith(self.foffice):
             command = [self.office_app, file]
+        elif lowerName.endswith(self.fcode):
+            command = [self.code_app, file]
         elif lowerName.endswith(self.ftext):
             command = [self.text_app, file]
         elif lowerName.endswith(self.fpdf):

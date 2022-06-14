@@ -30,7 +30,7 @@ class Icon(DesktopIconMixin, VideoIconMixin):
             if file.lower().endswith(self.fvideos):              # Video icon
                 thumbnl = self.create_thumbnail(dir, file)
             elif file.lower().endswith(self.fimages):            # Image Icon
-                thumbnl = self.create_scaled_image(full_path, self.VIDEO_ICON_WH)
+                thumbnl = self.create_scaled_image(full_path, self.video_icon_wh)
             elif full_path.lower().endswith( ('.desktop',) ):    # .desktop file parsing
                 thumbnl = self.parse_desktop_files(full_path)
 
@@ -46,7 +46,7 @@ class Icon(DesktopIconMixin, VideoIconMixin):
             if isfile(hash_img_pth) == False:
                 self.generate_video_thumbnail(full_path, hash_img_pth)
 
-            thumbnl = self.create_scaled_image(hash_img_pth, self.VIDEO_ICON_WH)
+            thumbnl = self.create_scaled_image(hash_img_pth, self.video_icon_wh)
             if thumbnl == None: # If no icon whatsoever, return internal default
                 thumbnl = GdkPixbuf.Pixbuf.new_from_file(f"{self.DEFAULT_ICONS}/video.png")
 
