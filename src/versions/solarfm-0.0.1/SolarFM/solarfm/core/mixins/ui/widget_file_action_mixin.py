@@ -45,7 +45,7 @@ class WidgetFileActionMixin:
             watcher = tab.get_dir_watcher()
             watcher.cancel()
             if debug:
-                print(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
+                self.logger.debug(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
 
         cur_dir = tab.get_current_directory()
 
@@ -64,7 +64,7 @@ class WidgetFileActionMixin:
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
                         Gio.FileMonitorEvent.MOVED_OUT]:
                 if debug:
-                    print(eve_type)
+                    self.logger.debug(eve_type)
 
                 if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
                     self.update_on_soft_lock_end(data[0])
@@ -84,7 +84,6 @@ class WidgetFileActionMixin:
             current_time     = time.time()
             if (current_time - last_update_time) > 0.6:
                 lock = False
-
 
         self.soft_update_lock.pop(tab_widget, None)
         GLib.idle_add(self.update_on_soft_lock_end, *(tab_widget,))
@@ -427,10 +426,10 @@ class WidgetFileActionMixin:
         start     = "-copy"
 
         if debug:
-            print(f"Path:  {full_path}")
-            print(f"Base Path:  {base_path}")
-            print(f'Name:  {file_name}')
-            print(f"Extension:  {extension}")
+            self.logger.debug(f"Path:  {full_path}")
+            self.logger.debug(f"Base Path:  {base_path}")
+            self.logger.debug(f'Name:  {file_name}')
+            self.logger.debug(f"Extension:  {extension}")
 
         i = 2
         while target.query_exists():

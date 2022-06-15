@@ -1,5 +1,5 @@
 # Python imports
-import os, gc, threading, time, shlex
+import os, gc, threading, time
 
 # Lib imports
 import gi
@@ -14,7 +14,14 @@ from .signals.keyboard_signals_mixin import KeyboardSignalsMixin
 from .controller_data import Controller_Data
 
 
+# NOTE: Threads will not die with parent's destruction
 def threaded(fn):
+    def wrapper(*args, **kwargs):
+        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
+    return wrapper
+
+# NOTE: Insure threads die with parent's destruction
+def daemon_threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
@@ -62,20 +69,20 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             event = event_system.consume_gui_event()
             if event:
                 try:
-                    type, target, data = event
-                    if type:
-                        method = getattr(self.__class__, "handle_gui_event_and_set_message")
-                        GLib.idle_add(method, *(self, type, target, data))
+                    sender_id, method_target, parameters = event
+                    if sender_id:
+                        method = getattr(self.__class__, "handle_gui_event_and_return_message")
+                        GLib.idle_add(method, *(self, sender_id, method_target, parameters))
                     else:
-                        method = getattr(self.__class__, target)
-                        GLib.idle_add(method, *(self, *data,))
+                        method = getattr(self.__class__, method_target)
+                        GLib.idle_add(method, *(self, *parameters,))
                 except Exception as e:
                     print(repr(e))
 
-    def handle_gui_event_and_set_message(self, type, target, parameters):
-        method = getattr(self.__class__, f"{target}")
+    def handle_gui_event_and_return_message(self, sender, method_target, parameters):
+        method = getattr(self.__class__, f"{method_target}")
         data   = method(*(self, *parameters))
-        self.plugins.send_message_to_plugin(type, data)
+        event_system.push_module_event([sender, None, data])
 
     def save_load_session(self, action="save_session"):
         wid, tid          = self.fm_controller.get_active_wid_and_tid()
@@ -110,7 +117,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
     def load_session(self, session_json):
         if debug:
-            print(f"Session Data: {session_json}")
+            self.logger.debug(f"Session Data: {session_json}")
 
         self.ctrl_down  = False
         self.shift_down = False
@@ -186,5 +193,4 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
     def open_terminal(self, widget=None, eve=None):
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
-        dir      = tab.get_current_directory()
-        tab.execute([f"{tab.terminal_app}"], start_dir=shlex.quote(dir))
+        tab.execute([f"{tab.terminal_app}"], start_dir=tab.get_current_directory())

@@ -59,7 +59,7 @@ class Settings:
             self._keybindings.configure(keybindings)
 
         self._main_window    = None
-        self._logger         = Logger(self._CONFIG_PATH).get_logger()
+        self._logger         = Logger(self._CONFIG_PATH, _fh_log_lvl=20).get_logger()
         self._builder        = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 

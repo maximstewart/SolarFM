@@ -12,6 +12,8 @@ from gi.repository import Gtk, Gio
 
 class Plugin:
     name: str       = None
+    author: str     = None
+    version: str    = None
     module: str     = None
     reference: type = None
 
@@ -61,6 +63,9 @@ class Plugins:
                     plugin_reference = app.Plugin(self._builder, event_system)
                     plugin           = Plugin()
                     plugin.name      = plugin_reference.get_plugin_name()
+                    plugin.author    = plugin_reference.get_plugin_author()
+                    plugin.version   = plugin_reference.get_plugin_version()
+
                     plugin.module    = path
                     plugin.reference = plugin_reference
 
@@ -74,10 +79,3 @@ class Plugins:
 
     def reload_plugins(self, file: str = None) -> None:
         print(f"Reloading plugins... stub.")
-
-    def send_message_to_plugin(self, target: str , data: type) -> None:
-        print("Trying to send message to plugin...")
-        for plugin in self._plugin_collection:
-            if target in plugin.name:
-                print('Found plugin; posting message...')
-                plugin.reference.set_message(data)

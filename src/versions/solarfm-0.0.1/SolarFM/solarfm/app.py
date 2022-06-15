@@ -17,7 +17,7 @@ class Application(EventSystem):
     def __init__(self, args, unknownargs):
         if not trace_debug:
             event_system.create_ipc_listener()
-            time.sleep(0.1)
+            time.sleep(0.05)
 
             if not event_system.is_ipc_alive:
                 if unknownargs:
