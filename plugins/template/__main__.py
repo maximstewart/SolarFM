@@ -9,13 +9,13 @@ from gi.repository import Gtk
 # Application imports
 
 
-# NOTE: Threads will not die with parent's destruction
+# NOTE: Threads WILL NOT die with parent's destruction.
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
     return wrapper
 
-# NOTE: Insure threads die with parent's destruction
+# NOTE: Threads WILL die with parent's destruction.
 def daemon_threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
@@ -39,16 +39,9 @@ class Plugin:
         button = Gtk.Button(label=self._plugin_name)
         button.connect("button-release-event", self.send_message)
 
-        # self._module_event_observer()  # NOTE: Enable if you want the plugin to watch for events sent to it
-
         plugin_list = self._builder.get_object("plugin_socket")
         plugin_list.add(button)
         plugin_list.show_all()
-
-
-    def send_message(self, widget=None, eve=None):
-        message = "Hello, World!"
-        self._event_system.push_gui_event([self._plugin_name, "display_message", ("warning", message, None)])
 
 
     def get_plugin_name(self):
@@ -62,6 +55,12 @@ class Plugin:
 
     def get_socket_id(self):
         return self._socket_id
+
+
+    def send_message(self, widget=None, eve=None):
+        message = "Hello, World!"
+        self._event_system.push_gui_event([self._plugin_name, "display_message", ("warning", message, None)])
+
 
     @daemon_threaded
     def _module_event_observer(self):

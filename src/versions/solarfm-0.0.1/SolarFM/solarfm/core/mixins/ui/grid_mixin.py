@@ -43,13 +43,6 @@ class GridMixin:
         GLib.idle_add(self.update_store, *(i, store, icon, tab, dir, file,))
 
     def update_store(self, i, store, icon, tab, dir, file):
-        while True:
-            try:
-                itr = store.get_iter(i)
-                break
-            except:
-                pass
-
         if not icon:
             path = f"{dir}/{file}"
             icon = self.get_system_thumbnail(path, tab.sys_icon_wh[0])
@@ -57,6 +50,7 @@ class GridMixin:
         if not icon:
             icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
 
+        itr = store.get_iter(i)
         store.set_value(itr, 0, icon)
 
     def get_system_thumbnail(self, filename, size):

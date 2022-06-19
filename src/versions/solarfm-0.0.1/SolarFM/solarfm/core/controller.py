@@ -62,7 +62,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         Gtk.main_quit()
 
 
-    @threaded
+    @daemon_threaded
     def gui_event_observer(self):
         while True:
             time.sleep(event_sleep_time)

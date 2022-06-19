@@ -9,13 +9,13 @@ from gi.repository import Gtk
 # Application imports
 
 
-# NOTE: Threads will not die with parent's destruction
+# NOTE: Threads WILL NOT die with parent's destruction.
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
     return wrapper
 
-# NOTE: Insure threads die with parent's destruction
+# NOTE: Threads WILL die with parent's destruction.
 def daemon_threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
@@ -36,15 +36,25 @@ class Plugin:
         self._event_sleep_time  = .5
         self._fm_event_message  = None
 
+        self._module_event_observer()
 
         button = Gtk.Button(label=self._plugin_name)
         button.connect("button-release-event", self._do_download)
 
-        self._module_event_observer()
-
         plugin_list = self._fm_builder.get_object("plugin_socket")
         plugin_list.add(button)
         plugin_list.show_all()
+
+
+    def get_plugin_name(self):
+        return self._plugin_name
+
+    def get_plugin_author(self):
+        return self._plugin_author
+
+    def get_plugin_version(self):
+        return self._plugin_version
+
 
     @daemon_threaded
     def _module_event_observer(self):
@@ -74,13 +84,3 @@ class Plugin:
         state = self._fm_event_message
         subprocess.Popen([f'{self.SCRIPT_PTH}/download.sh' , state.tab.get_current_directory()])
         self._fm_event_message = None
-
-
-    def get_plugin_name(self):
-        return self._plugin_name
-
-    def get_plugin_author(self):
-        return self._plugin_author
-
-    def get_plugin_version(self):
-        return self._plugin_version
