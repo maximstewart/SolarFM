@@ -24,36 +24,36 @@ def daemon_threaded(fn):
 
 
 
-class Plugin:
-    def __init__(self, fm_builder, fm_event_system):
-        self.SCRIPT_PTH         = os.path.dirname(os.path.realpath(__file__))
-        self._plugin_name       = "Youtube Download"
-        self._plugin_author     = "ITDominator"
-        self._plugin_version    = "0.0.1"
+class Manifest:
+    path: str        = os.path.dirname(os.path.realpath(__file__))
+    name: str        = "Youtube Download"
+    author: str      = "ITDominator"
+    version: str     = "0.0.1"
+    support: str     = ""
+    permissions: {}  = {
+        'ui_target': "plugin_control_list",
+        'pass_fm_events': "true"
 
-        self._fm_builder        = fm_builder
-        self._fm_event_system   = fm_event_system
+    }
+
+
+class Plugin(Manifest):
+    def __init__(self):
+        self._fm_event_system   = None
         self._event_sleep_time  = .5
         self._fm_event_message  = None
 
-        self._module_event_observer()
 
-        button = Gtk.Button(label=self._plugin_name)
+    def get_ui_element(self):
+        button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self._do_download)
+        return button
 
-        plugin_list = self._fm_builder.get_object("plugin_socket")
-        plugin_list.add(button)
-        plugin_list.show_all()
+    def set_fm_event_system(self, fm_event_system):
+        self._fm_event_system = fm_event_system
 
-
-    def get_plugin_name(self):
-        return self._plugin_name
-
-    def get_plugin_author(self):
-        return self._plugin_author
-
-    def get_plugin_version(self):
-        return self._plugin_version
+    def run(self):
+        self._module_event_observer()
 
 
     @daemon_threaded
@@ -63,7 +63,7 @@ class Plugin:
             event = self._fm_event_system.read_module_event()
             if event:
                 try:
-                    if event[0] is self._plugin_name:
+                    if event[0] is self.name:
                         target_id, method_target, data = self._fm_event_system.consume_module_event()
 
                         if not method_target:
@@ -77,10 +77,10 @@ class Plugin:
 
     @threaded
     def _do_download(self, widget=None, eve=None):
-        self._fm_event_system.push_gui_event([self._plugin_name, "get_current_state", ()])
+        self._fm_event_system.push_gui_event([self.name, "get_current_state", ()])
         while not self._fm_event_message:
             pass
 
         state = self._fm_event_message
-        subprocess.Popen([f'{self.SCRIPT_PTH}/download.sh' , state.tab.get_current_directory()])
+        subprocess.Popen([f'{self.path}/download.sh' , state.tab.get_current_directory()])
         self._fm_event_message = None

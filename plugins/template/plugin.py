@@ -24,42 +24,41 @@ def daemon_threaded(fn):
 
 
 
-class Plugin:
-    def __init__(self, builder, event_system):
-        self.SCRIPT_PTH         = os.path.dirname(os.path.realpath(__file__))
-        self._plugin_name       = "Example Plugin"
-        self._plugin_author     = "John Doe"
-        self._plugin_version    = "0.0.1"
+class Manifest:
+    path: str        = os.path.dirname(os.path.realpath(__file__))
+    name: str        = "Example Plugin"
+    author: str      = "John Doe"
+    version: str     = "0.0.1"
+    support: str     = ""
+    permissions: {}  = {
+        'ui_target': "plugin_control_list",
+        'pass_fm_events': "true"
 
-        self._builder           = builder
+    }
+
+
+class Plugin(Manifest):
+    def __init__(self):
         self._event_system      = event_system
         self._event_sleep_time  = .5
         self._event_message     = None
 
-        button = Gtk.Button(label=self._plugin_name)
+
+    def get_ui_element(self):
+        button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self.send_message)
+        return button
 
-        plugin_list = self._builder.get_object("plugin_socket")
-        plugin_list.add(button)
-        plugin_list.show_all()
+    def set_fm_event_system(self, fm_event_system):
+        self.event_system = fm_event_system
 
-
-    def get_plugin_name(self):
-        return self._plugin_name
-
-    def get_plugin_author(self):
-        return self._plugin_author
-
-    def get_plugin_version(self):
-        return self._plugin_version
-
-    def get_socket_id(self):
-        return self._socket_id
+    def run(self):
+        self._module_event_observer()
 
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"
-        self._event_system.push_gui_event([self._plugin_name, "display_message", ("warning", message, None)])
+        self._event_system.push_gui_event([self.name, "display_message", ("warning", message, None)])
 
 
     @daemon_threaded
@@ -69,7 +68,7 @@ class Plugin:
             event = self._event_system.read_module_event()
             if event:
                 try:
-                    if event[0] is self._plugin_name:
+                    if event[0] is self.name:
                         target_id, method_target, data = self._event_system.consume_module_event()
 
                         if not method_target:

@@ -97,16 +97,16 @@ class ShowHideMixin:
 
 
     def show_plugins_popup(self, widget=None, eve=None):
-        self.builder.get_object("plugin_list").popup()
+        self.builder.get_object("plugin_controls").popup()
 
     def hide_plugins_popup(self, widget=None, eve=None):
-        self.builder.get_object("plugin_list").hide()
+        self.builder.get_object("plugin_controls").hide()
 
     def show_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu").run()
+        self.builder.get_object("context_menu_popup").run()
 
     def hide_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu").hide()
+        self.builder.get_object("context_menu_popup").hide()
 
 
     def show_new_file_menu(self, widget=None, eve=None):

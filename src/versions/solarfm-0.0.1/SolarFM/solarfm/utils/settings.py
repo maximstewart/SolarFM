@@ -66,7 +66,7 @@ class Settings:
 
     def create_window(self) -> None:
         # Get window and connect signals
-        self._main_window = self._builder.get_object("Main_Window")
+        self._main_window = self._builder.get_object("main_window")
         self._set_window_data()
 
     def _set_window_data(self) -> None:
@@ -93,7 +93,7 @@ class Settings:
         cr.set_operator(cairo.OPERATOR_OVER)
 
     def get_monitor_data(self) -> list:
-        screen = self._builder.get_object("Main_Window").get_screen()
+        screen = self._builder.get_object("main_window").get_screen()
         monitors = []
         for m in range(screen.get_n_monitors()):
             monitors.append(screen.get_monitor_geometry(m))

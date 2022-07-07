@@ -44,7 +44,6 @@ class KeyboardSignalsMixin:
             if "alt" in keyname:
                 self.alt_down     = False
 
-
         mapping = self.keybindings.lookup(event)
         if mapping:
             getattr(self, mapping)()

@@ -63,15 +63,15 @@ class WidgetFileActionMixin:
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
                         Gio.FileMonitorEvent.MOVED_OUT]:
-                if debug:
-                    self.logger.debug(eve_type)
+            if debug:
+                self.logger.debug(eve_type)
 
-                if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
-                    self.update_on_soft_lock_end(data[0])
-                elif data[0] in self.soft_update_lock.keys():
-                    self.soft_update_lock[data[0]]["last_update_time"] = time.time()
-                else:
-                    self.soft_lock_countdown(data[0])
+            if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
+                self.update_on_soft_lock_end(data[0])
+            elif data[0] in self.soft_update_lock.keys():
+                self.soft_update_lock[data[0]]["last_update_time"] = time.time()
+            else:
+                self.soft_lock_countdown(data[0])
 
     @threaded
     def soft_lock_countdown(self, tab_widget):
@@ -149,10 +149,7 @@ class WidgetFileActionMixin:
 
     def archive_files(self, archiver_dialogue):
         state       = self.get_current_state()
-        _paths      = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
-        paths       = []
-        for p in _paths:
-            paths.append(shlex.quote(p))
+        paths       = [shlex.quote(p) for p in self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)]
 
         save_target = archiver_dialogue.get_filename();
         sItr, eItr  = self.arc_command_buffer.get_bounds()
@@ -175,6 +172,7 @@ class WidgetFileActionMixin:
             rename_input.set_text(entry)
 
             self.show_edit_file_menu(rename_input)
+
             if self.skip_edit:
                 self.skip_edit   = False
                 continue

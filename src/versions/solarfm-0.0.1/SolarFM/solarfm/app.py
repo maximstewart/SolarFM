@@ -30,7 +30,7 @@ class Application(EventSystem):
                     message = f"FILE|{args.new_tab}"
                     event_system.send_ipc_message(message)
 
-                raise Exception("IPC Server Exists: Will send path(s) to it and close...")
+                raise Exception("IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/solarfm-ipc.sock")
 
 
         settings = Settings()
