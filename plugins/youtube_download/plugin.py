@@ -63,14 +63,17 @@ class Plugin(Manifest):
             event = self._fm_event_system.read_module_event()
             if event:
                 try:
-                    if event[0] is self.name:
+                    if event[0] == self.name:
                         target_id, method_target, data = self._fm_event_system.consume_module_event()
 
                         if not method_target:
                             self._fm_event_message = data
                         else:
                             method = getattr(self.__class__, f"{method_target}")
-                            data   = method(*(self, *parameters))
+                            if data:
+                                data = method(*(self, *data))
+                            else:
+                                method(*(self,))
                 except Exception as e:
                     print(repr(e))
 

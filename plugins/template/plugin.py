@@ -32,8 +32,8 @@ class Manifest:
     support: str     = ""
     permissions: {}  = {
         'ui_target': "plugin_control_list",
-        'pass_fm_events': "true"
-
+        'pass_fm_events': "true",
+        'bind_keys': [f"{name}||send_message:<Control>f"]
     }
 
 
@@ -58,6 +58,7 @@ class Plugin(Manifest):
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"
+        print("here")
         self._event_system.push_gui_event([self.name, "display_message", ("warning", message, None)])
 
 
@@ -68,13 +69,17 @@ class Plugin(Manifest):
             event = self._event_system.read_module_event()
             if event:
                 try:
-                    if event[0] is self.name:
+                    if event[0] == self.name:
                         target_id, method_target, data = self._event_system.consume_module_event()
 
                         if not method_target:
                             self._event_message = data
                         else:
                             method = getattr(self.__class__, f"{method_target}")
-                            data   = method(*(self, *parameters))
+                            if data:
+                                data = method(*(self, *data))
+                            else:
+                                method(*(self,))
                 except Exception as e:
+                    print("ewww here")
                     print(repr(e))

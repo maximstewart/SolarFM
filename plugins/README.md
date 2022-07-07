@@ -3,7 +3,7 @@ Copy the example and rename it to your desired name. Plugins define a ui target 
 Plugins must have a run method defined; though, you do not need to necessarily do anything within it. The run method implies that the passed in event system or other data is ready for the plugin to use.
 
 
-### Manifest
+### Manifest Example (All are required.)
 ```
 class Manifest:
     path: str        = os.path.dirname(os.path.realpath(__file__))
@@ -23,8 +23,11 @@ class Manifest:
 ```
 permissions: {}  = {
     'ui_target': "plugin_control_list",
-    'ui_target_id': "<some other Gtk Glade ID>" # Only needed if using "other" in "ui_target". See below for predefined "ui_target" options...
-    'pass_fm_events': "true" # If empty or undefined will be ignored.
+    'ui_target_id': "<some other Gtk Glade ID>"          # Only needed if using "other" in "ui_target". See below for predefined "ui_target" options...
+    'pass_fm_events': "true"                             # If empty or not present will be ignored.
+    'bind_keys': [f"{name}||send_message:<Control>f"],
+                  f"{name}||do_save:<Control>s"]         # Bind keys with method and key pare using list. Must pass "name" like shown with delimiter to its right.
+
 }
 ```
 

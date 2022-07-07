@@ -33,9 +33,7 @@ class TabMixin(GridMixin):
             tab.set_path(path)
 
         tab_widget    = self.create_tab_widget(tab)
-        scroll, store = self.create_icon_grid_widget(tab, wid)
-        # TODO: Fix global logic to make the below work too
-        # scroll, store = self.create_icon_tree_widget(tab, wid)
+        scroll, store = self.create_scroll_and_store(tab, wid)
         index         = notebook.append_page(scroll, tab_widget)
 
         self.fm_controller.set_wid_and_tid(wid, tab.get_id())

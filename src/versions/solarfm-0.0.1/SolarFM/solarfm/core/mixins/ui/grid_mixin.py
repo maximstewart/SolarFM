@@ -19,6 +19,39 @@ def threaded(fn):
 
 
 
+# NOTE: Consider trying to use Gtk.TreeView with css that turns it into a grid...
+# Can possibly use this to dynamicly load icons instead...
+class Icon(Gtk.HBox):
+    def __init__(self, tab, dir, file):
+        super(Icon, self).__init__()
+
+        self.load_icon(tab, dir, file)
+
+    @threaded
+    def load_icon(self, tab, dir, file):
+        icon = tab.create_icon(dir, file)
+
+        if not icon:
+            path = f"{dir}/{file}"
+            icon = self.get_system_thumbnail(path, tab.sys_icon_wh[0])
+
+        if not icon:
+            icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
+
+        self.add(Gtk.Image.new_from_pixbuf(icon))
+        self.show_all()
+
+    def get_system_thumbnail(self, file, size):
+        try:
+            gio_file  = Gio.File.new_for_path(file)
+            info      = gio_file.query_info('standard::icon' , 0, None)
+            icon      = info.get_icon().get_names()[0]
+            icon_path = self.icon_theme.lookup_icon(icon , size , 0).get_filename()
+            return GdkPixbuf.Pixbuf.new_from_file(icon_path)
+        except Exception as e:
+            return None
+
+
 class GridMixin:
     """docstring for WidgetMixin"""
 
@@ -86,6 +119,15 @@ class GridMixin:
         tid.hide()
         return tab_widget
 
+    def create_scroll_and_store(self, tab, wid, use_tree_view=False):
+        if not use_tree_view:
+            scroll, store = self.create_icon_grid_widget(tab, wid)
+        else:
+            # TODO: Fix global logic to make the below work too
+            scroll, store = self.create_icon_tree_widget(tab, wid)
+
+        return scroll, store
+
     def create_icon_grid_widget(self, tab, wid):
         scroll = Gtk.ScrolledWindow()
         grid   = Gtk.IconView()
@@ -111,7 +153,6 @@ class GridMixin:
         grid.connect("drag-data-get",        self.grid_on_drag_set)
         grid.connect("drag-data-received",   self.grid_on_drag_data_received)
         grid.connect("drag-motion",          self.grid_on_drag_motion)
-
 
         URI_TARGET_TYPE  = 80
         uri_target       = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags(0), URI_TARGET_TYPE)
@@ -167,12 +208,14 @@ class GridMixin:
         grid.enable_model_drag_dest(targets, action)
         grid.enable_model_drag_source(0, targets, action)
 
-
         grid.show_all()
         scroll.add(grid)
         grid.set_name(f"{wid}|{tab.get_id()}")
         scroll.set_name(f"{wid}|{tab.get_id()}")
+        self.builder.expose_object(f"{wid}|{tab.get_id()}|icon_grid", grid)
+        self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
         grid.columns_autosize()
+
         self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
         return scroll, store
 

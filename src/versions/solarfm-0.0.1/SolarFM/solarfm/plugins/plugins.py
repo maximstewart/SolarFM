@@ -15,7 +15,7 @@ class Plugin:
     name: str       = None
     author: str     = None
     version: str    = None
-    suppoert: str   = None
+    support: str    = None
     permissions:{}  = None
     reference: type = None
 
@@ -28,6 +28,8 @@ class Plugins:
         self._settings            = settings
         self._builder             = self._settings.get_builder()
         self._plugins_path        = self._settings.get_plugins_path()
+        self._keybindings          = self._settings.get_keybindings()
+
         self._plugins_dir_watcher = None
         self._plugin_collection   = []
 
@@ -114,6 +116,10 @@ class Plugins:
             if permissions["pass_fm_events"] in ["true"]:
                 loading_data["pass_fm_events"] = True
 
+        if "bind_keys" in keys:
+            if isinstance(permissions["bind_keys"], list):
+                loading_data["bind_keys"] = permissions["bind_keys"]
+
         return loading_data
 
     def execute_plugin(self, module: type, plugin: Plugin, loading_data: []):
@@ -126,6 +132,9 @@ class Plugins:
 
         if "pass_fm_events" in keys:
             plugin.reference.set_fm_event_system(event_system)
+
+        if "bind_keys" in keys:
+            self._keybindings.append_bindings(loading_data["bind_keys"])
 
         plugin.reference.run()
         self._plugin_collection.append(plugin)

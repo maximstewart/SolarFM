@@ -42,6 +42,17 @@ class Keybindings:
         self.keymap = Gdk.Keymap.get_default()
         self.configure({})
 
+    def print_keys(self):
+        print(self.keys)
+
+    def append_bindings(self, combos):
+        """Accept new binding(s) and reload"""
+        for item in combos:
+            method, keys = item.split(":")
+            self.keys[method] = keys
+
+        self.reload()
+
     def configure(self, bindings):
         """Accept new bindings and reconfigure with them"""
         self.keys = bindings

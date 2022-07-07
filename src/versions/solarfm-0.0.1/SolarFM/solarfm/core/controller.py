@@ -84,6 +84,10 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         data   = method(*(self, *parameters))
         event_system.push_module_event([sender, None, data])
 
+    def handle_plugin_key_event(self, sender, method_target, parameters=()):
+        event_system.push_module_event([sender, method_target, parameters])
+
+
     def save_load_session(self, action="save_session"):
         wid, tid          = self.fm_controller.get_active_wid_and_tid()
         tab               = self.get_fm_window(wid).get_tab_by_id(tid)
