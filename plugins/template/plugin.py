@@ -25,12 +25,12 @@ def daemon_threaded(fn):
 
 
 class Manifest:
-    path: str        = os.path.dirname(os.path.realpath(__file__))
-    name: str        = "Example Plugin"
-    author: str      = "John Doe"
-    version: str     = "0.0.1"
-    support: str     = ""
-    permissions: {}  = {
+    path: str     = os.path.dirname(os.path.realpath(__file__))
+    name: str     = "Example Plugin"
+    author: str   = "John Doe"
+    version: str  = "0.0.1"
+    support: str  = ""
+    requests: {}  = {
         'ui_target': "plugin_control_list",
         'pass_fm_events': "true",
         'bind_keys': [f"{name}||send_message:<Control>f"]
@@ -39,7 +39,7 @@ class Manifest:
 
 class Plugin(Manifest):
     def __init__(self):
-        self._event_system      = event_system
+        self._event_system      = None
         self._event_sleep_time  = .5
         self._event_message     = None
 
@@ -50,7 +50,7 @@ class Plugin(Manifest):
         return button
 
     def set_fm_event_system(self, fm_event_system):
-        self.event_system = fm_event_system
+        self._event_system = fm_event_system
 
     def run(self):
         self._module_event_observer()
@@ -61,6 +61,10 @@ class Plugin(Manifest):
         print("here")
         self._event_system.push_gui_event([self.name, "display_message", ("warning", message, None)])
 
+
+    def wait_for_fm_message(self):
+        while not self._event_message:
+            pass
 
     @daemon_threaded
     def _module_event_observer(self):
@@ -81,5 +85,4 @@ class Plugin(Manifest):
                             else:
                                 method(*(self,))
                 except Exception as e:
-                    print("ewww here")
                     print(repr(e))

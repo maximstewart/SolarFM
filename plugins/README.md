@@ -1,17 +1,17 @@
 ### Note
-Copy the example and rename it to your desired name. Plugins define a ui target slot with the 'ui_target' permissions data but don't have to if not directly interacted with.
+Copy the example and rename it to your desired name. Plugins define a ui target slot with the 'ui_target' requests data but don't have to if not directly interacted with.
 Plugins must have a run method defined; though, you do not need to necessarily do anything within it. The run method implies that the passed in event system or other data is ready for the plugin to use.
 
 
-### Manifest Example (All are required.)
+### Manifest Example (All are required even if empty.)
 ```
 class Manifest:
-    path: str        = os.path.dirname(os.path.realpath(__file__))
-    name: str        = "Example Plugin"
-    author: str      = "John Doe"
-    version: str     = "0.0.1"
-    support: str     = ""
-    permissions: {}  = {
+    path: str     = os.path.dirname(os.path.realpath(__file__))
+    name: str     = "Example Plugin"
+    author: str   = "John Doe"
+    version: str  = "0.0.1"
+    support: str  = ""
+    requests: {}  = {
         'ui_target': "plugin_control_list",
         'pass_fm_events': "true"
 
@@ -19,9 +19,9 @@ class Manifest:
 ```
 
 
-### Permissions
+### Requests
 ```
-permissions: {}  = {
+requests: {}  = {
     'ui_target': "plugin_control_list",
     'ui_target_id': "<some other Gtk Glade ID>"          # Only needed if using "other" in "ui_target". See below for predefined "ui_target" options...
     'pass_fm_events': "true"                             # If empty or not present will be ignored.
