@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, subprocess, time
+import os, threading, subprocess, time, pwd, grp
 from datetime import datetime
 
 # Gtk imports
@@ -154,7 +154,27 @@ class Plugin(Manifest):
                 print("\nNew chmod flags...")
                 print(f"Old:  {''.join(properties.chmod_stat)}")
                 print(f"New:  {chmod_stat}")
-                # self._guest_fs.chmod(int(chmod_stat), properties.file_uri)
+
+                command = ["chmod", f"{chmod_stat}", properties.file_uri]
+                with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
+                    result = proc.stdout.read().decode("UTF-8").strip()
+                    print(result)
+            except Exception as e:
+                print(f"Couldn't chmod\nFile:  {properties.file_uri}")
+                print( repr(e) )
+
+
+        owner = self._file_owner.get_text()
+        group = self._file_group.get_text()
+        if owner is not properties.file_owner or group is not properties.file_group:
+            try:
+                print("\nNew owner/group flags...")
+                print(f"Old:\n\tOwner: {properties.file_owner}\n\tGroup: {properties.file_group}")
+                print(f"New:\n\tOwner: {owner}\n\tGroup: {group}")
+
+                uid = pwd.getpwnam(owner).pw_uid
+                gid = grp.getgrnam(group).gr_gid
+                os.chown(properties.file_uri, uid, gid)
             except Exception as e:
                 print(f"Couldn't chmod\nFile:  {properties.file_uri}")
                 print( repr(e) )
