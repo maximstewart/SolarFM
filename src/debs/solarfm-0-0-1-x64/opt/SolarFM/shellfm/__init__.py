@@ -1,1 +1,3 @@
-from .windows import WindowController
+"""
+Root of ShellFM
+"""

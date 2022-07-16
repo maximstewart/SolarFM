@@ -15,10 +15,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 # Application imports
-from __init__ import Main
+from app import Application
 
 
 if __name__ == "__main__":
+    """ Set process title, get arguments, and create GTK main thread. """
+
     try:
         # import web_pdb
         # web_pdb.set_trace()
@@ -33,7 +35,7 @@ if __name__ == "__main__":
         # Read arguments (If any...)
         args, unknownargs = parser.parse_known_args()
 
-        Main(args, unknownargs)
+        Application(args, unknownargs)
         Gtk.main()
     except Exception as e:
         traceback.print_exc()

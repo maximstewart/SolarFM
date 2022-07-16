@@ -1,0 +1,3 @@
+"""
+Trasher module
+"""

@@ -1,2 +1,3 @@
-from .Window import Window
-from .WindowController import WindowController
+"""
+Window module
+"""
