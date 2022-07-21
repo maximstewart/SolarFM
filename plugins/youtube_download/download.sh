@@ -10,7 +10,6 @@
 function main() {
     cd "$(dirname "")"
     echo "Working Dir: " $(pwd)
-    source "/home/abaddon/Portable_Apps/py-venvs/yt-dlp-venv/venv/bin/activate"
 
     LINK=`xclip -selection clipboard -o`
     yt-dlp --write-sub --embed-sub --sub-langs en -o "${1}/%(title)s.%(ext)s" "${LINK}"

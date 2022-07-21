@@ -2,7 +2,7 @@
 import os, threading, subprocess, time, pwd, grp
 from datetime import datetime
 
-# Gtk imports
+# Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, Gio
