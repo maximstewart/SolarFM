@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, subprocess, time
+import os
 
 # Lib imports
 import gi
@@ -9,12 +9,6 @@ gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Gio, GdkPixbuf
 
 # Application imports
-
-
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 

@@ -1,5 +1,5 @@
 # Python imports
-import traceback, threading, time
+import traceback, time
 
 # Lib imports
 import gi
@@ -9,10 +9,6 @@ from gi.repository import Gtk, GLib
 # Application imports
 
 
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 class ExceptionHookMixin:

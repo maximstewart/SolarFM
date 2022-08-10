@@ -1,5 +1,5 @@
 # Python imports
-import os, time, threading, shlex
+import os, time, shlex
 
 # Lib imports
 import gi
@@ -9,10 +9,6 @@ from gi.repository import Gtk, GObject, GLib, Gio
 # Application imports
 
 
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 class WidgetFileActionMixin:

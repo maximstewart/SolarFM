@@ -4,9 +4,9 @@ import os, inspect, time
 # Lib imports
 
 # Application imports
+from __builtins__ import EventSystem
 from utils.settings import Settings
 from core.controller import Controller
-from __builtins__ import EventSystem
 
 
 
