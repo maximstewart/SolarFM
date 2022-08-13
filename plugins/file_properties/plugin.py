@@ -25,17 +25,6 @@ def daemon_threaded(fn):
 
 
 
-class Manifest:
-    path: str     = os.path.dirname(os.path.realpath(__file__))
-    name: str     = "Properties"
-    author: str   = "ITDominator"
-    version: str  = "0.0.1"
-    support: str  = ""
-    requests: {}  = {
-        'ui_target': "context_menu",
-        'pass_fm_events': "true"
-    }
-
 class Properties:
     file_uri: str      = None
     file_name: str     = None
@@ -50,8 +39,11 @@ class Properties:
     chmod_stat: str    = None
 
 
-class Plugin(Manifest):
+class Plugin:
     def __init__(self):
+        self.path               = os.path.dirname(os.path.realpath(__file__))
+        self.name               = "Properties"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
+                                                #       where self.name should not be needed for message comms
         self._GLADE_FILE        = f"{self.path}/file_properties.glade"
         self._builder           = None
         self._properties_dialog = None

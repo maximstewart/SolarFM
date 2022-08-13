@@ -4,31 +4,33 @@ import os, inspect, time
 # Lib imports
 
 # Application imports
-from __builtins__ import EventSystem
+from __builtins__ import *
+from utils.ipc_server import IPCServer
 from utils.settings import Settings
 from core.controller import Controller
 
 
 
-
-class Application(EventSystem):
+class Application(IPCServer):
     """ Create Settings and Controller classes. Bind signal to Builder. Inherit from Builtins to bind global methods and classes. """
 
     def __init__(self, args, unknownargs):
+        super(Application, self).__init__()
+
         if not trace_debug:
-            event_system.create_ipc_listener()
+            self.create_ipc_listener()
             time.sleep(0.05)
 
-            if not event_system.is_ipc_alive:
+            if not self.is_ipc_alive:
                 if unknownargs:
                     for arg in unknownargs:
                         if os.path.isdir(arg):
                             message = f"FILE|{arg}"
-                            event_system.send_ipc_message(message)
+                            self.send_ipc_message(message)
 
                 if args.new_tab and os.path.isdir(args.new_tab):
                     message = f"FILE|{args.new_tab}"
-                    event_system.send_ipc_message(message)
+                    self.send_ipc_message(message)
 
                 raise Exception("IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/solarfm-ipc.sock")
 

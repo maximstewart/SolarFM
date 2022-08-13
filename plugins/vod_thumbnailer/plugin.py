@@ -26,19 +26,11 @@ def daemon_threaded(fn):
 
 
 
-class Manifest:
-    path: str     = os.path.dirname(os.path.realpath(__file__))
-    name: str     = "VOD Thumbnailer"
-    author: str   = "ITDominator"
-    version: str  = "0.0.1"
-    support: str  = ""
-    requests: {}  = {
-        'ui_target': "context_menu",
-        'pass_fm_events': "true"
-    }
-
-class Plugin(Manifest):
+class Plugin:
     def __init__(self):
+        self.path                   = os.path.dirname(os.path.realpath(__file__))
+        self.name                   = "VOD Thumbnailer"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
+                                                         #       where self.name should not be needed for message comms
         self._GLADE_FILE            = f"{self.path}/re_thumbnailer.glade"
         self._builder               = None
         self._thumbnailer_dialog    = None

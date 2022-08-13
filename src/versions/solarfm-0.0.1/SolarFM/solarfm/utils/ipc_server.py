@@ -7,12 +7,6 @@ from multiprocessing.connection import Listener, Client
 # Application imports
 
 
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
-
-
 
 
 class IPCServer:
@@ -36,7 +30,7 @@ class IPCServer:
             self._ipc_authkey = None
 
 
-    @threaded
+    @daemon_threaded
     def create_ipc_listener(self) -> None:
         if self._conn_type == "socket":
             if os.path.exists(self._ipc_address):

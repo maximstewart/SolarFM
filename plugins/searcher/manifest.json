@@ -1,0 +1,13 @@
+{
+    "manifest": {
+        "name": "Search",
+        "author": "ITDominator",
+        "version": "0.0.1",
+        "support": "",
+        "requests": {
+            "ui_target": "context_menu",
+            "pass_fm_events": "true",
+            "bind_keys": ["Search||_show_grep_list_page:<Control>f"]
+        }
+    }
+}

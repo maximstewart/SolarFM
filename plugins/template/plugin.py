@@ -24,21 +24,10 @@ def daemon_threaded(fn):
 
 
 
-class Manifest:
-    path: str     = os.path.dirname(os.path.realpath(__file__))
-    name: str     = "Example Plugin"
-    author: str   = "John Doe"
-    version: str  = "0.0.1"
-    support: str  = ""
-    requests: {}  = {
-        'ui_target': "plugin_control_list",
-        'pass_fm_events': "true",
-        'bind_keys': [f"{name}||send_message:<Control>f"]
-    }
-
-
-class Plugin(Manifest):
+class Plugin:
     def __init__(self):
+        self.name               = "Example Plugin"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
+                                                    #       where self.name should not be needed for message comms
         self._event_system      = None
         self._event_sleep_time  = .5
         self._event_message     = None
@@ -58,7 +47,6 @@ class Plugin(Manifest):
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"
-        print("here")
         self._event_system.push_gui_event([self.name, "display_message", ("warning", message, None)])
 
 

@@ -25,21 +25,6 @@ def daemon_threaded(fn):
 
 
 
-class Manifest:
-    path: str     = os.path.dirname(os.path.realpath(__file__))
-    name: str     = "Search"
-    author: str   = "ITDominator"
-    version: str  = "0.0.1"
-    support: str  = ""
-    requests: {}  = {
-        'ui_target': "context_menu",
-        'pass_fm_events': "true",
-        'bind_keys': [f"{name}||_show_grep_list_page:<Control>f"]
-    }
-
-
-
-
 class FilePreviewWidget(Gtk.LinkButton):
     def __init__(self, path, file):
         super(FilePreviewWidget, self).__init__()
@@ -89,8 +74,11 @@ grep_result_set  = manager.dict()
 file_result_set  = manager.list()
 
 
-class Plugin(Manifest):
+class Plugin:
     def __init__(self):
+        self.path              = os.path.dirname(os.path.realpath(__file__))
+        self.name              = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
+                                           #       where self.name should not be needed for message comms
         self._GLADE_FILE       = f"{self.path}/search_dialog.glade"
         self._builder          = None
         self._search_dialog    = None

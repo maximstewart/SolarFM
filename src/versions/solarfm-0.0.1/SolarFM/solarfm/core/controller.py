@@ -43,7 +43,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
 
     def tear_down(self, widget=None, eve=None):
-        event_system.send_ipc_message("close server")
         self.fm_controller.save_state()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
