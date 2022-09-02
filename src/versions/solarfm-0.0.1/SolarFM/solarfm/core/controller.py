@@ -1,5 +1,5 @@
 # Python imports
-import os, gc, threading, time
+import os, gc, time
 
 # Lib imports
 import gi
@@ -12,19 +12,6 @@ from .mixins.ui_mixin import UIMixin
 from .signals.ipc_signals_mixin import IPCSignalsMixin
 from .signals.keyboard_signals_mixin import KeyboardSignalsMixin
 from .controller_data import Controller_Data
-
-
-# NOTE: Threads will not die with parent's destruction
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Insure threads die with parent's destruction
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 
@@ -56,7 +43,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
 
     def tear_down(self, widget=None, eve=None):
-        event_system.send_ipc_message("close server")
         self.fm_controller.save_state()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
@@ -177,23 +163,28 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
 
 
-
+    @endpoint_registry.register(rule="go_home")
     def go_home(self, widget=None, eve=None):
         self.builder.get_object("go_home").released()
 
+    @endpoint_registry.register(rule="refresh_tab")
     def refresh_tab(self, widget=None, eve=None):
         self.builder.get_object("refresh_tab").released()
 
+    @endpoint_registry.register(rule="go_up")
     def go_up(self, widget=None, eve=None):
         self.builder.get_object("go_up").released()
 
+    @endpoint_registry.register(rule="grab_focus_path_entry")
     def grab_focus_path_entry(self, widget=None, eve=None):
         self.builder.get_object("path_entry").grab_focus()
 
+    @endpoint_registry.register(rule="tggl_top_main_menubar")
     def tggl_top_main_menubar(self, widget=None, eve=None):
         top_main_menubar = self.builder.get_object("top_main_menubar")
         top_main_menubar.hide() if top_main_menubar.is_visible() else top_main_menubar.show()
 
+    @endpoint_registry.register(rule="open_terminal")
     def open_terminal(self, widget=None, eve=None):
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)

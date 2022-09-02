@@ -120,7 +120,7 @@ class Controller_Data:
         self.warning_color      = self.settings.get_warning_color()
         self.error_color        = self.settings.get_error_color()
 
-        sys.excepthook = self.custom_except_hook
+        # sys.excepthook = self.custom_except_hook
         self.window.connect("delete-event", self.tear_down)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
 

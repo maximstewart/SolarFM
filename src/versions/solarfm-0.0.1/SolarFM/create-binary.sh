@@ -11,7 +11,7 @@ function main() {
     cd "$(dirname "")"
     echo "Working Dir: " $(pwd)
 
-    LINK=`xclip -selection clipboard -o`
-    yt-dlp --write-sub --embed-sub --sub-langs en -o "${1}/%(title)s.%(ext)s" "${LINK}"
+    source "/home/abaddon/Portable_Apps/py-venvs/gtk-apps-venv/venv/bin/activate"
+    python -m nuitka --onefile --follow-imports --linux-onefile-icon="/home/abaddon/.config/solarfm/solarfm.png"  solarfm/__main__.py -o solarfm.a
 }
 main "$@";

@@ -8,11 +8,10 @@
 
 
 function main() {
-    SCRIPTPATH="$( cd "$(dirname "")" >/dev/null 2>&1 ; pwd -P )"
-    cd "${SCRIPTPATH}"
+    cd "$(dirname "")"
     echo "Working Dir: " $(pwd)
 
-    source "/home/abaddon/Portable_Apps/py-venvs/flask-apps-venv/venv/bin/activate"
-    python ./solarfm
+    source "/home/abaddon/Portable_Apps/py-venvs/gtk-apps-venv/venv/bin/activate"
+    python -m nuitka --follow-imports --standalone --linux-onefile-icon="/home/abaddon/.config/solarfm/solarfm.png"  solarfm/__main__.py
 }
 main "$@";
