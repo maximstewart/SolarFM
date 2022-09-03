@@ -248,7 +248,13 @@ class WidgetFileActionMixin:
 
 
     def create_files(self):
-        fname_field = self.builder.get_object("context_menu_fname")
+        fname_field = self.builder.get_object("new_fname_field")
+        self.show_new_file_menu(fname_field)
+
+        if self.cancel_creation:
+            self.cancel_creation    = False
+            return
+
         file_name   = fname_field.get_text().strip()
         type        = self.builder.get_object("context_menu_type_toggle").get_state()
 
@@ -264,10 +270,13 @@ class WidgetFileActionMixin:
             else:                # Create Folder
                 self.handle_files([path], "create_dir")
 
+        self.cancel_creation    = False
         self.hide_new_file_menu()
+
 
     def move_files(self, files, target):
         self.handle_files(files, "move", target)
+
 
     # NOTE: Gtk recommends using fail flow than pre check which is more
     #       race condition proof. They're right; but, they can't even delete

@@ -155,7 +155,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         if action == "empty_trash":
             self.empty_trash()
         if action == "create":
-            self.show_new_file_menu()
+            self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
 
