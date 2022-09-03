@@ -145,7 +145,6 @@ class Controller_Data:
 
 
         selected_files       = state.icon_grid.get_selected_items()
-        # if self.selected_files:
         if selected_files:
             state.selected_files = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
 
