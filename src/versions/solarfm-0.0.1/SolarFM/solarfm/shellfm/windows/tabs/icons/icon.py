@@ -30,7 +30,7 @@ class Icon(DesktopIconMixin, VideoIconMixin):
             if file.lower().endswith(self.fvideos):              # Video icon
                 thumbnl = self.create_thumbnail(dir, file)
             elif file.lower().endswith(self.fimages):            # Image Icon
-                thumbnl = self.create_scaled_image(full_path, self.video_icon_wh)
+                thumbnl = self.create_scaled_image(full_path)
             elif full_path.lower().endswith( ('.desktop',) ):    # .desktop file parsing
                 thumbnl = self.parse_desktop_files(full_path)
 
@@ -38,13 +38,13 @@ class Icon(DesktopIconMixin, VideoIconMixin):
         except Exception as e:
             return None
 
-    def create_thumbnail(self, dir, file):
+    def create_thumbnail(self, dir, file, scrub_percent = "65%"):
         full_path = f"{dir}/{file}"
         try:
             file_hash    = hashlib.sha256(str.encode(full_path)).hexdigest()
             hash_img_pth = f"{self.ABS_THUMBS_PTH}/{file_hash}.jpg"
             if isfile(hash_img_pth) == False:
-                self.generate_video_thumbnail(full_path, hash_img_pth)
+                self.generate_video_thumbnail(full_path, hash_img_pth, scrub_percent)
 
             thumbnl = self.create_scaled_image(hash_img_pth, self.video_icon_wh)
             if thumbnl == None: # If no icon whatsoever, return internal default
@@ -57,7 +57,10 @@ class Icon(DesktopIconMixin, VideoIconMixin):
             return GdkPixbuf.Pixbuf.new_from_file(f"{self.DEFAULT_ICONS}/video.png")
 
 
-    def create_scaled_image(self, path, wxh):
+    def create_scaled_image(self, path, wxh = None):
+        if not wxh:
+            wxh = self.video_icon_wh
+
         try:
             if path.lower().endswith(".gif"):
                 return  GdkPixbuf.PixbufAnimation.new_from_file(path) \

@@ -7,9 +7,9 @@ import subprocess
 
 
 class VideoIconMixin:
-    def generate_video_thumbnail(self, full_path, hash_img_pth):
+    def generate_video_thumbnail(self, full_path, hash_img_pth, scrub_percent = "65%"):
         try:
-            proc = subprocess.Popen([self.FFMPG_THUMBNLR, "-t", "65%", "-s", "300", "-c", "jpg", "-i", full_path, "-o", hash_img_pth])
+            proc = subprocess.Popen([self.FFMPG_THUMBNLR, "-t", scrub_percent, "-s", "300", "-c", "jpg", "-i", full_path, "-o", hash_img_pth])
             proc.wait()
         except Exception as e:
             self.logger.debug(repr(e))
