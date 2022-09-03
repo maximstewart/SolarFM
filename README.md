@@ -13,7 +13,6 @@ sudo apt-get install python3.8 wget python3-setproctitle python3-gi ffmpegthumbn
 <ul>
 <li>Add simpleish preview plugin for various file types.</li>
 <li>Add simpleish bulk-renamer.</li>
-<li>Add a basic favorites manager plugin.</li>
 </ul>
 
 # Images

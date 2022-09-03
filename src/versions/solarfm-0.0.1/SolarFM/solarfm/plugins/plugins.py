@@ -58,7 +58,7 @@ class Plugins:
                 self.execute_plugin(module, plugin, loading_data)
             except Exception as e:
                 print(f"Malformed Plugin: Not loading -->: '{folder}' !")
-                traceback.print_exc() 
+                traceback.print_exc()
 
         os.chdir(parent_path)
 
@@ -78,14 +78,17 @@ class Plugins:
         keys             = loading_data.keys()
 
         if "ui_target" in keys:
-            loading_data["ui_target"].add(plugin.reference.get_ui_element())
+            loading_data["ui_target"].add( plugin.reference.get_ui_element() )
             loading_data["ui_target"].show_all()
+
+        if "pass_ui_objects" in keys:
+            plugin.reference.set_ui_object_collection( loading_data["pass_ui_objects"] )
 
         if "pass_fm_events" in keys:
             plugin.reference.set_fm_event_system(event_system)
 
         if "bind_keys" in keys:
-            self._keybindings.append_bindings(loading_data["bind_keys"])
+            self._keybindings.append_bindings( loading_data["bind_keys"] )
 
         plugin.reference.run()
         self._plugin_collection.append(plugin)

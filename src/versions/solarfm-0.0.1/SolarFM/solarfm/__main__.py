@@ -22,16 +22,13 @@ if __name__ == "__main__":
     """ Set process title, get arguments, and create GTK main thread. """
 
     try:
-        # import web_pdb
-        # web_pdb.set_trace()
-
         setproctitle('SolarFM')
         faulthandler.enable()  # For better debug info
+
         parser = argparse.ArgumentParser()
         # Add long and short arguments
         parser.add_argument("--new-tab", "-t", default="", help="Open a file into new tab.")
         parser.add_argument("--new-window", "-w", default="", help="Open a file into a new window.")
-
         # Read arguments (If any...)
         args, unknownargs = parser.parse_known_args()
 

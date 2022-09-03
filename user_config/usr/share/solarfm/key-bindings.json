@@ -21,6 +21,6 @@
         "copy_files"             : "<Control>c",
         "cut_files"              : "<Control>x",
         "paste_files"            : "<Control>v",
-        "show_new_file_menu"     : "<Control>n"
+        "create_files"           : "<Control>n"
     }
 }

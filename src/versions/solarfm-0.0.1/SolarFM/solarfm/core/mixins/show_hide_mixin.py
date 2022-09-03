@@ -108,21 +108,22 @@ class ShowHideMixin:
     def hide_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu_popup").hide()
 
-
     def show_new_file_menu(self, widget=None, eve=None):
-        context_menu_fname = self.builder.get_object("context_menu_fname")
-        context_menu_fname.set_text("")
-        context_menu_fname.grab_focus()
+        if widget:
+            widget.set_text("")
+            widget.grab_focus()
 
-        new_file_menu = self.builder.get_object("new_file_menu")
-        response      = new_file_menu.run()
-        if response == Gtk.ResponseType.APPLY:
-            self.create_files()
+        response = self.new_file_menu.run()
         if response == Gtk.ResponseType.CANCEL:
-            self.hide_new_file_menu()
+            self.cancel_creation = True
 
     def hide_new_file_menu(self, widget=None, eve=None):
         self.builder.get_object("new_file_menu").hide()
+
+    def hide_new_file_menu_enter_key(self, widget=None, eve=None):
+        keyname = Gdk.keyval_name(eve.keyval).lower()
+        if keyname in ["return", "enter"]:
+            self.builder.get_object("new_file_menu").hide()
 
     def show_edit_file_menu(self, widget=None, eve=None):
         if widget:

@@ -52,6 +52,7 @@ class Controller_Data:
 
         self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
         self.warning_alert      = self.builder.get_object("warning_alert")
+        self.new_file_menu      = self.builder.get_object("new_file_menu")
         self.edit_file_menu     = self.builder.get_object("edit_file_menu")
         self.file_exists_dialog = self.builder.get_object("file_exists_dialog")
         self.exists_file_label  = self.builder.get_object("exists_file_label")
@@ -110,6 +111,7 @@ class Controller_Data:
         self.search_icon_grid   = None
         self.search_tab         = None
 
+        self.cancel_creation    = False
         self.skip_edit          = False
         self.cancel_edit        = False
         self.ctrl_down          = False

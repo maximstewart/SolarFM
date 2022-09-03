@@ -69,6 +69,15 @@ class ManifestProcessor:
             if requests["pass_fm_events"] in ["true"]:
                 loading_data["pass_fm_events"] = True
 
+        if "pass_ui_objects" in keys:
+            if len(requests["pass_ui_objects"]) > 0:
+                loading_data["pass_ui_objects"] = []
+                for ui_id  in requests["pass_ui_objects"]:
+                    try:
+                        loading_data["pass_ui_objects"].append( self._builder.get_object(ui_id) )
+                    except Exception as e:
+                        print(repr(e))
+
         if "bind_keys" in keys:
             if isinstance(requests["bind_keys"], list):
                 loading_data["bind_keys"] = requests["bind_keys"]
