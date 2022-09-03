@@ -757,7 +757,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="stock">gtk-apply</property>
     <property name="icon_size">3</property>
   </object>
-  <object class="GtkApplicationWindow" id="Main_Window">
+  <object class="GtkApplicationWindow" id="main_window">
     <property name="width-request">800</property>
     <property name="height-request">600</property>
     <property name="can-focus">False</property>
@@ -775,7 +775,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
         <property name="orientation">vertical</property>
         <property name="baseline-position">top</property>
         <child>
-          <object class="GtkBox" id="app_menu_bar">
+          <object class="GtkBox" id="main_menu_bar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
@@ -1122,7 +1122,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="controll_box">
+          <object class="GtkBox" id="path_menu_bar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
@@ -1470,13 +1470,13 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="modal">True</property>
     <property name="window-position">center-always</property>
     <property name="destroy-with-parent">True</property>
-    <property name="type-hint">normal</property>
+    <property name="type-hint">dialog</property>
     <property name="skip-taskbar-hint">True</property>
     <property name="skip-pager-hint">True</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <property name="gravity">center</property>
-    <property name="attached-to">Main_Window</property>
+    <property name="attached-to">main_window</property>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>
@@ -1628,14 +1628,14 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="modal">True</property>
     <property name="window-position">center-always</property>
     <property name="destroy-with-parent">True</property>
-    <property name="type-hint">normal</property>
+    <property name="type-hint">dialog</property>
     <property name="skip-taskbar-hint">True</property>
     <property name="skip-pager-hint">True</property>
     <property name="urgency-hint">True</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <property name="gravity">center</property>
-    <property name="attached-to">Main_Window</property>
+    <property name="attached-to">main_window</property>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>
@@ -1958,7 +1958,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="width-request">320</property>
     <property name="can-focus">False</property>
     <property name="hexpand">True</property>
-    <property name="relative-to">app_menu_bar</property>
+    <property name="relative-to">main_menu_bar</property>
     <property name="position">bottom</property>
     <child>
       <object class="GtkBox">
@@ -2015,14 +2015,13 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="modal">True</property>
     <property name="window-position">center-always</property>
     <property name="destroy-with-parent">True</property>
-    <property name="type-hint">normal</property>
+    <property name="type-hint">dialog</property>
     <property name="skip-taskbar-hint">True</property>
     <property name="skip-pager-hint">True</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <property name="gravity">center</property>
-    <property name="attached-to">Main_Window</property>
-    <signal name="focus-out-event" handler="hide_new_file_menu" swapped="no"/>
+    <property name="attached-to">main_window</property>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>
@@ -2081,7 +2080,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkEntry" id="context_menu_fname">
+              <object class="GtkEntry" id="new_fname_field">
                 <property name="width-request">500</property>
                 <property name="height-request">26</property>
                 <property name="visible">True</property>
@@ -2095,6 +2094,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <property name="primary-icon-sensitive">False</property>
                 <property name="secondary-icon-sensitive">False</property>
                 <property name="placeholder-text" translatable="yes">New File/Dir Name...</property>
+                <signal name="key-release-event" handler="hide_new_file_menu_enter_key" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -2219,11 +2219,13 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
       </object>
     </child>
   </object>
-  <object class="GtkPopover" id="plugin_list">
+  <object class="GtkPopover" id="plugin_controls">
     <property name="can-focus">False</property>
     <property name="relative-to">plugins_buttoin</property>
+    <signal name="button-release-event" handler="hide_plugins_popup" swapped="no"/>
+    <signal name="key-release-event" handler="hide_plugins_popup" swapped="no"/>
     <child>
-      <object class="GtkBox" id="plugin_socket">
+      <object class="GtkBox" id="plugin_control_list">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
@@ -2329,7 +2331,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
     <property name="can-focus">False</property>
     <property name="icon-name">user-trash</property>
   </object>
-  <object class="GtkDialog" id="context_menu">
+  <object class="GtkDialog" id="context_menu_popup">
     <property name="can-focus">False</property>
     <property name="resizable">False</property>
     <property name="window-position">mouse</property>
@@ -2367,7 +2369,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="iconsButtonBox">
+              <object class="GtkBox" id="context_menu">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>

@@ -1,0 +1,14 @@
+{
+    "manifest": {
+        "name": "Favorites Plugin",
+        "author": "ITDominator",
+        "version": "0.0.1",
+        "support": "",
+        "requests": {
+            "ui_target": "plugin_control_list",
+            "pass_fm_events": "true",
+            "pass_ui_objects": ["path_entry"],
+            "bind_keys": []
+        }
+    }
+}
