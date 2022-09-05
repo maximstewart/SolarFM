@@ -10,6 +10,12 @@ from utils.settings import Settings
 from core.controller import Controller
 
 
+class App_Launch_Exception(Exception):
+    ...
+
+class Controller_Start_Exceptio(Exception):
+    ...
+
 
 class Application(IPCServer):
     """ Create Settings and Controller classes. Bind signal to Builder. Inherit from Builtins to bind global methods and classes. """
@@ -32,7 +38,7 @@ class Application(IPCServer):
                     message = f"FILE|{args.new_tab}"
                     self.send_ipc_message(message)
 
-                raise Exception("IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/solarfm-ipc.sock")
+                raise App_Launch_Exception("IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/solarfm-ipc.sock")
 
 
         settings = Settings()
@@ -40,7 +46,7 @@ class Application(IPCServer):
 
         controller = Controller(args, unknownargs, settings)
         if not controller:
-            raise Exception("Controller exited and doesn't exist...")
+            raise Controller_Start_Exceptio("Controller exited and doesn't exist...")
 
         # Gets the methods from the classes and sets to handler.
         # Then, builder connects to any signals it needs.

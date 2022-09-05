@@ -37,14 +37,15 @@ class Plugin:
         self._dialog                = None
         self._thumbnail_preview_img = None
         self._tmdb                  = scraper.get_tmdb_scraper()
+        self._state                 = None
         self._overview              = None
         self._file_name             = None
         self._file_location         = None
-        self._state                 = None
+        self._trailer_link          = None
 
-        self._event_system      = None
-        self._event_sleep_time  = .5
-        self._event_message     = None
+        self._event_system          = None
+        self._event_sleep_time      = .5
+        self._event_message         = None
 
 
     def get_ui_element(self):
@@ -69,6 +70,7 @@ class Plugin:
         self._file_location         = self._builder.get_object("file_location")
         self._thumbnail_preview_img = self._builder.get_object("thumbnail_preview_img")
         self._file_hash             = self._builder.get_object("file_hash")
+        self._trailer_link          = self._builder.get_object("trailer_link")
 
         button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self._show_info_page)
@@ -102,13 +104,14 @@ class Plugin:
                 self._thumbnailer_dialog.hide()
 
     def _set_ui_data(self):
-        title, path, video_data = self.get_video_data()
+        title, path, trailer, video_data = self.get_video_data()
         keys = video_data.keys() if video_data else None
 
         overview_text  = video_data["overview"] if video_data else f"...NO {self.name.upper()} DATA..."
 
         self.set_text_data(title, path, overview_text)
         self.set_thumbnail(video_data) if video_data else ...
+        self.set_trailer_link(trailer)
 
         print(video_data["videos"]) if not keys in ("", None) and "videos" in keys else ...
 
@@ -124,15 +127,31 @@ class Plugin:
             endIndex       = _title.index(')')
             date           = title[startIndex:endIndex]
         except Exception as e:
+            print(repr(e))
             title          = _title
             date           = None
 
         try:
+
             video_data    = self._tmdb.search(title, date)[0]
+            video_id      = video_data["id"]
+            try:
+                results = self._tmdb.tmdbapi.get_movie(str(video_id), append_to_response="videos")["videos"]["results"]
+                for result in results:
+                    if "YouTube" in result["site"]:
+                        trailer = result["key"]
+
+                if not trailer:
+                    raise Exception("No key found. Defering to none...")
+            except Exception as e:
+                print("No trailer found...")
+                trailer = None
+
         except Exception as e:
+            print(repr(e))
             video_data    = None
 
-        return title, path, video_data
+        return title, path, trailer, video_data
 
 
     def set_text_data(self, title, path, overview_text):
@@ -163,6 +182,11 @@ class Plugin:
             self._thumbnail_preview_img.set_from_pixbuf(preview_pixbuf)
         else:
             print('Cover Background Image Couldn\'t be retreived...')
+
+    def set_trailer_link(self, trailer):
+        if trailer:
+            self._trailer_link.set_uri(f"https://www.youtube.com/watch?v={trailer}")
+
 
 
 
