@@ -8,7 +8,7 @@
                                     "<Control>r"],
         "delete_files"           : ["Delete",
                                     "<Shift><Control>d"],
-        "tggl_top_main_menubar"  : "<Alt>",
+        "tggl_top_main_menubar"  : "<Alt>h",
         "trash_files"            : "<Shift><Control>t",
         "tear_down"              : "<Control>q",
         "go_up"                  : "<Control>Up",

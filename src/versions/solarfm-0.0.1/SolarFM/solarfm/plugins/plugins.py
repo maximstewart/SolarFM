@@ -65,7 +65,9 @@ class Plugins:
 
     def load_plugin_module(self, path, folder, target):
         os.chdir(path)
-        sys.path.insert(0, path)
+        sys.path.insert(0, path)  # NOTE: I think I'm not using this correctly...
+        # The folder and target aren't working to create parent package references, so using as stopgap.
+        # The above is probably polutling import logic and will cause unforseen import issues.
         spec   = importlib.util.spec_from_file_location(folder, target)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
