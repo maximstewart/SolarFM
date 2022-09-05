@@ -26,7 +26,7 @@ def daemon_threaded(fn):
 
 class Plugin:
     def __init__(self):
-        self.name               = "Favorites Plugin"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
+        self.name               = "Favorites"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                                       #       where self.name should not be needed for message comms
         self.path               = os.path.dirname(os.path.realpath(__file__))
         self._GLADE_FILE        = f"{self.path}/favorites.glade"
