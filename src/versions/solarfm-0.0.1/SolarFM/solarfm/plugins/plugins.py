@@ -8,15 +8,22 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio
 
 # Application imports
-from .manifest import Plugin, ManifestProcessor
+from .manifest import PluginInfo, ManifestProcessor
 
 
+
+
+class InvalidPluginException(Exception):
+    ...
 
 
 class Plugins:
     """Plugins controller"""
 
     def __init__(self, settings: type):
+        path                      = os.path.dirname(os.path.realpath(__file__))
+        sys.path.insert(0, path)  # NOTE: I think I'm not using this correctly...
+
         self._settings            = settings
         self._builder             = self._settings.get_builder()
         self._plugins_path        = self._settings.get_plugins_path()
@@ -51,7 +58,7 @@ class Plugins:
                 manifest = ManifestProcessor(path, self._builder)
 
                 if not os.path.exists(target):
-                    raise Exception("Invalid Plugin Structure: Plugin doesn't have 'plugin.py'. Aboarting load...")
+                    raise InvalidPluginException("Invalid Plugin Structure: Plugin doesn't have 'plugin.py'. Aboarting load...")
 
                 plugin, loading_data = manifest.get_loading_data()
                 module               = self.load_plugin_module(path, folder, target)
@@ -65,17 +72,15 @@ class Plugins:
 
     def load_plugin_module(self, path, folder, target):
         os.chdir(path)
-        sys.path.insert(0, path)  # NOTE: I think I'm not using this correctly...
-        # The folder and target aren't working to create parent package references, so using as stopgap.
-        # The above is probably polutling import logic and will cause unforseen import issues.
-        spec   = importlib.util.spec_from_file_location(folder, target)
+        spec   = importlib.util.spec_from_file_location(folder, target, submodule_search_locations=path)
         module = importlib.util.module_from_spec(spec)
+        sys.modules[folder] = module
         spec.loader.exec_module(module)
 
         return module
 
 
-    def execute_plugin(self, module: type, plugin: Plugin, loading_data: []):
+    def execute_plugin(self, module: type, plugin: PluginInfo, loading_data: []):
         plugin.reference = module.Plugin()
         keys             = loading_data.keys()
 

@@ -38,7 +38,7 @@ class Application(IPCServer):
                     message = f"FILE|{args.new_tab}"
                     self.send_ipc_message(message)
 
-                raise App_Launch_Exception("IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/solarfm-ipc.sock")
+                raise App_Launch_Exception(f"IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/{app_name}-ipc.sock")
 
 
         settings = Settings()

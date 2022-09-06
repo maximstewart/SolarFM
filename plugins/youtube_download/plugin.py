@@ -7,6 +7,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 # Application imports
+from plugins.plugin_base import PluginBase
 
 
 # NOTE: Threads WILL NOT die with parent's destruction.
@@ -24,22 +25,19 @@ def daemon_threaded(fn):
 
 
 
-class Plugin:
+class Plugin(PluginBase):
     def __init__(self):
+        super().__init__()
+
+        self.path              = os.path.dirname(os.path.realpath(__file__))
         self.name              = "Youtube Download"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                                      #       where self.name should not be needed for message comms
-        self._event_system     = None
-        self._event_sleep_time = .5
-        self._event_message    = None
 
 
     def get_ui_element(self):
         button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self._do_download)
         return button
-
-    def set_fm_event_system(self, fm_event_system):
-        self._event_system = fm_event_system
 
     def run(self):
         self._module_event_observer()
@@ -53,29 +51,3 @@ class Plugin:
         state = self._event_message
         subprocess.Popen([f'{self.path}/download.sh' , state.tab.get_current_directory()])
         self._event_message = None
-
-
-    def wait_for_fm_message(self):
-        while not self._event_message:
-            pass
-
-    @daemon_threaded
-    def _module_event_observer(self):
-        while True:
-            time.sleep(self._event_sleep_time)
-            event = self._event_system.read_module_event()
-            if event:
-                try:
-                    if event[0] == self.name:
-                        target_id, method_target, data = self._event_system.consume_module_event()
-
-                        if not method_target:
-                            self._event_message = data
-                        else:
-                            method = getattr(self.__class__, f"{method_target}")
-                            if data:
-                                data = method(*(self, *data))
-                            else:
-                                method(*(self,))
-                except Exception as e:
-                    print(repr(e))

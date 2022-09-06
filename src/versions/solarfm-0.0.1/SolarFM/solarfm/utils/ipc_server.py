@@ -16,11 +16,11 @@ class IPCServer:
         self._ipc_port        = 4848
         self._ipc_address     = ipc_address
         self._conn_type       = conn_type
-        self._ipc_authkey     = b'solarfm-ipc'
+        self._ipc_authkey     = b'' + bytes(f'{app_name}-ipc', 'utf-8')
         self._ipc_timeout     = 15.0
 
         if conn_type == "socket":
-            self._ipc_address = '/tmp/solarfm-ipc.sock'
+            self._ipc_address = f'/tmp/{app_name}-ipc.sock'
         elif conn_type == "full_network":
             self._ipc_address = '0.0.0.0'
         elif conn_type == "full_network_unsecured":

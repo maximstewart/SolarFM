@@ -7,6 +7,10 @@
 
 
 
+class EventSystemPushException(Exception):
+    ...
+
+
 class EventSystem:
     """ Inheret IPCServerMixin. Create an pub/sub systems. """
 
@@ -37,14 +41,14 @@ class EventSystem:
             self._gui_events.append(event)
             return None
 
-        raise Exception("Invald event format! Please do:  ['sender_id': str, method_target: method, (data,): any]")
+        raise EventSystemPushException("Invald event format! Please do:  ['sender_id': str, method_target: method, (data,): any]")
 
     def push_module_event(self, event: list) -> None:
         if len(event) == 3:
             self._module_events.append(event)
             return None
 
-        raise Exception("Invald event format! Please do:  ['target_id': str, method_target: method, (data,): any]")
+        raise EventSystemPushException("Invald event format! Please do:  ['target_id': str, method_target: method, (data,): any]")
 
     def read_gui_event(self) -> list:
         return self._gui_events[0] if self._gui_events else None

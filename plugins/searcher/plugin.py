@@ -8,6 +8,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject
 
 # Application imports
+from plugins.plugin_base import PluginBase
 
 
 # NOTE: Threads WILL NOT die with parent's destruction.
@@ -74,19 +75,16 @@ grep_result_set  = manager.dict()
 file_result_set  = manager.list()
 
 
-class Plugin:
+class Plugin(PluginBase):
     def __init__(self):
+        super().__init__()
+
         self.path              = os.path.dirname(os.path.realpath(__file__))
         self.name              = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                            #       where self.name should not be needed for message comms
         self._GLADE_FILE       = f"{self.path}/search_dialog.glade"
-        self._builder          = None
+
         self._search_dialog    = None
-
-        self._event_system     = None
-        self._event_sleep_time = .5
-        self._event_message    = None
-
         self._active_path      = None
         self._file_list        = None
         self._grep_list        = None
@@ -95,6 +93,13 @@ class Plugin:
 
 
     def get_ui_element(self):
+        button = Gtk.Button(label=self.name)
+        button.connect("button-release-event", self._show_grep_list_page)
+        return button
+
+    def run(self):
+        self._module_event_observer()
+
         self._builder          = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -118,16 +123,6 @@ class Plugin:
         self._search_dialog.connect("update-file-ui-signal", self._load_file_ui)
         GObject.signal_new("update-grep-ui-signal", self._search_dialog, GObject.SIGNAL_RUN_LAST, GObject.TYPE_PYOBJECT, (GObject.TYPE_PYOBJECT,))
         self._search_dialog.connect("update-grep-ui-signal", self._load_grep_ui)
-
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self._show_grep_list_page)
-        return button
-
-    def set_fm_event_system(self, fm_event_system):
-        self._event_system = fm_event_system
-
-    def run(self):
-        self._module_event_observer()
 
 
     @daemon_threaded
@@ -234,36 +229,3 @@ class Plugin:
         except Exception as e:
             if debug:
                 print("Couldn't read file. Might be binary or other cause...")
-
-
-
-
-    def clear_children(self, widget: type) -> None:
-        ''' Clear children of a gtk widget. '''
-        for child in widget.get_children():
-            widget.remove(child)
-
-    def wait_for_fm_message(self):
-        while not self._event_message:
-            pass
-
-    @daemon_threaded
-    def _module_event_observer(self):
-        while True:
-            time.sleep(self._event_sleep_time)
-            event = self._event_system.read_module_event()
-            if event:
-                try:
-                    if event[0] == self.name:
-                        target_id, method_target, data = self._event_system.consume_module_event()
-
-                        if not method_target:
-                            self._event_message = data
-                        else:
-                            method = getattr(self.__class__, f"{method_target}")
-                            if data:
-                                data = method(*(self, *data))
-                            else:
-                                method(*(self,))
-                except Exception as e:
-                    print(repr(e))
