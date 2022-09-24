@@ -9,7 +9,7 @@ from gi.repository import GLib
 # Application imports
 from trasher.xdgtrash import XDGTrash
 from shellfm.windows.controller import WindowController
-from plugins.plugins import Plugins
+from plugins.plugins_controller import PluginsController
 
 
 @dataclass(slots=True)
@@ -36,7 +36,7 @@ class Controller_Data:
 
         self.trashman            = XDGTrash()
         self.fm_controller       = WindowController()
-        self.plugins             = Plugins(_settings)
+        self.plugins             = PluginsController(_settings)
         self.fm_controller_data  = self.fm_controller.get_state_from_file()
         self.trashman.regenerate()
 

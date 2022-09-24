@@ -17,8 +17,8 @@ class InvalidPluginException(Exception):
     ...
 
 
-class Plugins:
-    """Plugins controller"""
+class PluginsController:
+    """PluginsController controller"""
 
     def __init__(self, settings: type):
         path                      = os.path.dirname(os.path.realpath(__file__))
