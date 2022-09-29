@@ -22,7 +22,7 @@ class EventSystem:
         if event_type in self.subscribers:
             for fn in self.subscribers[event_type]:
                 if data:
-                    if hasattr(data, '__iter__'):
+                    if hasattr(data, '__iter__') and not type(data) is str:
                         fn(*data)
                     else:
                         fn(data)
