@@ -29,6 +29,11 @@ class IPCServer:
         elif conn_type == "local_network_unsecured":
             self._ipc_authkey = None
 
+        self._subscribe_to_events()
+
+    def _subscribe_to_events(self):
+        event_system.subscribe("post_file_to_ipc", self.send_ipc_message)
+
 
     @daemon_threaded
     def create_ipc_listener(self) -> None:
@@ -60,7 +65,7 @@ class IPCServer:
             if "FILE|" in msg:
                 file = msg.split("FILE|")[1].strip()
                 if file:
-                    event_system.push_gui_event([None, "handle_file_from_ipc", (file,)])
+                    event_system.post_event("handle_file_from_ipc", file)
 
                 conn.close()
                 break

@@ -5,6 +5,7 @@ import builtins, threading
 
 # Application imports
 from utils.event_system import EventSystem
+from utils.endpoint_registry import EndpointRegistry
 
 
 
@@ -20,23 +21,6 @@ def daemon_threaded_wrapper(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
-
-
-
-
-class EndpointRegistry():
-    def __init__(self):
-        self._endpoints = {}
-
-    def register(self, rule, **options):
-        def decorator(f):
-            self._endpoints[rule] = f
-            return f
-
-        return decorator
-
-    def get_endpoints(self):
-        return self._endpoints
 
 
 

@@ -38,7 +38,6 @@ class Plugin(PluginBase):
         self._favorites_dialog  = None
         self._favorites_store   = None
         self._favorites         = None
-        self._state             = None
         self._selected          = None
 
 
@@ -48,8 +47,6 @@ class Plugin(PluginBase):
         return button
 
     def run(self):
-        self._module_event_observer()
-
         self._builder          = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -81,19 +78,15 @@ class Plugin(PluginBase):
 
     @threaded
     def _get_state(self, widget=None, eve=None):
-        self._event_system.push_gui_event([self.name, "get_current_state", ()])
-        self.wait_for_fm_message()
+        self._event_system.post_event("get_current_state", None)
 
-        self._state         = self._event_message
-        self._event_message = None
 
     @threaded
     def _set_current_dir_lbl(self, widget=None, eve=None):
-        self.wait_for_state()
-        self._current_dir_lbl.set_label(f"Current Directory:\n{self._state.tab.get_current_directory()}")
+        self._current_dir_lbl.set_label(f"Current Directory:\n{self._fm_state.tab.get_current_directory()}")
 
     def _add_to_favorite(self, state):
-        current_directory = self._state.tab.get_current_directory()
+        current_directory = self._fm_state.tab.get_current_directory()
         self._favorites_store.append([current_directory])
         self._favorites.append(current_directory)
         self._save_favorites()
@@ -111,11 +104,10 @@ class Plugin(PluginBase):
     def _set_selected_path(self, widget=None, eve=None):
         path = self._favorites_store.get_value(self._selected, 0)
         self._ui_objects[0].set_text(path)
-
-
+        self._set_current_dir_lbl()
 
     def _show_favorites_menu(self, widget=None, eve=None):
-        self._state = None
+        self._fm_state = None
         self._get_state()
         self._set_current_dir_lbl()
         self._favorites_dialog.run()
@@ -127,7 +119,3 @@ class Plugin(PluginBase):
         selected = user_data.get_selected()[1]
         if selected:
             self._selected = selected
-
-    def wait_for_state(self):
-        while not self._state:
-            pass

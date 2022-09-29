@@ -39,7 +39,6 @@ class Plugin(PluginBase):
         self._dialog                = None
         self._thumbnail_preview_img = None
         self._tmdb                  = scraper.get_tmdb_scraper()
-        self._state                 = None
         self._overview              = None
         self._file_name             = None
         self._file_location         = None
@@ -53,8 +52,6 @@ class Plugin(PluginBase):
         return button
 
     def run(self):
-        self._module_event_observer()
-
         self._builder           = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -80,19 +77,18 @@ class Plugin(PluginBase):
 
     @threaded
     def _show_info_page(self, widget=None, eve=None):
-        self._event_system.push_gui_event([self.name, "get_current_state", ()])
-        self.wait_for_fm_message()
+        self._event_system.post_event("get_current_state", None)
 
-        state               = self._event_message
+        state               = self._fm_state
         self._event_message = None
 
         GLib.idle_add(self._process_changes, (state))
 
     def _process_changes(self, state):
-        self._state = None
+        self._fm_state = None
 
         if len(state.selected_files) == 1:
-            self._state = state
+            self._fm_state = state
             self._set_ui_data()
             response   = self._thumbnailer_dialog.run()
             if response in [Gtk.ResponseType.CLOSE, Gtk.ResponseType.DELETE_EVENT]:
@@ -111,8 +107,8 @@ class Plugin(PluginBase):
         print(video_data["videos"]) if not keys in ("", None) and "videos" in keys else ...
 
     def get_video_data(self):
-        uri            = self._state.selected_files[0]
-        path           = self._state.tab.get_current_directory()
+        uri            = self._fm_state.selected_files[0]
+        path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
         _title         = parts[ len(parts) - 1 ]
 

@@ -93,6 +93,7 @@ class PluginsController:
 
         if "pass_fm_events" in keys:
             plugin.reference.set_fm_event_system(event_system)
+            plugin.reference.subscribe_to_events()
 
         if "bind_keys" in keys:
             self._keybindings.append_bindings( loading_data["bind_keys"] )

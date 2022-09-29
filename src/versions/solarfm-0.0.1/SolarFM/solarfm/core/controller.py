@@ -28,50 +28,30 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         if debug:
             self.window.set_interactive_debugging(True)
 
+
         if not trace_debug:
-            self.gui_event_observer()
+            self._subscribe_to_events()
 
             if unknownargs:
                 for arg in unknownargs:
                     if os.path.isdir(arg):
                         message = f"FILE|{arg}"
-                        event_system.send_ipc_message(message)
+                        event_system.post_event("post_file_to_ipc", message)
 
             if args.new_tab and os.path.isdir(args.new_tab):
                 message = f"FILE|{args.new_tab}"
-                event_system.send_ipc_message(message)
+                event_system.post_event("post_file_to_ipc", message)
 
+
+    def _subscribe_to_events(self):
+        event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
+        event_system.subscribe("get_current_state", self.get_current_state)
+        event_system.subscribe("display_message", self.display_message)
 
     def tear_down(self, widget=None, eve=None):
         self.fm_controller.save_state()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
-
-
-    @daemon_threaded
-    def gui_event_observer(self):
-        while True:
-            time.sleep(event_sleep_time)
-            event = event_system.consume_gui_event()
-            if event:
-                try:
-                    sender_id, method_target, parameters = event
-                    if sender_id:
-                        method = getattr(self.__class__, "handle_gui_event_and_return_message")
-                        GLib.idle_add(method, *(self, sender_id, method_target, parameters))
-                    else:
-                        method = getattr(self.__class__, method_target)
-                        GLib.idle_add(method, *(self, *parameters,))
-                except Exception as e:
-                    print(repr(e))
-
-    def handle_gui_event_and_return_message(self, sender, method_target, parameters):
-        method = getattr(self.__class__, f"{method_target}")
-        data   = method(*(self, *parameters))
-        event_system.push_module_event([sender, None, data])
-
-    def handle_plugin_key_event(self, sender, method_target, parameters=()):
-        event_system.push_module_event([sender, method_target, parameters])
 
 
     def save_load_session(self, action="save_session"):

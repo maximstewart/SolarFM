@@ -39,8 +39,8 @@ class Plugin(PluginBase):
         return button
 
     def run(self):
-        self._module_event_observer()
+        ...
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"
-        self._event_system.push_gui_event([self.name, "display_message", ("warning", message, None)])
+        event_system.post_event("display_message", ("warning", message, None))

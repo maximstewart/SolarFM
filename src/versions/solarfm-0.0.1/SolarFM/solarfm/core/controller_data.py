@@ -154,6 +154,8 @@ class Controller_Data:
         # if self.to_cut_files:
         #     state.to_cut_files   = self.format_to_uris(state.store, state.wid, state.tid, self.to_cut_files, True)
 
+        event_system.post_event("update_state_info_plugins", state)
+
         return state
 
 

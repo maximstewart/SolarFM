@@ -42,7 +42,6 @@ class Plugin(PluginBase):
         self._file_name             = None
         self._file_location         = None
         self._file_hash             = None
-        self._state                 = None
 
 
     def get_ui_element(self):
@@ -51,8 +50,6 @@ class Plugin(PluginBase):
         return button
 
     def run(self):
-        self._module_event_observer()
-
         self._builder           = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -78,20 +75,19 @@ class Plugin(PluginBase):
 
     @threaded
     def _show_thumbnailer_page(self, widget=None, eve=None):
-        self._event_system.push_gui_event([self.name, "get_current_state", ()])
-        self.wait_for_fm_message()
+        self._event_system.post_event("get_current_state", None)
 
-        state               = self._event_message
+        state               = self._fm_state
         self._event_message = None
 
         GLib.idle_add(self._process_changes, (state))
 
     def _process_changes(self, state):
-        self._state = None
+        self._fm_state = None
 
         if len(state.selected_files) == 1:
             if state.selected_files[0].lower().endswith(state.tab.fvideos):
-                self._state = state
+                self._fm_state = state
                 self._set_ui_data()
                 response   = self._thumbnailer_dialog.run()
                 if response in [Gtk.ResponseType.CLOSE, Gtk.ResponseType.DELETE_EVENT]:
@@ -103,32 +99,32 @@ class Plugin(PluginBase):
         file          = self._file_name.get_text()
         dir           = self._file_location.get_text()
         file_hash     = self._file_hash.get_text()
-        hash_img_pth  = f"{self._state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
+        hash_img_pth  = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
 
         try:
             os.remove(hash_img_pth) if os.path.isfile(hash_img_pth) else ...
 
-            self._state.tab.create_thumbnail(dir, file, f"{scrub_percent}%")
+            self._fm_state.tab.create_thumbnail(dir, file, f"{scrub_percent}%")
             preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
             self._thumbnail_preview_img.set_from_pixbuf(preview_pixbuf)
 
-            img_pixbuf = self._state.tab.create_scaled_image(hash_img_pth)
-            tree_pth   = self._state.icon_grid.get_selected_items()[0]
-            itr        = self._state.store.get_iter(tree_pth)
-            pixbuff    = self._state.store.get(itr, 0)[0]
-            self._state.store.set(itr, 0, img_pixbuf)
+            img_pixbuf = self._fm_state.tab.create_scaled_image(hash_img_pth)
+            tree_pth   = self._fm_state.icon_grid.get_selected_items()[0]
+            itr        = self._fm_state.store.get_iter(tree_pth)
+            pixbuff    = self._fm_state.store.get(itr, 0)[0]
+            self._fm_state.store.set(itr, 0, img_pixbuf)
         except Exception as e:
             print(repr(e))
             print("Couldn't regenerate thumbnail!")
 
 
     def _set_ui_data(self):
-        uri            = self._state.selected_files[0]
-        path           = self._state.tab.get_current_directory()
+        uri            = self._fm_state.selected_files[0]
+        path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
 
         file_hash      = hashlib.sha256(str.encode(uri)).hexdigest()
-        hash_img_pth   = f"{self._state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
+        hash_img_pth   = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
         preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
 
         self._thumbnail_preview_img.set_from_pixbuf(preview_pixbuf)

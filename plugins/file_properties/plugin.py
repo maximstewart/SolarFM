@@ -89,8 +89,6 @@ class Plugin(PluginBase):
         return button
 
     def run(self):
-        self._module_event_observer()
-
         self._builder           = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -109,10 +107,9 @@ class Plugin(PluginBase):
 
     @threaded
     def _show_properties_page(self, widget=None, eve=None):
-        self._event_system.push_gui_event([self.name, "get_current_state", ()])
-        self.wait_for_fm_message()
+        event_system.post_event("get_current_state", None)
 
-        state               = self._event_message
+        state               = self._fm_state
         self._event_message = None
 
         GLib.idle_add(self._process_changes, (state))

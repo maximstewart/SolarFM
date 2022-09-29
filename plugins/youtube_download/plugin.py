@@ -40,14 +40,15 @@ class Plugin(PluginBase):
         return button
 
     def run(self):
-        self._module_event_observer()
+        ...
 
+
+    def _do_download(self, widget=None, eve=None):
+        self._event_system.post_event("get_current_state", None)
+
+        dir = self._fm_state.tab.get_current_directory()
+        self._download(dir)
 
     @threaded
-    def _do_download(self, widget=None, eve=None):
-        self._event_system.push_gui_event([self.name, "get_current_state", ()])
-        self.wait_for_fm_message()
-
-        state = self._event_message
-        subprocess.Popen([f'{self.path}/download.sh' , state.tab.get_current_directory()])
-        self._event_message = None
+    def _download(self, dir):
+        subprocess.Popen([f'{self.path}/download.sh', dir])
