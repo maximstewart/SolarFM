@@ -125,7 +125,7 @@ class Plugin(PluginBase):
 
     @daemon_threaded
     def _show_grep_list_page(self, widget=None, eve=None):
-        self._event_system.post_event("get_current_state", None)
+        self._event_system.emit("get_current_state
 
         state               = self._fm_state
         self._event_message = None

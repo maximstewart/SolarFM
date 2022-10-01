@@ -44,7 +44,7 @@ class Plugin(PluginBase):
 
 
     def _do_download(self, widget=None, eve=None):
-        self._event_system.post_event("get_current_state", None)
+        self._event_system.emit("get_current_state
 
         dir = self._fm_state.tab.get_current_directory()
         self._download(dir)

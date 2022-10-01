@@ -2,10 +2,17 @@
 import os, subprocess, threading, hashlib
 from os.path import isfile
 
-# Gtk imports
+# Lib imports
 import gi
 gi.require_version('GdkPixbuf', '2.0')
-from gi.repository import GdkPixbuf
+from gi.repository import GdkPixbuf, GLib
+
+
+try:
+    from PIL import Image as PImage
+except Exception as e:
+    PImage = None
+
 
 # Application imports
 from .mixins.desktopiconmixin import DesktopIconMixin
@@ -67,11 +74,26 @@ class Icon(DesktopIconMixin, VideoIconMixin):
                                                     .get_static_image() \
                                                     .scale_simple(wxh[0], wxh[1], GdkPixbuf.InterpType.BILINEAR)
             else:
-                return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, wxh[0], wxh[1], True)
+                if PImage and path.lower().endswith(".webp"):
+                    return self.image2pixbuf(path, wxh)
+                else:
+                    return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, wxh[0], wxh[1], True)
         except Exception as e:
             print("Image Scaling Issue:")
             print( repr(e) )
             return None
+
+    def image2pixbuf(self, path, wxh):
+        """Convert Pillow image to GdkPixbuf"""
+        im   = PImage.open(path)
+        data = im.tobytes()
+        data = GLib.Bytes.new(data)
+        w, h = im.size
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
+                                                            False, 8, w, h, w * 3)
+
+        return pixbuf.scale_simple(wxh[0], wxh[1], 2) # BILINEAR = 2
 
     def create_from_file(self, path):
         try:

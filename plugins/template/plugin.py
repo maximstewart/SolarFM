@@ -43,4 +43,4 @@ class Plugin(PluginBase):
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"
-        event_system.post_event("display_message", ("warning", message, None))
+        event_system.emit("display_message", ("warning", message, None))

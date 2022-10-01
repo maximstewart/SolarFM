@@ -65,7 +65,7 @@ class IPCServer:
             if "FILE|" in msg:
                 file = msg.split("FILE|")[1].strip()
                 if file:
-                    event_system.post_event("handle_file_from_ipc", file)
+                    event_system.emit("handle_file_from_ipc", file)
 
                 conn.close()
                 break

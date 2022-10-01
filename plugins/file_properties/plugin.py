@@ -107,7 +107,7 @@ class Plugin(PluginBase):
 
     @threaded
     def _show_properties_page(self, widget=None, eve=None):
-        event_system.post_event("get_current_state", None)
+        event_system.emit("get_current_state
 
         state               = self._fm_state
         self._event_message = None

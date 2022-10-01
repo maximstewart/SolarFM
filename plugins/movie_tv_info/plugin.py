@@ -77,7 +77,7 @@ class Plugin(PluginBase):
 
     @threaded
     def _show_info_page(self, widget=None, eve=None):
-        self._event_system.post_event("get_current_state", None)
+        self._event_system.emit("get_current_state")
 
         state               = self._fm_state
         self._event_message = None
@@ -111,6 +111,7 @@ class Plugin(PluginBase):
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
         _title         = parts[ len(parts) - 1 ]
+        trailer        = None
 
         try:
             title          = _title.split("(")[0].strip()
@@ -136,7 +137,6 @@ class Plugin(PluginBase):
                     raise Exception("No key found. Defering to none...")
             except Exception as e:
                 print("No trailer found...")
-                trailer = None
 
         except Exception as e:
             print(repr(e))

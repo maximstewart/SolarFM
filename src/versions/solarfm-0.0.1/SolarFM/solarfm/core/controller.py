@@ -36,11 +36,11 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
                 for arg in unknownargs:
                     if os.path.isdir(arg):
                         message = f"FILE|{arg}"
-                        event_system.post_event("post_file_to_ipc", message)
+                        event_system.emit("post_file_to_ipc", message)
 
             if args.new_tab and os.path.isdir(args.new_tab):
                 message = f"FILE|{args.new_tab}"
-                event_system.post_event("post_file_to_ipc", message)
+                event_system.emit("post_file_to_ipc", message)
 
 
     def _subscribe_to_events(self):

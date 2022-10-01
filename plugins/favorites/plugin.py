@@ -78,7 +78,7 @@ class Plugin(PluginBase):
 
     @threaded
     def _get_state(self, widget=None, eve=None):
-        self._event_system.post_event("get_current_state", None)
+        self._event_system.emit("get_current_state
 
 
     @threaded
