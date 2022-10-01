@@ -47,6 +47,8 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
         event_system.subscribe("get_current_state", self.get_current_state)
         event_system.subscribe("display_message", self.display_message)
+        event_system.subscribe("go_to_path", self.go_to_path)
+        event_system.subscribe("do_hide_context_menu", self.do_hide_context_menu)
 
     def tear_down(self, widget=None, eve=None):
         self.fm_controller.save_state()
@@ -100,7 +102,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         gc.collect()
 
 
-    def do_action_from_menu_controls(self, widget, event_button):
+    def do_action_from_menu_controls(self, widget, eve = None):
         action = widget.get_name()
         self.hide_context_menu()
         self.hide_new_file_menu()
@@ -124,16 +126,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             self.paste_files()
         if action == "archive":
             self.show_archiver_dialogue()
-        if action == "delete":
-            self.delete_files()
-        if action == "trash":
-            self.trash_files()
-        if action == "go_to_trash":
-            self.path_entry.set_text(self.trash_files_path)
-        if action == "restore_from_trash":
-            self.restore_trash_files()
-        if action == "empty_trash":
-            self.empty_trash()
         if action == "create":
             self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:
@@ -169,3 +161,9 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         tab.execute([f"{tab.terminal_app}"], start_dir=tab.get_current_directory())
+
+    def go_to_path(self, path):
+        self.path_entry.set_text(path)
+
+    def do_hide_context_menu(self):
+        self.hide_context_menu()

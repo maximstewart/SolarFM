@@ -7,7 +7,6 @@ import gi
 from gi.repository import GLib
 
 # Application imports
-from trasher.xdgtrash import XDGTrash
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
 
@@ -22,6 +21,7 @@ class State:
     selected_files: [] = None
     to_copy_files:  [] = None
     to_cut_files:   [] = None
+    warning_alert: type = None
 
 
 class Controller_Data:
@@ -34,11 +34,9 @@ class Controller_Data:
         self.logger              = self.settings.get_logger()
         self.keybindings         = self.settings.get_keybindings()
 
-        self.trashman            = XDGTrash()
         self.fm_controller       = WindowController()
         self.plugins             = PluginsController(_settings)
         self.fm_controller_data  = self.fm_controller.get_state_from_file()
-        self.trashman.regenerate()
 
         self.window             = self.settings.get_main_window()
         self.window1            = self.builder.get_object("window_1")
@@ -142,6 +140,7 @@ class Controller_Data:
         state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
         state.store          = state.icon_grid.get_model()
+        state.warning_alert  = self.warning_alert
 
 
         selected_files       = state.icon_grid.get_selected_items()
@@ -155,7 +154,6 @@ class Controller_Data:
         #     state.to_cut_files   = self.format_to_uris(state.store, state.wid, state.tid, self.to_cut_files, True)
 
         event_system.emit("update_state_info_plugins", state)
-
         return state
 
 

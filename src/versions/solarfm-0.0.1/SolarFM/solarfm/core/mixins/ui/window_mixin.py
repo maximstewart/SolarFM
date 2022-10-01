@@ -88,12 +88,11 @@ class WindowMixin(TabMixin):
         formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
         formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
 
+        # NOTE: Hides empty trash and other desired buttons based on context.
         if self.trash_files_path == current_directory:
-            self.builder.get_object("restore_from_trash").show()
-            self.builder.get_object("empty_trash").show()
+            event_system.emit("show_trash_buttons")
         else:
-            self.builder.get_object("restore_from_trash").hide()
-            self.builder.get_object("empty_trash").hide()
+            event_system.emit("hide_trash_buttons")
 
         # If something selected
         self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")

@@ -208,45 +208,6 @@ class WidgetFileActionMixin:
         elif self.to_cut_files:
             self.handle_files(self.to_cut_files, "move", target)
 
-    def delete_files(self):
-        state    = self.get_current_state()
-        uris     = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
-        response = None
-
-        self.warning_alert.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
-        for uri in uris:
-            file = Gio.File.new_for_path(uri)
-
-            if not response:
-                response = self.warning_alert.run()
-                self.warning_alert.hide()
-            if response == Gtk.ResponseType.YES:
-                type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
-
-                if type == Gio.FileType.DIRECTORY:
-                    state.tab.delete_file( file.get_path() )
-                else:
-                    file.delete(cancellable=None)
-            else:
-                break
-
-
-    def trash_files(self):
-        state = self.get_current_state()
-        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
-        for uri in uris:
-            self.trashman.trash(uri, False)
-
-    def restore_trash_files(self):
-        state = self.get_current_state()
-        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
-        for uri in uris:
-            self.trashman.restore(filename=uri.split("/")[-1], verbose=False)
-
-    def empty_trash(self):
-        self.trashman.empty(verbose=False)
-
-
     def create_files(self):
         fname_field = self.builder.get_object("new_fname_field")
         self.show_new_file_menu(fname_field)
