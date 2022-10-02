@@ -72,13 +72,23 @@ class PluginsController:
 
     def load_plugin_module(self, path, folder, target):
         os.chdir(path)
-        spec   = importlib.util.spec_from_file_location(folder, target, submodule_search_locations=path)
+
+        locations = []
+        self.collect_search_locations(path, locations)
+
+        spec   = importlib.util.spec_from_file_location(folder, target, submodule_search_locations = locations)
         module = importlib.util.module_from_spec(spec)
         sys.modules[folder] = module
         spec.loader.exec_module(module)
 
         return module
 
+    def collect_search_locations(self, path, locations):
+        locations.append(path)
+        for file in os.listdir(path):
+            _path = os.path.join(path, file)
+            if os.path.isdir(_path):
+                self.collect_search_locations(_path, locations)
 
     def execute_plugin(self, module: type, plugin: PluginInfo, loading_data: []):
         plugin.reference = module.Plugin()
