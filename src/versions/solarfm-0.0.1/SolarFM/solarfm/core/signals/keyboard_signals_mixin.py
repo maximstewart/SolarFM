@@ -52,8 +52,8 @@ class KeyboardSignalsMixin:
                 return True
             except Exception:
                 # Must be plugins scope or we forgot to add method to file manager scope
-                sender, method_target = mapping.split("||")
-                self.handle_plugin_key_event(sender, method_target)
+                sender, eve_type = mapping.split("||")
+                self.handle_plugin_key_event(sender, eve_type)
         else:
             if debug:
                 print(f"on_global_key_release_controller > key > {keyname}")
@@ -76,6 +76,9 @@ class KeyboardSignalsMixin:
                             self.popup_search_files(state.wid, keyname)
                             return True
 
+
+    def handle_plugin_key_event(self, sender, eve_type):
+        event_system.emit(eve_type)
 
     def keyboard_close_tab(self):
         wid, tid  = self.fm_controller.get_active_wid_and_tid()

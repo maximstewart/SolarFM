@@ -12,6 +12,10 @@ from gi.repository import Gdk, Gio
 from .tab_mixin import TabMixin
 
 
+class WindowException(Exception):
+    ...
+
+
 class WindowMixin(TabMixin):
     """docstring for WindowMixin"""
 
@@ -46,7 +50,7 @@ class WindowMixin(TabMixin):
 
                 icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
                 icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
-            except Exception as e:
+            except WindowException as e:
                 print("\n:  The saved session might be missing window data!  :\nLocation: ~/.config/solarfm/session.json\nFix: Back it up and delete it to reset.\n")
                 print(repr(e))
         else:
@@ -107,7 +111,7 @@ class WindowMixin(TabMixin):
                                                         cancellable=None)
                     file_size = file_info.get_size()
                     combined_size += file_size
-                except Exception as e:
+                except WindowException as e:
                     if debug:
                         print(repr(e))
 
@@ -168,14 +172,13 @@ class WindowMixin(TabMixin):
             self.set_path_text(wid, tid)
             self.set_window_title()
 
-
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
                     self.grid_icon_double_click(icons_grid)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
                 self.show_context_menu()
 
-        except Exception as e:
+        except WindowException as e:
             print(repr(e))
             self.display_message(self.error_color, f"{repr(e)}")
 
@@ -204,7 +207,7 @@ class WindowMixin(TabMixin):
                 self.update_tab(tab_label, state.tab, state.store, state.wid, state.tid)
             else:
                 self.open_files()
-        except Exception as e:
+        except WindowException as e:
             traceback.print_exc()
             self.display_message(self.error_color, f"{repr(e)}")
 

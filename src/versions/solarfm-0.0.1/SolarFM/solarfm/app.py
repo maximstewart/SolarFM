@@ -10,10 +10,10 @@ from utils.settings import Settings
 from core.controller import Controller
 
 
-class App_Launch_Exception(Exception):
+class AppLaunchException(Exception):
     ...
 
-class Controller_Start_Exceptio(Exception):
+class ControllerStartExceptio(Exception):
     ...
 
 
@@ -38,7 +38,7 @@ class Application(IPCServer):
                     message = f"FILE|{args.new_tab}"
                     self.send_ipc_message(message)
 
-                raise App_Launch_Exception(f"IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/{app_name}-ipc.sock")
+                raise AppLaunchException(f"IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/{app_name}-ipc.sock")
 
 
         settings = Settings()
@@ -46,7 +46,7 @@ class Application(IPCServer):
 
         controller = Controller(args, unknownargs, settings)
         if not controller:
-            raise Controller_Start_Exceptio("Controller exited and doesn't exist...")
+            raise ControllerStartExceptio("Controller exited and doesn't exist...")
 
         # Gets the methods from the classes and sets to handler.
         # Then, builder connects to any signals it needs.
@@ -57,7 +57,7 @@ class Application(IPCServer):
             try:
                 methods = inspect.getmembers(c, predicate=inspect.ismethod)
                 handlers.update(methods)
-            except Exception as e:
+            except AppLaunchException as e:
                 print(repr(e))
 
         settings.get_builder().connect_signals(handlers)
