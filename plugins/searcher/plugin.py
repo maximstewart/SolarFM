@@ -1,14 +1,15 @@
 # Python imports
-import os, multiprocessing, threading, subprocess, inspect, time, json
-from multiprocessing import Manager, Process
+import os, threading, subprocess, inspect, time, json, base64, shlex, select, signal, pickle
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib, GObject
+from gi.repository import Gtk, GLib
 
 # Application imports
 from plugins.plugin_base import PluginBase
+
+
 
 
 # NOTE: Threads WILL NOT die with parent's destruction.
@@ -35,19 +36,21 @@ class FilePreviewWidget(Gtk.LinkButton):
 
 
 class GrepPreviewWidget(Gtk.Box):
-    def __init__(self, path, sub_keys, data):
+    def __init__(self, _path, sub_keys, data):
         super(GrepPreviewWidget, self).__init__()
         self.set_orientation(Gtk.Orientation.VERTICAL)
         self.line_color = "#e0cc64"
 
-
+        path   = base64.urlsafe_b64decode(_path.encode('utf-8')).decode('utf-8')
         _label = '/'.join( path.split("/")[-3:] )
         title  = Gtk.LinkButton.new_with_label(uri=f"file://{path}", label=_label)
 
         self.add(title)
         for key in sub_keys:
             line_num     = key
-            text         = data[key]
+            text = base64.urlsafe_b64decode(data[key].encode('utf-8')).decode('utf-8')
+
+
             box          = Gtk.Box()
             number_label = Gtk.Label()
             text_view    = Gtk.Label(label=text[:-1])
@@ -69,11 +72,7 @@ class GrepPreviewWidget(Gtk.Box):
         self.show_all()
 
 
-
-manager  = Manager()
-grep_result_set  = manager.dict()
-file_result_set  = manager.list()
-
+pause_fifo_update = False
 
 class Plugin(PluginBase):
     def __init__(self):
@@ -83,6 +82,9 @@ class Plugin(PluginBase):
         self.name              = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                            #       where self.name should not be needed for message comms
         self._GLADE_FILE       = f"{self.path}/search_dialog.glade"
+
+        self._files_fifo_file  = f"/tmp/search_files_fifo"
+        self._grep_fifo_file   = f"/tmp/grep_files_fifo"
 
         self._search_dialog    = None
         self._active_path      = None
@@ -116,113 +118,118 @@ class Plugin(PluginBase):
         self._search_dialog = self._builder.get_object("search_dialog")
         self._grep_list     = self._builder.get_object("grep_list")
         self._file_list     = self._builder.get_object("file_list")
+        self.fsearch        = self._builder.get_object("fsearch")
 
-        GObject.signal_new("update-file-ui-signal", self._search_dialog, GObject.SIGNAL_RUN_LAST, GObject.TYPE_PYOBJECT, (GObject.TYPE_PYOBJECT,))
-        self._search_dialog.connect("update-file-ui-signal", self._load_file_ui)
-        GObject.signal_new("update-grep-ui-signal", self._search_dialog, GObject.SIGNAL_RUN_LAST, GObject.TYPE_PYOBJECT, (GObject.TYPE_PYOBJECT,))
-        self._search_dialog.connect("update-grep-ui-signal", self._load_grep_ui)
+        self._event_system.subscribe("update-file-ui", self._load_file_ui)
+        self._event_system.subscribe("update-grep-ui", self._load_grep_ui)
+
+        if not os.path.exists(self._files_fifo_file):
+            os.mkfifo(self._files_fifo_file, 0o777)
+        if not os.path.exists(self._grep_fifo_file):
+            os.mkfifo(self._grep_fifo_file, 0o777)
+
+        self.run_files_fifo_thread()
+        self.run_grep_fifo_thread()
 
 
     @daemon_threaded
+    def run_files_fifo_thread(self):
+        with open(self._files_fifo_file) as fifo:
+            while True:
+                select.select([fifo],[],[fifo])
+                data = fifo.read()
+                GLib.idle_add(self._load_file_ui, data)
+
+    @daemon_threaded
+    def run_grep_fifo_thread(self):
+        with open(self._grep_fifo_file) as fifo:
+            while True:
+                select.select([fifo],[],[fifo])
+                data = fifo.read()
+                GLib.idle_add(self._load_grep_ui, data)
+
+
     def _show_grep_list_page(self, widget=None, eve=None):
-        self._event_system.emit("get_current_state
+        self._event_system.emit("get_current_state")
 
         state               = self._fm_state
         self._event_message = None
 
-        GLib.idle_add(self._process_queries, (state))
-
-    def _process_queries(self, state):
         self._active_path   = state.tab.get_current_directory()
         response            = self._search_dialog.run()
         self._search_dialog.hide()
 
 
     def _run_find_file_query(self, widget=None, eve=None):
-        if self._list_proc:
-            self._list_proc.terminate()
-            self._list_proc = None
-            time.sleep(.2)
-
-        del file_result_set[:]
-        self.clear_children(self._file_list)
+        self._stop_find_file_query()
 
         query = widget.get_text()
-        if query:
-            self._list_proc = multiprocessing.Process(self._do_list_search(self._active_path, query))
-            self._list_proc.start()
+        if not query in ("", None):
+            target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
+            # command = [f"{self.path}/search.sh", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
+            command = ["python", f"{self.path}/search.py", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
 
-    def _do_list_search(self, path, query):
-        self._file_traverse_path(path, query)
-        for target, file in file_result_set:
-            widget = FilePreviewWidget(target, file)
-            self._search_dialog.emit("update-file-ui-signal", (widget))
+            process = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
-    def _load_file_ui(self, parent=None, widget=None):
-        self._file_list.add(widget)
+    def _stop_find_file_query(self, widget=None, eve=None):
+        pause_fifo_update = True
 
-    def _file_traverse_path(self, path, query):
-        try:
-            for file in os.listdir(path):
-                target = os.path.join(path, file)
-                if os.path.isdir(target):
-                    self._file_traverse_path(target, query)
-                else:
-                    if query.lower() in file.lower():
-                        file_result_set.append([target, file])
-        except Exception as e:
-            if debug:
-                print("Couldn't traverse to path. Might be permissions related...")
+        if self._list_proc:
+            if self._list_proc.poll():
+                self._list_proc.send_signal(signal.SIGKILL)
+                while self._list_proc.poll():
+                    pass
+
+                self._list_proc = None
+            else:
+                self._list_proc = None
+
+        self.clear_children(self._file_list)
+        pause_fifo_update = False
 
 
     def _run_grep_query(self, widget=None, eve=None):
-        if self._grep_proc:
-            self._grep_proc.terminate()
-            self._grep_proc = None
-            time.sleep(.2)
-
-        grep_result_set.clear()
-        self.clear_children(self._grep_list)
+        self._stop_grep_query()
 
         query = widget.get_text()
-        if query:
-            self._grep_proc = multiprocessing.Process(self._do_grep_search(self._active_path, query))
-            self._grep_proc.start()
+        if not query in ("", None):
+            target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
+            command = ["python", f"{self.path}/search.py", "-t", "grep_search", "-d", f"{target_dir}", "-q", f"{query}"]
+            process = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
-    def _do_grep_search(self, path, query):
-        self._grep_traverse_path(path, query)
+    def _stop_grep_query(self, widget=None, eve=None):
+        pause_fifo_update = True
 
-        keys = grep_result_set.keys()
-        for key in keys:
-            sub_keys = grep_result_set[key].keys()
-            widget   = GrepPreviewWidget(key, sub_keys, grep_result_set[key])
-            self._search_dialog.emit("update-grep-ui-signal", (widget))
+        if self._grep_proc:
+            if self._grep_proc.poll():
+                self._grep_proc.send_signal(signal.SIGKILL)
+                while self._grep_proc.poll():
+                    pass
 
-    def _load_grep_ui(self, parent=None, widget=None):
-        self._grep_list.add(widget)
+                self._grep_proc = None
+            else:
+                self._grep_proc = None
 
-    def _grep_traverse_path(self, path, query):
-        try:
-            for file in os.listdir(path):
-                target = os.path.join(path, file)
-                if os.path.isdir(target):
-                    self._grep_traverse_path(target, query)
-                else:
-                    self._search_for_string(target, query)
-        except Exception as e:
-            if debug:
-                print("Couldn't traverse to path. Might be permissions related...")
+        self.clear_children(self._grep_list)
+        pause_fifo_update = False
 
-    def _search_for_string(self, file, query):
-        try:
-            with open(file, 'r') as fp:
-                for i, line in enumerate(fp):
-                    if query in line:
-                        if f"{file}" in grep_result_set.keys():
-                            grep_result_set[f"{file}"][f"{i+1}"] = line
-                        else:
-                            grep_result_set[f"{file}"] = {}
-                            grep_result_set[f"{file}"] = {f"{i+1}": line}
-        except Exception as e:
-            if debug:
-                print("Couldn't read file. Might be binary or other cause...")
+
+    def _load_file_ui(self, data):
+        if not data in ("", None) and not pause_fifo_update:
+            jdata  = json.loads( data )
+            target = jdata[0]
+            file   = jdata[1]
+
+            widget = FilePreviewWidget(target, file)
+            self._file_list.add(widget)
+
+    def _load_grep_ui(self, data):
+        if not data in ("", None) and not pause_fifo_update:
+            jdata = json.loads( data )
+            jkeys = jdata.keys()
+            for key in jkeys:
+                sub_keys    = jdata[key].keys()
+                grep_result = jdata[key]
+
+                widget = GrepPreviewWidget(key, sub_keys, grep_result)
+                self._grep_list.add(widget)

@@ -74,7 +74,7 @@
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkSearchEntry">
+                  <object class="GtkSearchEntry" id="fsearch">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="tooltip-text" translatable="yes">Query...</property>
@@ -83,6 +83,7 @@
                     <property name="primary-icon-sensitive">False</property>
                     <property name="placeholder-text" translatable="yes">Search for file...</property>
                     <signal name="search-changed" handler="_run_find_file_query" swapped="no"/>
+                    <signal name="stop-search" handler="_stop_find_file_query" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -149,6 +150,7 @@
                     <property name="primary-icon-sensitive">False</property>
                     <property name="placeholder-text" translatable="yes">Query string in file...</property>
                     <signal name="search-changed" handler="_run_grep_query" swapped="no"/>
+                    <signal name="stop-search" handler="_stop_grep_query" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
