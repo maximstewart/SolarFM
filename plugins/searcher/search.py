@@ -2,8 +2,9 @@
 
 
 # Python imports
-import os, traceback, argparse, time, json, base64
+import os, traceback, argparse, json, base64
 from setproctitle import setproctitle
+from multiprocessing.connection import Client
 
 # Lib imports
 
@@ -11,8 +12,9 @@ from setproctitle import setproctitle
 
 
 
-_files_fifo_file  = f"/tmp/search_files_fifo"
-_grep_fifo_file   = f"/tmp/grep_files_fifo"
+
+_ipc_address = f'/tmp/solarfm-search_grep-ipc.sock'
+_ipc_authkey = b'' + bytes(f'solarfm-search_grep-ipc', 'utf-8')
 
 filter = (".mkv", ".mp4", ".webm", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".wmv", ".flv") + \
             (".png", ".jpg", ".jpeg", ".gif", ".ico", ".tga", ".webp") + \
@@ -21,46 +23,49 @@ filter = (".mkv", ".mp4", ".webm", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".wm
 file_result_set = []
 
 
-def file_search(fifo, path, query):
+def send_ipc_message(message) -> None:
+    try:
+        conn = Client(address=_ipc_address, family="AF_UNIX", authkey=_ipc_authkey)
+
+        conn.send(message)
+        conn.close()
+    except ConnectionRefusedError as e:
+        print("Connection refused...")
+    except Exception as e:
+        print(repr(e))
+
+
+def file_search(path, query):
     try:
         for file in os.listdir(path):
             target = os.path.join(path, file)
             if os.path.isdir(target):
-                file_search(fifo, target, query)
+                file_search(target, query)
             else:
                 if query.lower() in file.lower():
-                    # file_result_set.append([target, file])
-                    data = json.dumps([target, file])
-                    fifo.write(data)
-                    time.sleep(0.01)
+                    data = f"SEARCH|{json.dumps([target, file])}"
+                    send_ipc_message(data)
     except Exception as e:
         print("Couldn't traverse to path. Might be permissions related...")
         traceback.print_exc()
 
 def _search_for_string(file, query):
-    try:
-        b64_file = base64.urlsafe_b64encode(file.encode('utf-8')).decode('utf-8')
-        grep_result_set = {}
+    b64_file = base64.urlsafe_b64encode(file.encode('utf-8')).decode('utf-8')
+    grep_result_set = {}
 
-        with open(file, 'r') as fp:
-            for i, line in enumerate(fp):
-                if query in line:
-                    b64_line = base64.urlsafe_b64encode(line.encode('utf-8')).decode('utf-8')
+    with open(file, 'r') as fp:
+        for i, line in enumerate(fp):
+            if query in line:
+                b64_line = base64.urlsafe_b64encode(line.encode('utf-8')).decode('utf-8')
 
-                    if f"{b64_file}" in grep_result_set.keys():
-                        grep_result_set[f"{b64_file}"][f"{i+1}"] = b64_line
-                    else:
-                        grep_result_set[f"{b64_file}"] = {}
-                        grep_result_set[f"{b64_file}"] = {f"{i+1}": b64_line}
+                if f"{b64_file}" in grep_result_set.keys():
+                    grep_result_set[f"{b64_file}"][f"{i+1}"] = b64_line
+                else:
+                    grep_result_set[f"{b64_file}"] = {}
+                    grep_result_set[f"{b64_file}"] = {f"{i+1}": b64_line}
 
-            # NOTE: Push to fifo here after loop
-        with open(_grep_fifo_file, 'w') as fifo:
-            data = json.dumps(grep_result_set)
-            fifo.write(data)
-            time.sleep(0.05)
-    except Exception as e:
-        print("Couldn't read file. Might be binary or other cause...")
-        traceback.print_exc()
+        data = f"GREP|{json.dumps(grep_result_set)}"
+        send_ipc_message(data)
 
 
 def grep_search(path, query):
@@ -78,8 +83,7 @@ def grep_search(path, query):
 
 def search(args):
     if args.type == "file_search":
-       with open(_files_fifo_file, 'w') as fifo:
-           file_search(fifo, args.dir, args.query)
+        file_search(args.dir, args.query)
 
     if args.type == "grep_search":
         grep_search(args.dir, args.query)
@@ -98,6 +102,5 @@ if __name__ == "__main__":
         # Read arguments (If any...)
         args = parser.parse_args()
         search(args)
-
     except Exception as e:
         traceback.print_exc()

@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, subprocess, inspect, time, json, base64, shlex, select, signal, pickle
+import os, threading, subprocess, inspect, time, json, base64, shlex, select, signal
 
 # Lib imports
 import gi
@@ -8,7 +8,7 @@ from gi.repository import Gtk, GLib
 
 # Application imports
 from plugins.plugin_base import PluginBase
-
+from .ipc_server import IPCServer
 
 
 
@@ -74,7 +74,7 @@ class GrepPreviewWidget(Gtk.Box):
 
 pause_fifo_update = False
 
-class Plugin(PluginBase):
+class Plugin(IPCServer, PluginBase):
     def __init__(self):
         super().__init__()
 
@@ -82,9 +82,6 @@ class Plugin(PluginBase):
         self.name              = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                            #       where self.name should not be needed for message comms
         self._GLADE_FILE       = f"{self.path}/search_dialog.glade"
-
-        self._files_fifo_file  = f"/tmp/search_files_fifo"
-        self._grep_fifo_file   = f"/tmp/grep_files_fifo"
 
         self._search_dialog    = None
         self._active_path      = None
@@ -123,30 +120,7 @@ class Plugin(PluginBase):
         self._event_system.subscribe("update-file-ui", self._load_file_ui)
         self._event_system.subscribe("update-grep-ui", self._load_grep_ui)
 
-        if not os.path.exists(self._files_fifo_file):
-            os.mkfifo(self._files_fifo_file, 0o777)
-        if not os.path.exists(self._grep_fifo_file):
-            os.mkfifo(self._grep_fifo_file, 0o777)
-
-        self.run_files_fifo_thread()
-        self.run_grep_fifo_thread()
-
-
-    @daemon_threaded
-    def run_files_fifo_thread(self):
-        with open(self._files_fifo_file) as fifo:
-            while True:
-                select.select([fifo],[],[fifo])
-                data = fifo.read()
-                GLib.idle_add(self._load_file_ui, data)
-
-    @daemon_threaded
-    def run_grep_fifo_thread(self):
-        with open(self._grep_fifo_file) as fifo:
-            while True:
-                select.select([fifo],[],[fifo])
-                data = fifo.read()
-                GLib.idle_add(self._load_grep_ui, data)
+        self.create_ipc_listener()
 
 
     def _show_grep_list_page(self, widget=None, eve=None):
@@ -166,9 +140,7 @@ class Plugin(PluginBase):
         query = widget.get_text()
         if not query in ("", None):
             target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
-            # command = [f"{self.path}/search.sh", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
             command = ["python", f"{self.path}/search.py", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
-
             process = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
     def _stop_find_file_query(self, widget=None, eve=None):
