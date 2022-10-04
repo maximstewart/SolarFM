@@ -70,4 +70,5 @@ class GrepSearchMixin:
                 grep_result = jdata[key]
 
                 widget = GrepPreviewWidget(key, sub_keys, grep_result)
-                self._grep_list.add(widget)
+                GLib.idle_add(self._grep_list.add, widget)
+                # self._grep_list.add(widget)
