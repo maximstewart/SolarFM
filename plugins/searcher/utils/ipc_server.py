@@ -57,32 +57,35 @@ class IPCServer:
     def handle_message(self, conn, start_time) -> None:
         while True:
             msg  = conn.recv()
-            data = msg
 
-            if "SEARCH|" in msg:
-                file = msg.split("SEARCH|")[1].strip()
-                if file:
-                    GLib.idle_add(self._load_file_ui, file)
+            if not self.pause_fifo_update:
+                if "SEARCH|" in msg:
+                    file = msg.split("SEARCH|")[1].strip()
+                    if file:
+                        GLib.idle_add(self._load_file_ui, file)
 
-                conn.close()
-                break
+                    conn.close()
+                    break
 
-            if "GREP|" in msg:
-                data = msg.split("GREP|")[1].strip()
-                if data:
-                    GLib.idle_add(self._load_grep_ui, data)
+                if "GREP|" in msg:
+                    data = msg.split("GREP|")[1].strip()
+                    if data:
+                        GLib.idle_add(self._load_grep_ui, data)
 
-                conn.close()
-                break
+                    conn.close()
+                    break
 
 
-            if msg in ['close connection', 'close server']:
-                conn.close()
-                break
+                if msg in ['close connection', 'close server']:
+                    conn.close()
+                    break
 
-            # NOTE: Not perfect but insures we don't lock up the connection for too long.
-            end_time = time.perf_counter()
-            if (end_time - start_time) > self._ipc_timeout:
+                # NOTE: Not perfect but insures we don't lock up the connection for too long.
+                end_time = time.perf_counter()
+                if (end_time - start_time) > self._ipc_timeout:
+                    conn.close()
+                    break
+            else:
                 conn.close()
                 break
 
