@@ -23,7 +23,7 @@
         "remux_folder_max_disk_usage": "8589934592"
     },
     "filters": {
-        "code":   [".cpp", ".css", ".c", ".go", ".html", ".htm", ".java", ".js", ".json", ".lua", ".md", ".py", ".rs"],
+        "code":   [".cpp", ".css", ".c", ".go", ".html", ".htm", ".java", ".js", ".json", ".lua", ".md", ".py", ".rs", ".toml", ".xml", ".pom"],
         "videos": [".mkv", ".mp4", ".webm", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".wmv", ".flv"],
         "office": [".doc", ".docx", ".xls", ".xlsx", ".xlt", ".xltx", ".xlm", ".ppt", ".pptx", ".pps", ".ppsx", ".odt", ".rtf"],
         "images": [".png", ".jpg", ".jpeg", ".gif", ".ico", ".tga", ".webp"],

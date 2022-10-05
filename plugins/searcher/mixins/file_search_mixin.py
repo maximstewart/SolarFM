@@ -29,6 +29,7 @@ class FileSearchMixin:
     def _handle_find_file_query(self, widget=None, eve=None, query=None):
         # NOTE: Freeze IPC consumption
         self.pause_fifo_update = True
+        self.search_query      = ""
 
         # NOTE: Kill the former process
         if self._list_proc:
@@ -41,15 +42,13 @@ class FileSearchMixin:
             else:
                 self._list_proc = None
 
+        # NOTE: Clear children from ui and make sure ui thread redraws
         GLib.idle_add(self.clear_children, self._file_list)
         while len(self._file_list.get_children()) > 0:
-            ...
-
-        # NOTE: Make sure ui thread redraws
-        time.sleep(0.5)
-        self.pause_fifo_update = False
+            time.sleep(0.2)
 
         # NOTE: If query create new process and do all new loop.
+        self.pause_fifo_update = False
         if query:
             GLib.idle_add(self._exec_find_file_query, query)
 
@@ -57,12 +56,16 @@ class FileSearchMixin:
         query = widget.get_text()
 
         if not query in ("", None):
+            self.search_query = query
             target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
             command = ["python", f"{self.path}/utils/search.py", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
             self._list_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
     def _load_file_ui(self, data):
-        if not data in ("", None) and not self.pause_fifo_update:
+        if self.pause_fifo_update:
+            return
+
+        if not data in ("", None):
             jdata  = json.loads( data )
             target = jdata[0]
             file   = jdata[1]

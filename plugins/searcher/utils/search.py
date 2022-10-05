@@ -33,15 +33,11 @@ def daemon_threaded(fn):
 
 
 def send_ipc_message(message) -> None:
-    try:
-        conn = Client(address=_ipc_address, family="AF_UNIX", authkey=_ipc_authkey)
-
+    with Client(address=_ipc_address, family="AF_UNIX", authkey=_ipc_authkey) as conn:
         conn.send(message)
         conn.close()
-    except ConnectionRefusedError as e:
-        print("Connection refused...")
-    except Exception as e:
-        print(repr(e))
+
+    time.sleep(0.05)
 
 
 def file_search(path, query):

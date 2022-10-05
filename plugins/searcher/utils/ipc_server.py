@@ -48,47 +48,32 @@ class IPCServer:
 
         self.is_ipc_alive = True
         while True:
-            conn       = listener.accept()
-            start_time = time.perf_counter()
-            self.handle_message(conn, start_time)
+            conn = listener.accept()
+
+            if not self.pause_fifo_update:
+                self.handle_message(conn)
+            else:
+                conn.close()
 
         listener.close()
 
-    def handle_message(self, conn, start_time) -> None:
+    def handle_message(self, conn) -> None:
         while True:
             msg  = conn.recv()
 
-            if not self.pause_fifo_update:
-                if "SEARCH|" in msg:
-                    file = msg.split("SEARCH|")[1].strip()
-                    if file:
-                        GLib.idle_add(self._load_file_ui, file)
+            if "SEARCH|" in msg:
+                file = msg.split("SEARCH|")[1].strip()
+                if file:
+                    GLib.idle_add(self._load_file_ui, file)
 
-                    conn.close()
-                    break
-
-                if "GREP|" in msg:
-                    data = msg.split("GREP|")[1].strip()
-                    if data:
-                        GLib.idle_add(self._load_grep_ui, data)
-
-                    conn.close()
-                    break
+            if "GREP|" in msg:
+                data = msg.split("GREP|")[1].strip()
+                if data:
+                    GLib.idle_add(self._load_grep_ui, data)
 
 
-                if msg in ['close connection', 'close server']:
-                    conn.close()
-                    break
-
-                # NOTE: Not perfect but insures we don't lock up the connection for too long.
-                end_time = time.perf_counter()
-                if (end_time - start_time) > self._ipc_timeout:
-                    conn.close()
-                    break
-            else:
-                conn.close()
-                break
-
+            conn.close()
+            break
 
     def send_ipc_message(self, message: str = "Empty Data...") -> None:
         try:

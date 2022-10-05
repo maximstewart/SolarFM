@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, inspect
+import os, threading, inspect, time
 
 # Lib imports
 import gi
@@ -46,6 +46,8 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self._list_proc        = None
         self.pause_fifo_update = False
         self.update_list_ui_buffer = ()
+        self.grep_query        = ""
+        self.search_query      = ""
 
 
     def get_ui_element(self):
@@ -95,3 +97,4 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         ''' Clear children of a gtk widget. '''
         for child in widget.get_children():
             widget.remove(child)
+            time.sleep(0.01)
