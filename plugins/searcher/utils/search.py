@@ -2,7 +2,7 @@
 
 
 # Python imports
-import os, traceback, argparse, threading, json, base64, time
+import os, traceback, argparse, threading, json, base64, time, pickle
 from setproctitle import setproctitle
 from multiprocessing.connection import Client
 
@@ -37,19 +37,18 @@ def send_ipc_message(message) -> None:
         conn.send(message)
         conn.close()
 
-    time.sleep(0.05)
+    # NOTE: Kinda important as this prevents overloading the UI thread
+    time.sleep(0.04)
 
 
 def file_search(path, query):
     try:
-        for file in os.listdir(path):
-            target = os.path.join(path, file)
-            if os.path.isdir(target):
-                file_search(target, query)
-            else:
-                if query in file.lower():
-                    data = f"SEARCH|{json.dumps([target, file])}"
-                    send_ipc_message(data)
+        for _path, _dir, _files in os.walk(path, topdown = True):
+             for file in _files:
+                 if query in file.lower():
+                     target = os.path.join(_path, file)
+                     data = f"SEARCH|{json.dumps([target, file])}"
+                     send_ipc_message(data)
     except Exception as e:
         print("Couldn't traverse to path. Might be permissions related...")
         traceback.print_exc()
@@ -59,8 +58,9 @@ def _search_for_string(file, query):
     grep_result_set = {}
     padding = 15
     with open(file, 'r') as fp:
-        # NOTE: I know there's an issue if there's a very large file with content all on one line will lower and dupe it.
-        #       And, yes, it will only return one instance from the file.
+        # NOTE: I know there's an issue if there's a very large file with content
+        #       all on one line will lower and dupe it. And, yes, it will only
+        #       return one instance from the file.
         for i, raw in enumerate(fp):
             line   = None
             llower = raw.lower()
@@ -87,10 +87,10 @@ def _search_for_string(file, query):
         data = f"GREP|{json.dumps(grep_result_set)}"
         send_ipc_message(data)
 
+
 @daemon_threaded
 def _search_for_string_threaded(file, query):
     _search_for_string(file, query)
-
 
 def grep_search(path, query):
     try:
@@ -101,7 +101,7 @@ def grep_search(path, query):
             else:
                 if target.lower().endswith(filter):
                     size = os.path.getsize(target)
-                    if size < 5000:
+                    if not size > 5000:
                         _search_for_string(target, query)
                     else:
                         _search_for_string_threaded(target, query)

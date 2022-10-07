@@ -40,6 +40,8 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
 
         self._search_dialog    = None
         self._active_path      = None
+        self.file_list_parent  = None
+        self.grep_list_parent  = None
         self._file_list        = None
         self._grep_list        = None
         self._grep_proc        = None
@@ -72,9 +74,10 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self._builder.connect_signals(handlers)
 
         self._search_dialog = self._builder.get_object("search_dialog")
-        self._grep_list     = self._builder.get_object("grep_list")
-        self._file_list     = self._builder.get_object("file_list")
         self.fsearch        = self._builder.get_object("fsearch")
+
+        self.grep_list_parent = self._builder.get_object("grep_list_parent")
+        self.file_list_parent = self._builder.get_object("file_list_parent")
 
         self._event_system.subscribe("update-file-ui", self._load_file_ui)
         self._event_system.subscribe("update-grep-ui", self._load_grep_ui)
@@ -92,9 +95,29 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         response            = self._search_dialog.run()
         self._search_dialog.hide()
 
+    # TODO: Merge the below methods into some unified logic
+    def reset_grep_box(self) -> None:
+        try:
+            child = self.grep_list_parent.get_children()[0]
+            self._grep_list = None
+            self.grep_list_parent.remove(child)
+        except Exception:
+            ...
 
-    def clear_children(self, widget: type) -> None:
-        ''' Clear children of a gtk widget. '''
-        for child in widget.get_children():
-            widget.remove(child)
-            time.sleep(0.01)
+        self._grep_list = Gtk.Box()
+        self._grep_list.set_orientation(Gtk.Orientation.VERTICAL)
+        self.grep_list_parent.add(self._grep_list)
+        self.grep_list_parent.show_all()
+
+    def reset_file_list_box(self) -> None:
+        try:
+            child = self.file_list_parent.get_children()[0]
+            self._file_list = None
+            self.file_list_parent.remove(child)
+        except Exception:
+            ...
+
+        self._file_list = Gtk.Box()
+        self._file_list.set_orientation(Gtk.Orientation.VERTICAL)
+        self.file_list_parent.add(self._file_list)
+        self.file_list_parent.show_all()
