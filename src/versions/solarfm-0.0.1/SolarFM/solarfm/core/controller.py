@@ -128,8 +128,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             self.copy_files()
         if action == "paste":
             self.paste_files()
-        if action == "archive":
-            self.show_archiver_dialogue()
         if action == "create":
             self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:

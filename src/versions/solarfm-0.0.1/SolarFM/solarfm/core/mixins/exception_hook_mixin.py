@@ -51,8 +51,3 @@ class ExceptionHookMixin:
                 f.write(text)
 
         save_location_prompt.destroy()
-
-
-    def set_arc_buffer_text(self, widget=None, eve=None):
-        sid = widget.get_active_id()
-        self.arc_command_buffer.set_text(self.arc_commands[int(sid)])

@@ -64,32 +64,6 @@ class Controller_Data:
         self.trash_info_path         = f"{GLib.get_user_data_dir()}/Trash/info"
         self.icon_theme              = settings.get_icon_theme()
 
-        # In compress commands:
-        #    %n: First selected filename/dir to archive
-        #    %N: All selected filenames/dirs to archive, or (with %O) a single filename
-        #    %o: Resulting single archive file
-        #    %O: Resulting archive per source file/directory (use changes %N meaning)
-        #
-        #  In extract commands:
-        #    %x: Archive file to extract
-        #    %g: Unique extraction target filename with optional subfolder
-        #    %G: Unique extraction target filename, never with subfolder
-        #
-        #  In list commands:
-        #      %x: Archive to list
-        #
-        #  Plus standard bash variables are accepted.
-        self.arc_commands            = [ '$(which 7za || echo 7zr) a %o %N',
-                                                                'zip -r %o %N',
-                                                                'rar a -r %o %N',
-                                                                'tar -cvf %o %N',
-                                                                'tar -cvjf %o %N',
-                                                                'tar -cvzf %o %N',
-                                                                'tar -cvJf %o %N',
-                                                                'gzip -c %N > %O',
-                                                                'xz -cz %N > %O'
-                                        ]
-
         self.notebooks          = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files     = []
         self.to_copy_files      = []

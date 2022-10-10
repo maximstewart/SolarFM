@@ -143,19 +143,6 @@ class WidgetFileActionMixin:
             command = f"{shlex.quote(path)}" if not in_terminal else f"{state.tab.terminal_app} -e {shlex.quote(path)}"
             state.tab.execute(shlex.split(command), start_dir=state.tab.get_current_directory())
 
-    def archive_files(self, archiver_dialogue):
-        state       = self.get_current_state()
-        paths       = [shlex.quote(p) for p in self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)]
-
-        save_target = archiver_dialogue.get_filename();
-        sItr, eItr  = self.arc_command_buffer.get_bounds()
-        pre_command = self.arc_command_buffer.get_text(sItr, eItr, False)
-        pre_command = pre_command.replace("%o", shlex.quote(save_target))
-        pre_command = pre_command.replace("%N", ' '.join(paths))
-        command     = f"{state.tab.terminal_app} -e {shlex.quote(pre_command)}"
-
-        state.tab.execute(shlex.split(command), start_dir=shlex.quote(state.tab.get_current_directory()))
-
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
         rename_input = self.builder.get_object("new_rename_fname")
