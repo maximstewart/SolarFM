@@ -44,11 +44,6 @@ class Plugin(PluginBase):
         self._file_hash             = None
 
 
-    def get_ui_element(self):
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self._show_thumbnailer_page)
-        return button
-
     def run(self):
         self._builder           = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
@@ -72,10 +67,15 @@ class Plugin(PluginBase):
         self._thumbnail_preview_img = self._builder.get_object("thumbnail_preview_img")
         self._file_hash             = self._builder.get_object("file_hash")
 
+    def generate_reference_ui_element(self):
+        button = Gtk.Button(label=self.name)
+        button.connect("button-release-event", self._show_thumbnailer_page)
+        return button
+
 
     @threaded
     def _show_thumbnailer_page(self, widget=None, eve=None):
-        self._event_system.emit("get_current_state
+        self._event_system.emit("get_current_state")
 
         state               = self._fm_state
         self._event_message = None

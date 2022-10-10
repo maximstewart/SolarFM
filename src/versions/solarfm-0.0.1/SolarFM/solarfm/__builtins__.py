@@ -6,7 +6,7 @@ import builtins, threading
 # Application imports
 from utils.event_system import EventSystem
 from utils.endpoint_registry import EndpointRegistry
-
+from utils.settings import Settings
 
 
 
@@ -28,11 +28,11 @@ def daemon_threaded_wrapper(fn):
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
 builtins.app_name          = "SolarFM"
+builtins.settings          = Settings()
+builtins.logger            = settings.get_logger()
 builtins.event_system      = EventSystem()
 builtins.endpoint_registry = EndpointRegistry()
+
 builtins.threaded          = threaded_wrapper
 builtins.daemon_threaded   = daemon_threaded_wrapper
 builtins.event_sleep_time  = 0.05
-builtins.trace_debug       = False
-builtins.debug             = False
-builtins.app_settings      = None

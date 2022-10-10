@@ -41,11 +41,6 @@ class Plugin(PluginBase):
         self._selected          = None
 
 
-    def get_ui_element(self):
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self._show_favorites_menu)
-        return button
-
     def run(self):
         self._builder          = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
@@ -76,9 +71,14 @@ class Plugin(PluginBase):
                 f.write('[]')
 
 
+    def generate_reference_ui_element(self):
+        button = Gtk.Button(label=self.name)
+        button.connect("button-release-event", self._show_favorites_menu)
+        return button
+
     @threaded
     def _get_state(self, widget=None, eve=None):
-        self._event_system.emit("get_current_state
+        self._event_system.emit("get_current_state")
 
 
     @threaded

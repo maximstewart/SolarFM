@@ -40,8 +40,8 @@ class WidgetFileActionMixin:
         if tab.get_dir_watcher():
             watcher = tab.get_dir_watcher()
             watcher.cancel()
-            if debug:
-                self.logger.debug(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
+            if settings.is_debug():
+                logger.debug(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
 
         cur_dir = tab.get_current_directory()
 
@@ -59,8 +59,8 @@ class WidgetFileActionMixin:
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
                         Gio.FileMonitorEvent.MOVED_OUT]:
-            if debug:
-                self.logger.debug(eve_type)
+            if settings.is_debug():
+                logger.debug(eve_type)
 
             if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
                 self.update_on_soft_lock_end(data[0])
@@ -389,11 +389,11 @@ class WidgetFileActionMixin:
         target    = Gio.File.new_for_path(full_path)
         start     = "-copy"
 
-        if debug:
-            self.logger.debug(f"Path:  {full_path}")
-            self.logger.debug(f"Base Path:  {base_path}")
-            self.logger.debug(f'Name:  {file_name}')
-            self.logger.debug(f"Extension:  {extension}")
+        if settings.is_debug():
+            logger.debug(f"Path:  {full_path}")
+            logger.debug(f"Base Path:  {base_path}")
+            logger.debug(f'Name:  {file_name}')
+            logger.debug(f"Extension:  {extension}")
 
         i = 2
         while target.query_exists():

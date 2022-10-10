@@ -1,11 +1,9 @@
 # Python imports
-import os, threading, time, pickle
+import os, threading, pickle
 from multiprocessing.connection import Listener, Client
 
 # Lib imports
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import GLib
 
 # Application imports
 
@@ -64,12 +62,12 @@ class IPCServer:
             if "SEARCH|" in msg:
                 file = msg.split("SEARCH|")[1].strip()
                 if file:
-                    GLib.idle_add(self._load_file_ui, file)
+                    GLib.idle_add(self._load_file_ui, file, priority=GLib.PRIORITY_LOW)
 
             if "GREP|" in msg:
                 data = msg.split("GREP|")[1].strip()
                 if data:
-                    GLib.idle_add(self._load_grep_ui, data)
+                    GLib.idle_add(self._load_grep_ui, data, priority=GLib.PRIORITY_LOW)
 
 
             conn.close()

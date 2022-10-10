@@ -16,8 +16,9 @@ from multiprocessing.connection import Client
 _ipc_address = f'/tmp/solarfm-search_grep-ipc.sock'
 _ipc_authkey = b'' + bytes(f'solarfm-search_grep-ipc', 'utf-8')
 
-filter = (".cpp", ".css", ".c", ".go", ".html", ".htm", ".java", ".js", ".json", ".lua", ".md", ".py", ".rs", ".toml", ".xml", ".pom") + \
-            (".txt", ".text", ".sh", ".cfg", ".conf", ".log")
+filter = (".mkv", ".mp4", ".webm", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".wmv", ".flv") + \
+        (".png", ".jpg", ".jpeg", ".gif", ".ico", ".tga", ".webp") + \
+        (".psf", ".mp3", ".ogg", ".flac", ".m4a")
 
 # NOTE: Threads WILL NOT die with parent's destruction.
 def threaded(fn):
@@ -33,12 +34,12 @@ def daemon_threaded(fn):
 
 
 def send_ipc_message(message) -> None:
-    with Client(address=_ipc_address, family="AF_UNIX", authkey=_ipc_authkey) as conn:
-        conn.send(message)
-        conn.close()
+    conn = Client(address=_ipc_address, family="AF_UNIX", authkey=_ipc_authkey)
+    conn.send(message)
+    conn.close()
 
     # NOTE: Kinda important as this prevents overloading the UI thread
-    time.sleep(0.04)
+    time.sleep(0.05)
 
 
 def file_search(path, query):
@@ -57,35 +58,44 @@ def _search_for_string(file, query):
     b64_file = base64.urlsafe_b64encode(file.encode('utf-8')).decode('utf-8')
     grep_result_set = {}
     padding = 15
+
     with open(file, 'r') as fp:
         # NOTE: I know there's an issue if there's a very large file with content
         #       all on one line will lower and dupe it. And, yes, it will only
         #       return one instance from the file.
-        for i, raw in enumerate(fp):
-            line   = None
-            llower = raw.lower()
-            if not query in llower:
-                continue
+        try:
+            for i, raw in enumerate(fp):
+                line   = None
+                llower = raw.lower()
+                if not query in llower:
+                    continue
 
-            if len(raw) > 72:
-                start  = 0
-                end    = len(raw) - 1
-                index  = llower.index(query)
-                sindex = llower.index(query) - 15 if index >= 15 else abs(start - index) - index
-                eindex = sindex + 15 if end > (index + 15) else abs(index - end) + index
-                line   = raw[sindex:eindex]
-            else:
-                line = raw
+                if len(raw) > 72:
+                    start  = 0
+                    end    = len(raw) - 1
+                    index  = llower.index(query)
+                    sindex = llower.index(query) - 15 if index >= 15 else abs(start - index) - index
+                    eindex = sindex + 15 if end > (index + 15) else abs(index - end) + index
+                    line   = raw[sindex:eindex]
+                else:
+                    line = raw
 
-            b64_line = base64.urlsafe_b64encode(line.encode('utf-8')).decode('utf-8')
-            if f"{b64_file}" in grep_result_set.keys():
-                grep_result_set[f"{b64_file}"][f"{i+1}"] = b64_line
-            else:
-                grep_result_set[f"{b64_file}"] = {}
-                grep_result_set[f"{b64_file}"] = {f"{i+1}": b64_line}
+                b64_line = base64.urlsafe_b64encode(line.encode('utf-8')).decode('utf-8')
+                if f"{b64_file}" in grep_result_set.keys():
+                    grep_result_set[f"{b64_file}"][f"{i+1}"] = b64_line
+                else:
+                    grep_result_set[f"{b64_file}"] = {}
+                    grep_result_set[f"{b64_file}"] = {f"{i+1}": b64_line}
 
-        data = f"GREP|{json.dumps(grep_result_set)}"
-        send_ipc_message(data)
+        except Exception as e:
+            ...
+
+        try:
+            data = f"GREP|{json.dumps(grep_result_set)}"
+            send_ipc_message(data)
+        except Exception as e:
+            ...
+
 
 
 @daemon_threaded
@@ -99,7 +109,7 @@ def grep_search(path, query):
             if os.path.isdir(target):
                 grep_search(target, query)
             else:
-                if target.lower().endswith(filter):
+                if not target.lower().endswith(filter):
                     size = os.path.getsize(target)
                     if not size > 5000:
                         _search_for_string(target, query)

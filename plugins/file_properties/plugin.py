@@ -83,11 +83,6 @@ class Plugin(PluginBase):
         }
 
 
-    def get_ui_element(self):
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self._show_properties_page)
-        return button
-
     def run(self):
         self._builder           = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
@@ -103,11 +98,15 @@ class Plugin(PluginBase):
         self._file_owner    = self._builder.get_object("file_owner")
         self._file_group    = self._builder.get_object("file_group")
 
+    def generate_reference_ui_element(self):
+        button = Gtk.Button(label=self.name)
+        button.connect("button-release-event", self._show_properties_page)
+        return button
 
 
     @threaded
     def _show_properties_page(self, widget=None, eve=None):
-        event_system.emit("get_current_state
+        event_system.emit("get_current_state")
 
         state               = self._fm_state
         self._event_message = None

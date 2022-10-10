@@ -18,18 +18,18 @@ from .controller_data import Controller_Data
 
 class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMixin, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
-    def __init__(self, args, unknownargs, _settings):
-        self.setup_controller_data(_settings)
+    def __init__(self, args, unknownargs):
+        self.setup_controller_data()
         self.window.show()
 
         self.generate_windows(self.fm_controller_data)
         self.plugins.launch_plugins()
 
-        if debug:
+        if settings.is_debug():
             self.window.set_interactive_debugging(True)
 
-
-        if not trace_debug:
+        # NOTE: Open files if passed in from cli and not trace debugging...
+        if not settings.is_trace_debug():
             self._subscribe_to_events()
 
             if unknownargs:
@@ -51,7 +51,9 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         event_system.subscribe("do_hide_context_menu", self.do_hide_context_menu)
 
     def tear_down(self, widget=None, eve=None):
-        self.fm_controller.save_state()
+        if not settings.is_trace_debug():
+            self.fm_controller.save_state()
+
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 
@@ -62,7 +64,9 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         save_load_dialog  = self.builder.get_object("save_load_dialog")
 
         if action == "save_session":
-            self.fm_controller.save_state()
+            if not settings.is_trace_debug():
+                self.fm_controller.save_state()
+
             return
         elif action == "save_session_as":
             save_load_dialog.set_action(Gtk.FileChooserAction.SAVE)
@@ -88,8 +92,8 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         save_load_dialog.hide()
 
     def load_session(self, session_json):
-        if debug:
-            self.logger.debug(f"Session Data: {session_json}")
+        if settings.is_debug():
+            logger.debug(f"Session Data: {session_json}")
 
         self.ctrl_down  = False
         self.shift_down = False

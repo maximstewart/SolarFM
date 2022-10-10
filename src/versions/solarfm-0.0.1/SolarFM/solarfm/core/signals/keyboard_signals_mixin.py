@@ -55,7 +55,7 @@ class KeyboardSignalsMixin:
                 sender, eve_type = mapping.split("||")
                 self.handle_plugin_key_event(sender, eve_type)
         else:
-            if debug:
+            if settings.is_debug():
                 print(f"on_global_key_release_controller > key > {keyname}")
 
             if self.ctrl_down:
@@ -91,5 +91,6 @@ class KeyboardSignalsMixin:
 
         self.get_fm_window(wid).delete_tab_by_id(tid)
         notebook.remove_page(page)
-        self.fm_controller.save_state()
+        if not trace_debug:
+            self.fm_controller.save_state()
         self.set_window_title()

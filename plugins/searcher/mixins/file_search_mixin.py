@@ -1,8 +1,10 @@
 # Python imports
-import threading, subprocess, signal, time, json, shlex
+import threading, subprocess, signal, json, shlex
 
 # Lib imports
-from gi.repository import GLib
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib
 
 # Application imports
 from ..widgets.file_preview_widget import FilePreviewWidget
@@ -61,6 +63,8 @@ class FileSearchMixin:
             self._list_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
     def _load_file_ui(self, data):
+        Gtk.main_iteration()
+
         if not data in ("", None):
             jdata  = json.loads( data )
             target = jdata[0]

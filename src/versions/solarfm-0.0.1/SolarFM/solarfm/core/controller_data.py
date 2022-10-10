@@ -28,17 +28,15 @@ class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
     __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
-    def setup_controller_data(self, _settings: type) -> None:
-        self.settings            = _settings
-        self.builder             = self.settings.get_builder()
-        self.logger              = self.settings.get_logger()
-        self.keybindings         = self.settings.get_keybindings()
+    def setup_controller_data(self) -> None:
+        self.builder             = settings.get_builder()
+        self.keybindings         = settings.get_keybindings()
 
         self.fm_controller       = WindowController()
-        self.plugins             = PluginsController(_settings)
+        self.plugins             = PluginsController()
         self.fm_controller_data  = self.fm_controller.get_state_from_file()
 
-        self.window             = self.settings.get_main_window()
+        self.window             = settings.get_main_window()
         self.window1            = self.builder.get_object("window_1")
         self.window2            = self.builder.get_object("window_2")
         self.window3            = self.builder.get_object("window_3")
@@ -64,7 +62,7 @@ class Controller_Data:
 
         self.trash_files_path        = f"{GLib.get_user_data_dir()}/Trash/files"
         self.trash_info_path         = f"{GLib.get_user_data_dir()}/Trash/info"
-        self.icon_theme              = self.settings.get_icon_theme()
+        self.icon_theme              = settings.get_icon_theme()
 
         # In compress commands:
         #    %n: First selected filename/dir to archive
@@ -116,9 +114,9 @@ class Controller_Data:
         self.shift_down         = False
         self.alt_down           = False
 
-        self.success_color      = self.settings.get_success_color()
-        self.warning_color      = self.settings.get_warning_color()
-        self.error_color        = self.settings.get_error_color()
+        self.success_color      = settings.get_success_color()
+        self.warning_color      = settings.get_warning_color()
+        self.error_color        = settings.get_error_color()
 
         # sys.excepthook = self.custom_except_hook
         self.window.connect("delete-event", self.tear_down)

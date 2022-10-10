@@ -20,14 +20,13 @@ class InvalidPluginException(Exception):
 class PluginsController:
     """PluginsController controller"""
 
-    def __init__(self, settings: type):
+    def __init__(self):
         path                      = os.path.dirname(os.path.realpath(__file__))
         sys.path.insert(0, path)  # NOTE: I think I'm not using this correctly...
 
-        self._settings            = settings
-        self._builder             = self._settings.get_builder()
-        self._plugins_path        = self._settings.get_plugins_path()
-        self._keybindings         = self._settings.get_keybindings()
+        self._builder             = settings.get_builder()
+        self._plugins_path        = settings.get_plugins_path()
+        self._keybindings         = settings.get_keybindings()
 
         self._plugins_dir_watcher = None
         self._plugin_collection   = []
@@ -95,7 +94,7 @@ class PluginsController:
         keys             = loading_data.keys()
 
         if "ui_target" in keys:
-            loading_data["ui_target"].add( plugin.reference.get_ui_element() )
+            loading_data["ui_target"].add( plugin.reference.generate_reference_ui_element() )
             loading_data["ui_target"].show_all()
 
         if "pass_ui_objects" in keys:

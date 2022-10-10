@@ -22,7 +22,7 @@ class TabMixin(GridMixin):
         notebook    = self.builder.get_object(f"window_{wid}")
         path_entry  = self.builder.get_object(f"path_entry")
         tab         = self.fm_controller.add_tab_for_window_by_nickname(f"window_{wid}")
-        tab.logger  = self.logger
+        tab.logger  = logger
 
         tab.set_wid(wid)
         if not path:
@@ -63,7 +63,8 @@ class TabMixin(GridMixin):
         watcher.cancel()
         self.get_fm_window(wid).delete_tab_by_id(tid)
         notebook.remove_page(page)
-        self.fm_controller.save_state()
+        if not settings.is_trace_debug():
+            self.fm_controller.save_state()
         self.set_window_title()
 
     def on_tab_reorder(self, child, page_num, new_index):
@@ -80,7 +81,8 @@ class TabMixin(GridMixin):
 
         tab = window.get_tab_by_id(tid)
         self.set_file_watcher(tab)
-        self.fm_controller.save_state()
+        if not settings.is_trace_debug():
+            self.fm_controller.save_state()
 
     def on_tab_switch_update(self, notebook, content=None, index=None):
         self.selected_files.clear()
@@ -115,7 +117,8 @@ class TabMixin(GridMixin):
         tab_label.set_label(tab.get_end_of_path())
         self.set_window_title()
         self.set_file_watcher(tab)
-        self.fm_controller.save_state()
+        if not settings.is_trace_debug():
+            self.fm_controller.save_state()
 
     def do_action_from_bar_controls(self, widget, eve=None):
         action    = widget.get_name()
@@ -127,7 +130,9 @@ class TabMixin(GridMixin):
         if action == "create_tab":
             dir = tab.get_current_directory()
             self.create_tab(wid, None, dir)
-            self.fm_controller.save_state()
+            if not settings.is_trace_debug():
+                self.fm_controller.save_state()
+
             return
         if action == "go_up":
             tab.pop_from_path()

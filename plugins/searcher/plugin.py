@@ -52,11 +52,6 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self.search_query      = ""
 
 
-    def get_ui_element(self):
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self._show_page)
-        return button
-
     def run(self):
         self._builder          = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
@@ -84,6 +79,11 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
 
         self.create_ipc_listener()
 
+    def generate_reference_ui_element(self):
+        button = Gtk.Button(label=self.name)
+        button.connect("button-release-event", self._show_page)
+        return button
+
 
     def _show_page(self, widget=None, eve=None):
         self._event_system.emit("get_current_state")
@@ -109,6 +109,8 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self.grep_list_parent.add(self._grep_list)
         self.grep_list_parent.show_all()
 
+        Gtk.main_iteration()
+
     def reset_file_list_box(self) -> None:
         try:
             child = self.file_list_parent.get_children()[0]
@@ -121,3 +123,5 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self._file_list.set_orientation(Gtk.Orientation.VERTICAL)
         self.file_list_parent.add(self._file_list)
         self.file_list_parent.show_all()
+
+        Gtk.main_iteration()

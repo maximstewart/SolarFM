@@ -158,17 +158,15 @@ class WindowController:
                     tabs.append(tab.get_current_directory())
 
                 windows.append(
-                    [
-                        {
-                            'window':{
-                                "ID": window.get_id(),
-                                "Name": window.get_name(),
-                                "Nickname": window.get_nickname(),
-                                "isHidden": f"{window.is_hidden()}",
-                                'tabs': tabs
-                            }
+                    {
+                        'window':{
+                            "ID": window.get_id(),
+                            "Name": window.get_name(),
+                            "Nickname": window.get_nickname(),
+                            "isHidden": f"{window.is_hidden()}",
+                            'tabs': tabs
                         }
-                    ]
+                    }
                 )
 
             with open(session_file, 'w') as outfile:

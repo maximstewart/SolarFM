@@ -24,8 +24,8 @@ class WindowMixin(TabMixin):
             for j, value in enumerate(session_json):
                 i = j + 1
                 notebook_tggl_button = self.builder.get_object(f"tggl_notebook_{i}")
-                is_hidden = True if value[0]["window"]["isHidden"] == "True" else False
-                tabs      = value[0]["window"]["tabs"]
+                is_hidden = True if value["window"]["isHidden"] == "True" else False
+                tabs      = value["window"]["tabs"]
                 self.fm_controller.create_window()
                 notebook_tggl_button.set_active(True)
 
@@ -112,7 +112,7 @@ class WindowMixin(TabMixin):
                     file_size = file_info.get_size()
                     combined_size += file_size
                 except WindowException as e:
-                    if debug:
+                    if settings.is_debug():
                         print(repr(e))
 
 

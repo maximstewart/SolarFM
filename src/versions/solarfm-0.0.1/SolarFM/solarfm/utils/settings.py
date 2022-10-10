@@ -63,6 +63,9 @@ class Settings:
         self._builder        = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
+        self._trace_debug   = False
+        self._debug         = False
+
 
     def create_window(self) -> None:
         # Get window and connect signals
@@ -111,3 +114,13 @@ class Settings:
     def get_success_color(self) -> str: return self._success_color
     def get_warning_color(self) -> str: return self._warning_color
     def get_error_color(self)   -> str: return self._error_color
+
+    def is_trace_debug(self)    -> str: return self._trace_debug
+    def is_debug(self)          -> str: return self._debug
+
+
+    def set_trace_debug(self, trace_debug):
+        self._trace_debug = trace_debug
+
+    def set_debug(self, debug):
+        self._debug = debug

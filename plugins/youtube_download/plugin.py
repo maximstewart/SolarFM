@@ -33,8 +33,7 @@ class Plugin(PluginBase):
         self.name              = "Youtube Download"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                                      #       where self.name should not be needed for message comms
 
-
-    def get_ui_element(self):
+    def generate_reference_ui_element(self):
         button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self._do_download)
         return button
@@ -44,7 +43,7 @@ class Plugin(PluginBase):
 
 
     def _do_download(self, widget=None, eve=None):
-        self._event_system.emit("get_current_state
+        self._event_system.emit("get_current_state")
 
         dir = self._fm_state.tab.get_current_directory()
         self._download(dir)

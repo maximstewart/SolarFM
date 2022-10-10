@@ -61,7 +61,7 @@ class GridMixin:
             self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
-        if save_state:
+        if save_state and not trace_debug:
             self.fm_controller.save_state()
 
     @threaded

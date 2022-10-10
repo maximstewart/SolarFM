@@ -39,7 +39,14 @@ class Plugin(PluginBase):
 
         self.trashman.regenerate()
 
-    def get_ui_element(self):
+
+    def run(self):
+        self._event_system.subscribe("show_trash_buttons", self._show_trash_buttons)
+        self._event_system.subscribe("hide_trash_buttons", self._hide_trash_buttons)
+        self._event_system.subscribe("delete_files", self.delete_files)
+        self._event_system.subscribe("trash_files", self.trash_files)
+
+    def generate_reference_ui_element(self):
         self._builder           = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -61,10 +68,6 @@ class Plugin(PluginBase):
         return trasher
 
 
-    def run(self):
-        self._event_system.subscribe("show_trash_buttons", self._show_trash_buttons)
-        self._event_system.subscribe("hide_trash_buttons", self._hide_trash_buttons)
-
     def _show_trash_buttons(self):
         self._builder.get_object("restore_from_trash").show()
         self._builder.get_object("empty_trash").show()
@@ -74,6 +77,7 @@ class Plugin(PluginBase):
         self._builder.get_object("empty_trash").hide()
 
     def delete_files(self, widget = None, eve = None):
+        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("get_current_state")
         state    = self._fm_state
         uris     = state.selected_files
@@ -97,19 +101,23 @@ class Plugin(PluginBase):
                 break
 
     def trash_files(self, widget = None, eve = None, verbocity = False):
+        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("get_current_state")
         state = self._fm_state
         for uri in state.selected_files:
             self.trashman.trash(uri, verbocity)
 
     def restore_trash_files(self, widget = None, eve = None, verbocity = False):
+        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("get_current_state")
         state = self._fm_state
         for uri in state.selected_files:
             self.trashman.restore(filename=uri.split("/")[-1], verbose = verbocity)
 
     def empty_trash(self, widget = None, eve = None, verbocity = False):
+        self._event_system.emit("do_hide_context_menu")
         self.trashman.empty(verbose = verbocity)
 
     def go_to_trash(self, widget = None, eve = None, verbocity = False):
+        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("go_to_path", self.trash_files_path)

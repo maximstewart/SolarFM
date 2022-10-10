@@ -33,7 +33,7 @@ class Plugin(PluginBase):
                                                     #       where self.name should not be needed for message comms
 
 
-    def get_ui_element(self):
+    def generate_reference_ui_element(self):
         button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self.send_message)
         return button

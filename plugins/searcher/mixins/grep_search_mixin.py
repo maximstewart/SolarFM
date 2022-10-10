@@ -1,8 +1,10 @@
 # Python imports
-import threading, subprocess, signal, time, json, shlex
+import threading, subprocess, signal, json, shlex
 
 # Lib imports
-from gi.repository import GLib
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib
 
 # Application imports
 from ..widgets.grep_preview_widget import GrepPreviewWidget
@@ -53,7 +55,7 @@ class GrepSearchMixin:
 
     def _exec_grep_query(self, widget=None, eve=None):
         query = widget.get_text()
-        if not query in ("", None):
+        if not query.strip() in ("", None):
             self.grep_query = query
 
             target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
@@ -61,6 +63,8 @@ class GrepSearchMixin:
             self._grep_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
     def _load_grep_ui(self, data):
+        Gtk.main_iteration()
+
         if not data in ("", None):
             jdata = json.loads( data )
             jkeys = jdata.keys()

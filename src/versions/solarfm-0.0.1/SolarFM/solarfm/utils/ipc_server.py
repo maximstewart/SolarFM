@@ -59,7 +59,7 @@ class IPCServer:
     def handle_message(self, conn, start_time) -> None:
         while True:
             msg = conn.recv()
-            if debug:
+            if settings.is_debug():
                 print(msg)
 
             if "FILE|" in msg:

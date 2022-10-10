@@ -322,10 +322,8 @@ def getIconPath(iconname, size = None, theme = None, extensions = ["png", "svg",
                     icon_cache[tmp] = [time.time(), icon]
                     return icon
             except UnicodeDecodeError as e:
-                if debug:
-                    raise e
-                else:
-                    pass
+                ...
+
 
     # we haven't found anything? "hicolor" is our fallback
     if theme != "hicolor":

@@ -4,7 +4,7 @@ import os, inspect, time
 # Lib imports
 
 # Application imports
-from __builtins__ import *
+
 from utils.ipc_server import IPCServer
 from utils.settings import Settings
 from core.controller import Controller
@@ -22,8 +22,14 @@ class Application(IPCServer):
 
     def __init__(self, args, unknownargs):
         super(Application, self).__init__()
+        if args.debug == "true":
+            settings.set_debug(True)
 
-        if not trace_debug:
+        if args.trace_debug == "true":
+            settings.set_trace_debug(True)
+
+        # NOTE: Instance found, sending files to it...
+        if not settings.is_trace_debug():
             self.create_ipc_listener()
             time.sleep(0.05)
 
@@ -41,10 +47,9 @@ class Application(IPCServer):
                 raise AppLaunchException(f"IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/{app_name}-ipc.sock")
 
 
-        settings = Settings()
         settings.create_window()
 
-        controller = Controller(args, unknownargs, settings)
+        controller = Controller(args, unknownargs)
         if not controller:
             raise ControllerStartExceptio("Controller exited and doesn't exist...")
 
