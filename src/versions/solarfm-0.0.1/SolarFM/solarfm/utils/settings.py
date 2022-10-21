@@ -31,6 +31,7 @@ class Settings:
         self._KEY_BINDINGS  = f"{self._CONFIG_PATH}/key-bindings.json"
         self._DEFAULT_ICONS = f"{self._CONFIG_PATH}/icons"
         self._WINDOW_ICON   = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
+        self._PID_FILE      = f"{self._CONFIG_PATH}/solarfm.pid"
         self._ICON_THEME    = Gtk.IconTheme.get_default()
 
         if not os.path.exists(self._CONFIG_PATH):
@@ -65,6 +66,44 @@ class Settings:
 
         self._trace_debug   = False
         self._debug         = False
+        self._dirty_start   = False
+
+        self._check_for_dirty_state()
+
+
+    def _check_for_dirty_state(self):
+        if not os.path.exists(self._PID_FILE):
+            self._write_new_pid()
+        else:
+            with open(self._PID_FILE, "r") as _pid:
+                pid = _pid.readline().strip()
+                if pid not in ("", None):
+                    self._check_alive_status(int(pid))
+                else:
+                    self._write_new_pid()
+
+    """ Check For the existence of a unix pid. """
+    def _check_alive_status(self, pid):
+        print(f"PID Found: {pid}")
+        try:
+            os.kill(pid, 0)
+        except OSError:
+            print("SolarFM Is starting dirty...")
+            self._dirty_start = True
+            self._write_new_pid()
+
+        print("PID is alive... Let downstream errors handle app closure.")
+
+    def _write_new_pid(self):
+        pid = os.getpid()
+        self._write_pid(pid)
+
+    def _clean_pid(self):
+        os.unlink(self._PID_FILE)
+
+    def _write_pid(self, pid):
+        with open(self._PID_FILE, "w") as _pid:
+            _pid.write(f"{pid}")
 
 
     def create_window(self) -> None:
@@ -104,6 +143,7 @@ class Settings:
 
         return monitors
 
+
     def get_main_window(self)   -> Gtk.ApplicationWindow: return self._main_window
     def get_builder(self)       -> Gtk.Builder:  return self._builder
     def get_logger(self)        -> Logger:       return self._logger
@@ -117,6 +157,8 @@ class Settings:
 
     def is_trace_debug(self)    -> str: return self._trace_debug
     def is_debug(self)          -> str: return self._debug
+    def is_dirty_start(self)    -> bool: return self._dirty_start
+    def clear_pid(self): self._clean_pid()
 
 
     def set_trace_debug(self, trace_debug):

@@ -68,8 +68,13 @@ class Plugin(PluginBase):
         self._file_hash             = self._builder.get_object("file_hash")
 
     def generate_reference_ui_element(self):
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(f"{self.path}/../../icons/video.png", 16, 16, True)
+        icon   = Gtk.Image.new_from_pixbuf(pixbuf)
         button = Gtk.Button(label=self.name)
+
+        button.set_image(icon)
         button.connect("button-release-event", self._show_thumbnailer_page)
+
         return button
 
 

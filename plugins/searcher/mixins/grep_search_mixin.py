@@ -1,5 +1,6 @@
 # Python imports
-import threading, subprocess, signal, json, shlex
+import ctypes, threading, subprocess, signal, json, shlex
+libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 
 # Lib imports
 import gi
@@ -49,8 +50,8 @@ class GrepSearchMixin:
         GLib.idle_add(self.reset_grep_box)
 
         # NOTE: If query create new process and do all new loop.
-        self.pause_fifo_update = False
         if query:
+            self.pause_fifo_update = False
             GLib.idle_add(self._exec_grep_query, query)
 
     def _exec_grep_query(self, widget=None, eve=None):

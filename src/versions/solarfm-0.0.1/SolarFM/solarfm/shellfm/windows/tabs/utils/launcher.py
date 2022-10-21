@@ -1,5 +1,5 @@
 # System import
-import os, threading, subprocess, shlex
+import os, threading, subprocess
 
 # Lib imports
 

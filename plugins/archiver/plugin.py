@@ -81,8 +81,12 @@ class Plugin(PluginBase):
         self._archiver_dialogue  = self._builder.get_object("archiver_dialogue")
         self._arc_command_buffer = self._builder.get_object("arc_command_buffer")
 
+        icon   = Gtk.Image(stock=Gtk.STOCK_FLOPPY)
         button = Gtk.Button(label=self.name)
+
+        button.set_image(icon)
         button.connect("button-release-event", self.show_archiver_dialogue)
+
         return button
 
     def run(self):

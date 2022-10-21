@@ -16,9 +16,9 @@ from multiprocessing.connection import Client
 _ipc_address = f'/tmp/solarfm-search_grep-ipc.sock'
 _ipc_authkey = b'' + bytes(f'solarfm-search_grep-ipc', 'utf-8')
 
-filter = (".mkv", ".mp4", ".webm", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".wmv", ".flv") + \
-        (".png", ".jpg", ".jpeg", ".gif", ".ico", ".tga", ".webp") + \
-        (".psf", ".mp3", ".ogg", ".flac", ".m4a")
+filter = (".cpp", ".css", ".c", ".go", ".html", ".htm", ".java", ".js", ".json", ".lua", ".md", ".py", ".rs", ".toml", ".xml", ".pom") + \
+            (".txt", ".text", ".sh", ".cfg", ".conf", ".log")
+
 
 # NOTE: Threads WILL NOT die with parent's destruction.
 def threaded(fn):
@@ -59,7 +59,7 @@ def _search_for_string(file, query):
     grep_result_set = {}
     padding = 15
 
-    with open(file, 'r') as fp:
+    with open(file, 'rb') as fp:
         # NOTE: I know there's an issue if there's a very large file with content
         #       all on one line will lower and dupe it. And, yes, it will only
         #       return one instance from the file.
@@ -80,7 +80,7 @@ def _search_for_string(file, query):
                 else:
                     line = raw
 
-                b64_line = base64.urlsafe_b64encode(line.encode('utf-8')).decode('utf-8')
+                b64_line = base64.urlsafe_b64encode(line).decode('utf-8')
                 if f"{b64_file}" in grep_result_set.keys():
                     grep_result_set[f"{b64_file}"][f"{i+1}"] = b64_line
                 else:
@@ -109,7 +109,7 @@ def grep_search(path, query):
             if os.path.isdir(target):
                 grep_search(target, query)
             else:
-                if not target.lower().endswith(filter):
+                if target.lower().endswith(filter):
                     size = os.path.getsize(target)
                     if not size > 5000:
                         _search_for_string(target, query)
@@ -125,7 +125,7 @@ def search(args):
         file_search(args.dir, args.query.lower())
 
     if args.type == "grep_search":
-        grep_search(args.dir, args.query.lower())
+        grep_search(args.dir, args.query.lower().encode("utf-8"))
 
 
 if __name__ == "__main__":

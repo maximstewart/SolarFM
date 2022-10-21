@@ -80,8 +80,12 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self.create_ipc_listener()
 
     def generate_reference_ui_element(self):
+        icon   = Gtk.Image(stock=Gtk.STOCK_FIND)
         button = Gtk.Button(label=self.name)
+
         button.connect("button-release-event", self._show_page)
+        button.set_image(icon)
+
         return button
 
 

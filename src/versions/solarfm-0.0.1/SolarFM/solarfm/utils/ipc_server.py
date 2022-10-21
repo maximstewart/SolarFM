@@ -38,8 +38,8 @@ class IPCServer:
     @daemon_threaded
     def create_ipc_listener(self) -> None:
         if self._conn_type == "socket":
-            if os.path.exists(self._ipc_address):
-                return
+            if os.path.exists(self._ipc_address) and settings.is_dirty_start():
+                os.unlink(self._ipc_address)
 
             listener = Listener(address=self._ipc_address, family="AF_UNIX", authkey=self._ipc_authkey)
         elif "unsecured" not in self._conn_type:

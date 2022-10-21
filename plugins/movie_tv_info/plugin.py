@@ -70,8 +70,12 @@ class Plugin(PluginBase):
         self._trailer_link          = self._builder.get_object("trailer_link")
 
     def generate_reference_ui_element(self):
+        icon   = Gtk.Image(stock=Gtk.STOCK_FIND)
         button = Gtk.Button(label=self.name)
+
         button.connect("button-release-event", self._show_info_page)
+        button.set_image(icon)
+
         return button
 
     @threaded

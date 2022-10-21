@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 # Python imports
 import argparse, faulthandler, traceback
 from setproctitle import setproctitle

@@ -50,13 +50,8 @@ class DesktopIconMixin:
             return None
 
     def traverse_icons_folder(self, path, icon):
-        alt_icon_path = ""
-
         for (dirpath, dirnames, filenames) in os.walk(path):
             for file in filenames:
                 appNM = "application-x-" + icon
                 if icon in file or appNM in file:
-                    alt_icon_path = dirpath + "/" + file
-                    break
-
-        return alt_icon_path
+                    return f"{dirpath}/{file}"

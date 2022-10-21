@@ -54,6 +54,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         if not settings.is_trace_debug():
             self.fm_controller.save_state()
 
+        settings.clear_pid()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
 

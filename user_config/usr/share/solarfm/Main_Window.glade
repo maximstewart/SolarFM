@@ -740,23 +740,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                         <property name="position">4</property>
                       </packing>
                     </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="label" translatable="yes">Archive</property>
-                        <property name="name">archive</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">True</property>
-                        <property name="tooltip-text" translatable="yes">Archive...</property>
-                        <property name="always-show-image">True</property>
-                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
                   </object>
                 </child>
                 <child type="label">
@@ -1072,17 +1055,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                           <object class="GtkImageMenuItem">
                             <property name="label">gtk-paste</property>
                             <property name="name">paste</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-delete</property>
-                            <property name="name">delete</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="use-underline">True</property>

@@ -49,8 +49,8 @@ class FileSearchMixin:
         GLib.idle_add(self.reset_file_list_box)
 
         # NOTE: If query create new process and do all new loop.
-        self.pause_fifo_update = False
         if query:
+            self.pause_fifo_update = False
             GLib.idle_add(self._exec_find_file_query, query)
 
     def _exec_find_file_query(self, widget=None, eve=None):
