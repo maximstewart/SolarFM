@@ -31,7 +31,7 @@ class Settings:
         self._KEY_BINDINGS  = f"{self._CONFIG_PATH}/key-bindings.json"
         self._DEFAULT_ICONS = f"{self._CONFIG_PATH}/icons"
         self._WINDOW_ICON   = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
-        self._PID_FILE      = f"{self._CONFIG_PATH}/solarfm.pid"
+        self._PID_FILE      = f"{self._CONFIG_PATH}/{app_name.lower()}.pid"
         self._ICON_THEME    = Gtk.IconTheme.get_default()
 
         if not os.path.exists(self._CONFIG_PATH):
@@ -68,10 +68,8 @@ class Settings:
         self._debug         = False
         self._dirty_start   = False
 
-        self._check_for_dirty_state()
 
-
-    def _check_for_dirty_state(self):
+    def do_dirty_start_check(self):
         if not os.path.exists(self._PID_FILE):
             self._write_new_pid()
         else:
@@ -88,11 +86,12 @@ class Settings:
         try:
             os.kill(pid, 0)
         except OSError:
-            print("SolarFM Is starting dirty...")
+            print(f"{app_name} is starting dirty...")
             self._dirty_start = True
             self._write_new_pid()
+            return
 
-        print("PID is alive... Let downstream errors handle app closure.")
+        print("PID is alive... Let downstream errors (sans debug args) handle app closure propigation.")
 
     def _write_new_pid(self):
         pid = os.getpid()

@@ -31,11 +31,10 @@ class IPCServer:
 
         self._subscribe_to_events()
 
+
     def _subscribe_to_events(self):
         event_system.subscribe("post_file_to_ipc", self.send_ipc_message)
 
-
-    @daemon_threaded
     def create_ipc_listener(self) -> None:
         if self._conn_type == "socket":
             if os.path.exists(self._ipc_address) and settings.is_dirty_start():
@@ -49,14 +48,18 @@ class IPCServer:
 
 
         self.is_ipc_alive = True
+        self._run_ipc_loop(listener)
+
+    @daemon_threaded
+    def _run_ipc_loop(self, listener) -> None:
         while True:
             conn       = listener.accept()
             start_time = time.perf_counter()
-            self.handle_message(conn, start_time)
+            self._handle_ipc_message(conn, start_time)
 
         listener.close()
 
-    def handle_message(self, conn, start_time) -> None:
+    def _handle_ipc_message(self, conn, start_time) -> None:
         while True:
             msg = conn.recv()
             if settings.is_debug():

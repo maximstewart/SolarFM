@@ -19,27 +19,14 @@ from .controller_data import Controller_Data
 class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMixin, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
     def __init__(self, args, unknownargs):
+        self._subscribe_to_events()
         self.setup_controller_data()
-        self.window.show()
-
         self.generate_windows(self.fm_controller_data)
         self.plugins.launch_plugins()
 
-        if settings.is_debug():
-            self.window.set_interactive_debugging(True)
-
-        # NOTE: Open files if passed in from cli and not trace debugging...
-        if not settings.is_trace_debug():
-            self._subscribe_to_events()
-
-            if unknownargs:
-                for arg in unknownargs:
-                    if os.path.isdir(arg):
-                        message = f"FILE|{arg}"
-                        event_system.emit("post_file_to_ipc", message)
-
-            if args.new_tab and os.path.isdir(args.new_tab):
-                message = f"FILE|{args.new_tab}"
+        for arg in unknownargs + [args.new_tab,]:
+            if os.path.isdir(arg):
+                message = f"FILE|{arg}"
                 event_system.emit("post_file_to_ipc", message)
 
 
@@ -88,7 +75,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
                 session_json = self.fm_controller.get_state_from_file(path)
                 self.load_session(session_json)
         if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
-            pass
+            ...
 
         save_load_dialog.hide()
 
@@ -133,7 +120,6 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
-
 
 
 

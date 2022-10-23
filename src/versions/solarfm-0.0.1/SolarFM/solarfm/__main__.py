@@ -35,6 +35,13 @@ if __name__ == "__main__":
         # Read arguments (If any...)
         args, unknownargs = parser.parse_known_args()
 
+        if args.debug == "true":
+            settings.set_debug(True)
+
+        if args.trace_debug == "true":
+            settings.set_trace_debug(True)
+
+        settings.do_dirty_start_check()
         Application(args, unknownargs)
         Gtk.main()
     except Exception as e:

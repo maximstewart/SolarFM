@@ -96,6 +96,10 @@ class Controller_Data:
         self.window.connect("delete-event", self.tear_down)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
 
+        self.window.show()
+        if settings.is_debug():
+            self.window.set_interactive_debugging(True)
+
 
     def get_current_state(self) -> State:
         '''
