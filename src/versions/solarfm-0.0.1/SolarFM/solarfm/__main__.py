@@ -22,7 +22,7 @@ if __name__ == "__main__":
     """ Set process title, get arguments, and create GTK main thread. """
 
     try:
-        setproctitle('SolarFM')
+        setproctitle(f"{app_name}")
         faulthandler.enable()  # For better debug info
 
         parser = argparse.ArgumentParser()

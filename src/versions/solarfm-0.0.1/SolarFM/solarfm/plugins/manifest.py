@@ -56,7 +56,8 @@ class ManifestProcessor:
             if requests["ui_target"] in  [
                                             "none", "other", "main_Window", "main_menu_bar",
                                             "main_menu_bttn_box_bar", "path_menu_bar", "plugin_control_list",
-                                            "context_menu", "window_1", "window_2", "window_3", "window_4"
+                                            "context_menu", "context_menu_plugins", "window_1",
+                                            "window_2", "window_3", "window_4"
                                         ]:
                 if requests["ui_target"] == "other":
                     if "ui_target_id" in keys:

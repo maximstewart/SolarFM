@@ -80,13 +80,11 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self.create_ipc_listener()
 
     def generate_reference_ui_element(self):
-        icon   = Gtk.Image(stock=Gtk.STOCK_FIND)
-        button = Gtk.Button(label=self.name)
-
-        button.connect("button-release-event", self._show_page)
-        button.set_image(icon)
-
-        return button
+        item = Gtk.ImageMenuItem(self.name)
+        item.set_image( Gtk.Image(stock=Gtk.STOCK_FIND) )
+        item.connect("activate", self._show_page)
+        item.set_always_show_image(True)
+        return item
 
 
     def _show_page(self, widget=None, eve=None):
@@ -113,6 +111,7 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self.grep_list_parent.add(self._grep_list)
         self.grep_list_parent.show_all()
 
+        time.sleep(0.05)
         Gtk.main_iteration()
 
     def reset_file_list_box(self) -> None:
@@ -128,4 +127,5 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self.file_list_parent.add(self._file_list)
         self.file_list_parent.show_all()
 
+        time.sleep(0.05)
         Gtk.main_iteration()

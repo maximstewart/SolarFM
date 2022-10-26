@@ -47,34 +47,49 @@ class Plugin(PluginBase):
         self._event_system.subscribe("trash_files", self.trash_files)
 
     def generate_reference_ui_element(self):
-        self._builder           = Gtk.Builder()
-        self._builder.add_from_file(self._GLADE_FILE)
+        trash_a = Gtk.MenuItem("Trash Actions")
+        trash_menu = Gtk.Menu()
 
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
+        self.restore = Gtk.MenuItem("Restore From Trash")
+        self.restore.connect("activate", self.restore_trash_files)
 
-        self._builder.connect_signals(handlers)
+        self.empty = Gtk.MenuItem("Empty Trash")
+        self.empty.connect("activate", self.empty_trash)
 
-        trasher = self._builder.get_object("trasher")
-        trasher.show_all()
+        trash = Gtk.ImageMenuItem("Trash")
+        trash.set_image( Gtk.Image.new_from_icon_name("user-trash", 16) )
+        trash.connect("activate", self.trash_files)
+        trash.set_always_show_image(True)
 
-        return trasher
+        go_to = Gtk.ImageMenuItem("Go To Trash")
+        go_to.set_image( Gtk.Image.new_from_icon_name("user-trash", 16) )
+        go_to.connect("activate", self.go_to_trash)
+        go_to.set_always_show_image(True)
+
+        delete = Gtk.ImageMenuItem("Delete")
+        delete.set_image( Gtk.Image(stock=Gtk.STOCK_DELETE) )
+        delete.connect("activate", self.delete_files)
+        delete.set_always_show_image(True)
+
+        trash_a.set_submenu(trash_menu)
+        trash_a.show_all()
+        self._appen_menu_items(trash_menu, [self.restore, self.empty, trash, go_to, delete])
+
+        return trash_a
+
+
+    def _appen_menu_items(self, menu, items):
+        for item in items:
+            menu.append(item)
 
 
     def _show_trash_buttons(self):
-        self._builder.get_object("restore_from_trash").show()
-        self._builder.get_object("empty_trash").show()
+        self.restore.show()
+        self.empty.show()
 
     def _hide_trash_buttons(self):
-        self._builder.get_object("restore_from_trash").hide()
-        self._builder.get_object("empty_trash").hide()
+        self.restore.hide()
+        self.empty.hide()
 
     def delete_files(self, widget = None, eve = None):
         self._event_system.emit("do_hide_context_menu")

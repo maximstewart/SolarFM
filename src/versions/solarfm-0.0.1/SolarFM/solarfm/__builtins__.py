@@ -24,7 +24,6 @@ def daemon_threaded_wrapper(fn):
 
 
 
-
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
 builtins.app_name          = "SolarFM"

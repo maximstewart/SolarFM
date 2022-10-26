@@ -99,13 +99,11 @@ class Plugin(PluginBase):
         self._file_group    = self._builder.get_object("file_group")
 
     def generate_reference_ui_element(self):
-        icon   = Gtk.Image(stock=Gtk.STOCK_PROPERTIES )
-        button = Gtk.Button(label=self.name)
-
-        button.connect("button-release-event", self._show_properties_page)
-        button.set_image(icon)
-
-        return button
+        item = Gtk.ImageMenuItem(self.name)
+        item.set_image( Gtk.Image(stock=Gtk.STOCK_PROPERTIES) )
+        item.connect("activate", self._show_properties_page)
+        item.set_always_show_image(True)
+        return item
 
 
     @threaded

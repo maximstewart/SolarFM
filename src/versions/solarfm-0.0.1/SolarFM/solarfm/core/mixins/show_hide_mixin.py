@@ -83,10 +83,10 @@ class ShowHideMixin:
         self.builder.get_object("plugin_controls").hide()
 
     def show_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu_popup").run()
+        self.builder.get_object("context_menu").popup_at_pointer(None)
 
     def hide_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu_popup").hide()
+        self.builder.get_object("context_menu").popdown()
 
     def show_new_file_menu(self, widget=None, eve=None):
         if widget:
