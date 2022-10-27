@@ -70,7 +70,8 @@ class Plugin(PluginBase):
     def generate_reference_ui_element(self):
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(f"{self.path}/../../icons/video.png", 16, 16, True)
         icon   = Gtk.Image.new_from_pixbuf(pixbuf)
-        item   = Gtk.ImageMenuItem("Delete")
+        item   = Gtk.ImageMenuItem(self.name)
+
         item.set_image( icon )
         item.connect("activate", self._show_thumbnailer_page)
         item.set_always_show_image(True)

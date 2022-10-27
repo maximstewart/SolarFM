@@ -12,7 +12,7 @@ from .mixins.ui_mixin import UIMixin
 from .signals.ipc_signals_mixin import IPCSignalsMixin
 from .signals.keyboard_signals_mixin import KeyboardSignalsMixin
 from .controller_data import Controller_Data
-
+from .context_menu import ContextMenu
 
 
 
@@ -22,6 +22,10 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         self._subscribe_to_events()
         self.setup_controller_data()
         self.generate_windows(self.fm_controller_data)
+
+        cm = ContextMenu()
+        cm.build_context_menu()
+
         self.plugins.launch_plugins()
 
         for arg in unknownargs + [args.new_tab,]:
@@ -36,6 +40,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         event_system.subscribe("display_message", self.display_message)
         event_system.subscribe("go_to_path", self.go_to_path)
         event_system.subscribe("do_hide_context_menu", self.do_hide_context_menu)
+        event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
 
     def tear_down(self, widget=None, eve=None):
         if not settings.is_trace_debug():
@@ -95,7 +100,11 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
 
 
     def do_action_from_menu_controls(self, widget, eve = None):
-        action = widget.get_name()
+        if not isinstance(widget, str):
+            action = widget.get_name()
+        else:
+            action = widget
+
         self.hide_context_menu()
         self.hide_new_file_menu()
         self.hide_edit_file_menu()

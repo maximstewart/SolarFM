@@ -31,6 +31,7 @@ class Settings:
         self._KEY_BINDINGS  = f"{self._CONFIG_PATH}/key-bindings.json"
         self._DEFAULT_ICONS = f"{self._CONFIG_PATH}/icons"
         self._WINDOW_ICON   = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
+        self._CONTEXT_MENU  = f"{self._CONFIG_PATH}/contexct_menu.json"
         self._PID_FILE      = f"{self._CONFIG_PATH}/{app_name.lower()}.pid"
         self._ICON_THEME    = Gtk.IconTheme.get_default()
 
@@ -41,6 +42,8 @@ class Settings:
 
         if not os.path.exists(self._GLADE_FILE):
             self._GLADE_FILE    = f"{self._USR_SOLARFM}/Main_Window.glade"
+        if not os.path.exists(self._CONTEXT_MENU):
+            self._CONTEXT_MENU    = f"{self._USR_SOLARFM}/contexct_menu.json"
         if not os.path.exists(self._KEY_BINDINGS):
             self._KEY_BINDINGS  = f"{self._USR_SOLARFM}/key-bindings.json"
         if not os.path.exists(self._CSS_FILE):
@@ -58,6 +61,9 @@ class Settings:
         with open(self._KEY_BINDINGS) as file:
             keybindings = json.load(file)["keybindings"]
             self._keybindings.configure(keybindings)
+
+        with open(self._CONTEXT_MENU) as file:
+            self._context_menu_data = json.load(file)
 
         self._main_window    = None
         self._logger         = Logger(self._CONFIG_PATH, _fh_log_lvl=20).get_logger()
@@ -143,6 +149,7 @@ class Settings:
         return monitors
 
 
+    def get_context_menu_data(self) -> Gtk.Builder:  return self._context_menu_data
     def get_main_window(self)   -> Gtk.ApplicationWindow: return self._main_window
     def get_builder(self)       -> Gtk.Builder:  return self._builder
     def get_logger(self)        -> Logger:       return self._logger
