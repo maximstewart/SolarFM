@@ -1073,6 +1073,21 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <child type="tab">
                       <placeholder/>
                     </child>
+                    <child type="action-end">
+                      <object class="GtkSearchEntry" id="win1_search_field">
+                        <property name="name">window_1</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="primary-icon-name">edit-find-symbolic</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="primary-icon-sensitive">False</property>
+                        <property name="placeholder-text" translatable="yes">Search...</property>
+                        <signal name="changed" handler="do_file_search" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="tab-fill">False</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="resize">False</property>
@@ -1110,6 +1125,21 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     </child>
                     <child type="tab">
                       <placeholder/>
+                    </child>
+                    <child type="action-end">
+                      <object class="GtkSearchEntry" id="win2_search_field">
+                        <property name="name">window_2</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="primary-icon-name">edit-find-symbolic</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="primary-icon-sensitive">False</property>
+                        <property name="placeholder-text" translatable="yes">Search...</property>
+                        <signal name="changed" handler="do_file_search" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="tab-fill">False</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -1163,6 +1193,21 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <child type="tab">
                       <placeholder/>
                     </child>
+                    <child type="action-end">
+                      <object class="GtkSearchEntry" id="win3_search_field">
+                        <property name="name">window_3</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="primary-icon-name">edit-find-symbolic</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="primary-icon-sensitive">False</property>
+                        <property name="placeholder-text" translatable="yes">Search...</property>
+                        <signal name="changed" handler="do_file_search" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="tab-fill">False</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="resize">False</property>
@@ -1199,6 +1244,21 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     </child>
                     <child type="tab">
                       <placeholder/>
+                    </child>
+                    <child type="action-end">
+                      <object class="GtkSearchEntry" id="win4_search_field">
+                        <property name="name">window_4</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="primary-icon-name">edit-find-symbolic</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="primary-icon-sensitive">False</property>
+                        <property name="placeholder-text" translatable="yes">Search...</property>
+                        <signal name="changed" handler="do_file_search" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="tab-fill">False</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -2044,92 +2104,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkPopover" id="win1_search">
-    <property name="can-focus">False</property>
-    <property name="margin-start">5</property>
-    <property name="margin-end">5</property>
-    <property name="margin-top">5</property>
-    <property name="margin-bottom">5</property>
-    <property name="relative-to">window_1</property>
-    <property name="position">bottom</property>
-    <property name="constrain-to">none</property>
-    <signal name="closed" handler="stop_file_searching" swapped="no"/>
-    <child>
-      <object class="GtkEntry" id="win1_search_field">
-        <property name="width-request">52</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <signal name="changed" handler="do_file_search" swapped="no"/>
-      </object>
-    </child>
-    <style>
-      <class name="search-border"/>
-    </style>
-  </object>
-  <object class="GtkPopover" id="win2_search">
-    <property name="can-focus">False</property>
-    <property name="margin-start">5</property>
-    <property name="margin-end">5</property>
-    <property name="margin-top">5</property>
-    <property name="margin-bottom">5</property>
-    <property name="relative-to">window_2</property>
-    <property name="position">bottom</property>
-    <property name="constrain-to">none</property>
-    <signal name="closed" handler="stop_file_searching" swapped="no"/>
-    <child>
-      <object class="GtkEntry" id="win2_search_field">
-        <property name="width-request">96</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <signal name="changed" handler="do_file_search" swapped="no"/>
-      </object>
-    </child>
-    <style>
-      <class name="search-border"/>
-    </style>
-  </object>
-  <object class="GtkPopover" id="win3_search">
-    <property name="can-focus">False</property>
-    <property name="margin-start">5</property>
-    <property name="margin-end">5</property>
-    <property name="margin-top">5</property>
-    <property name="margin-bottom">5</property>
-    <property name="relative-to">window_3</property>
-    <property name="constrain-to">none</property>
-    <signal name="closed" handler="stop_file_searching" swapped="no"/>
-    <child>
-      <object class="GtkEntry" id="win3_search_field">
-        <property name="width-request">96</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <signal name="changed" handler="do_file_search" swapped="no"/>
-      </object>
-    </child>
-    <style>
-      <class name="search-border"/>
-    </style>
-  </object>
-  <object class="GtkPopover" id="win4_search">
-    <property name="can-focus">False</property>
-    <property name="margin-start">5</property>
-    <property name="margin-end">5</property>
-    <property name="margin-top">5</property>
-    <property name="margin-bottom">5</property>
-    <property name="relative-to">window_4</property>
-    <property name="constrain-to">none</property>
-    <signal name="closed" handler="stop_file_searching" swapped="no"/>
-    <child>
-      <object class="GtkEntry" id="win4_search_field">
-        <property name="width-request">96</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <signal name="changed" handler="do_file_search" swapped="no"/>
-      </object>
-    </child>
-    <style>
-      <class name="search-border"/>
-    </style>
   </object>
   <object class="GtkMessageDialog" id="warning_alert">
     <property name="can-focus">False</property>

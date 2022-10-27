@@ -30,7 +30,7 @@ class Plugin(PluginBase):
         super().__init__()
 
         self.name               = "Favorites"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
-                                                      #       where self.name should not be needed for message comms
+                                                #       where self.name should not be needed for message comms
         self.path               = os.path.dirname(os.path.realpath(__file__))
         self._GLADE_FILE        = f"{self.path}/favorites.glade"
         self._FAVORITES_FILE    = f"{self.path}/favorites.json"
@@ -69,6 +69,8 @@ class Plugin(PluginBase):
         else:
             with open(self._FAVORITES_FILE, 'a') as f:
                 f.write('[]')
+
+        self._event_system.subscribe("show_favorites_menu", self._show_favorites_menu)
 
 
     def generate_reference_ui_element(self):

@@ -7,7 +7,7 @@
         "requests": {
             "ui_target": "context_menu",
             "pass_fm_events": "true",
-            "bind_keys": ["Search||_show_grep_list_page:<Control>f"]
+            "bind_keys": ["Search||show_search_page:<Control>s"]
         }
     }
 }

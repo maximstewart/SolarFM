@@ -11,4 +11,4 @@ from .show_hide_mixin import ShowHideMixin
 
 
 class UIMixin(WidgetFileActionMixin, PaneMixin, WindowMixin, ShowHideMixin):
-    pass
+    ...

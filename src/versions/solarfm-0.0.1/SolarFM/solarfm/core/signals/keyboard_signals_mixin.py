@@ -21,7 +21,6 @@ class KeyboardSignalsMixin:
         self.ctrl_down    = False
         self.shift_down   = False
         self.alt_down     = False
-        self.is_searching = False
 
     def on_global_key_press_controller(self, eve, user_data):
         keyname = Gdk.keyval_name(user_data.keyval).lower()
@@ -61,21 +60,6 @@ class KeyboardSignalsMixin:
             if self.ctrl_down:
                 if keyname in ["1", "kp_1", "2", "kp_2", "3", "kp_3", "4", "kp_4"]:
                     self.builder.get_object(f"tggl_notebook_{keyname.strip('kp_')}").released()
-
-            if re.fullmatch(valid_keyvalue_pat, keyname):
-                if not self.is_searching and not self.ctrl_down \
-                    and not self.shift_down and not self.alt_down:
-                        focused_obj = self.window.get_focus()
-                        if isinstance(focused_obj, Gtk.IconView):
-                            self.is_searching     = True
-                            state                 = self.get_current_state()
-                            self.search_tab       = state.tab
-                            self.search_icon_grid = state.icon_grid
-
-                            self.unset_keys_and_data()
-                            self.popup_search_files(state.wid, keyname)
-                            return True
-
 
     def handle_plugin_key_event(self, sender, eve_type):
         event_system.emit(eve_type)

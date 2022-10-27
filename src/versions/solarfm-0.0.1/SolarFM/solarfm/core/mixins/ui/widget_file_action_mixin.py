@@ -102,24 +102,27 @@ class WidgetFileActionMixin:
             self.set_bottom_labels(tab)
 
 
-    def popup_search_files(self, wid, keyname):
-        entry = self.builder.get_object(f"win{wid}_search_field")
-        self.builder.get_object(f"win{wid}_search").popup()
-        entry.set_text(keyname)
-        entry.grab_focus_without_selecting()
-        entry.set_position(-1)
-
     def do_file_search(self, widget, eve=None):
-        query = widget.get_text().lower()
-        self.search_icon_grid.unselect_all()
-        for i, file in enumerate(self.search_tab.get_files()):
-            if query and query in file[0].lower():
-                path = Gtk.TreePath().new_from_indices([i])
-                self.search_icon_grid.select_path(path)
+        if not self.ctrl_down and not self.shift_down and not self.alt_down:
+            target    = widget.get_name()
+            notebook  = self.builder.get_object(target)
+            page      = notebook.get_current_page()
+            nth_page  = notebook.get_nth_page(page)
+            icon_grid = nth_page.get_children()[0]
 
-        items = self.search_icon_grid.get_selected_items()
-        if len(items) > 0:
-            self.search_icon_grid.scroll_to_path(items[-1], True, 0.5, 0.5)
+            wid, tid  = icon_grid.get_name().split("|")
+            tab       = self.get_fm_window(wid).get_tab_by_id(tid)
+            query     = widget.get_text().lower()
+
+            icon_grid.unselect_all()
+            for i, file in enumerate(tab.get_files()):
+                if query and query in file[0].lower():
+                    path = Gtk.TreePath().new_from_indices([i])
+                    icon_grid.select_path(path)
+
+            items = icon_grid.get_selected_items()
+            if len(items) == 1:
+                icon_grid.scroll_to_path(items[-1], True, 0.5, 0.5)
 
 
     def open_files(self):

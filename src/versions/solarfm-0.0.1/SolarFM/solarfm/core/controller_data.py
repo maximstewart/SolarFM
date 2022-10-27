@@ -79,9 +79,6 @@ class Controller_Data:
         self.is_pane4_hidden    = False
 
         self.override_drop_dest = None
-        self.is_searching       = False
-        self.search_icon_grid   = None
-        self.search_tab         = None
 
         self.cancel_creation    = False
         self.skip_edit          = False

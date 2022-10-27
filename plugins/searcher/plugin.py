@@ -76,6 +76,8 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
 
         self._event_system.subscribe("update-file-ui", self._load_file_ui)
         self._event_system.subscribe("update-grep-ui", self._load_grep_ui)
+        self._event_system.subscribe("show_search_page", self._show_page)
+
 
         self.create_ipc_listener()
 

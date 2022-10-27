@@ -161,9 +161,6 @@ class WindowMixin(TabMixin):
     def grid_set_selected_items(self, icons_grid):
         self.selected_files = icons_grid.get_selected_items()
 
-    def grid_cursor_toggled(self, icons_grid):
-        print("wat...")
-
     def grid_icon_single_click(self, icons_grid, eve):
         try:
             self.path_menu.popdown()
