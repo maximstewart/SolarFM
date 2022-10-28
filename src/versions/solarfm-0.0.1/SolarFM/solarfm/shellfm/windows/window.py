@@ -11,62 +11,68 @@ from .tabs.tab import Tab
 
 class Window:
     def __init__(self):
-        self._id_length = 10
-        self._id        = ""
-        self._name      = ""
-        self._nickname  = ""
-        self._isHidden  = False
-        self._tabs      = []
+        self._id_length: int  = 10
+        self._id: str         = ""
+        self._name: str       = ""
+        self._nickname:str    = ""
+        self._isHidden: bool  = False
+        self._active_tab: int = 0
+        self._tabs: list      = []
 
         self._generate_id()
         self._set_name()
 
 
-    def create_tab(self):
+    def create_tab(self) -> Tab:
         tab = Tab()
         self._tabs.append(tab)
         return tab
 
-    def pop_tab(self):
+    def pop_tab(self) -> None:
         self._tabs.pop()
 
-    def delete_tab_by_id(self, tid):
+    def delete_tab_by_id(self, tid: str):
         for tab in self._tabs:
             if tab.get_id() == tid:
                 self._tabs.remove(tab)
                 break
 
 
-    def get_tab_by_id(self, tid):
+    def get_tab_by_id(self, tid: str) -> Tab:
         for tab in self._tabs:
             if tab.get_id() == tid:
                 return tab
 
-    def get_tab_by_index(self, index):
+    def get_tab_by_index(self, index) -> Tab:
         return self._tabs[index]
 
-    def get_tabs_count(self):
+    def get_tabs_count(self) -> int:
         return len(self._tabs)
 
-    def get_all_tabs(self):
+    def get_all_tabs(self) -> list:
         return self._tabs
 
-    def get_id(self):
+    def get_id(self) -> str:
         return self._id
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self._name
 
-    def get_nickname(self):
+    def get_nickname(self) -> str:
         return self._nickname
 
-    def is_hidden(self):
+    def is_hidden(self) -> bool:
         return self._isHidden
 
-    def list_files_from_tabs(self):
+    def list_files_from_tabs(self) -> None:
         for tab in self._tabs:
             print(tab.get_files())
 
+    def set_active_tab(self, index: int):
+        self._active_tab = index
+
+    def get_active_tab(self) -> Tab:
+        return self._tabs[self._active_tab]
 
     def set_nickname(self, nickname):
         self._nickname = f"{nickname}"
