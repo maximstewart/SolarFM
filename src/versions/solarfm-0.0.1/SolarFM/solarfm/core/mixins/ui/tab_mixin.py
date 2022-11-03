@@ -35,6 +35,7 @@ class TabMixin(GridMixin):
         tab_widget    = self.create_tab_widget(tab)
         scroll, store = self.create_scroll_and_store(tab, wid)
         index         = notebook.append_page(scroll, tab_widget)
+        notebook.set_tab_detachable(scroll, True)
 
         self.fm_controller.set_wid_and_tid(wid, tab.get_id())
         path_entry.set_text(tab.get_current_directory())
@@ -66,6 +67,10 @@ class TabMixin(GridMixin):
         if not settings.is_trace_debug():
             self.fm_controller.save_state()
         self.set_window_title()
+
+    # NOTE: Not actually getting called even tho set in the glade file...
+    def on_tab_dnded(self, notebook, page, x, y):
+        ...
 
     def on_tab_reorder(self, child, page_num, new_index):
         wid, tid = page_num.get_name().split("|")

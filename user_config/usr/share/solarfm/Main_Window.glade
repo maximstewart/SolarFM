@@ -1053,6 +1053,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="margin-bottom">5</property>
                     <property name="show-border">False</property>
                     <property name="scrollable">True</property>
+                    <property name="group-name">sfm_windows</property>
+                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
                     <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
                     <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
                     <child>
@@ -1106,6 +1108,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="margin-bottom">5</property>
                     <property name="show-border">False</property>
                     <property name="scrollable">True</property>
+                    <property name="group-name">sfm_windows</property>
+                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
                     <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
                     <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
                     <child>
@@ -1173,6 +1177,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="margin-bottom">5</property>
                     <property name="show-border">False</property>
                     <property name="scrollable">True</property>
+                    <property name="group-name">sfm_windows</property>
+                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
                     <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
                     <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
                     <child>
@@ -1225,6 +1231,8 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="margin-bottom">5</property>
                     <property name="show-border">False</property>
                     <property name="scrollable">True</property>
+                    <property name="group-name">sfm_windows</property>
+                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
                     <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
                     <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
                     <child>

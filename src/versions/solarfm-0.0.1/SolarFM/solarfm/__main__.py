@@ -18,9 +18,9 @@ from __builtins__ import *
 from app import Application
 
 
-if __name__ == "__main__":
-    """ Set process title, get arguments, and create GTK main thread. """
 
+
+def run():
     try:
         setproctitle(f"{app_name}")
         faulthandler.enable()  # For better debug info
@@ -47,3 +47,8 @@ if __name__ == "__main__":
     except Exception as e:
         traceback.print_exc()
         quit()
+
+
+if __name__ == "__main__":
+    """ Set process title, get arguments, and create GTK main thread. """
+    run()
