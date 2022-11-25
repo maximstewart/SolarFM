@@ -26,7 +26,8 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         cm = ContextMenu()
         cm.build_context_menu()
 
-        self.plugins.launch_plugins()
+        if args.no_plugins == "false":
+            self.plugins.launch_plugins()
 
         for arg in unknownargs + [args.new_tab,]:
             if os.path.isdir(arg):

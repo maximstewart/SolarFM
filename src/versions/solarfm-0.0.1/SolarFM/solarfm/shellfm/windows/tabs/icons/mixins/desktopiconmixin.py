@@ -3,6 +3,11 @@ import os, subprocess, hashlib
 from os.path import isfile
 
 # Gtk imports
+import gi
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import Gtk
+from gi.repository import Gio
 
 # Application imports
 from .xdg.DesktopEntry import DesktopEntry
@@ -36,8 +41,13 @@ class DesktopIconMixin:
             elif os.path.exists(icon):
                 return self.create_scaled_image(icon, self.sys_icon_wh)
             else:
-                alt_icon_path = ""
+                gio_icon = Gio.Icon.new_for_string(icon)
+                gicon    = Gtk.Image.new_from_gicon(gio_icon, 32)
+                pixbuf   = gicon.get_pixbuf()
+                if pixbuf:
+                    return pixbuf
 
+                alt_icon_path = ""
                 for dir in self.ICON_DIRS:
                     alt_icon_path = self.traverse_icons_folder(dir, icon)
                     if alt_icon_path != "":

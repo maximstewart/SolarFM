@@ -1,0 +1,12 @@
+{
+    "manifest": {
+        "name": "Disk Usage",
+        "author": "ITDominator",
+        "version": "0.0.1",
+        "support": "",
+        "requests": {
+            "ui_target": "context_menu_plugins",
+            "pass_fm_events": "true"
+        }
+    }
+}
