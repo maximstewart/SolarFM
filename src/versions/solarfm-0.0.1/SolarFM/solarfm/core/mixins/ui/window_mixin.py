@@ -158,9 +158,6 @@ class WindowMixin(TabMixin):
         tab        = self.get_fm_window(wid).get_tab_by_id(tid)
         path_entry.set_text(tab.get_current_directory())
 
-    # NOTE: If selected multiple with box select and then reselecting the same
-    #       with box select, self.dnd_left_primed does not get deprimed if already primed.
-    #       Ctrl does help in this context but the abocve is not desired
     def grid_set_selected_items(self, icons_grid):
         items = icons_grid.get_selected_items()
         size  = len(items)
@@ -182,7 +179,11 @@ class WindowMixin(TabMixin):
 
                 return
 
-        self.selected_files = icons_grid.get_selected_items()
+        if size > 0:
+            self.selected_files = icons_grid.get_selected_items()
+        else:
+            self.dnd_left_primed = 0
+            self.selected_files.clear()
 
     def grid_icon_single_click(self, icons_grid, eve):
         try:
