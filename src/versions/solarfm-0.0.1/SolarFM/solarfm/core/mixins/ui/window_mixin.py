@@ -158,7 +158,30 @@ class WindowMixin(TabMixin):
         tab        = self.get_fm_window(wid).get_tab_by_id(tid)
         path_entry.set_text(tab.get_current_directory())
 
+    # NOTE: If selected multiple with box select and then reselecting the same
+    #       with box select, self.dnd_left_primed does not get deprimed if already primed.
+    #       Ctrl does help in this context but the abocve is not desired
     def grid_set_selected_items(self, icons_grid):
+        items = icons_grid.get_selected_items()
+        size  = len(items)
+
+        if size == 1:
+            # NOTE: If already in selection, likely dnd else not so wont readd
+            if items[0] in self.selected_files:
+                self.dnd_left_primed += 1
+                # NOTE: If in selection but trying to just select an already selected item.
+                if self.dnd_left_primed > 1:
+                    self.dnd_left_primed = 0
+                    self.selected_files.clear()
+                    return
+
+                # NOTE: Likely trying dnd, just readd to selection the former set.
+                #       Prevents losing highlighting of grid selected.
+                for path in self.selected_files:
+                    icons_grid.select_path(path)
+
+                return
+
         self.selected_files = icons_grid.get_selected_items()
 
     def grid_icon_single_click(self, icons_grid, eve):
@@ -170,6 +193,9 @@ class WindowMixin(TabMixin):
             self.set_window_title()
 
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
+                if self.ctrl_down:
+                    self.dnd_left_primed = 0
+
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
                     self.grid_icon_double_click(icons_grid)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
