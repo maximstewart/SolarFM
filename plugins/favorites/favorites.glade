@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkListStore" id="favorites_store">
     <columns>
       <!-- column-name Favorites -->
       <column type="gchararray"/>
+      <!-- column-name Path -->
+      <column type="gchararray"/>
     </columns>
   </object>
   <object class="GtkDialog" id="favorites_dialog">
-    <property name="width-request">320</property>
+    <property name="width-request">420</property>
     <property name="height-request">450</property>
     <property name="can-focus">False</property>
     <property name="modal">True</property>

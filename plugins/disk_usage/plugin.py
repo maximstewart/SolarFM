@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, subprocess, time, inspect
+import os, subprocess, time, inspect
 
 # Lib imports
 import gi
@@ -8,19 +8,6 @@ from gi.repository import Gtk
 
 # Application imports
 from plugins.plugin_base import PluginBase
-
-
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 

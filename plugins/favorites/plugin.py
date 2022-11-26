@@ -1,5 +1,5 @@
 # Python imports
-import os, threading, subprocess, time, inspect, json
+import os, inspect, json
 
 # Lib imports
 import gi
@@ -8,19 +8,6 @@ from gi.repository import Gtk
 
 # Application imports
 from plugins.plugin_base import PluginBase
-
-
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 
@@ -65,7 +52,8 @@ class Plugin(PluginBase):
             with open(self._FAVORITES_FILE) as f:
                 self._favorites = json.load(f)
                 for favorite in self._favorites:
-                    self._favorites_store.append([favorite])
+                    display, path = favorite
+                    self._favorites_store.append([display, path])
         else:
             with open(self._FAVORITES_FILE, 'a') as f:
                 f.write('[]')
@@ -78,25 +66,29 @@ class Plugin(PluginBase):
         button.connect("button-release-event", self._show_favorites_menu)
         return button
 
-    @threaded
     def _get_state(self, widget=None, eve=None):
         self._event_system.emit("get_current_state")
 
-
-    @threaded
     def _set_current_dir_lbl(self, widget=None, eve=None):
         self._current_dir_lbl.set_label(f"Current Directory:\n{self._fm_state.tab.get_current_directory()}")
 
     def _add_to_favorite(self, state):
-        current_directory = self._fm_state.tab.get_current_directory()
-        self._favorites_store.append([current_directory])
-        self._favorites.append(current_directory)
+        path    = self._fm_state.tab.get_current_directory()
+        parts   = path.split("/")
+        display = '/'.join(parts[-3:]) if len(parts) > 3 else path
+
+        self._favorites_store.append([display, path])
+        self._favorites.append([display, path])
         self._save_favorites()
 
     def _remove_from_favorite(self, state):
-        path = self._favorites_store.get_value(self._selected, 0)
+        path = self._favorites_store.get_value(self._selected, 1)
         self._favorites_store.remove(self._selected)
-        self._favorites.remove(path)
+
+        for i, f in enumerate(self._favorites):
+            if f[1] == path:
+                self._favorites.remove( self._favorites[i] )
+
         self._save_favorites()
 
     def _save_favorites(self):
@@ -104,7 +96,7 @@ class Plugin(PluginBase):
             json.dump(self._favorites, outfile, separators=(',', ':'), indent=4)
 
     def _set_selected_path(self, widget=None, eve=None):
-        path = self._favorites_store.get_value(self._selected, 0)
+        path = self._favorites_store.get_value(self._selected, 1)
         self._ui_objects[0].set_text(path)
         self._set_current_dir_lbl()
 
@@ -119,5 +111,5 @@ class Plugin(PluginBase):
 
     def _set_selected(self, user_data):
         selected = user_data.get_selected()[1]
-        if selected:
+        if selected and not self._selected == selected:
             self._selected = selected

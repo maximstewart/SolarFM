@@ -115,6 +115,9 @@ class ShowHideMixin:
         if response == Gtk.ResponseType.CANCEL:
             self.cancel_edit = True
 
+    def show_io_popup(self, widget=None, eve=None):
+        self.builder.get_object("io_popup").popup()
+
     def hide_edit_file_menu(self, widget=None, eve=None):
         self.builder.get_object("edit_file_menu").hide()
 
