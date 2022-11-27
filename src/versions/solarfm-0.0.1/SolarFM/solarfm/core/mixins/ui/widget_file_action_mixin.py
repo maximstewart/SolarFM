@@ -320,11 +320,6 @@ class WidgetFileActionMixin:
                     if action == "move" or action == "rename":
                         tab.move_file(fPath, tPath)
                 else:
-                    # if action == "copy":
-                    #     file.copy(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
-                    # if action == "move" or action == "rename":
-                    #     file.move(target, flags=Gio.FileCopyFlags.BACKUP, cancellable=None)
-
                     if action == "copy":
                         container, cancle_eve, update_progress, finish_callback = self.create_io_widget(action, file)
                         file.copy_async(destination=target, flags=Gio.FileCopyFlags.BACKUP,
@@ -333,8 +328,9 @@ class WidgetFileActionMixin:
                         self.builder.get_object("io_list").add(container)
                     if action == "move" or action == "rename":
                         container, cancle_eve, update_progress, finish_callback = self.create_io_widget(action, file)
-                        file.move(destination=target, flags=Gio.FileCopyFlags.BACKUP,
-                                    cancellable=cancle_eve, progress_callback=update_progress)
+                        file.move_async(destination=target, flags=Gio.FileCopyFlags.BACKUP,
+                                        io_priority=100, cancellable=cancle_eve,
+                                        progress_callback=None) # NOTE: progress_callback causes seg fault when set
                         self.builder.get_object("io_list").add(container)
 
 
@@ -353,7 +349,7 @@ class WidgetFileActionMixin:
         label       = Gtk.Label()
         progress    = Gtk.ProgressBar()
         cncl_button = Gtk.Button(label="Cancel")
-        del_button  = Gtk.Button(label="Delete")
+        del_button  = Gtk.Button(label="Clear")
         io_list     = self.builder.get_object("io_list")
         label.set_label(file.get_basename())
 
@@ -379,7 +375,7 @@ class WidgetFileActionMixin:
             io_list.remove(container)
 
 
-        if not action == "move":
+        if not action in ("create", "rename"):
             stats.pack_end(cncl_button, False, False, 5)
             cncl_button.connect("clicked", do_cancel, *(container, cancle_eve))
         else:
