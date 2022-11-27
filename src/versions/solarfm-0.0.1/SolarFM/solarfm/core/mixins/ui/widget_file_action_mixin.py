@@ -329,8 +329,8 @@ class WidgetFileActionMixin:
                     if action == "move" or action == "rename":
                         container, cancle_eve, update_progress, finish_callback = self.create_io_widget(action, file)
                         file.move_async(destination=target, flags=Gio.FileCopyFlags.BACKUP,
-                                        io_priority=100, cancellable=cancle_eve,
-                                        progress_callback=None) # NOTE: progress_callback causes seg fault when set
+                                        io_priority=98, cancellable=cancle_eve,
+                                        progress_callback=None, callback=finish_callback) # NOTE: progress_callback causes seg fault when set
                         self.builder.get_object("io_list").add(container)
 
 
@@ -339,9 +339,6 @@ class WidgetFileActionMixin:
 
         self.exists_file_rename_bttn.set_sensitive(False)
 
-    # NOTE: There is something not right about the way we are doing this.
-    #       Calling cancel results in an error getting thrown to finish_callback
-    #       and checking for task.had_error() is True and task.get_completed() is False
     def create_io_widget(self, action, file):
         cancle_eve  = Gio.Cancellable.new()
         container   = Gtk.Box()
@@ -365,22 +362,26 @@ class WidgetFileActionMixin:
             progress.set_fraction(current/total)
 
         def finish_callback(file, task=None, eve=None):
-            io_list.remove(container)
-            # if not task.had_error():
-            #     self.builder.get_object("io_list").remove(container)
-            # else:
-            #     print(f"{action} of {file.get_basename()} failed...")
+            if action == "move":
+                status = file.move_finish(task)
+            if action == "copy":
+                status = file.copy_finish(task)
+
+            if status:
+                self.builder.get_object("io_list").remove(container)
+            else:
+                print(f"{action} of {file.get_basename()} failed...")
 
         def delete_container(widget, eve):
             io_list.remove(container)
 
 
+        stats.pack_end(del_button, False, False, 5)
+        del_button.connect("clicked", delete_container, ())
+
         if not action in ("create", "rename"):
             stats.pack_end(cncl_button, False, False, 5)
             cncl_button.connect("clicked", do_cancel, *(container, cancle_eve))
-        else:
-            stats.pack_end(del_button, False, False, 5)
-            del_button.connect("clicked", delete_container, ())
 
         container.set_orientation(1)
         stats.set_orientation(0)
