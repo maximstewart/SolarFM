@@ -9,9 +9,11 @@ from gi.repository import GLib
 # Application imports
 
 
-class ContextMenu(Gtk.Menu):
+class ContextMenuWidget(Gtk.Menu):
+    """docstring for ContextMenuWidget"""
+
     def __init__(self):
-        super(ContextMenu, self).__init__()
+        super(ContextMenuWidget, self).__init__()
         self._builder           = settings.get_builder()
         self._context_menu_data = settings.get_context_menu_data()
         self._window            = settings.get_main_window()

@@ -7,6 +7,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject, GLib, Gio
 
 # Application imports
+from widgets.io_widget import IOWidget
 
 
 
@@ -203,7 +204,7 @@ class WidgetFileActionMixin:
         self.show_new_file_menu(fname_field)
 
         if self.cancel_creation:
-            self.cancel_creation    = False
+            self.cancel_creation = False
             return
 
         file_name   = fname_field.get_text().strip()
@@ -306,7 +307,6 @@ class WidgetFileActionMixin:
                     file.make_directory(cancellable=None)
                     continue
 
-
                 type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
                 if type == Gio.FileType.DIRECTORY:
                     wid, tid  = self.fm_controller.get_active_wid_and_tid()
@@ -320,78 +320,32 @@ class WidgetFileActionMixin:
                     if action == "move" or action == "rename":
                         tab.move_file(fPath, tPath)
                 else:
-                    if action == "copy":
-                        container, cancle_eve, update_progress, finish_callback = self.create_io_widget(action, file)
-                        file.copy_async(destination=target, flags=Gio.FileCopyFlags.BACKUP,
-                                        io_priority=98, cancellable=cancle_eve,
-                                        progress_callback=update_progress, callback=finish_callback)
-                        self.builder.get_object("io_list").add(container)
-                    if action == "move" or action == "rename":
-                        container, cancle_eve, update_progress, finish_callback = self.create_io_widget(action, file)
-                        file.move_async(destination=target, flags=Gio.FileCopyFlags.BACKUP,
-                                        io_priority=98, cancellable=cancle_eve,
-                                        progress_callback=None, callback=finish_callback) # NOTE: progress_callback causes seg fault when set
-                        self.builder.get_object("io_list").add(container)
+                    io_widget = IOWidget(action, file)
 
+                    if action == "copy":
+                        file.copy_async(destination=target,
+                                        flags=Gio.FileCopyFlags.BACKUP,
+                                        io_priority=98,
+                                        cancellable=io_widget.cancle_eve,
+                                        progress_callback=io_widget.update_progress,
+                                        callback=io_widget.finish_callback)
+
+                        self.builder.get_object("io_list").add(io_widget)
+                    if action == "move" or action == "rename":
+                        file.move_async(destination=target,
+                                        flags=Gio.FileCopyFlags.BACKUP,
+                                        io_priority=98,
+                                        cancellable=io_widget.cancle_eve,
+                                        progress_callback=None,
+                                        # NOTE: progress_callback here causes seg fault when set
+                                        callback=io_widget.finish_callback)
+
+                        self.builder.get_object("io_list").add(io_widget)
 
             except GObject.GError as e:
                 raise OSError(e)
 
         self.exists_file_rename_bttn.set_sensitive(False)
-
-    def create_io_widget(self, action, file):
-        cancle_eve  = Gio.Cancellable.new()
-        container   = Gtk.Box()
-        stats       = Gtk.Box()
-        label       = Gtk.Label()
-        progress    = Gtk.ProgressBar()
-        cncl_button = Gtk.Button(label="Cancel")
-        del_button  = Gtk.Button(label="Clear")
-        io_list     = self.builder.get_object("io_list")
-        label.set_label(file.get_basename())
-
-        progress.set_show_text(True)
-        progress.set_text(f"{action.upper()}ING")
-
-
-        def do_cancel(widget, container, eve):
-            print(f"Canceling: [{action}] of {file.get_basename()} ...")
-            eve.cancel()
-
-        def update_progress(current, total, eve=None):
-            progress.set_fraction(current/total)
-
-        def finish_callback(file, task=None, eve=None):
-            if action == "move":
-                status = file.move_finish(task)
-            if action == "copy":
-                status = file.copy_finish(task)
-
-            if status:
-                self.builder.get_object("io_list").remove(container)
-            else:
-                print(f"{action} of {file.get_basename()} failed...")
-
-        def delete_container(widget, eve):
-            io_list.remove(container)
-
-
-        stats.pack_end(del_button, False, False, 5)
-        del_button.connect("clicked", delete_container, ())
-
-        if not action in ("create", "rename"):
-            stats.pack_end(cncl_button, False, False, 5)
-            cncl_button.connect("clicked", do_cancel, *(container, cancle_eve))
-
-        container.set_orientation(1)
-        stats.set_orientation(0)
-        stats.add(progress)
-
-        container.add(label)
-        container.add(stats)
-        container.show_all()
-
-        return container, cancle_eve, update_progress, finish_callback
 
 
     def setup_exists_data(self, from_file, to_file):

@@ -829,22 +829,6 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                 <property name="spacing">5</property>
                 <property name="layout-style">start</property>
                 <child>
-                  <object class="GtkButton" id="io_button">
-                    <property name="label" translatable="yes">I/O</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="image">io_img</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="released" handler="show_io_popup" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton" id="plugins_button">
                     <property name="label" translatable="yes">Plugins</property>
                     <property name="visible">True</property>
@@ -855,7 +839,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -871,7 +855,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -887,7 +871,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -903,7 +887,7 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -915,6 +899,22 @@ SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspe
                     <property name="image">tggl_notebook_4_img</property>
                     <property name="always-show-image">True</property>
                     <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="io_button">
+                    <property name="label" translatable="yes">I/O</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="image">io_img</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="released" handler="show_io_popup" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>

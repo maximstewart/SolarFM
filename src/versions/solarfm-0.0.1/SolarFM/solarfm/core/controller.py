@@ -7,12 +7,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
 # Application imports
+from widgets.context_menu_widget import ContextMenuWidget
 from .mixins.exception_hook_mixin import ExceptionHookMixin
 from .mixins.ui_mixin import UIMixin
 from .signals.ipc_signals_mixin import IPCSignalsMixin
 from .signals.keyboard_signals_mixin import KeyboardSignalsMixin
 from .controller_data import Controller_Data
-from .context_menu import ContextMenu
 
 
 
@@ -23,7 +23,7 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         self.setup_controller_data()
         self.generate_windows(self.fm_controller_data)
 
-        cm = ContextMenu()
+        cm = ContextMenuWidget()
         cm.build_context_menu()
 
         if args.no_plugins == "false":
