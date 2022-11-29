@@ -25,7 +25,7 @@ class Settings:
     FFMPG_THUMBNLR    = f"{CONFIG_PATH}/ffmpegthumbnailer" # Thumbnail generator binary
     REMUX_FOLDER      = f"{USER_HOME}/.remuxs"             # Remuxed files folder
 
-    ICON_DIRS         = ["/usr/share/pixmaps", "/usr/share/icons", f"{USER_HOME}/.icons" ,]
+    ICON_DIRS         = ["/usr/share/icons", f"{USER_HOME}/.icons" "/usr/share/pixmaps"]
     BASE_THUMBS_PTH   = f"{USER_HOME}/.thumbnails"         # Used for thumbnail generation
     ABS_THUMBS_PTH    = f"{BASE_THUMBS_PTH}/normal"        # Used for thumbnail generation
     STEAM_ICONS_PTH   = f"{BASE_THUMBS_PTH}/steam_icons"

@@ -1,15 +1,14 @@
 # Python imports
-import os, json
+import os
+import json
 from os import path
 
 # Gtk imports
 import gi, cairo
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-
 from gi.repository import Gtk
 from gi.repository import Gdk
-
 
 # Application imports
 from .logger import Logger
@@ -31,6 +30,8 @@ class Settings:
         self._KEY_BINDINGS  = f"{self._CONFIG_PATH}/key-bindings.json"
         self._DEFAULT_ICONS = f"{self._CONFIG_PATH}/icons"
         self._WINDOW_ICON   = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
+        self._CONTEXT_MENU  = f"{self._CONFIG_PATH}/contexct_menu.json"
+        self._PID_FILE      = f"{self._CONFIG_PATH}/{app_name.lower()}.pid"
         self._ICON_THEME    = Gtk.IconTheme.get_default()
 
         if not os.path.exists(self._CONFIG_PATH):
@@ -40,6 +41,8 @@ class Settings:
 
         if not os.path.exists(self._GLADE_FILE):
             self._GLADE_FILE    = f"{self._USR_SOLARFM}/Main_Window.glade"
+        if not os.path.exists(self._CONTEXT_MENU):
+            self._CONTEXT_MENU    = f"{self._USR_SOLARFM}/contexct_menu.json"
         if not os.path.exists(self._KEY_BINDINGS):
             self._KEY_BINDINGS  = f"{self._USR_SOLARFM}/key-bindings.json"
         if not os.path.exists(self._CSS_FILE):
@@ -58,10 +61,53 @@ class Settings:
             keybindings = json.load(file)["keybindings"]
             self._keybindings.configure(keybindings)
 
+        with open(self._CONTEXT_MENU) as file:
+            self._context_menu_data = json.load(file)
+
         self._main_window    = None
         self._logger         = Logger(self._CONFIG_PATH, _fh_log_lvl=20).get_logger()
         self._builder        = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
+
+        self._trace_debug   = False
+        self._debug         = False
+        self._dirty_start   = False
+
+
+    def do_dirty_start_check(self):
+        if not os.path.exists(self._PID_FILE):
+            self._write_new_pid()
+        else:
+            with open(self._PID_FILE, "r") as _pid:
+                pid = _pid.readline().strip()
+                if pid not in ("", None):
+                    self._check_alive_status(int(pid))
+                else:
+                    self._write_new_pid()
+
+    """ Check For the existence of a unix pid. """
+    def _check_alive_status(self, pid):
+        print(f"PID Found: {pid}")
+        try:
+            os.kill(pid, 0)
+        except OSError:
+            print(f"{app_name} is starting dirty...")
+            self._dirty_start = True
+            self._write_new_pid()
+            return
+
+        print("PID is alive... Let downstream errors (sans debug args) handle app closure propigation.")
+
+    def _write_new_pid(self):
+        pid = os.getpid()
+        self._write_pid(pid)
+
+    def _clean_pid(self):
+        os.unlink(self._PID_FILE)
+
+    def _write_pid(self, pid):
+        with open(self._PID_FILE, "w") as _pid:
+            _pid.write(f"{pid}")
 
 
     def create_window(self) -> None:
@@ -101,6 +147,8 @@ class Settings:
 
         return monitors
 
+
+    def get_context_menu_data(self) -> Gtk.Builder:  return self._context_menu_data
     def get_main_window(self)   -> Gtk.ApplicationWindow: return self._main_window
     def get_builder(self)       -> Gtk.Builder:  return self._builder
     def get_logger(self)        -> Logger:       return self._logger
@@ -111,3 +159,15 @@ class Settings:
     def get_success_color(self) -> str: return self._success_color
     def get_warning_color(self) -> str: return self._warning_color
     def get_error_color(self)   -> str: return self._error_color
+
+    def is_trace_debug(self)    -> str: return self._trace_debug
+    def is_debug(self)          -> str: return self._debug
+    def is_dirty_start(self)    -> bool: return self._dirty_start
+    def clear_pid(self): self._clean_pid()
+
+
+    def set_trace_debug(self, trace_debug):
+        self._trace_debug = trace_debug
+
+    def set_debug(self, debug):
+        self._debug = debug

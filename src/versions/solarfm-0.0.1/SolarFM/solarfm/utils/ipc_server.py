@@ -1,6 +1,7 @@
 # Python imports
 import os, threading, time
-from multiprocessing.connection import Listener, Client
+from multiprocessing.connection import Client
+from multiprocessing.connection import Listener
 
 # Lib imports
 
@@ -29,12 +30,16 @@ class IPCServer:
         elif conn_type == "local_network_unsecured":
             self._ipc_authkey = None
 
+        self._subscribe_to_events()
 
-    @daemon_threaded
+
+    def _subscribe_to_events(self):
+        event_system.subscribe("post_file_to_ipc", self.send_ipc_message)
+
     def create_ipc_listener(self) -> None:
         if self._conn_type == "socket":
-            if os.path.exists(self._ipc_address):
-                return
+            if os.path.exists(self._ipc_address) and settings.is_dirty_start():
+                os.unlink(self._ipc_address)
 
             listener = Listener(address=self._ipc_address, family="AF_UNIX", authkey=self._ipc_authkey)
         elif "unsecured" not in self._conn_type:
@@ -44,23 +49,27 @@ class IPCServer:
 
 
         self.is_ipc_alive = True
+        self._run_ipc_loop(listener)
+
+    @daemon_threaded
+    def _run_ipc_loop(self, listener) -> None:
         while True:
             conn       = listener.accept()
             start_time = time.perf_counter()
-            self.handle_message(conn, start_time)
+            self._handle_ipc_message(conn, start_time)
 
         listener.close()
 
-    def handle_message(self, conn, start_time) -> None:
+    def _handle_ipc_message(self, conn, start_time) -> None:
         while True:
             msg = conn.recv()
-            if debug:
+            if settings.is_debug():
                 print(msg)
 
             if "FILE|" in msg:
                 file = msg.split("FILE|")[1].strip()
                 if file:
-                    event_system.push_gui_event([None, "handle_file_from_ipc", (file,)])
+                    event_system.emit("handle_file_from_ipc", file)
 
                 conn.close()
                 break

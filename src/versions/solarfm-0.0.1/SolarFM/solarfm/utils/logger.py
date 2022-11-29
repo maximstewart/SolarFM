@@ -1,5 +1,6 @@
 # Python imports
-import os, logging
+import os
+import logging
 
 # Application imports
 

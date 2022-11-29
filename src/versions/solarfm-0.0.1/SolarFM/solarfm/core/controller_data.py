@@ -4,12 +4,13 @@ from dataclasses import dataclass
 
 # Lib imports
 import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 from gi.repository import GLib
 
 # Application imports
-from trasher.xdgtrash import XDGTrash
 from shellfm.windows.controller import WindowController
-from plugins.plugins import Plugins
+from plugins.plugins_controller import PluginsController
 
 
 @dataclass(slots=True)
@@ -22,25 +23,22 @@ class State:
     selected_files: [] = None
     to_copy_files:  [] = None
     to_cut_files:   [] = None
+    warning_alert: type = None
 
 
 class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
     __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
-    def setup_controller_data(self, _settings: type) -> None:
-        self.settings            = _settings
-        self.builder             = self.settings.get_builder()
-        self.logger              = self.settings.get_logger()
-        self.keybindings         = self.settings.get_keybindings()
+    def setup_controller_data(self) -> None:
+        self.builder             = settings.get_builder()
+        self.keybindings         = settings.get_keybindings()
 
-        self.trashman            = XDGTrash()
         self.fm_controller       = WindowController()
-        self.plugins             = Plugins(_settings)
+        self.plugins             = PluginsController()
         self.fm_controller_data  = self.fm_controller.get_state_from_file()
-        self.trashman.regenerate()
 
-        self.window             = self.settings.get_main_window()
+        self.window             = settings.get_main_window()
         self.window1            = self.builder.get_object("window_1")
         self.window2            = self.builder.get_object("window_2")
         self.window3            = self.builder.get_object("window_3")
@@ -66,39 +64,14 @@ class Controller_Data:
 
         self.trash_files_path        = f"{GLib.get_user_data_dir()}/Trash/files"
         self.trash_info_path         = f"{GLib.get_user_data_dir()}/Trash/info"
-        self.icon_theme              = self.settings.get_icon_theme()
-
-        # In compress commands:
-        #    %n: First selected filename/dir to archive
-        #    %N: All selected filenames/dirs to archive, or (with %O) a single filename
-        #    %o: Resulting single archive file
-        #    %O: Resulting archive per source file/directory (use changes %N meaning)
-        #
-        #  In extract commands:
-        #    %x: Archive file to extract
-        #    %g: Unique extraction target filename with optional subfolder
-        #    %G: Unique extraction target filename, never with subfolder
-        #
-        #  In list commands:
-        #      %x: Archive to list
-        #
-        #  Plus standard bash variables are accepted.
-        self.arc_commands            = [ '$(which 7za || echo 7zr) a %o %N',
-                                                                'zip -r %o %N',
-                                                                'rar a -r %o %N',
-                                                                'tar -cvf %o %N',
-                                                                'tar -cvjf %o %N',
-                                                                'tar -cvzf %o %N',
-                                                                'tar -cvJf %o %N',
-                                                                'gzip -c %N > %O',
-                                                                'xz -cz %N > %O'
-                                        ]
+        self.icon_theme              = settings.get_icon_theme()
 
         self.notebooks          = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files     = []
         self.to_copy_files      = []
         self.to_cut_files       = []
         self.soft_update_lock   = {}
+        self.dnd_left_primed    = 0
 
         self.single_click_open  = False
         self.is_pane1_hidden    = False
@@ -107,9 +80,6 @@ class Controller_Data:
         self.is_pane4_hidden    = False
 
         self.override_drop_dest = None
-        self.is_searching       = False
-        self.search_icon_grid   = None
-        self.search_tab         = None
 
         self.cancel_creation    = False
         self.skip_edit          = False
@@ -118,13 +88,17 @@ class Controller_Data:
         self.shift_down         = False
         self.alt_down           = False
 
-        self.success_color      = self.settings.get_success_color()
-        self.warning_color      = self.settings.get_warning_color()
-        self.error_color        = self.settings.get_error_color()
+        self.success_color      = settings.get_success_color()
+        self.warning_color      = settings.get_warning_color()
+        self.error_color        = settings.get_error_color()
 
         # sys.excepthook = self.custom_except_hook
         self.window.connect("delete-event", self.tear_down)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.tear_down)
+
+        self.window.show()
+        if settings.is_debug():
+            self.window.set_interactive_debugging(True)
 
 
     def get_current_state(self) -> State:
@@ -142,7 +116,7 @@ class Controller_Data:
         state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
         state.store          = state.icon_grid.get_model()
-
+        state.warning_alert  = self.warning_alert
 
         selected_files       = state.icon_grid.get_selected_items()
         if selected_files:
@@ -154,6 +128,7 @@ class Controller_Data:
         # if self.to_cut_files:
         #     state.to_cut_files   = self.format_to_uris(state.store, state.wid, state.tid, self.to_cut_files, True)
 
+        event_system.emit("update_state_info_plugins", state)
         return state
 
 

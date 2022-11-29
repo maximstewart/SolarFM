@@ -2,10 +2,17 @@
 import os, subprocess, threading, hashlib
 from os.path import isfile
 
-# Gtk imports
+# Lib imports
 import gi
 gi.require_version('GdkPixbuf', '2.0')
-from gi.repository import GdkPixbuf
+from gi.repository import GdkPixbuf, GLib
+
+
+try:
+    from PIL import Image as PImage
+except Exception as e:
+    PImage = None
+
 
 # Application imports
 from .mixins.desktopiconmixin import DesktopIconMixin
@@ -35,11 +42,14 @@ class Icon(DesktopIconMixin, VideoIconMixin):
                 thumbnl = self.parse_desktop_files(full_path)
 
             return thumbnl
-        except Exception as e:
-            return None
+        except Exception:
+            ...
+
+        return None
 
     def create_thumbnail(self, dir, file, scrub_percent = "65%"):
         full_path = f"{dir}/{file}"
+
         try:
             file_hash    = hashlib.sha256(str.encode(full_path)).hexdigest()
             hash_img_pth = f"{self.ABS_THUMBS_PTH}/{file_hash}.jpg"
@@ -54,24 +64,41 @@ class Icon(DesktopIconMixin, VideoIconMixin):
         except Exception as e:
             print("Thumbnail generation issue:")
             print( repr(e) )
-            return GdkPixbuf.Pixbuf.new_from_file(f"{self.DEFAULT_ICONS}/video.png")
+
+        return GdkPixbuf.Pixbuf.new_from_file(f"{self.DEFAULT_ICONS}/video.png")
 
 
     def create_scaled_image(self, path, wxh = None):
         if not wxh:
             wxh = self.video_icon_wh
 
-        try:
-            if path.lower().endswith(".gif"):
-                return  GdkPixbuf.PixbufAnimation.new_from_file(path) \
-                                                    .get_static_image() \
-                                                    .scale_simple(wxh[0], wxh[1], GdkPixbuf.InterpType.BILINEAR)
-            else:
+        if path:
+            try:
+                if path.lower().endswith(".gif"):
+                    return  GdkPixbuf.PixbufAnimation.new_from_file(path) \
+                                                        .get_static_image() \
+                                                        .scale_simple(wxh[0], wxh[1], GdkPixbuf.InterpType.BILINEAR)
+                elif path.lower().endswith(".webp") and PImage:
+                    return self.image2pixbuf(path, wxh)
+
                 return GdkPixbuf.Pixbuf.new_from_file_at_scale(path, wxh[0], wxh[1], True)
-        except Exception as e:
-            print("Image Scaling Issue:")
-            print( repr(e) )
-            return None
+            except Exception as e:
+                print("Image Scaling Issue:")
+                print( repr(e) )
+
+        return None
+
+    def image2pixbuf(self, path, wxh):
+        """Convert Pillow image to GdkPixbuf"""
+        im   = PImage.open(path)
+        data = im.tobytes()
+        data = GLib.Bytes.new(data)
+        w, h = im.size
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
+                                                            False, 8, w, h, w * 3)
+
+        return pixbuf.scale_simple(wxh[0], wxh[1], 2) # BILINEAR = 2
 
     def create_from_file(self, path):
         try:
@@ -79,7 +106,8 @@ class Icon(DesktopIconMixin, VideoIconMixin):
         except Exception as e:
             print("Image from file Issue:")
             print( repr(e) )
-            return None
+
+        return None
 
     def return_generic_icon(self):
         return GdkPixbuf.Pixbuf.new_from_file(self.DEFAULT_ICON)

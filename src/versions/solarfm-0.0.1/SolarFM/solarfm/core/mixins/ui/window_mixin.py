@@ -6,10 +6,15 @@ from os.path import isdir
 # Lib imports
 import gi
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gdk, Gio
+from gi.repository import Gdk
+from gi.repository import Gio
 
 # Application imports
 from .tab_mixin import TabMixin
+
+
+class WindowException(Exception):
+    ...
 
 
 class WindowMixin(TabMixin):
@@ -20,8 +25,8 @@ class WindowMixin(TabMixin):
             for j, value in enumerate(session_json):
                 i = j + 1
                 notebook_tggl_button = self.builder.get_object(f"tggl_notebook_{i}")
-                is_hidden = True if value[0]["window"]["isHidden"] == "True" else False
-                tabs      = value[0]["window"]["tabs"]
+                is_hidden = True if value["window"]["isHidden"] == "True" else False
+                tabs      = value["window"]["tabs"]
                 self.fm_controller.create_window()
                 notebook_tggl_button.set_active(True)
 
@@ -46,7 +51,7 @@ class WindowMixin(TabMixin):
 
                 icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
                 icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
-            except Exception as e:
+            except WindowException as e:
                 print("\n:  The saved session might be missing window data!  :\nLocation: ~/.config/solarfm/session.json\nFix: Back it up and delete it to reset.\n")
                 print(repr(e))
         else:
@@ -88,12 +93,11 @@ class WindowMixin(TabMixin):
         formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
         formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
 
+        # NOTE: Hides empty trash and other desired buttons based on context.
         if self.trash_files_path == current_directory:
-            self.builder.get_object("restore_from_trash").show()
-            self.builder.get_object("empty_trash").show()
+            event_system.emit("show_trash_buttons")
         else:
-            self.builder.get_object("restore_from_trash").hide()
-            self.builder.get_object("empty_trash").hide()
+            event_system.emit("hide_trash_buttons")
 
         # If something selected
         self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")
@@ -108,8 +112,8 @@ class WindowMixin(TabMixin):
                                                         cancellable=None)
                     file_size = file_info.get_size()
                     combined_size += file_size
-                except Exception as e:
-                    if debug:
+                except WindowException as e:
+                    if settings.is_debug():
                         print(repr(e))
 
 
@@ -156,10 +160,31 @@ class WindowMixin(TabMixin):
         path_entry.set_text(tab.get_current_directory())
 
     def grid_set_selected_items(self, icons_grid):
-        self.selected_files = icons_grid.get_selected_items()
+        items = icons_grid.get_selected_items()
+        size  = len(items)
 
-    def grid_cursor_toggled(self, icons_grid):
-        print("wat...")
+        if size == 1:
+            # NOTE: If already in selection, likely dnd else not so wont readd
+            if items[0] in self.selected_files:
+                self.dnd_left_primed += 1
+                # NOTE: If in selection but trying to just select an already selected item.
+                if self.dnd_left_primed > 1:
+                    self.dnd_left_primed = 0
+                    self.selected_files.clear()
+                    return
+
+                # NOTE: Likely trying dnd, just readd to selection the former set.
+                #       Prevents losing highlighting of grid selected.
+                for path in self.selected_files:
+                    icons_grid.select_path(path)
+
+                return
+
+        if size > 0:
+            self.selected_files = icons_grid.get_selected_items()
+        else:
+            self.dnd_left_primed = 0
+            self.selected_files.clear()
 
     def grid_icon_single_click(self, icons_grid, eve):
         try:
@@ -169,14 +194,16 @@ class WindowMixin(TabMixin):
             self.set_path_text(wid, tid)
             self.set_window_title()
 
-
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
+                if self.ctrl_down:
+                    self.dnd_left_primed = 0
+
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
                     self.grid_icon_double_click(icons_grid)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
                 self.show_context_menu()
 
-        except Exception as e:
+        except WindowException as e:
             print(repr(e))
             self.display_message(self.error_color, f"{repr(e)}")
 
@@ -205,7 +232,7 @@ class WindowMixin(TabMixin):
                 self.update_tab(tab_label, state.tab, state.store, state.wid, state.tid)
             else:
                 self.open_files()
-        except Exception as e:
+        except WindowException as e:
             traceback.print_exc()
             self.display_message(self.error_color, f"{repr(e)}")
 

@@ -1,14 +1,21 @@
 # Python imports
-import os, multiprocessing, threading, subprocess, inspect, time, json
-from multiprocessing import Manager, Process
+import os
+import threading
+import inspect
+import time
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib, GObject
+from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 from plugins.plugin_base import PluginBase
+from .mixins.file_search_mixin import FileSearchMixin
+from .mixins.grep_search_mixin import GrepSearchMixin
+from .utils.ipc_server import IPCServer
+
 
 
 # NOTE: Threads WILL NOT die with parent's destruction.
@@ -26,56 +33,7 @@ def daemon_threaded(fn):
 
 
 
-class FilePreviewWidget(Gtk.LinkButton):
-    def __init__(self, path, file):
-        super(FilePreviewWidget, self).__init__()
-        self.set_label(file)
-        self.set_uri(f"file://{path}")
-        self.show_all()
-
-
-class GrepPreviewWidget(Gtk.Box):
-    def __init__(self, path, sub_keys, data):
-        super(GrepPreviewWidget, self).__init__()
-        self.set_orientation(Gtk.Orientation.VERTICAL)
-        self.line_color = "#e0cc64"
-
-
-        _label = '/'.join( path.split("/")[-3:] )
-        title  = Gtk.LinkButton.new_with_label(uri=f"file://{path}", label=_label)
-
-        self.add(title)
-        for key in sub_keys:
-            line_num     = key
-            text         = data[key]
-            box          = Gtk.Box()
-            number_label = Gtk.Label()
-            text_view    = Gtk.Label(label=text[:-1])
-            label_text   = f"<span foreground='{self.line_color}'>{line_num}</span>"
-
-            number_label.set_markup(label_text)
-            number_label.set_margin_left(15)
-            number_label.set_margin_right(5)
-            number_label.set_margin_top(5)
-            number_label.set_margin_bottom(5)
-            text_view.set_margin_top(5)
-            text_view.set_margin_bottom(5)
-            text_view.set_line_wrap(True)
-
-            box.add(number_label)
-            box.add(text_view)
-            self.add(box)
-
-        self.show_all()
-
-
-
-manager  = Manager()
-grep_result_set  = manager.dict()
-file_result_set  = manager.list()
-
-
-class Plugin(PluginBase):
+class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
     def __init__(self):
         super().__init__()
 
@@ -86,20 +44,19 @@ class Plugin(PluginBase):
 
         self._search_dialog    = None
         self._active_path      = None
+        self.file_list_parent  = None
+        self.grep_list_parent  = None
         self._file_list        = None
         self._grep_list        = None
         self._grep_proc        = None
         self._list_proc        = None
+        self.pause_fifo_update = False
+        self.update_list_ui_buffer = ()
+        self.grep_query        = ""
+        self.search_query      = ""
 
-
-    def get_ui_element(self):
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self._show_grep_list_page)
-        return button
 
     def run(self):
-        self._module_event_observer()
-
         self._builder          = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -116,116 +73,65 @@ class Plugin(PluginBase):
         self._builder.connect_signals(handlers)
 
         self._search_dialog = self._builder.get_object("search_dialog")
-        self._grep_list     = self._builder.get_object("grep_list")
-        self._file_list     = self._builder.get_object("file_list")
+        self.fsearch        = self._builder.get_object("fsearch")
 
-        GObject.signal_new("update-file-ui-signal", self._search_dialog, GObject.SIGNAL_RUN_LAST, GObject.TYPE_PYOBJECT, (GObject.TYPE_PYOBJECT,))
-        self._search_dialog.connect("update-file-ui-signal", self._load_file_ui)
-        GObject.signal_new("update-grep-ui-signal", self._search_dialog, GObject.SIGNAL_RUN_LAST, GObject.TYPE_PYOBJECT, (GObject.TYPE_PYOBJECT,))
-        self._search_dialog.connect("update-grep-ui-signal", self._load_grep_ui)
+        self.grep_list_parent = self._builder.get_object("grep_list_parent")
+        self.file_list_parent = self._builder.get_object("file_list_parent")
+
+        self._event_system.subscribe("update-file-ui", self._load_file_ui)
+        self._event_system.subscribe("update-grep-ui", self._load_grep_ui)
+        self._event_system.subscribe("show_search_page", self._show_page)
 
 
-    @daemon_threaded
-    def _show_grep_list_page(self, widget=None, eve=None):
-        self._event_system.push_gui_event([self.name, "get_current_state", ()])
-        self.wait_for_fm_message()
+        self.create_ipc_listener()
 
-        state               = self._event_message
+    def generate_reference_ui_element(self):
+        item = Gtk.ImageMenuItem(self.name)
+        item.set_image( Gtk.Image(stock=Gtk.STOCK_FIND) )
+        item.connect("activate", self._show_page)
+        item.set_always_show_image(True)
+        return item
+
+
+    def _show_page(self, widget=None, eve=None):
+        self._event_system.emit("get_current_state")
+
+        state               = self._fm_state
         self._event_message = None
 
-        GLib.idle_add(self._process_queries, (state))
-
-    def _process_queries(self, state):
         self._active_path   = state.tab.get_current_directory()
         response            = self._search_dialog.run()
         self._search_dialog.hide()
 
-
-    def _run_find_file_query(self, widget=None, eve=None):
-        if self._list_proc:
-            self._list_proc.terminate()
-            self._list_proc = None
-            time.sleep(.2)
-
-        del file_result_set[:]
-        self.clear_children(self._file_list)
-
-        query = widget.get_text()
-        if query:
-            self._list_proc = multiprocessing.Process(self._do_list_search(self._active_path, query))
-            self._list_proc.start()
-
-    def _do_list_search(self, path, query):
-        self._file_traverse_path(path, query)
-        for target, file in file_result_set:
-            widget = FilePreviewWidget(target, file)
-            self._search_dialog.emit("update-file-ui-signal", (widget))
-
-    def _load_file_ui(self, parent=None, widget=None):
-        self._file_list.add(widget)
-
-    def _file_traverse_path(self, path, query):
+    # TODO: Merge the below methods into some unified logic
+    def reset_grep_box(self) -> None:
         try:
-            for file in os.listdir(path):
-                target = os.path.join(path, file)
-                if os.path.isdir(target):
-                    self._file_traverse_path(target, query)
-                else:
-                    if query.lower() in file.lower():
-                        file_result_set.append([target, file])
-        except Exception as e:
-            if debug:
-                print("Couldn't traverse to path. Might be permissions related...")
+            child = self.grep_list_parent.get_children()[0]
+            self._grep_list = None
+            self.grep_list_parent.remove(child)
+        except Exception:
+            ...
 
+        self._grep_list = Gtk.Box()
+        self._grep_list.set_orientation(Gtk.Orientation.VERTICAL)
+        self.grep_list_parent.add(self._grep_list)
+        self.grep_list_parent.show_all()
 
-    def _run_grep_query(self, widget=None, eve=None):
-        if self._grep_proc:
-            self._grep_proc.terminate()
-            self._grep_proc = None
-            time.sleep(.2)
+        time.sleep(0.05)
+        Gtk.main_iteration()
 
-        grep_result_set.clear()
-        self.clear_children(self._grep_list)
-
-        query = widget.get_text()
-        if query:
-            self._grep_proc = multiprocessing.Process(self._do_grep_search(self._active_path, query))
-            self._grep_proc.start()
-
-    def _do_grep_search(self, path, query):
-        self._grep_traverse_path(path, query)
-
-        keys = grep_result_set.keys()
-        for key in keys:
-            sub_keys = grep_result_set[key].keys()
-            widget   = GrepPreviewWidget(key, sub_keys, grep_result_set[key])
-            self._search_dialog.emit("update-grep-ui-signal", (widget))
-
-    def _load_grep_ui(self, parent=None, widget=None):
-        self._grep_list.add(widget)
-
-    def _grep_traverse_path(self, path, query):
+    def reset_file_list_box(self) -> None:
         try:
-            for file in os.listdir(path):
-                target = os.path.join(path, file)
-                if os.path.isdir(target):
-                    self._grep_traverse_path(target, query)
-                else:
-                    self._search_for_string(target, query)
-        except Exception as e:
-            if debug:
-                print("Couldn't traverse to path. Might be permissions related...")
+            child = self.file_list_parent.get_children()[0]
+            self._file_list = None
+            self.file_list_parent.remove(child)
+        except Exception:
+            ...
 
-    def _search_for_string(self, file, query):
-        try:
-            with open(file, 'r') as fp:
-                for i, line in enumerate(fp):
-                    if query in line:
-                        if f"{file}" in grep_result_set.keys():
-                            grep_result_set[f"{file}"][f"{i+1}"] = line
-                        else:
-                            grep_result_set[f"{file}"] = {}
-                            grep_result_set[f"{file}"] = {f"{i+1}": line}
-        except Exception as e:
-            if debug:
-                print("Couldn't read file. Might be binary or other cause...")
+        self._file_list = Gtk.Box()
+        self._file_list.set_orientation(Gtk.Orientation.VERTICAL)
+        self.file_list_parent.add(self._file_list)
+        self.file_list_parent.show_all()
+
+        time.sleep(0.05)
+        Gtk.main_iteration()

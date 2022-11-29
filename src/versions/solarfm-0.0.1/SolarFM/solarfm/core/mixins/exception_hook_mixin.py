@@ -1,10 +1,12 @@
 # Python imports
-import traceback, time
+import traceback
+import time
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 
@@ -51,8 +53,3 @@ class ExceptionHookMixin:
                 f.write(text)
 
         save_location_prompt.destroy()
-
-
-    def set_arc_buffer_text(self, widget=None, eve=None):
-        sid = widget.get_active_id()
-        self.arc_command_buffer.set_text(self.arc_commands[int(sid)])

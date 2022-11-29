@@ -1,52 +1,51 @@
 # Python imports
-import os, inspect, time
+import os
+import inspect
 
 # Lib imports
 
 # Application imports
-from __builtins__ import *
+
 from utils.ipc_server import IPCServer
-from utils.settings import Settings
 from core.controller import Controller
 
 
-class App_Launch_Exception(Exception):
+class AppLaunchException(Exception):
     ...
 
-class Controller_Start_Exceptio(Exception):
+class ControllerStartException(Exception):
     ...
 
 
 class Application(IPCServer):
-    """ Create Settings and Controller classes. Bind signal to Builder. Inherit from Builtins to bind global methods and classes. """
+    """ Inherit from IPCServer; create Controller classe; bind any signal(s) to Builder. """
 
     def __init__(self, args, unknownargs):
         super(Application, self).__init__()
+        self.args, self.unknownargs = args, unknownargs
 
-        if not trace_debug:
-            self.create_ipc_listener()
-            time.sleep(0.05)
+        if not settings.is_trace_debug():
+            try:
+                self.create_ipc_listener()
+            except Exception:
+                ...
 
             if not self.is_ipc_alive:
-                if unknownargs:
-                    for arg in unknownargs:
-                        if os.path.isdir(arg):
-                            message = f"FILE|{arg}"
-                            self.send_ipc_message(message)
+                for arg in unknownargs + [args.new_tab,]:
+                    if os.path.isdir(arg):
+                        message = f"FILE|{arg}"
+                        self.send_ipc_message(message)
 
-                if args.new_tab and os.path.isdir(args.new_tab):
-                    message = f"FILE|{args.new_tab}"
-                    self.send_ipc_message(message)
-
-                raise App_Launch_Exception(f"IPC Server Exists: Will send path(s) to it and close...\nNote: If no fm exists, remove /tmp/{app_name}-ipc.sock")
+                raise AppLaunchException(f"{app_name} IPC Server Exists: Will send path(s) to it and close...")
 
 
-        settings = Settings()
         settings.create_window()
+        self._load_controller_and_builder()
 
-        controller = Controller(args, unknownargs, settings)
+    def _load_controller_and_builder(self):
+        controller = Controller(self.args, self.unknownargs)
         if not controller:
-            raise Controller_Start_Exceptio("Controller exited and doesn't exist...")
+            raise ControllerStartException("Controller exited and doesn't exist...")
 
         # Gets the methods from the classes and sets to handler.
         # Then, builder connects to any signals it needs.
@@ -57,7 +56,7 @@ class Application(IPCServer):
             try:
                 methods = inspect.getmembers(c, predicate=inspect.ismethod)
                 handlers.update(methods)
-            except Exception as e:
+            except AppLaunchException as e:
                 print(repr(e))
 
         settings.get_builder().connect_signals(handlers)

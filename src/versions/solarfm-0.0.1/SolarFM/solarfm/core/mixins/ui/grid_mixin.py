@@ -6,48 +6,22 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk, GLib, Gio, GdkPixbuf
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GLib
+from gi.repository import Gio
+from gi.repository import GdkPixbuf
 
 # Application imports
+from widgets.tab_header_widget import TabHeaderWidget
+from widgets.icon_grid_widget import IconGridWidget
+from widgets.icon_tree_widget import IconTreeWidget
 
 
-
-
-# NOTE: Consider trying to use Gtk.TreeView with css that turns it into a grid...
-# Can possibly use this to dynamicly load icons instead...
-class Icon(Gtk.HBox):
-    def __init__(self, tab, dir, file):
-        super(Icon, self).__init__()
-
-        self.load_icon(tab, dir, file)
-
-    @threaded
-    def load_icon(self, tab, dir, file):
-        icon = tab.create_icon(dir, file)
-
-        if not icon:
-            path = f"{dir}/{file}"
-            icon = self.get_system_thumbnail(path, tab.sys_icon_wh[0])
-
-        if not icon:
-            icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
-
-        self.add(Gtk.Image.new_from_pixbuf(icon))
-        self.show_all()
-
-    def get_system_thumbnail(self, file, size):
-        try:
-            gio_file  = Gio.File.new_for_path(file)
-            info      = gio_file.query_info('standard::icon' , 0, None)
-            icon      = info.get_icon().get_names()[0]
-            icon_path = self.icon_theme.lookup_icon(icon , size , 0).get_filename()
-            return GdkPixbuf.Pixbuf.new_from_file(icon_path)
-        except Exception as e:
-            return None
 
 
 class GridMixin:
-    """docstring for WidgetMixin"""
+    """docstring for GridMixin"""
 
     def load_store(self, tab, store, save_state=False):
         store.clear()
@@ -61,7 +35,7 @@ class GridMixin:
             self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
-        if save_state:
+        if save_state and not trace_debug:
             self.fm_controller.save_state()
 
     @threaded
@@ -86,133 +60,59 @@ class GridMixin:
             info      = gio_file.query_info('standard::icon' , 0, None)
             icon      = info.get_icon().get_names()[0]
             icon_path = self.icon_theme.lookup_icon(icon , size , 0).get_filename()
+
             return GdkPixbuf.Pixbuf.new_from_file(icon_path)
-        except Exception as e:
-            return None
+        except Exception:
+            ...
+
+        return None
 
 
     def create_tab_widget(self, tab):
-        tab_widget = Gtk.ButtonBox()
-        label = Gtk.Label()
-        tid   = Gtk.Label()
-        close = Gtk.Button()
-        icon  = Gtk.Image(stock=Gtk.STOCK_CLOSE)
-
-        label.set_label(f"{tab.get_end_of_path()}")
-        label.set_width_chars(len(tab.get_end_of_path()))
-        label.set_xalign(0.0)
-        tid.set_label(f"{tab.get_id()}")
-
-        close.add(icon)
-        tab_widget.add(label)
-        tab_widget.add(close)
-        tab_widget.add(tid)
-
-        close.connect("released", self.close_tab)
-        tab_widget.show_all()
-        tid.hide()
-        return tab_widget
+        return TabHeaderWidget(tab, self.close_tab)
 
     def create_scroll_and_store(self, tab, wid, use_tree_view=False):
+        scroll = Gtk.ScrolledWindow()
+
         if not use_tree_view:
-            scroll, store = self.create_icon_grid_widget(tab, wid)
+            grid = self.create_icon_grid_widget()
         else:
             # TODO: Fix global logic to make the below work too
-            scroll, store = self.create_icon_tree_widget(tab, wid)
+            grid = self.create_icon_tree_widget()
 
-        return scroll, store
-
-    def create_icon_grid_widget(self, tab, wid):
-        scroll = Gtk.ScrolledWindow()
-        grid   = Gtk.IconView()
-        store  = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
-
-        grid.set_model(store)
-        grid.set_pixbuf_column(0)
-        grid.set_text_column(1)
-
-        grid.set_item_orientation(1)
-        grid.set_selection_mode(3)
-        grid.set_item_width(96)
-        grid.set_item_padding(8)
-        grid.set_margin(12)
-        grid.set_row_spacing(18)
-        grid.set_columns(-1)
-        grid.set_spacing(12)
-        grid.set_column_spacing(18)
-
-        grid.connect("button_release_event", self.grid_icon_single_click)
-        grid.connect("item-activated",       self.grid_icon_double_click)
-        grid.connect("selection-changed",    self.grid_set_selected_items)
-        grid.connect("drag-data-get",        self.grid_on_drag_set)
-        grid.connect("drag-data-received",   self.grid_on_drag_data_received)
-        grid.connect("drag-motion",          self.grid_on_drag_motion)
-
-        URI_TARGET_TYPE  = 80
-        uri_target       = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags(0), URI_TARGET_TYPE)
-        targets          = [ uri_target ]
-        action           = Gdk.DragAction.COPY
-        grid.enable_model_drag_dest(targets, action)
-        grid.enable_model_drag_source(0, targets, action)
-
-        grid.show_all()
         scroll.add(grid)
-        grid.set_name(f"{wid}|{tab.get_id()}")
         scroll.set_name(f"{wid}|{tab.get_id()}")
+        grid.set_name(f"{wid}|{tab.get_id()}")
         self.builder.expose_object(f"{wid}|{tab.get_id()}|icon_grid", grid)
         self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
-        return scroll, store
 
-    def create_icon_tree_widget(self, tab, wid):
-        scroll = Gtk.ScrolledWindow()
-        grid   = Gtk.TreeView()
-        store  = Gtk.TreeStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
-        column = Gtk.TreeViewColumn("Icons")
-        icon   = Gtk.CellRendererPixbuf()
-        name   = Gtk.CellRendererText()
-        selec  = grid.get_selection()
+        return scroll, grid.get_store()
 
-        grid.set_model(store)
-        selec.set_mode(3)
-        column.pack_start(icon, False)
-        column.pack_start(name, True)
-        column.add_attribute(icon, "pixbuf", 0)
-        column.add_attribute(name, "text", 1)
-        column.set_expand(False)
-        column.set_sizing(2)
-        column.set_min_width(120)
-        column.set_max_width(74)
+    def create_icon_grid_widget(self):
+        grid = IconGridWidget()
+        grid._setup_additional_signals(
+            self.grid_icon_single_click,
+            self.grid_icon_double_click,
+            self.grid_set_selected_items,
+            self.grid_on_drag_set,
+            self.grid_on_drag_data_received,
+            self.grid_on_drag_motion
+        )
 
-        grid.append_column(column)
-        grid.set_search_column(1)
-        grid.set_rubber_banding(True)
-        grid.set_headers_visible(False)
-        grid.set_enable_tree_lines(False)
+        return grid
 
-        grid.connect("button_release_event", self.grid_icon_single_click)
-        grid.connect("row-activated",        self.grid_icon_double_click)
-        grid.connect("drag-data-get",        self.grid_on_drag_set)
-        grid.connect("drag-data-received",   self.grid_on_drag_data_received)
-        grid.connect("drag-motion",          self.grid_on_drag_motion)
+    def create_icon_tree_widget(self):
+        grid = IconTreeWidget()
+        grid._setup_additional_signals(
+            self.grid_icon_single_click,
+            self.grid_icon_double_click,
+            self.grid_on_drag_set,
+            self.grid_on_drag_data_received,
+            self.grid_on_drag_motion
+        )
 
-        URI_TARGET_TYPE  = 80
-        uri_target       = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags(0), URI_TARGET_TYPE)
-        targets          = [ uri_target ]
-        action           = Gdk.DragAction.COPY
-        grid.enable_model_drag_dest(targets, action)
-        grid.enable_model_drag_source(0, targets, action)
-
-        grid.show_all()
-        scroll.add(grid)
-        grid.set_name(f"{wid}|{tab.get_id()}")
-        scroll.set_name(f"{wid}|{tab.get_id()}")
-        self.builder.expose_object(f"{wid}|{tab.get_id()}|icon_grid", grid)
-        self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
         grid.columns_autosize()
-
-        self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
-        return scroll, store
-
+        return grid
 
     def get_store_and_label_from_notebook(self, notebook, _name):
         icon_grid = None

@@ -56,4 +56,5 @@ class PaneMixin:
     def _save_state(self, state, pane_index):
         window = self.fm_controller.get_window_by_index(pane_index - 1)
         window.set_is_hidden(state)
-        self.fm_controller.save_state()
+        if not settings.is_trace_debug():
+            self.fm_controller.save_state()

@@ -1,11 +1,18 @@
 # Python imports
-import os, threading, subprocess, time, pwd, grp
+import os
+import threading
+import subprocess
+import time
+import pwd
+import grp
 from datetime import datetime
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib, Gio
+from gi.repository import Gtk
+from gi.repository import GLib
+from gi.repository import Gio
 
 # Application imports
 from plugins.plugin_base import PluginBase
@@ -83,14 +90,7 @@ class Plugin(PluginBase):
         }
 
 
-    def get_ui_element(self):
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self._show_properties_page)
-        return button
-
     def run(self):
-        self._module_event_observer()
-
         self._builder           = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
 
@@ -105,14 +105,19 @@ class Plugin(PluginBase):
         self._file_owner    = self._builder.get_object("file_owner")
         self._file_group    = self._builder.get_object("file_group")
 
+    def generate_reference_ui_element(self):
+        item = Gtk.ImageMenuItem(self.name)
+        item.set_image( Gtk.Image(stock=Gtk.STOCK_PROPERTIES) )
+        item.connect("activate", self._show_properties_page)
+        item.set_always_show_image(True)
+        return item
 
 
     @threaded
     def _show_properties_page(self, widget=None, eve=None):
-        self._event_system.push_gui_event([self.name, "get_current_state", ()])
-        self.wait_for_fm_message()
+        event_system.emit("get_current_state")
 
-        state               = self._event_message
+        state               = self._fm_state
         self._event_message = None
 
         GLib.idle_add(self._process_changes, (state))

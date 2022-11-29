@@ -1,5 +1,8 @@
 # Python imports
-import os, threading, subprocess, time
+import os
+import threading
+import subprocess
+import ime
 
 # Lib imports
 import gi
@@ -33,14 +36,14 @@ class Plugin(PluginBase):
                                                     #       where self.name should not be needed for message comms
 
 
-    def get_ui_element(self):
+    def generate_reference_ui_element(self):
         button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self.send_message)
         return button
 
     def run(self):
-        self._module_event_observer()
+        ...
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"
-        self._event_system.push_gui_event([self.name, "display_message", ("warning", message, None)])
+        event_system.emit("display_message", ("warning", message, None))

@@ -7,71 +7,47 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
 # Application imports
-from .mixins.exception_hook_mixin import ExceptionHookMixin
-from .mixins.ui_mixin import UIMixin
-from .signals.ipc_signals_mixin import IPCSignalsMixin
-from .signals.keyboard_signals_mixin import KeyboardSignalsMixin
 from .controller_data import Controller_Data
+from .mixins.signals_mixins import SignalsMixins
+from .ui import UI
+from widgets.context_menu_widget import ContextMenuWidget
 
 
 
 
-class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMixin, Controller_Data):
+class Controller(UI, SignalsMixins, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
-    def __init__(self, args, unknownargs, _settings):
-        self.setup_controller_data(_settings)
-        self.window.show()
-
+    def __init__(self, args, unknownargs):
+        self._subscribe_to_events()
+        self.setup_controller_data()
         self.generate_windows(self.fm_controller_data)
-        self.plugins.launch_plugins()
 
-        if debug:
-            self.window.set_interactive_debugging(True)
+        ContextMenuWidget().build_context_menu()
 
-        if not trace_debug:
-            self.gui_event_observer()
+        if args.no_plugins == "false":
+            self.plugins.launch_plugins()
 
-            if unknownargs:
-                for arg in unknownargs:
-                    if os.path.isdir(arg):
-                        message = f"FILE|{arg}"
-                        event_system.send_ipc_message(message)
+        for arg in unknownargs + [args.new_tab,]:
+            if os.path.isdir(arg):
+                message = f"FILE|{arg}"
+                event_system.emit("post_file_to_ipc", message)
 
-            if args.new_tab and os.path.isdir(args.new_tab):
-                message = f"FILE|{args.new_tab}"
-                event_system.send_ipc_message(message)
 
+    def _subscribe_to_events(self):
+        event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
+        event_system.subscribe("get_current_state", self.get_current_state)
+        event_system.subscribe("display_message", self.display_message)
+        event_system.subscribe("go_to_path", self.go_to_path)
+        event_system.subscribe("do_hide_context_menu", self.do_hide_context_menu)
+        event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
 
     def tear_down(self, widget=None, eve=None):
-        self.fm_controller.save_state()
+        if not settings.is_trace_debug():
+            self.fm_controller.save_state()
+
+        settings.clear_pid()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
-
-
-    @daemon_threaded
-    def gui_event_observer(self):
-        while True:
-            time.sleep(event_sleep_time)
-            event = event_system.consume_gui_event()
-            if event:
-                try:
-                    sender_id, method_target, parameters = event
-                    if sender_id:
-                        method = getattr(self.__class__, "handle_gui_event_and_return_message")
-                        GLib.idle_add(method, *(self, sender_id, method_target, parameters))
-                    else:
-                        method = getattr(self.__class__, method_target)
-                        GLib.idle_add(method, *(self, *parameters,))
-                except Exception as e:
-                    print(repr(e))
-
-    def handle_gui_event_and_return_message(self, sender, method_target, parameters):
-        method = getattr(self.__class__, f"{method_target}")
-        data   = method(*(self, *parameters))
-        event_system.push_module_event([sender, None, data])
-
-    def handle_plugin_key_event(self, sender, method_target, parameters=()):
-        event_system.push_module_event([sender, method_target, parameters])
 
 
     def save_load_session(self, action="save_session"):
@@ -80,7 +56,9 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         save_load_dialog  = self.builder.get_object("save_load_dialog")
 
         if action == "save_session":
-            self.fm_controller.save_state()
+            if not settings.is_trace_debug():
+                self.fm_controller.save_state()
+
             return
         elif action == "save_session_as":
             save_load_dialog.set_action(Gtk.FileChooserAction.SAVE)
@@ -101,13 +79,13 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
                 session_json = self.fm_controller.get_state_from_file(path)
                 self.load_session(session_json)
         if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
-            pass
+            ...
 
         save_load_dialog.hide()
 
     def load_session(self, session_json):
-        if debug:
-            self.logger.debug(f"Session Data: {session_json}")
+        if settings.is_debug():
+            logger.debug(f"Session Data: {session_json}")
 
         self.ctrl_down  = False
         self.shift_down = False
@@ -120,8 +98,12 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         gc.collect()
 
 
-    def do_action_from_menu_controls(self, widget, event_button):
-        action = widget.get_name()
+    def do_action_from_menu_controls(self, widget, eve = None):
+        if not isinstance(widget, str):
+            action = widget.get_name()
+        else:
+            action = widget
+
         self.hide_context_menu()
         self.hide_new_file_menu()
         self.hide_edit_file_menu()
@@ -142,23 +124,10 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
             self.copy_files()
         if action == "paste":
             self.paste_files()
-        if action == "archive":
-            self.show_archiver_dialogue()
-        if action == "delete":
-            self.delete_files()
-        if action == "trash":
-            self.trash_files()
-        if action == "go_to_trash":
-            self.path_entry.set_text(self.trash_files_path)
-        if action == "restore_from_trash":
-            self.restore_trash_files()
-        if action == "empty_trash":
-            self.empty_trash()
         if action == "create":
             self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
-
 
 
 
@@ -189,3 +158,9 @@ class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMi
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         tab.execute([f"{tab.terminal_app}"], start_dir=tab.get_current_directory())
+
+    def go_to_path(self, path):
+        self.path_entry.set_text(path)
+
+    def do_hide_context_menu(self):
+        self.hide_context_menu()

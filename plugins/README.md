@@ -25,7 +25,7 @@ requests: {}  = {
     'pass_fm_events': "true",                             # If empty or not present will be ignored.
     "pass_ui_objects": [""],                              # Request reference to a UI component. Will be passed back as array to plugin.
     'bind_keys': [f"{name}||send_message:<Control>f"],
-                  f"{name}||do_save:<Control>s"]         # Bind keys with method and key pare using list. Must pass "name" like shown with delimiter to its right.
+                  f"{name}||do_save:<Control>s"]          # Bind keys with method and key pare using list. Must pass "name" like shown with delimiter to its right.
 
 }
 ```
@@ -40,25 +40,3 @@ UI Targets:
 <li>context_menu</li>
 <li>other</li>
 </ul>
-
-### Methods
-```
-# Must define and return a widget if "ui_target" is defined.
-def get_ui_element(self):
-    button = Gtk.Button(label=self.name)
-    button.connect("button-release-event", self._do_download)
-    return button
-
-# Must define in plugin if "pass_fm_events" is set to "true" string.
-def set_fm_event_system(self, fm_event_system):
-    self._fm_event_system = fm_event_system
-
-# Must define regardless if needed. Can just pass if plugin does stuff in its __init__
-def run(self):
-    self._module_event_observer()
-
-# Must define in plugin if "pass_ui_objects" is set and an array of valid glade UI IDs.
-def set_ui_object_collection(self, ui_objects):
-    self._ui_objects = ui_objects
-
-```

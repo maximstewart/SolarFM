@@ -4,7 +4,8 @@
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
+from gi.repository import Gdk
 
 # Application imports
 
@@ -55,26 +56,6 @@ class ShowHideMixin:
         self.builder.get_object("about_page").hide()
 
 
-    def show_archiver_dialogue(self, widget=None, eve=None):
-        wid, tid          = self.fm_controller.get_active_wid_and_tid()
-        tab               = self.get_fm_window(wid).get_tab_by_id(tid)
-        archiver_dialogue = self.builder.get_object("archiver_dialogue")
-        archiver_dialogue.set_action(Gtk.FileChooserAction.SAVE)
-        archiver_dialogue.set_current_folder(tab.get_current_directory())
-        archiver_dialogue.set_current_name("arc.7z")
-
-        response = archiver_dialogue.run()
-        if response == Gtk.ResponseType.OK:
-            self.archive_files(archiver_dialogue)
-        if (response == Gtk.ResponseType.CANCEL) or (response == Gtk.ResponseType.DELETE_EVENT):
-            pass
-
-        archiver_dialogue.hide()
-
-    def hide_archiver_dialogue(self, widget=None, eve=None):
-        self.builder.get_object("archiver_dialogue").hide()
-
-
     def show_appchooser_menu(self, widget=None, eve=None):
         appchooser_menu   = self.builder.get_object("appchooser_menu")
         appchooser_widget = self.builder.get_object("appchooser_widget")
@@ -103,10 +84,10 @@ class ShowHideMixin:
         self.builder.get_object("plugin_controls").hide()
 
     def show_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu_popup").run()
+        self.builder.get_object("context_menu").popup_at_pointer(None)
 
     def hide_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu_popup").hide()
+        self.builder.get_object("context_menu").popdown()
 
     def show_new_file_menu(self, widget=None, eve=None):
         if widget:
@@ -134,6 +115,9 @@ class ShowHideMixin:
             self.skip_edit   = True
         if response == Gtk.ResponseType.CANCEL:
             self.cancel_edit = True
+
+    def show_io_popup(self, widget=None, eve=None):
+        self.builder.get_object("io_popup").popup()
 
     def hide_edit_file_menu(self, widget=None, eve=None):
         self.builder.get_object("edit_file_menu").hide()
