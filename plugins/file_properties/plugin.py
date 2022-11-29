@@ -1,11 +1,18 @@
 # Python imports
-import os, threading, subprocess, time, pwd, grp
+import os
+import threading
+import subprocess
+import time
+import pwd
+import grp
 from datetime import datetime
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib, Gio
+from gi.repository import Gtk
+from gi.repository import GLib
+from gi.repository import Gio
 
 # Application imports
 from plugins.plugin_base import PluginBase

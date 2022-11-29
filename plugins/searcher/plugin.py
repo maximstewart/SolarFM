@@ -1,10 +1,14 @@
 # Python imports
-import os, threading, inspect, time
+import os
+import threading
+import inspect
+import time
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 from plugins.plugin_base import PluginBase

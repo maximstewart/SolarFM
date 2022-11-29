@@ -1,10 +1,15 @@
 # Python imports
-import threading, subprocess, signal, json, shlex
+import threading
+import subprocess
+import signal
+import json
+import shlex
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 from ..widgets.file_preview_widget import FilePreviewWidget

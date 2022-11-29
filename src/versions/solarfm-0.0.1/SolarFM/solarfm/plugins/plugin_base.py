@@ -1,5 +1,6 @@
 # Python imports
-import os, time
+import os
+import time
 
 # Lib imports
 

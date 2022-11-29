@@ -7,24 +7,22 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
 # Application imports
-from widgets.context_menu_widget import ContextMenuWidget
-from .mixins.exception_hook_mixin import ExceptionHookMixin
-from .mixins.ui_mixin import UIMixin
-from .signals.ipc_signals_mixin import IPCSignalsMixin
-from .signals.keyboard_signals_mixin import KeyboardSignalsMixin
 from .controller_data import Controller_Data
+from .mixins.signals_mixins import SignalsMixins
+from .ui import UI
+from widgets.context_menu_widget import ContextMenuWidget
 
 
 
-class Controller(UIMixin, KeyboardSignalsMixin, IPCSignalsMixin, ExceptionHookMixin, Controller_Data):
+
+class Controller(UI, SignalsMixins, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
     def __init__(self, args, unknownargs):
         self._subscribe_to_events()
         self.setup_controller_data()
         self.generate_windows(self.fm_controller_data)
 
-        cm = ContextMenuWidget()
-        cm.build_context_menu()
+        ContextMenuWidget().build_context_menu()
 
         if args.no_plugins == "false":
             self.plugins.launch_plugins()

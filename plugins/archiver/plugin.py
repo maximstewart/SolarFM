@@ -1,5 +1,9 @@
 # Python imports
-import os, threading, subprocess, inspect, shlex
+import os
+import threading
+import subprocess
+import inspect
+import shlex
 
 # Lib imports
 import gi

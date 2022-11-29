@@ -1,5 +1,8 @@
 # Python imports
-import os, threading, subprocess, time
+import os
+import threading
+import subprocess
+import ime
 
 # Lib imports
 import gi

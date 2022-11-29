@@ -1,5 +1,7 @@
 # Python imports
-import os, inspect, json
+import os
+import inspect
+import json
 
 # Lib imports
 import gi

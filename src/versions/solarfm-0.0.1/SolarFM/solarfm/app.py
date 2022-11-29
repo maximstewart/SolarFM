@@ -1,5 +1,6 @@
 # Python imports
-import os, inspect
+import os
+import inspect
 
 # Lib imports
 

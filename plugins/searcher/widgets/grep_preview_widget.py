@@ -1,5 +1,6 @@
 # Python imports
-import base64, re
+import base64
+import re
 
 # Lib imports
 import gi

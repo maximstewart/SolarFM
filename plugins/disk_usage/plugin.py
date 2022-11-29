@@ -1,5 +1,8 @@
 # Python imports
-import os, subprocess, time, inspect
+import os
+import subprocess
+import time
+import inspect
 
 # Lib imports
 import gi

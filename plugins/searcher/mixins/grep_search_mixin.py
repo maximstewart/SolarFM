@@ -1,11 +1,17 @@
 # Python imports
-import ctypes, threading, subprocess, signal, json, shlex
+import ctypes
+import threading
+import subprocess
+import signal
+import json
+import shlex
 libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 from ..widgets.grep_preview_widget import GrepPreviewWidget

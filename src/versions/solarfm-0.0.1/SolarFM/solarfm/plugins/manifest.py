@@ -1,5 +1,6 @@
 # Python imports
-import os, json
+import os
+import json
 from os.path import join
 
 # Lib imports

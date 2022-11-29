@@ -1,6 +1,7 @@
 # Python imports
 import os, threading, time
-from multiprocessing.connection import Listener, Client
+from multiprocessing.connection import Client
+from multiprocessing.connection import Listener
 
 # Lib imports
 

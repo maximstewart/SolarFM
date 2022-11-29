@@ -6,45 +6,18 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk, GLib, Gio, GdkPixbuf
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GLib
+from gi.repository import Gio
+from gi.repository import GdkPixbuf
 
 # Application imports
-from widgets.tab_header import TabHeader
+from widgets.tab_header_widget import TabHeaderWidget
 from widgets.icon_grid_widget import IconGridWidget
 from widgets.icon_tree_widget import IconTreeWidget
 
 
-# NOTE: Consider trying to use Gtk.TreeView with css that turns it into a grid...
-# Can possibly use this to dynamicly load icons instead...
-class Icon(Gtk.HBox):
-    def __init__(self, tab, dir, file):
-        super(Icon, self).__init__()
-
-        self.load_icon(tab, dir, file)
-
-    @threaded
-    def load_icon(self, tab, dir, file):
-        icon = tab.create_icon(dir, file)
-
-        if not icon:
-            path = f"{dir}/{file}"
-            icon = self.get_system_thumbnail(path, tab.sys_icon_wh[0])
-
-        if not icon:
-            icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
-
-        self.add(Gtk.Image.new_from_pixbuf(icon))
-        self.show_all()
-
-    def get_system_thumbnail(self, file, size):
-        try:
-            gio_file  = Gio.File.new_for_path(file)
-            info      = gio_file.query_info('standard::icon' , 0, None)
-            icon      = info.get_icon().get_names()[0]
-            icon_path = self.icon_theme.lookup_icon(icon , size , 0).get_filename()
-            return GdkPixbuf.Pixbuf.new_from_file(icon_path)
-        except Exception as e:
-            return None
 
 
 class GridMixin:
@@ -96,7 +69,7 @@ class GridMixin:
 
 
     def create_tab_widget(self, tab):
-        return TabHeader(tab, self.close_tab)
+        return TabHeaderWidget(tab, self.close_tab)
 
     def create_scroll_and_store(self, tab, wid, use_tree_view=False):
         scroll = Gtk.ScrolledWindow()

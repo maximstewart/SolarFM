@@ -1,19 +1,24 @@
 # Python imports
-import os, time, shlex
+import os
+import time
+import shlex
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject, GLib, Gio
+from gi.repository import Gtk
+from gi.repository import GObject
+from gi.repository import GLib
+from gi.repository import Gio
+
 
 # Application imports
 from widgets.io_widget import IOWidget
 
 
 
-
-class WidgetFileActionMixin:
-    """docstring for WidgetFileActionMixin"""
+class FileActionSignalsMixin:
+    """docstring for FileActionSignalsMixin"""
 
     def sizeof_fmt(self, num, suffix="B"):
         for unit in ["", "K", "M", "G", "T", "Pi", "Ei", "Zi"]:

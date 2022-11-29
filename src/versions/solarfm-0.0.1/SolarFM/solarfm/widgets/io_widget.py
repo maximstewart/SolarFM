@@ -3,7 +3,8 @@
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk
+from gi.repository import Gio
 
 # Application imports
 
@@ -64,7 +65,7 @@ class IOWidget(Gtk.Box):
         self.progress.set_fraction(current/total)
 
     def finish_callback(self, file, task=None, eve=None):
-        if self._action == "move" and self._action == "rename":
+        if self._action == "move" or self._action == "rename":
             status = self._file.move_finish(task)
         if self._action == "copy":
             status = self._file.copy_finish(task)

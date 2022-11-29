@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
 # Python imports
-import argparse, faulthandler, traceback
+import argparse
+import faulthandler
+import traceback
 from setproctitle import setproctitle
 
 import tracemalloc

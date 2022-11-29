@@ -3,16 +3,17 @@
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk
+from gi.repository import Gio
 
 # Application imports
 
 
-class TabHeader(Gtk.ButtonBox):
-    """docstring for TabHeader"""
+class TabHeaderWidget(Gtk.ButtonBox):
+    """docstring for TabHeaderWidget"""
 
     def __init__(self, tab, close_tab):
-        super(TabHeader, self).__init__()
+        super(TabHeaderWidget, self).__init__()
         self._tab       = tab
         self._close_tab = close_tab # NOTE: Close method in tab_mixin
 

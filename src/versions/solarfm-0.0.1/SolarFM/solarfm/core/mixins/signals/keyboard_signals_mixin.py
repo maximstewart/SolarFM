@@ -5,12 +5,15 @@ import re
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
+from gi.repository import Gdk
 
 # Application imports
 
 
 valid_keyvalue_pat    = re.compile(r"[a-z0-9A-Z-_\[\]\(\)\| ]")
+
+
 
 
 class KeyboardSignalsMixin:

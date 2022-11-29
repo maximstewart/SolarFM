@@ -5,11 +5,12 @@
 # Application imports
 
 
+
+
 class IPCSignalsMixin:
     """ IPCSignalsMixin handle messages from another starting solarfm process. """
 
     def print_to_console(self, message=None):
-        print(self)
         print(message)
 
     def handle_file_from_ipc(self, path):

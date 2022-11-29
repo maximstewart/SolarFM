@@ -1,12 +1,20 @@
 # Python imports
-import os, threading, subprocess, time, inspect, hashlib
+import os
+import threading
+import subprocess
+import time
+import inspect
+import hashlib
 from datetime import datetime
 
 # Gtk imports
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('GdkPixbuf', '2.0')
-from gi.repository import Gtk, GLib, Gio, GdkPixbuf
+from gi.repository import Gtk
+from gi.repository import GLib
+from gi.repository import Gio
+from gi.repository import GdkPixbuf
 
 # Application imports
 from plugins.plugin_base import PluginBase

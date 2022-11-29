@@ -1,15 +1,14 @@
 # Python imports
-import os, json
+import os
+import json
 from os import path
 
 # Gtk imports
 import gi, cairo
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-
 from gi.repository import Gtk
 from gi.repository import Gdk
-
 
 # Application imports
 from .logger import Logger

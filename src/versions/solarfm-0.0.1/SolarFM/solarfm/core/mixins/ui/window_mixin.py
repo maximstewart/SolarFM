@@ -6,7 +6,8 @@ from os.path import isdir
 # Lib imports
 import gi
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gdk, Gio
+from gi.repository import Gdk
+from gi.repository import Gio
 
 # Application imports
 from .tab_mixin import TabMixin
