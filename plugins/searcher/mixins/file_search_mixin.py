@@ -4,6 +4,7 @@ import subprocess
 import signal
 import json
 import shlex
+from datetime import datetime
 
 # Lib imports
 import gi
@@ -38,8 +39,10 @@ class FileSearchMixin:
     @daemon_threaded
     def _handle_find_file_query(self, widget=None, eve=None, query=None):
         # NOTE: Freeze IPC consumption
-        self.pause_fifo_update = True
-        self.search_query      = ""
+        self.pause_fifo_update  = True
+        self.search_query       = ""
+        dt                      = datetime.now()
+        self.fsearch_time_stamp = datetime.timestamp(dt) # NOTE: Get timestamp
 
         # NOTE: Kill the former process
         if self._list_proc:

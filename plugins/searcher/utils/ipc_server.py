@@ -60,14 +60,22 @@ class IPCServer:
             msg  = conn.recv()
 
             if "SEARCH|" in msg:
-                file = msg.split("SEARCH|")[1].strip()
-                if file:
-                    GLib.idle_add(self._load_file_ui, file, priority=GLib.PRIORITY_LOW)
+                ts, file = msg.split("SEARCH|")[1].strip().split("|", 1)
+                try:
+                    timestamp = float(ts)
+                    if timestamp > self.fsearch_time_stamp and file:
+                        GLib.idle_add(self._load_file_ui, file, priority=GLib.PRIORITY_LOW)
+                except Exception as e:
+                    ...
 
             if "GREP|" in msg:
-                data = msg.split("GREP|")[1].strip()
-                if data:
-                    GLib.idle_add(self._load_grep_ui, data, priority=GLib.PRIORITY_LOW)
+                ts, data = msg.split("GREP|")[1].strip().split("|", 1)
+                try:
+                    timestamp = float(ts)
+                    if timestamp > self.grep_time_stamp and data:
+                        GLib.idle_add(self._load_grep_ui, data, priority=GLib.PRIORITY_LOW)
+                except Exception as e:
+                    ...
 
 
             conn.close()

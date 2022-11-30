@@ -37,23 +37,25 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.path              = os.path.dirname(os.path.realpath(__file__))
-        self.name              = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
-                                           #       where self.name should not be needed for message comms
-        self._GLADE_FILE       = f"{self.path}/search_dialog.glade"
+        self.path               = os.path.dirname(os.path.realpath(__file__))
+        self.name               = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
+                                            #       where self.name should not be needed for message comms
+        self._GLADE_FILE        = f"{self.path}/search_dialog.glade"
 
-        self._search_dialog    = None
-        self._active_path      = None
-        self.file_list_parent  = None
-        self.grep_list_parent  = None
-        self._file_list        = None
-        self._grep_list        = None
-        self._grep_proc        = None
-        self._list_proc        = None
-        self.pause_fifo_update = False
         self.update_list_ui_buffer = ()
-        self.grep_query        = ""
-        self.search_query      = ""
+        self._search_dialog     = None
+        self._active_path       = None
+        self.file_list_parent   = None
+        self.grep_list_parent   = None
+        self._file_list         = None
+        self._grep_list         = None
+        self._grep_proc         = None
+        self._list_proc         = None
+        self.pause_fifo_update  = False
+        self.grep_time_stamp    = None
+        self.fsearch_time_stamp = None
+        self.grep_query         = ""
+        self.search_query       = ""
 
 
     def run(self):
