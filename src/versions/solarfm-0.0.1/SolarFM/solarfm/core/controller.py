@@ -1,10 +1,13 @@
 # Python imports
-import os, gc, time
+import os
+import gc
+import time
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 from .controller_data import Controller_Data
@@ -122,6 +125,8 @@ class Controller(UI, SignalsMixins, Controller_Data):
             self.cut_files()
         if action == "copy":
             self.copy_files()
+        if action == "copy_name":
+            self.copy_name()
         if action == "paste":
             self.paste_files()
         if action == "create":
@@ -130,6 +135,21 @@ class Controller(UI, SignalsMixins, Controller_Data):
             self.save_load_session(action)
 
 
+    def set_to_title_case(self, widget, eve=None):
+        rename_widget = self.builder.get_object("new_rename_fname")
+        rename_widget.set_text( rename_widget.get_text().title() )
+
+    def set_to_upper_case(self, widget, eve=None):
+        rename_widget = self.builder.get_object("new_rename_fname")
+        rename_widget.set_text( rename_widget.get_text().upper() )
+
+    def set_to_lower_case(self, widget, eve=None):
+        rename_widget = self.builder.get_object("new_rename_fname")
+        rename_widget.set_text( rename_widget.get_text().lower() )
+
+    def set_to_invert_case(self, widget, eve=None):
+        rename_widget = self.builder.get_object("new_rename_fname")
+        rename_widget.set_text( rename_widget.get_text().swapcase() )
 
 
     @endpoint_registry.register(rule="go_home")

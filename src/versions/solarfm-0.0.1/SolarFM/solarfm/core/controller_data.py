@@ -1,5 +1,8 @@
 # Python imports
-import sys, os, signal
+import sys
+import os
+import signal
+import subprocess
 from dataclasses import dataclass
 
 # Lib imports
@@ -161,3 +164,15 @@ class Controller_Data:
         ''' Clear children of a gtk widget. '''
         for child in widget.get_children():
             widget.remove(child)
+
+    def get_clipboard_data(self) -> str:
+        proc    = subprocess.Popen(['xclip','-selection', 'clipboard', '-o'], stdout=subprocess.PIPE)
+        retcode = proc.wait()
+        data    = proc.stdout.read()
+        return data.decode("utf-8").strip()
+
+    def set_clipboard_data(self, data: type) -> None:
+        proc = subprocess.Popen(['xclip','-selection','clipboard'], stdin=subprocess.PIPE)
+        proc.stdin.write(data.encode("utf-8"))
+        proc.stdin.close()
+        retcode = proc.wait()

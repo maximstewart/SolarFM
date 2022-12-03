@@ -188,6 +188,13 @@ class FileActionSignalsMixin:
         uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         self.to_cut_files = uris
 
+    def copy_name(self):
+        state = self.get_current_state()
+        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
+        if len(uris) == 1:
+            file_name = uris[0].split("/")[-1]
+            self.set_clipboard_data(file_name)
+
     def copy_files(self):
         self.to_cut_files.clear()
         state = self.get_current_state()

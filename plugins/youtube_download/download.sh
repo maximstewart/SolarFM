@@ -10,8 +10,10 @@
 function main() {
     cd "$(dirname "")"
     echo "Working Dir: " $(pwd)
-
     LINK=`xclip -selection clipboard -o`
-    yt-dlp --write-sub --embed-sub --sub-langs en -o "${1}/%(title)s.%(ext)s" "${LINK}"
+
+    python "${HOME}/.config/solarfm/plugins/youtube_download/yt_dlp/__main__.py" \
+            --cookies-from-browser firefox --write-sub --embed-sub --sub-langs en \
+            -o "${1}/%(title)s.%(ext)s" "${LINK}"
 }
 main "$@";
