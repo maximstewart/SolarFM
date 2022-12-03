@@ -19,20 +19,21 @@ from .keybindings import Keybindings
 
 class Settings:
     def __init__(self):
-        self._SCRIPT_PTH    = os.path.dirname(os.path.realpath(__file__))
-        self._USER_HOME     = path.expanduser('~')
-        self._CONFIG_PATH   = f"{self._USER_HOME}/.config/{app_name.lower()}"
-        self._PLUGINS_PATH  = f"{self._CONFIG_PATH}/plugins"
-        self._USR_SOLARFM   = f"/usr/share/{app_name.lower()}"
+        self._SCRIPT_PTH      = os.path.dirname(os.path.realpath(__file__))
+        self._USER_HOME       = path.expanduser('~')
+        self._CONFIG_PATH     = f"{self._USER_HOME}/.config/{app_name.lower()}"
+        self._UI_WIDEGTS_PATH = f"{self._CONFIG_PATH}/ui_widgets"
+        self._PLUGINS_PATH    = f"{self._CONFIG_PATH}/plugins"
+        self._USR_SOLARFM     = f"/usr/share/{app_name.lower()}"
 
-        self._CSS_FILE      = f"{self._CONFIG_PATH}/stylesheet.css"
-        self._GLADE_FILE    = f"{self._CONFIG_PATH}/Main_Window.glade"
-        self._KEY_BINDINGS  = f"{self._CONFIG_PATH}/key-bindings.json"
-        self._DEFAULT_ICONS = f"{self._CONFIG_PATH}/icons"
-        self._WINDOW_ICON   = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
-        self._CONTEXT_MENU  = f"{self._CONFIG_PATH}/contexct_menu.json"
-        self._PID_FILE      = f"{self._CONFIG_PATH}/{app_name.lower()}.pid"
-        self._ICON_THEME    = Gtk.IconTheme.get_default()
+        self._CSS_FILE        = f"{self._CONFIG_PATH}/stylesheet.css"
+        self._GLADE_FILE      = f"{self._CONFIG_PATH}/Main_Window.glade"
+        self._KEY_BINDINGS    = f"{self._CONFIG_PATH}/key-bindings.json"
+        self._DEFAULT_ICONS   = f"{self._CONFIG_PATH}/icons"
+        self._WINDOW_ICON     = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
+        self._CONTEXT_MENU    = f"{self._CONFIG_PATH}/contexct_menu.json"
+        self._PID_FILE        = f"{self._CONFIG_PATH}/{app_name.lower()}.pid"
+        self._ICON_THEME      = Gtk.IconTheme.get_default()
 
         if not os.path.exists(self._CONFIG_PATH):
             os.mkdir(self._CONFIG_PATH)
@@ -149,8 +150,9 @@ class Settings:
 
 
     def get_context_menu_data(self) -> Gtk.Builder:  return self._context_menu_data
-    def get_main_window(self)   -> Gtk.ApplicationWindow: return self._main_window
-    def get_builder(self)       -> Gtk.Builder:  return self._builder
+    def get_main_window(self)       -> Gtk.ApplicationWindow: return self._main_window
+    def get_builder(self)           -> Gtk.Builder:  return self._builder
+    def get_ui_widgets_path(self)   -> Gtk.Builder:  return self._UI_WIDEGTS_PATH
     def get_logger(self)        -> Logger:       return self._logger
     def get_keybindings(self)   -> Keybindings:  return self._keybindings
     def get_plugins_path(self)  -> str:          return self._PLUGINS_PATH

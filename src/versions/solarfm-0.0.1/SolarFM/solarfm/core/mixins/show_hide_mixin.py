@@ -119,14 +119,6 @@ class ShowHideMixin:
     def show_io_popup(self, widget=None, eve=None):
         self.builder.get_object("io_popup").popup()
 
-    def hide_edit_file_menu(self, widget=None, eve=None):
-        self.builder.get_object("edit_file_menu").hide()
-
-    def hide_edit_file_menu_enter_key(self, widget=None, eve=None):
-        keyname = Gdk.keyval_name(eve.keyval).lower()
-        if keyname in ["return", "enter"]:
-            self.builder.get_object("edit_file_menu").hide()
-
     def hide_edit_file_menu_skip(self, widget=None, eve=None):
         self.edit_file_menu.response(Gtk.ResponseType.CLOSE)
 

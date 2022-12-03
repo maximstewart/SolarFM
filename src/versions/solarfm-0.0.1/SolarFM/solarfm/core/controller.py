@@ -13,7 +13,6 @@ from gi.repository import GLib
 from .controller_data import Controller_Data
 from .mixins.signals_mixins import SignalsMixins
 from .ui import UI
-from widgets.context_menu_widget import ContextMenuWidget
 
 
 
@@ -24,8 +23,6 @@ class Controller(UI, SignalsMixins, Controller_Data):
         self._subscribe_to_events()
         self.setup_controller_data()
         self.generate_windows(self.fm_controller_data)
-
-        ContextMenuWidget().build_context_menu()
 
         if args.no_plugins == "false":
             self.plugins.launch_plugins()
@@ -109,7 +106,7 @@ class Controller(UI, SignalsMixins, Controller_Data):
 
         self.hide_context_menu()
         self.hide_new_file_menu()
-        self.hide_edit_file_menu()
+        event_system.emit("do_hide_edit_file_menu")
 
         if action == "open":
             self.open_files()
@@ -133,23 +130,6 @@ class Controller(UI, SignalsMixins, Controller_Data):
             self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
-
-
-    def set_to_title_case(self, widget, eve=None):
-        rename_widget = self.builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().title() )
-
-    def set_to_upper_case(self, widget, eve=None):
-        rename_widget = self.builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().upper() )
-
-    def set_to_lower_case(self, widget, eve=None):
-        rename_widget = self.builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().lower() )
-
-    def set_to_invert_case(self, widget, eve=None):
-        rename_widget = self.builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().swapcase() )
 
 
     @endpoint_registry.register(rule="go_home")

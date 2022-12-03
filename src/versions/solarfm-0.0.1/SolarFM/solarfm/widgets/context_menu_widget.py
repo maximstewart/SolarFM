@@ -18,6 +18,8 @@ class ContextMenuWidget(Gtk.Menu):
         self._context_menu_data = settings.get_context_menu_data()
         self._window            = settings.get_main_window()
 
+        self.build_context_menu()
+
 
     def make_submenu(self, name, data, keys):
         menu      = Gtk.Menu()

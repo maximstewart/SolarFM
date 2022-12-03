@@ -179,7 +179,7 @@ class FileActionSignalsMixin:
 
         self.skip_edit   = False
         self.cancel_edit = False
-        self.hide_edit_file_menu()
+        event_system.emit("do_hide_edit_file_menu")
         self.selected_files.clear()
 
     def cut_files(self):

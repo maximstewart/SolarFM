@@ -12,6 +12,8 @@ from gi.repository import Gtk
 from gi.repository import GLib
 
 # Application imports
+from widgets.context_menu_widget import ContextMenuWidget
+from widgets.rename_widget import RenameWidget
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
 
@@ -36,6 +38,9 @@ class Controller_Data:
     def setup_controller_data(self) -> None:
         self.builder             = settings.get_builder()
         self.keybindings         = settings.get_keybindings()
+
+        RenameWidget()
+        ContextMenuWidget()
 
         self.fm_controller       = WindowController()
         self.plugins             = PluginsController()
