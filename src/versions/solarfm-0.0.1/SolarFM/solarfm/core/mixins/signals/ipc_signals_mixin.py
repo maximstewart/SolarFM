@@ -14,6 +14,11 @@ class IPCSignalsMixin:
         print(message)
 
     def handle_file_from_ipc(self, path):
+        window = self.builder.get_object("main_window")
+        window.deiconify()
+        window.show()
+        window.present()
+
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         notebook = self.builder.get_object(f"window_{wid}")
         if notebook.is_visible():
