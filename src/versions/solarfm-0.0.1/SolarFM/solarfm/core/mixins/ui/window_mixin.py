@@ -252,15 +252,20 @@ class WindowMixin(TabMixin):
         data.set_text(uris_text, -1)
 
     def grid_on_drag_motion(self, icons_grid, drag_context, x, y, data):
-        current   = '|'.join(self.fm_controller.get_active_wid_and_tid())
-        target    = icons_grid.get_name()
-        wid, tid  = target.split("|")
-        store     = icons_grid.get_model()
-        treePath  = icons_grid.get_drag_dest_item().path
+        current     = '|'.join(self.fm_controller.get_active_wid_and_tid())
+        target      = icons_grid.get_name()
+        wid, tid    = target.split("|")
+        store       = icons_grid.get_model()
+        path_at_loc = None
 
-        if treePath:
-            uri = self.format_to_uris(store, wid, tid, treePath)[0].replace("file://", "")
-            self.override_drop_dest = uri if isdir(uri) else None
+        try:
+            path_at_loc           = icons_grid.get_item_at_pos(x, y)[0]
+            highlighted_item_path = icons_grid.get_drag_dest_item().path
+            if path_at_loc and path_at_loc == highlighted_item_path:
+                uri = self.format_to_uris(store, wid, tid, highlighted_item_path)[0].replace("file://", "")
+                self.override_drop_dest = uri if isdir(uri) else None
+        except Exception as e:
+            ...
 
         if target not in current:
             self.fm_controller.set_wid_and_tid(wid, tid)
