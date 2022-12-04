@@ -9,6 +9,8 @@ from gi.repository import Gtk
 # Application imports
 
 
+
+
 class AppchooserWidget:
     """docstring for AppchooserWidget."""
 

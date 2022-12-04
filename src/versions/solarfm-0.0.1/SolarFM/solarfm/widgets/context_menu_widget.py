@@ -9,6 +9,8 @@ from gi.repository import Gtk
 # Application imports
 
 
+
+
 class ContextMenuWidget(Gtk.Menu):
     """docstring for ContextMenuWidget"""
 

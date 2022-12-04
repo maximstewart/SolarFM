@@ -188,7 +188,7 @@ class WindowMixin(TabMixin):
 
     def grid_icon_single_click(self, icons_grid, eve):
         try:
-            self.path_menu.popdown()
+            event_system.emit("hide_path_menu")
             wid, tid = icons_grid.get_name().split("|")
             self.fm_controller.set_wid_and_tid(wid, tid)
             self.set_path_text(wid, tid)

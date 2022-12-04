@@ -9,6 +9,8 @@ from gi.repository import Gtk
 # Application imports
 
 
+
+
 class PluginsPopupWidget(Gtk.Popover):
     """docstring for PluginsPopupWidget."""
 
@@ -37,6 +39,8 @@ class PluginsPopupWidget(Gtk.Popover):
 
     def _load_widgets(self):
         vbox = Gtk.Box()
+
+        vbox.set_orientation(Gtk.Orientation.VERTICAL)
         self.builder.expose_object(f"plugin_control_list", vbox)
         self.add(vbox)
 

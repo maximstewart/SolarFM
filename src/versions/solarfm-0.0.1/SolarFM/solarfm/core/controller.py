@@ -13,6 +13,8 @@ from gi.repository import GLib
 from .controller_data import Controller_Data
 from .mixins.signals_mixins import SignalsMixins
 
+from widgets.popups.message_popup_widget import MessagePopupWidget
+from widgets.popups.path_menu_popup_widget import PathMenuPopupWidget
 from widgets.popups.plugins_popup_widget import PluginsPopupWidget
 from widgets.popups.io_popup_widget import IOPopupWidget
 
@@ -56,6 +58,8 @@ class Controller(UI, SignalsMixins, Controller_Data):
     # NOTE: Really we will move these to the UI/(New) Window 'base' controller
     #       after we're done cleaning and refactoring to use fewer mixins.
     def _load_widgets(self):
+        MessagePopupWidget()
+        PathMenuPopupWidget()
         PluginsPopupWidget()
         IOPopupWidget()
         ContextMenuWidget()
@@ -68,7 +72,6 @@ class Controller(UI, SignalsMixins, Controller_Data):
     def _subscribe_to_events(self):
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
         event_system.subscribe("get_current_state", self.get_current_state)
-        event_system.subscribe("display_message", self.display_message)
         event_system.subscribe("go_to_path", self.go_to_path)
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
         # NOTE: Needs to be moved (probably just to file actions class) after reducing mixins usage
@@ -171,7 +174,8 @@ class Controller(UI, SignalsMixins, Controller_Data):
             event_system.emit("show_io_popup")
         if action == "plugins_popup":
             event_system.emit("show_plugins_popup")
-
+        if action == "messages_popup":
+            event_system.emit("show_messages_popup")
 
 
     @endpoint_registry.register(rule="go_home")

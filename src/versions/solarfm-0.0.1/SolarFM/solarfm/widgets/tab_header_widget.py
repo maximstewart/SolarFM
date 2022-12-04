@@ -8,6 +8,8 @@ from gi.repository import Gtk
 # Application imports
 
 
+
+
 class TabHeaderWidget(Gtk.ButtonBox):
     """docstring for TabHeaderWidget"""
 

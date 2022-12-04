@@ -11,6 +11,8 @@ from gi.repository import Gdk
 # Application imports
 
 
+
+
 class RenameWidget:
     """docstring for RenameWidget."""
 

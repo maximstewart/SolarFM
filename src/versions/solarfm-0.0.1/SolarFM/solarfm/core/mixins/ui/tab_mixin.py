@@ -167,9 +167,9 @@ class TabMixin(GridMixin):
                             show_path_menu = True
 
                 if not show_path_menu:
-                    self.path_menu.popdown()
+                    event_system.emit("hide_path_menu")
                 else:
-                    self.path_menu.popup()
+                    event_system.emit("show_path_menu")
                     widget.grab_focus_without_selecting()
                     widget.set_position(-1)
 
@@ -194,7 +194,7 @@ class TabMixin(GridMixin):
         path_entry.set_text(path)
         path_entry.grab_focus_without_selecting()
         path_entry.set_position(-1)
-        self.path_menu.popdown()
+        event_system.emit("hide_path_menu")
 
     def show_hide_hidden_files(self):
         wid, tid = self.fm_controller.get_active_wid_and_tid()

@@ -9,6 +9,8 @@ from gi.repository import Gtk
 # Application imports
 
 
+
+
 class IOPopupWidget(Gtk.Popover):
     """docstring for IOPopupWidget."""
 
@@ -29,12 +31,15 @@ class IOPopupWidget(Gtk.Popover):
         self.set_relative_to(io_button)
         self.set_modal(True)
         self.set_position(Gtk.PositionType.BOTTOM)
+        self.set_size_request(320, 280)
 
     def _setup_signals(self):
         event_system.subscribe("show_io_popup", self.show_io_popup)
 
     def _load_widgets(self):
         vbox = Gtk.Box()
+
+        vbox.set_orientation(Gtk.Orientation.VERTICAL)
         self.builder.expose_object(f"io_list", vbox)
         self.add(vbox)
 

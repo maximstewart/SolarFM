@@ -55,7 +55,6 @@ class Controller_Data:
 
         self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
         self.warning_alert      = self.builder.get_object("warning_alert")
-        self.path_menu          = self.builder.get_object("path_menu")
         self.path_entry         = self.builder.get_object("path_entry")
 
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")

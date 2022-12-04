@@ -12,6 +12,8 @@ from gi.repository import GdkPixbuf
 # Application imports
 
 
+
+
 class IconGridWidget(Gtk.IconView):
     """docstring for IconGridWidget"""
 

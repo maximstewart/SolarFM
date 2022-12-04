@@ -32,7 +32,6 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-stop</property>
   </object>
-  <object class="GtkTextBuffer" id="message_buffer"/>
   <object class="GtkFileChooserDialog" id="save_load_dialog">
     <property name="can-focus">False</property>
     <property name="type-hint">dialog</property>
@@ -254,11 +253,12 @@
                                 <child>
                                   <object class="GtkImageMenuItem">
                                     <property name="label">Show Errors</property>
+                                    <property name="name">messages_popup</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="image">image3</property>
                                     <property name="use-stock">False</property>
-                                    <signal name="button-release-event" handler="show_messages_popup" swapped="no"/>
+                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -897,94 +897,6 @@
             <property name="fill">True</property>
             <property name="position">3</property>
           </packing>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="message_popup_widget">
-    <property name="width-request">320</property>
-    <property name="can-focus">False</property>
-    <property name="hexpand">True</property>
-    <property name="relative-to">main_menu_bar</property>
-    <property name="position">bottom</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkButton">
-            <property name="label">gtk-save-as</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="use-stock">True</property>
-            <signal name="button-release-event" handler="save_debug_alerts" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow">
-            <property name="height-request">600</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="shadow-type">in</property>
-            <property name="overlay-scrolling">False</property>
-            <child>
-              <object class="GtkTextView" id="message_text_view">
-                <property name="name">message_view</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="editable">False</property>
-                <property name="cursor-visible">False</property>
-                <property name="buffer">message_buffer</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="path_menu">
-    <property name="width-request">240</property>
-    <property name="height-request">420</property>
-    <property name="can-focus">False</property>
-    <property name="relative-to">path_entry</property>
-    <property name="position">bottom</property>
-    <property name="modal">False</property>
-    <child>
-      <object class="GtkScrolledWindow">
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <property name="shadow-type">in</property>
-        <property name="overlay-scrolling">False</property>
-        <child>
-          <object class="GtkViewport">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <child>
-              <object class="GtkButtonBox" id="path_menu_buttons">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="orientation">vertical</property>
-                <property name="layout-style">start</property>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-            </child>
-          </object>
         </child>
       </object>
     </child>
