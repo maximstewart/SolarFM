@@ -3,9 +3,7 @@
 # Gtk imports
 import gi
 gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
-from gi.repository import Gdk
 
 # Application imports
 
@@ -54,44 +52,5 @@ class ShowHideMixin:
     def hide_plugins_popup(self, widget=None, eve=None):
         self.builder.get_object("plugin_controls").hide()
 
-    def show_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu").popup_at_pointer(None)
-
-    def hide_context_menu(self, widget=None, eve=None):
-        self.builder.get_object("context_menu").popdown()
-
-    def show_new_file_menu(self, widget=None, eve=None):
-        if widget:
-            widget.set_text("")
-            widget.grab_focus()
-
-        response = self.new_file_menu.run()
-        if response == Gtk.ResponseType.CANCEL:
-            self.cancel_creation = True
-
-    def hide_new_file_menu(self, widget=None, eve=None):
-        self.builder.get_object("new_file_menu").hide()
-
-    def hide_new_file_menu_enter_key(self, widget=None, eve=None):
-        keyname = Gdk.keyval_name(eve.keyval).lower()
-        if keyname in ["return", "enter"]:
-            self.builder.get_object("new_file_menu").hide()
-
-    def show_edit_file_menu(self, widget=None, eve=None):
-        if widget:
-            widget.grab_focus()
-
-        response = self.edit_file_menu.run()
-        if response == Gtk.ResponseType.CLOSE:
-            self.skip_edit   = True
-        if response == Gtk.ResponseType.CANCEL:
-            self.cancel_edit = True
-
     def show_io_popup(self, widget=None, eve=None):
         self.builder.get_object("io_popup").popup()
-
-    def hide_edit_file_menu_skip(self, widget=None, eve=None):
-        self.edit_file_menu.response(Gtk.ResponseType.CLOSE)
-
-    def hide_edit_file_menu_cancel(self, widget=None, eve=None):
-        self.edit_file_menu.response(Gtk.ResponseType.CANCEL)

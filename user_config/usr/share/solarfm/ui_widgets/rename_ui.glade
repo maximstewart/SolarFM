@@ -13,7 +13,7 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-media-forward</property>
   </object>
-  <object class="GtkDialog" id="edit_file_menu">
+  <object class="GtkDialog" id="rename_file_menu">
     <property name="can-focus">False</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
@@ -116,7 +116,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="new_rename_fname">
+              <object class="GtkEntry" id="rename_fname">
                 <property name="width-request">500</property>
                 <property name="height-request">26</property>
                 <property name="visible">True</property>
@@ -130,7 +130,7 @@
                 <property name="primary-icon-sensitive">False</property>
                 <property name="secondary-icon-sensitive">False</property>
                 <property name="placeholder-text" translatable="yes">To:</property>
-                <signal name="key-release-event" handler="hide_edit_file_menu_enter_key" swapped="no"/>
+                <signal name="key-release-event" handler="hide_rename_file_menu_enter_key" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -216,7 +216,7 @@
                 <property name="receives-default">True</property>
                 <property name="image">rename_img</property>
                 <property name="always-show-image">True</property>
-                <signal name="button-release-event" handler="hide_edit_file_menu" swapped="no"/>
+                <signal name="button-release-event" handler="hide_rename_file_menu" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

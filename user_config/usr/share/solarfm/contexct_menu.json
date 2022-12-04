@@ -6,11 +6,12 @@
         "Execute in Terminal": ["STOCK_EXECUTE", "execute_in_terminal"]
     },
     "File Actions": {
-        "New":    ["STOCK_ADD", "create"],
-        "Rename": ["STOCK_EDIT", "rename"],
-        "Cut":    ["STOCK_CUT", "cut"],
-        "Copy":   ["STOCK_COPY", "copy"],
-        "Paste":  ["STOCK_PASTE", "paste"]
+        "New":       ["STOCK_ADD", "create"],
+        "Rename":    ["STOCK_EDIT", "rename"],
+        "Cut":       ["STOCK_CUT", "cut"],
+        "Copy":      ["STOCK_COPY", "copy"],
+        "Copy Name": ["STOCK_COPY", "copy_name"],
+        "Paste":     ["STOCK_PASTE", "paste"]
     },
     "Plugins": {}
 }

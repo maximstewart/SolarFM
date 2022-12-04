@@ -201,7 +201,7 @@ class WindowMixin(TabMixin):
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
                     self.grid_icon_double_click(icons_grid)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
-                self.show_context_menu()
+                event_system.emit("show_context_menu")
 
         except WindowException as e:
             print(repr(e))

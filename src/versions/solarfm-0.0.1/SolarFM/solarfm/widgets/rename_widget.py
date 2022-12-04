@@ -21,13 +21,13 @@ class RenameWidget:
         self._builder = Gtk.Builder()
 
         self._builder.add_from_file(_GLADE_FILE)
-        edit_file_menu   = self._builder.get_object("edit_file_menu")
-        new_rename_fname = self._builder.get_object("new_rename_fname")
-        file_to_rename_label = self._builder.get_object("file_to_rename_label")
+        self._rename_file_menu     = self._builder.get_object("rename_file_menu")
+        self._rename_fname         = self._builder.get_object("rename_fname")
+        self._file_to_rename_label = self._builder.get_object("file_to_rename_label")
 
-        builder.expose_object(f"edit_file_menu", edit_file_menu)
-        builder.expose_object(f"new_rename_fname", new_rename_fname)
-        builder.expose_object(f"file_to_rename_label", file_to_rename_label)
+        builder.expose_object(f"rename_file_menu", self._rename_file_menu)
+        builder.expose_object(f"rename_fname", self._rename_fname)
+        builder.expose_object(f"file_to_rename_label", self._file_to_rename_label)
 
         self._setup_styling()
         self._setup_signals()
@@ -38,7 +38,8 @@ class RenameWidget:
         ...
 
     def _setup_signals(self):
-        event_system.subscribe("do_hide_edit_file_menu", self.hide_edit_file_menu)
+        event_system.subscribe("show_rename_file_menu", self.show_rename_file_menu)
+        event_system.subscribe("hide_rename_file_menu", self.hide_rename_file_menu)
 
         classes  = [self]
         handlers = {}
@@ -55,26 +56,35 @@ class RenameWidget:
     def _load_widgets(self):
         ...
 
+    def show_rename_file_menu(self, widget=None, eve=None):
+        if widget:
+            widget.grab_focus()
+
+        response = self._rename_file_menu.run()
+        if response == Gtk.ResponseType.CLOSE:
+            return "skip_edit"
+        if response == Gtk.ResponseType.CANCEL:
+            return "cancel_edit"
+
+        return ""
+
+
     def set_to_title_case(self, widget, eve=None):
-        rename_widget = self._builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().title() )
+        self._rename_fname.set_text( self._rename_fname.get_text().title() )
 
     def set_to_upper_case(self, widget, eve=None):
-        rename_widget = self._builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().upper() )
+        self._rename_fname.set_text( self._rename_fname.get_text().upper() )
 
     def set_to_lower_case(self, widget, eve=None):
-        rename_widget = self._builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().lower() )
+        self._rename_fname.set_text( self._rename_fname.get_text().lower() )
 
     def set_to_invert_case(self, widget, eve=None):
-        rename_widget = self._builder.get_object("new_rename_fname")
-        rename_widget.set_text( rename_widget.get_text().swapcase() )
+        self._rename_fname.set_text( self._rename_fname.get_text().swapcase() )
 
-    def hide_edit_file_menu(self, widget=None, eve=None):
-        self._builder.get_object("edit_file_menu").hide()
+    def hide_rename_file_menu(self, widget=None, eve=None):
+        self._rename_file_menu.hide()
 
-    def hide_edit_file_menu_enter_key(self, widget=None, eve=None):
+    def hide_rename_file_menu_enter_key(self, widget=None, eve=None):
         keyname = Gdk.keyval_name(eve.keyval).lower()
         if keyname in ["return", "enter"]:
-            self._builder.get_object("edit_file_menu").hide()
+            self._rename_file_menu.hide()

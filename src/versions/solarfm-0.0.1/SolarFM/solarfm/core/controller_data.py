@@ -12,6 +12,7 @@ from gi.repository import Gtk
 from gi.repository import GLib
 
 # Application imports
+from widgets.new_file_widget import NewFileWidget
 from widgets.rename_widget import RenameWidget
 from widgets.file_exists_widget import FileExistsWidget
 from widgets.context_menu_widget import ContextMenuWidget
@@ -41,6 +42,7 @@ class Controller_Data:
         self.builder             = settings.get_builder()
         self.keybindings         = settings.get_keybindings()
 
+        NewFileWidget()
         RenameWidget()
         FileExistsWidget()
         ContextMenuWidget()
@@ -61,11 +63,6 @@ class Controller_Data:
 
         self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
         self.warning_alert      = self.builder.get_object("warning_alert")
-        self.new_file_menu      = self.builder.get_object("new_file_menu")
-        self.edit_file_menu     = self.builder.get_object("edit_file_menu")
-        self.file_exists_dialog = self.builder.get_object("file_exists_dialog")
-        self.exists_file_label  = self.builder.get_object("exists_file_label")
-        self.exists_file_field  = self.builder.get_object("exists_file_field")
         self.path_menu          = self.builder.get_object("path_menu")
         self.path_entry         = self.builder.get_object("path_entry")
 
@@ -92,9 +89,6 @@ class Controller_Data:
 
         self.override_drop_dest = None
 
-        self.cancel_creation    = False
-        self.skip_edit          = False
-        self.cancel_edit        = False
         self.ctrl_down          = False
         self.shift_down         = False
         self.alt_down           = False

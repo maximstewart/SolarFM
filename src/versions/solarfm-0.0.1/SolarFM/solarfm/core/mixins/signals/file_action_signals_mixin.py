@@ -21,7 +21,7 @@ class FileActionSignalsMixin:
     """docstring for FileActionSignalsMixin"""
 
     def get_dir_size(self, sdir):
-        """Get the size of a directory.  Based on code found online."""
+        """Get the size of a directory. Based on code found online."""
         size = os.path.getsize(sdir)
 
         for item in os.listdir(sdir):
@@ -147,7 +147,7 @@ class FileActionSignalsMixin:
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
-        rename_input = self.builder.get_object("new_rename_fname")
+        rename_input = self.builder.get_object("rename_fname")
         state        = self.get_current_state()
         uris         = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
 
@@ -156,23 +156,18 @@ class FileActionSignalsMixin:
             rename_label.set_label(entry)
             rename_input.set_text(entry)
 
-            self.show_edit_file_menu(rename_input)
-
-            if self.skip_edit:
-                self.skip_edit   = False
+            response = event_system.emit_and_await("show_rename_file_menu", rename_input)
+            if response == "skip_edit":
                 continue
-            if self.cancel_edit:
-                self.cancel_edit = False
+            if response == "cancel_edit":
                 break
 
             rname_to = rename_input.get_text().strip()
-            target   = f"{state.tab.get_current_directory()}/{rname_to}"
-            self.handle_files([uri], "rename", target)
+            if rname_to:
+                target = f"{state.tab.get_current_directory()}/{rname_to}"
+                self.handle_files([uri], "rename", target)
 
-
-        self.skip_edit   = False
-        self.cancel_edit = False
-        event_system.emit("do_hide_edit_file_menu")
+        event_system.emit("hide_rename_file_menu")
         self.selected_files.clear()
 
     def cut_files(self):
@@ -205,15 +200,15 @@ class FileActionSignalsMixin:
             self.handle_files(self.to_cut_files, "move", target)
 
     def create_files(self):
-        fname_field = self.builder.get_object("new_fname_field")
-        self.show_new_file_menu(fname_field)
+        fname_field     = self.builder.get_object("new_fname_field")
+        cancel_creation = event_system.emit_and_await("show_new_file_menu", fname_field)
 
-        if self.cancel_creation:
-            self.cancel_creation = False
+        if cancel_creation:
+            event_system.emit("hide_new_file_menu")
             return
 
         file_name   = fname_field.get_text().strip()
-        type        = self.builder.get_object("context_menu_type_toggle").get_state()
+        type        = self.builder.get_object("new_file_toggle_type").get_state()
 
         wid, tid    = self.fm_controller.get_active_wid_and_tid()
         tab         = self.get_fm_window(wid).get_tab_by_id(tid)
@@ -227,8 +222,7 @@ class FileActionSignalsMixin:
             else:                # Create Folder
                 self.handle_files([path], "create_dir")
 
-        self.cancel_creation    = False
-        self.hide_new_file_menu()
+        event_system.emit("hide_new_file_menu")
 
 
     def move_files(self, files, target):
@@ -277,7 +271,7 @@ class FileActionSignalsMixin:
 
                     if response == "rename":
                         base_path = _file.get_parent().get_path()
-                        new_name  = self.exists_file_field.get_text().strip()
+                        new_name  = self.builder.get_object("exists_file_field").get_text().strip()
                         rfPath    = f"{base_path}/{new_name}"
                         _file     = Gio.File.new_for_path(rfPath)
 

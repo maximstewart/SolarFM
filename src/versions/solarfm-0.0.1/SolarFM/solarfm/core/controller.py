@@ -38,7 +38,6 @@ class Controller(UI, SignalsMixins, Controller_Data):
         event_system.subscribe("get_current_state", self.get_current_state)
         event_system.subscribe("display_message", self.display_message)
         event_system.subscribe("go_to_path", self.go_to_path)
-        event_system.subscribe("do_hide_context_menu", self.do_hide_context_menu)
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
 
     def tear_down(self, widget=None, eve=None):
@@ -104,9 +103,9 @@ class Controller(UI, SignalsMixins, Controller_Data):
         else:
             action = widget
 
-        self.hide_context_menu()
-        self.hide_new_file_menu()
-        event_system.emit("do_hide_edit_file_menu")
+        event_system.emit("hide_context_menu")
+        event_system.emit("hide_new_file_menu")
+        event_system.emit("hide_rename_file_menu")
 
         if action == "open":
             self.open_files()
@@ -161,6 +160,3 @@ class Controller(UI, SignalsMixins, Controller_Data):
 
     def go_to_path(self, path):
         self.path_entry.set_text(path)
-
-    def do_hide_context_menu(self):
-        self.hide_context_menu()
