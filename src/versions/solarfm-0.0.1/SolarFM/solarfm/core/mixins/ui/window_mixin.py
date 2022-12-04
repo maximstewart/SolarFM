@@ -90,8 +90,8 @@ class WindowMixin(TabMixin):
         current_directory    = tab.get_current_directory()
         path_file            = Gio.File.new_for_path(current_directory)
         mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
-        formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
-        formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
+        formatted_mount_free = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
+        formatted_mount_size = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
 
         # NOTE: Hides empty trash and other desired buttons based on context.
         if self.trash_files_path == current_directory:
@@ -117,7 +117,7 @@ class WindowMixin(TabMixin):
                         print(repr(e))
 
 
-            formatted_size = self.sizeof_fmt(combined_size)
+            formatted_size = sizeof_fmt(combined_size)
             if tab.is_hiding_hidden():
                 self.bottom_path_label.set_label(f" {len(uris)} / {tab.get_files_count()} ({formatted_size})")
             else:

@@ -22,6 +22,13 @@ def daemon_threaded_wrapper(fn):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
+def sizeof_fmt_def(num, suffix="B"):
+    for unit in ["", "K", "M", "G", "T", "Pi", "Ei", "Zi"]:
+        if abs(num) < 1024.0:
+            return f"{num:3.1f} {unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f} Yi{suffix}"
+
 
 
 # NOTE: Just reminding myself we can add to builtins two different ways...
@@ -34,4 +41,5 @@ builtins.endpoint_registry = EndpointRegistry()
 
 builtins.threaded          = threaded_wrapper
 builtins.daemon_threaded   = daemon_threaded_wrapper
+builtins.sizeof_fmt        = sizeof_fmt_def
 builtins.event_sleep_time  = 0.05

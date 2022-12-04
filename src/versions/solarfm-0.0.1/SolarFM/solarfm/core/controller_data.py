@@ -12,10 +12,12 @@ from gi.repository import Gtk
 from gi.repository import GLib
 
 # Application imports
-from widgets.context_menu_widget import ContextMenuWidget
 from widgets.rename_widget import RenameWidget
+from widgets.file_exists_widget import FileExistsWidget
+from widgets.context_menu_widget import ContextMenuWidget
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
+
 
 
 @dataclass(slots=True)
@@ -40,6 +42,7 @@ class Controller_Data:
         self.keybindings         = settings.get_keybindings()
 
         RenameWidget()
+        FileExistsWidget()
         ContextMenuWidget()
 
         self.fm_controller       = WindowController()

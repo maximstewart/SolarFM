@@ -20,13 +20,6 @@ from widgets.io_widget import IOWidget
 class FileActionSignalsMixin:
     """docstring for FileActionSignalsMixin"""
 
-    def sizeof_fmt(self, num, suffix="B"):
-        for unit in ["", "K", "M", "G", "T", "Pi", "Ei", "Zi"]:
-            if abs(num) < 1024.0:
-                return f"{num:3.1f} {unit}{suffix}"
-            num /= 1024.0
-        return f"{num:.1f} Yi{suffix}"
-
     def get_dir_size(self, sdir):
         """Get the size of a directory.  Based on code found online."""
         size = os.path.getsize(sdir)
@@ -274,8 +267,8 @@ class FileActionSignalsMixin:
 
                 if _file.query_exists():
                     if not overwrite_all and not rename_auto_all:
-                        self.setup_exists_data(file, _file)
-                        response = self.show_exists_page()
+                        event_system.emit("setup_exists_data", (file, _file))
+                        response = event_system.emit_and_await("show_exists_page")
 
                     if response == "overwrite_all":
                         overwrite_all   = True
@@ -359,47 +352,6 @@ class FileActionSignalsMixin:
 
         self.exists_file_rename_bttn.set_sensitive(False)
 
-
-    def setup_exists_data(self, from_file, to_file):
-        from_info             = from_file.query_info("standard::*,time::modified", 0, cancellable=None)
-        to_info               = to_file.query_info("standard::*,time::modified", 0, cancellable=None)
-        exists_file_diff_from = self.builder.get_object("exists_file_diff_from")
-        exists_file_diff_to   = self.builder.get_object("exists_file_diff_to")
-        exists_file_from      = self.builder.get_object("exists_file_from")
-        exists_file_to        = self.builder.get_object("exists_file_to")
-        from_date             = from_info.get_modification_date_time()
-        to_date               = to_info.get_modification_date_time()
-        from_size             = from_info.get_size()
-        to_size               = to_info.get_size()
-
-        exists_file_from.set_label(from_file.get_parent().get_path())
-        exists_file_to.set_label(to_file.get_parent().get_path())
-        self.exists_file_label.set_label(to_file.get_basename())
-        self.exists_file_field.set_text(to_file.get_basename())
-
-        # Returns: -1, 0 or 1 if dt1 is less than, equal to or greater than dt2.
-        age       = GLib.DateTime.compare(from_date, to_date)
-        age_text  = "( same time )"
-        if age == -1:
-            age_text = "older"
-        if age == 1:
-            age_text = "newer"
-
-        size_text = "( same size )"
-        if from_size < to_size:
-            size_text = "smaller"
-        if from_size > to_size:
-            size_text = "larger"
-
-        from_label_text = f"{age_text} & {size_text}"
-        if age_text != "( same time )" or size_text != "( same size )":
-            from_label_text = f"{from_date.format('%F %R')}     {self.sizeof_fmt(from_size)}     ( {from_size} bytes )  ( {age_text} & {size_text} )"
-        to_label_text = f"{to_date.format('%F %R')}     {self.sizeof_fmt(to_size)}     ( {to_size} bytes )"
-
-        exists_file_diff_from.set_text(from_label_text)
-        exists_file_diff_to.set_text(to_label_text)
-
-
     def rename_proc(self, gio_file):
         full_path = gio_file.get_path()
         base_path = gio_file.get_parent().get_path()
@@ -427,16 +379,3 @@ class FileActionSignalsMixin:
             i += 1
 
         return target
-
-
-    def exists_rename_field_changed(self, widget):
-        nfile_name = widget.get_text().strip()
-        ofile_name = self.exists_file_label.get_label()
-
-        if nfile_name:
-            if nfile_name == ofile_name:
-                self.exists_file_rename_bttn.set_sensitive(False)
-            else:
-                self.exists_file_rename_bttn.set_sensitive(True)
-        else:
-            self.exists_file_rename_bttn.set_sensitive(False)

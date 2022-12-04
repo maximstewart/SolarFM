@@ -17,35 +17,6 @@ class ShowHideMixin:
     def stop_file_searching(self, widget=None, eve=None):
         self.is_searching = False
 
-    def show_exists_page(self, widget=None, eve=None):
-        response = self.file_exists_dialog.run()
-        self.file_exists_dialog.hide()
-
-        if response == Gtk.ResponseType.OK:
-            return "rename"
-        if response == Gtk.ResponseType.ACCEPT:
-            return "rename_auto"
-        if response == Gtk.ResponseType.CLOSE:
-            return "rename_auto_all"
-        if response == Gtk.ResponseType.YES:
-            return "overwrite"
-        if response == Gtk.ResponseType.APPLY:
-            return "overwrite_all"
-        if response == Gtk.ResponseType.NO:
-            return "skip"
-        if response == Gtk.ResponseType.REJECT:
-            return "skip_all"
-
-    def hide_exists_page_rename(self, widget=None, eve=None):
-        self.file_exists_dialog.response(Gtk.ResponseType.OK)
-
-    def hide_exists_page_auto_rename(self, widget=None, eve=None):
-        self.file_exists_dialog.response(Gtk.ResponseType.ACCEPT)
-
-    def hide_exists_page_auto_rename_all(self, widget=None, eve=None):
-        self.file_exists_dialog.response(Gtk.ResponseType.CLOSE)
-
-
     def show_about_page(self, widget=None, eve=None):
         about_page = self.builder.get_object("about_page")
         response   = about_page.run()
