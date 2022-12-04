@@ -130,9 +130,8 @@ class FileActionSignalsMixin:
         for file in uris:
             state.tab.open_file_locally(file)
 
-    def open_with_files(self, appchooser_widget):
+    def open_with_files(self, app_info):
         state     = self.get_current_state()
-        app_info  = appchooser_widget.get_app_info()
         uris      = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files)
         state.tab.app_chooser_exec(app_info, uris)
 

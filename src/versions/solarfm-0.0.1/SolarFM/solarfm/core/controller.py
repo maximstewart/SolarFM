@@ -18,6 +18,7 @@ from widgets.new_file_widget import NewFileWidget
 from widgets.rename_widget import RenameWidget
 from widgets.file_exists_widget import FileExistsWidget
 from widgets.about_widget import AboutWidget
+from widgets.appchooser_widget import AppchooserWidget
 
 from .ui import UI
 
@@ -49,15 +50,15 @@ class Controller(UI, SignalsMixins, Controller_Data):
     def _setup_signals(self):
         ...
 
-    # NOTE: Really we will move these to the UI/(New) Window
-    #       'base' controller after we're done cleaning and refactoring
-    #       to use fewer mixins.
+    # NOTE: Really we will move these to the UI/(New) Window 'base' controller
+    #       after we're done cleaning and refactoring to use fewer mixins.
     def _load_widgets(self):
         ContextMenuWidget()
         NewFileWidget()
         RenameWidget()
         FileExistsWidget()
         AboutWidget()
+        AppchooserWidget()
 
     def _subscribe_to_events(self):
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
@@ -65,6 +66,9 @@ class Controller(UI, SignalsMixins, Controller_Data):
         event_system.subscribe("display_message", self.display_message)
         event_system.subscribe("go_to_path", self.go_to_path)
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
+        # NOTE: Needs to be moved (probably just to file actions class) after reducing mixins usage
+        event_system.subscribe("open_with_files", self.open_with_files)
+
 
     def tear_down(self, widget=None, eve=None):
         if not settings.is_trace_debug():
@@ -136,7 +140,7 @@ class Controller(UI, SignalsMixins, Controller_Data):
         if action == "open":
             self.open_files()
         if action == "open_with":
-            self.show_appchooser_menu()
+            event_system.emit("show_appchooser_menu")
         if action == "execute":
             self.execute_files()
         if action == "execute_in_terminal":
