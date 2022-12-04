@@ -5,6 +5,7 @@ import subprocess
 import signal
 import json
 import shlex
+from datetime import datetime
 libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 
 # Lib imports
@@ -42,6 +43,8 @@ class GrepSearchMixin:
         # NOTE: Freeze IPC consumption
         self.pause_fifo_update = True
         self.grep_query        = ""
+        dt                     = datetime.now()
+        self.grep_time_stamp   = datetime.timestamp(dt) # NOTE: Get timestamp
 
         # NOTE: Kill the former process
         if self._grep_proc:

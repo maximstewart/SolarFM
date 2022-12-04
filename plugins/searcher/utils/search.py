@@ -5,11 +5,11 @@
 import os
 import traceback
 import argparse
-import threading
+import subprocess
 import json
 import base64
 import time
-import pickle
+from datetime import datetime
 from setproctitle import setproctitle
 from multiprocessing.connection import Client
 
@@ -26,18 +26,10 @@ _ipc_authkey = b'' + bytes(f'solarfm-search_grep-ipc', 'utf-8')
 filter = (".cpp", ".css", ".c", ".go", ".html", ".htm", ".java", ".js", ".json", ".lua", ".md", ".py", ".rs", ".toml", ".xml", ".pom") + \
             (".txt", ".text", ".sh", ".cfg", ".conf", ".log")
 
-
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
+# NOTE: Create timestamp of when this launched. Is used in IPC to see if
+# we are stale and that new call didn't fully kill this or older processes.
+dt = datetime.now()
+ts = datetime.timestamp(dt)
 
 
 def send_ipc_message(message) -> None:
@@ -55,84 +47,51 @@ def file_search(path, query):
              for file in _files:
                  if query in file.lower():
                      target = os.path.join(_path, file)
-                     data = f"SEARCH|{json.dumps([target, file])}"
+                     data = f"SEARCH|{ts}|{json.dumps([target, file])}"
                      send_ipc_message(data)
     except Exception as e:
         print("Couldn't traverse to path. Might be permissions related...")
         traceback.print_exc()
 
-def _search_for_string(file, query):
-    b64_file = base64.urlsafe_b64encode(file.encode('utf-8')).decode('utf-8')
-    grep_result_set = {}
-    padding = 15
 
-    with open(file, 'rb') as fp:
-        # NOTE: I know there's an issue if there's a very large file with content
-        #       all on one line will lower and dupe it. And, yes, it will only
-        #       return one instance from the file.
-        try:
-            for i, raw in enumerate(fp):
-                line   = None
-                llower = raw.lower()
-                if not query in llower:
-                    continue
+def grep_search(target=None, query=None):
+    if not query or not target:
+        return
 
-                if len(raw) > 72:
-                    start  = 0
-                    end    = len(raw) - 1
-                    index  = llower.index(query)
-                    sindex = llower.index(query) - 15 if index >= 15 else abs(start - index) - index
-                    eindex = sindex + 15 if end > (index + 15) else abs(index - end) + index
-                    line   = raw[sindex:eindex]
-                else:
-                    line = raw
+    # NOTE: -n = provide line numbers, -R = Search recursive in given target
+    #       -i = insensitive, -F = don't do regex parsing. (Treat as raw string)
+    command    = ["grep", "-n", "-R", "-i", "-F", query, target]
+    proc       = subprocess.Popen(command, stdout=subprocess.PIPE, encoding="utf-8")
+    raw_data   = proc.communicate()[0].strip()
+    proc_data  = raw_data.split("\n")   # NOTE: Will return data AFTER completion (if any)
+    collection = {}
 
-                b64_line = base64.urlsafe_b64encode(line).decode('utf-8')
-                if f"{b64_file}" in grep_result_set.keys():
-                    grep_result_set[f"{b64_file}"][f"{i+1}"] = b64_line
-                else:
-                    grep_result_set[f"{b64_file}"] = {}
-                    grep_result_set[f"{b64_file}"] = {f"{i+1}": b64_line}
+    for line in proc_data:
+        file, line_no, data = line.split(":", 2)
+        b64_file = base64.urlsafe_b64encode(file.encode('utf-8')).decode('utf-8')
+        b64_data = base64.urlsafe_b64encode(data.encode('utf-8')).decode('utf-8')
 
-        except Exception as e:
-            ...
+        if b64_file in collection.keys():
+            collection[f"{b64_file}"][f"{line_no}"] = b64_data
+        else:
+            collection[f"{b64_file}"] = {}
+            collection[f"{b64_file}"] = { f"{line_no}": b64_data}
 
-        try:
-            data = f"GREP|{json.dumps(grep_result_set)}"
-            send_ipc_message(data)
-        except Exception as e:
-            ...
-
-
-
-@daemon_threaded
-def _search_for_string_threaded(file, query):
-    _search_for_string(file, query)
-
-def grep_search(path, query):
     try:
-        for file in os.listdir(path):
-            target = os.path.join(path, file)
-            if os.path.isdir(target):
-                grep_search(target, query)
-            else:
-                if target.lower().endswith(filter):
-                    size = os.path.getsize(target)
-                    if not size > 5000:
-                        _search_for_string(target, query)
-                    else:
-                        _search_for_string_threaded(target, query)
-
+        data = f"GREP|{ts}|{json.dumps(collection, separators=(',', ':'), indent=4)}"
+        send_ipc_message(data)
     except Exception as e:
-        print("Couldn't traverse to path. Might be permissions related...")
-        traceback.print_exc()
+        ...
+
+    collection = {}
+
 
 def search(args):
     if args.type == "file_search":
         file_search(args.dir, args.query.lower())
 
     if args.type == "grep_search":
-        grep_search(args.dir, args.query.lower().encode("utf-8"))
+        grep_search(args.dir, args.query.encode("utf-8"))
 
 
 if __name__ == "__main__":

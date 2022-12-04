@@ -1,16 +1,31 @@
 # Python imports
-import os, gc, time
+import os
+import gc
+import time
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 from .controller_data import Controller_Data
 from .mixins.signals_mixins import SignalsMixins
-from .ui import UI
+
+from widgets.popups.message_popup_widget import MessagePopupWidget
+from widgets.popups.path_menu_popup_widget import PathMenuPopupWidget
+from widgets.popups.plugins_popup_widget import PluginsPopupWidget
+from widgets.popups.io_popup_widget import IOPopupWidget
+
 from widgets.context_menu_widget import ContextMenuWidget
+from widgets.new_file_widget import NewFileWidget
+from widgets.rename_widget import RenameWidget
+from widgets.file_exists_widget import FileExistsWidget
+from widgets.about_widget import AboutWidget
+from widgets.appchooser_widget import AppchooserWidget
+
+from .ui import UI
 
 
 
@@ -18,11 +33,13 @@ from widgets.context_menu_widget import ContextMenuWidget
 class Controller(UI, SignalsMixins, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
     def __init__(self, args, unknownargs):
+        self._setup_styling()
+        self._setup_signals()
         self._subscribe_to_events()
+        self._load_widgets()
+
         self.setup_controller_data()
         self.generate_windows(self.fm_controller_data)
-
-        ContextMenuWidget().build_context_menu()
 
         if args.no_plugins == "false":
             self.plugins.launch_plugins()
@@ -32,14 +49,34 @@ class Controller(UI, SignalsMixins, Controller_Data):
                 message = f"FILE|{arg}"
                 event_system.emit("post_file_to_ipc", message)
 
+    def _setup_styling(self):
+        ...
+
+    def _setup_signals(self):
+        ...
+
+    # NOTE: Really we will move these to the UI/(New) Window 'base' controller
+    #       after we're done cleaning and refactoring to use fewer mixins.
+    def _load_widgets(self):
+        MessagePopupWidget()
+        PathMenuPopupWidget()
+        PluginsPopupWidget()
+        IOPopupWidget()
+        ContextMenuWidget()
+        NewFileWidget()
+        RenameWidget()
+        FileExistsWidget()
+        AboutWidget()
+        AppchooserWidget()
 
     def _subscribe_to_events(self):
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
         event_system.subscribe("get_current_state", self.get_current_state)
-        event_system.subscribe("display_message", self.display_message)
         event_system.subscribe("go_to_path", self.go_to_path)
-        event_system.subscribe("do_hide_context_menu", self.do_hide_context_menu)
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
+        # NOTE: Needs to be moved (probably just to file actions class) after reducing mixins usage
+        event_system.subscribe("open_with_files", self.open_with_files)
+
 
     def tear_down(self, widget=None, eve=None):
         if not settings.is_trace_debug():
@@ -104,14 +141,14 @@ class Controller(UI, SignalsMixins, Controller_Data):
         else:
             action = widget
 
-        self.hide_context_menu()
-        self.hide_new_file_menu()
-        self.hide_edit_file_menu()
+        event_system.emit("hide_context_menu")
+        event_system.emit("hide_new_file_menu")
+        event_system.emit("hide_rename_file_menu")
 
         if action == "open":
             self.open_files()
         if action == "open_with":
-            self.show_appchooser_menu()
+            event_system.emit("show_appchooser_menu")
         if action == "execute":
             self.execute_files()
         if action == "execute_in_terminal":
@@ -122,6 +159,8 @@ class Controller(UI, SignalsMixins, Controller_Data):
             self.cut_files()
         if action == "copy":
             self.copy_files()
+        if action == "copy_name":
+            self.copy_name()
         if action == "paste":
             self.paste_files()
         if action == "create":
@@ -129,7 +168,14 @@ class Controller(UI, SignalsMixins, Controller_Data):
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
 
-
+        if action == "about_page":
+            event_system.emit("show_about_page")
+        if action == "io_popup":
+            event_system.emit("show_io_popup")
+        if action == "plugins_popup":
+            event_system.emit("show_plugins_popup")
+        if action == "messages_popup":
+            event_system.emit("show_messages_popup")
 
 
     @endpoint_registry.register(rule="go_home")
@@ -161,6 +207,3 @@ class Controller(UI, SignalsMixins, Controller_Data):
 
     def go_to_path(self, path):
         self.path_entry.set_text(path)
-
-    def do_hide_context_menu(self):
-        self.hide_context_menu()

@@ -11,6 +11,8 @@ from gi.repository import GdkPixbuf
 # Application imports
 
 
+
+
 class IconTreeWidget(Gtk.TreeView):
     """docstring for IconTreeWidget"""
 

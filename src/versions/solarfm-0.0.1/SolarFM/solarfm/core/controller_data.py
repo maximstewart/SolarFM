@@ -1,5 +1,8 @@
 # Python imports
-import sys, os, signal
+import sys
+import os
+import signal
+import subprocess
 from dataclasses import dataclass
 
 # Lib imports
@@ -11,6 +14,8 @@ from gi.repository import GLib
 # Application imports
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
+
+
 
 
 @dataclass(slots=True)
@@ -31,12 +36,12 @@ class Controller_Data:
     __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
     def setup_controller_data(self) -> None:
-        self.builder             = settings.get_builder()
-        self.keybindings         = settings.get_keybindings()
+        self.builder            = settings.get_builder()
+        self.keybindings        = settings.get_keybindings()
 
-        self.fm_controller       = WindowController()
-        self.plugins             = PluginsController()
-        self.fm_controller_data  = self.fm_controller.get_state_from_file()
+        self.fm_controller      = WindowController()
+        self.plugins            = PluginsController()
+        self.fm_controller_data = self.fm_controller.get_state_from_file()
 
         self.window             = settings.get_main_window()
         self.window1            = self.builder.get_object("window_1")
@@ -50,12 +55,6 @@ class Controller_Data:
 
         self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
         self.warning_alert      = self.builder.get_object("warning_alert")
-        self.new_file_menu      = self.builder.get_object("new_file_menu")
-        self.edit_file_menu     = self.builder.get_object("edit_file_menu")
-        self.file_exists_dialog = self.builder.get_object("file_exists_dialog")
-        self.exists_file_label  = self.builder.get_object("exists_file_label")
-        self.exists_file_field  = self.builder.get_object("exists_file_field")
-        self.path_menu          = self.builder.get_object("path_menu")
         self.path_entry         = self.builder.get_object("path_entry")
 
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")
@@ -81,9 +80,6 @@ class Controller_Data:
 
         self.override_drop_dest = None
 
-        self.cancel_creation    = False
-        self.skip_edit          = False
-        self.cancel_edit        = False
         self.ctrl_down          = False
         self.shift_down         = False
         self.alt_down           = False
@@ -161,3 +157,15 @@ class Controller_Data:
         ''' Clear children of a gtk widget. '''
         for child in widget.get_children():
             widget.remove(child)
+
+    def get_clipboard_data(self) -> str:
+        proc    = subprocess.Popen(['xclip','-selection', 'clipboard', '-o'], stdout=subprocess.PIPE)
+        retcode = proc.wait()
+        data    = proc.stdout.read()
+        return data.decode("utf-8").strip()
+
+    def set_clipboard_data(self, data: type) -> None:
+        proc = subprocess.Popen(['xclip','-selection','clipboard'], stdin=subprocess.PIPE)
+        proc.stdin.write(data.encode("utf-8"))
+        proc.stdin.close()
+        retcode = proc.wait()

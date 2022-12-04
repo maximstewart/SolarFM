@@ -76,9 +76,10 @@ class Plugin(PluginBase):
         path     = self._fm_state.tab.get_current_directory()
         # NOTE: -h = human readable, -d = depth asigned to 1
         command  = ["du", "-h", "-d", "1", path]
-        proc     = subprocess.Popen(command, stdout=subprocess.PIPE)
+        proc     = subprocess.Popen(command, stdout=subprocess.PIPE, encoding="utf-8")
         raw_data = proc.communicate()[0]
-        data     = raw_data.decode("utf-8").strip()  # NOTE: Will return data AFTER completion (if any)
+        # NOTE: Will return data AFTER completion (if any)
+        data     = raw_data.strip()
         parts    = data.split("\n")
 
         # NOTE: Last entry is curret dir. Move to top of list and pop off...

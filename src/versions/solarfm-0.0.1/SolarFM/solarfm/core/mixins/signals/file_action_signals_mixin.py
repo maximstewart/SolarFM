@@ -20,15 +20,8 @@ from widgets.io_widget import IOWidget
 class FileActionSignalsMixin:
     """docstring for FileActionSignalsMixin"""
 
-    def sizeof_fmt(self, num, suffix="B"):
-        for unit in ["", "K", "M", "G", "T", "Pi", "Ei", "Zi"]:
-            if abs(num) < 1024.0:
-                return f"{num:3.1f} {unit}{suffix}"
-            num /= 1024.0
-        return f"{num:.1f} Yi{suffix}"
-
     def get_dir_size(self, sdir):
-        """Get the size of a directory.  Based on code found online."""
+        """Get the size of a directory. Based on code found online."""
         size = os.path.getsize(sdir)
 
         for item in os.listdir(sdir):
@@ -137,9 +130,8 @@ class FileActionSignalsMixin:
         for file in uris:
             state.tab.open_file_locally(file)
 
-    def open_with_files(self, appchooser_widget):
+    def open_with_files(self, app_info):
         state     = self.get_current_state()
-        app_info  = appchooser_widget.get_app_info()
         uris      = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files)
         state.tab.app_chooser_exec(app_info, uris)
 
@@ -154,7 +146,7 @@ class FileActionSignalsMixin:
 
     def rename_files(self):
         rename_label = self.builder.get_object("file_to_rename_label")
-        rename_input = self.builder.get_object("new_rename_fname")
+        rename_input = self.builder.get_object("rename_fname")
         state        = self.get_current_state()
         uris         = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
 
@@ -163,23 +155,18 @@ class FileActionSignalsMixin:
             rename_label.set_label(entry)
             rename_input.set_text(entry)
 
-            self.show_edit_file_menu(rename_input)
-
-            if self.skip_edit:
-                self.skip_edit   = False
+            response = event_system.emit_and_await("show_rename_file_menu", rename_input)
+            if response == "skip_edit":
                 continue
-            if self.cancel_edit:
-                self.cancel_edit = False
+            if response == "cancel_edit":
                 break
 
             rname_to = rename_input.get_text().strip()
-            target   = f"{state.tab.get_current_directory()}/{rname_to}"
-            self.handle_files([uri], "rename", target)
+            if rname_to:
+                target = f"{state.tab.get_current_directory()}/{rname_to}"
+                self.handle_files([uri], "rename", target)
 
-
-        self.skip_edit   = False
-        self.cancel_edit = False
-        self.hide_edit_file_menu()
+        event_system.emit("hide_rename_file_menu")
         self.selected_files.clear()
 
     def cut_files(self):
@@ -187,6 +174,13 @@ class FileActionSignalsMixin:
         state = self.get_current_state()
         uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
         self.to_cut_files = uris
+
+    def copy_name(self):
+        state = self.get_current_state()
+        uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
+        if len(uris) == 1:
+            file_name = uris[0].split("/")[-1]
+            self.set_clipboard_data(file_name)
 
     def copy_files(self):
         self.to_cut_files.clear()
@@ -205,15 +199,15 @@ class FileActionSignalsMixin:
             self.handle_files(self.to_cut_files, "move", target)
 
     def create_files(self):
-        fname_field = self.builder.get_object("new_fname_field")
-        self.show_new_file_menu(fname_field)
+        fname_field     = self.builder.get_object("new_fname_field")
+        cancel_creation = event_system.emit_and_await("show_new_file_menu", fname_field)
 
-        if self.cancel_creation:
-            self.cancel_creation = False
+        if cancel_creation:
+            event_system.emit("hide_new_file_menu")
             return
 
         file_name   = fname_field.get_text().strip()
-        type        = self.builder.get_object("context_menu_type_toggle").get_state()
+        type        = self.builder.get_object("new_file_toggle_type").get_state()
 
         wid, tid    = self.fm_controller.get_active_wid_and_tid()
         tab         = self.get_fm_window(wid).get_tab_by_id(tid)
@@ -227,8 +221,7 @@ class FileActionSignalsMixin:
             else:                # Create Folder
                 self.handle_files([path], "create_dir")
 
-        self.cancel_creation    = False
-        self.hide_new_file_menu()
+        event_system.emit("hide_new_file_menu")
 
 
     def move_files(self, files, target):
@@ -267,8 +260,8 @@ class FileActionSignalsMixin:
 
                 if _file.query_exists():
                     if not overwrite_all and not rename_auto_all:
-                        self.setup_exists_data(file, _file)
-                        response = self.show_exists_page()
+                        event_system.emit("setup_exists_data", (file, _file))
+                        response = event_system.emit_and_await("show_exists_page")
 
                     if response == "overwrite_all":
                         overwrite_all   = True
@@ -277,7 +270,7 @@ class FileActionSignalsMixin:
 
                     if response == "rename":
                         base_path = _file.get_parent().get_path()
-                        new_name  = self.exists_file_field.get_text().strip()
+                        new_name  = self.builder.get_object("exists_file_field").get_text().strip()
                         rfPath    = f"{base_path}/{new_name}"
                         _file     = Gio.File.new_for_path(rfPath)
 
@@ -352,47 +345,6 @@ class FileActionSignalsMixin:
 
         self.exists_file_rename_bttn.set_sensitive(False)
 
-
-    def setup_exists_data(self, from_file, to_file):
-        from_info             = from_file.query_info("standard::*,time::modified", 0, cancellable=None)
-        to_info               = to_file.query_info("standard::*,time::modified", 0, cancellable=None)
-        exists_file_diff_from = self.builder.get_object("exists_file_diff_from")
-        exists_file_diff_to   = self.builder.get_object("exists_file_diff_to")
-        exists_file_from      = self.builder.get_object("exists_file_from")
-        exists_file_to        = self.builder.get_object("exists_file_to")
-        from_date             = from_info.get_modification_date_time()
-        to_date               = to_info.get_modification_date_time()
-        from_size             = from_info.get_size()
-        to_size               = to_info.get_size()
-
-        exists_file_from.set_label(from_file.get_parent().get_path())
-        exists_file_to.set_label(to_file.get_parent().get_path())
-        self.exists_file_label.set_label(to_file.get_basename())
-        self.exists_file_field.set_text(to_file.get_basename())
-
-        # Returns: -1, 0 or 1 if dt1 is less than, equal to or greater than dt2.
-        age       = GLib.DateTime.compare(from_date, to_date)
-        age_text  = "( same time )"
-        if age == -1:
-            age_text = "older"
-        if age == 1:
-            age_text = "newer"
-
-        size_text = "( same size )"
-        if from_size < to_size:
-            size_text = "smaller"
-        if from_size > to_size:
-            size_text = "larger"
-
-        from_label_text = f"{age_text} & {size_text}"
-        if age_text != "( same time )" or size_text != "( same size )":
-            from_label_text = f"{from_date.format('%F %R')}     {self.sizeof_fmt(from_size)}     ( {from_size} bytes )  ( {age_text} & {size_text} )"
-        to_label_text = f"{to_date.format('%F %R')}     {self.sizeof_fmt(to_size)}     ( {to_size} bytes )"
-
-        exists_file_diff_from.set_text(from_label_text)
-        exists_file_diff_to.set_text(to_label_text)
-
-
     def rename_proc(self, gio_file):
         full_path = gio_file.get_path()
         base_path = gio_file.get_parent().get_path()
@@ -420,16 +372,3 @@ class FileActionSignalsMixin:
             i += 1
 
         return target
-
-
-    def exists_rename_field_changed(self, widget):
-        nfile_name = widget.get_text().strip()
-        ofile_name = self.exists_file_label.get_label()
-
-        if nfile_name:
-            if nfile_name == ofile_name:
-                self.exists_file_rename_bttn.set_sensitive(False)
-            else:
-                self.exists_file_rename_bttn.set_sensitive(True)
-        else:
-            self.exists_file_rename_bttn.set_sensitive(False)

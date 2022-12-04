@@ -97,7 +97,6 @@ class Plugin(PluginBase):
         self.empty.hide()
 
     def delete_files(self, widget = None, eve = None):
-        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("get_current_state")
         state    = self._fm_state
         uris     = state.selected_files
@@ -121,23 +120,19 @@ class Plugin(PluginBase):
                 break
 
     def trash_files(self, widget = None, eve = None, verbocity = False):
-        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("get_current_state")
         state = self._fm_state
         for uri in state.selected_files:
             self.trashman.trash(uri, verbocity)
 
     def restore_trash_files(self, widget = None, eve = None, verbocity = False):
-        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("get_current_state")
         state = self._fm_state
         for uri in state.selected_files:
             self.trashman.restore(filename=uri.split("/")[-1], verbose = verbocity)
 
     def empty_trash(self, widget = None, eve = None, verbocity = False):
-        self._event_system.emit("do_hide_context_menu")
         self.trashman.empty(verbose = verbocity)
 
     def go_to_trash(self, widget = None, eve = None, verbocity = False):
-        self._event_system.emit("do_hide_context_menu")
         self._event_system.emit("go_to_path", self.trash_files_path)

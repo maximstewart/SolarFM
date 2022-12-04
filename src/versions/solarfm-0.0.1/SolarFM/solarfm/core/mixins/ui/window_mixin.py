@@ -90,8 +90,8 @@ class WindowMixin(TabMixin):
         current_directory    = tab.get_current_directory()
         path_file            = Gio.File.new_for_path(current_directory)
         mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
-        formatted_mount_free = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
-        formatted_mount_size = self.sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
+        formatted_mount_free = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
+        formatted_mount_size = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
 
         # NOTE: Hides empty trash and other desired buttons based on context.
         if self.trash_files_path == current_directory:
@@ -117,7 +117,7 @@ class WindowMixin(TabMixin):
                         print(repr(e))
 
 
-            formatted_size = self.sizeof_fmt(combined_size)
+            formatted_size = sizeof_fmt(combined_size)
             if tab.is_hiding_hidden():
                 self.bottom_path_label.set_label(f" {len(uris)} / {tab.get_files_count()} ({formatted_size})")
             else:
@@ -188,7 +188,7 @@ class WindowMixin(TabMixin):
 
     def grid_icon_single_click(self, icons_grid, eve):
         try:
-            self.path_menu.popdown()
+            event_system.emit("hide_path_menu")
             wid, tid = icons_grid.get_name().split("|")
             self.fm_controller.set_wid_and_tid(wid, tid)
             self.set_path_text(wid, tid)
@@ -201,7 +201,7 @@ class WindowMixin(TabMixin):
                 if self.single_click_open: # FIXME: need to find a way to pass the model index
                     self.grid_icon_double_click(icons_grid)
             elif eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 3: # r-click
-                self.show_context_menu()
+                event_system.emit("show_context_menu")
 
         except WindowException as e:
             print(repr(e))
@@ -252,15 +252,20 @@ class WindowMixin(TabMixin):
         data.set_text(uris_text, -1)
 
     def grid_on_drag_motion(self, icons_grid, drag_context, x, y, data):
-        current   = '|'.join(self.fm_controller.get_active_wid_and_tid())
-        target    = icons_grid.get_name()
-        wid, tid  = target.split("|")
-        store     = icons_grid.get_model()
-        treePath  = icons_grid.get_drag_dest_item().path
+        current     = '|'.join(self.fm_controller.get_active_wid_and_tid())
+        target      = icons_grid.get_name()
+        wid, tid    = target.split("|")
+        store       = icons_grid.get_model()
+        path_at_loc = None
 
-        if treePath:
-            uri = self.format_to_uris(store, wid, tid, treePath)[0].replace("file://", "")
-            self.override_drop_dest = uri if isdir(uri) else None
+        try:
+            path_at_loc           = icons_grid.get_item_at_pos(x, y)[0]
+            highlighted_item_path = icons_grid.get_drag_dest_item().path
+            if path_at_loc and path_at_loc == highlighted_item_path:
+                uri = self.format_to_uris(store, wid, tid, highlighted_item_path)[0].replace("file://", "")
+                self.override_drop_dest = uri if isdir(uri) else None
+        except Exception as e:
+            ...
 
         if target not in current:
             self.fm_controller.set_wid_and_tid(wid, tid)
