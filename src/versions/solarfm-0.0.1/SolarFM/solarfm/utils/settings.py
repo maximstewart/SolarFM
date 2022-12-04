@@ -149,21 +149,21 @@ class Settings:
         return monitors
 
 
-    def get_context_menu_data(self) -> Gtk.Builder:  return self._context_menu_data
+    def get_context_menu_data(self) -> Gtk.Builder:           return self._context_menu_data
     def get_main_window(self)       -> Gtk.ApplicationWindow: return self._main_window
-    def get_builder(self)           -> Gtk.Builder:  return self._builder
-    def get_ui_widgets_path(self)   -> Gtk.Builder:  return self._UI_WIDEGTS_PATH
-    def get_logger(self)        -> Logger:       return self._logger
-    def get_keybindings(self)   -> Keybindings:  return self._keybindings
-    def get_plugins_path(self)  -> str:          return self._PLUGINS_PATH
-    def get_icon_theme(self)    -> str:          return self._ICON_THEME
+    def get_builder(self)           -> Gtk.Builder:           return self._builder
+    def get_ui_widgets_path(self)   -> Gtk.Builder:           return self._UI_WIDEGTS_PATH
+    def get_logger(self)        -> Logger:      return self._logger
+    def get_keybindings(self)   -> Keybindings: return self._keybindings
+    def get_plugins_path(self)  -> str:         return self._PLUGINS_PATH
+    def get_icon_theme(self)    -> str:         return self._ICON_THEME
 
-    def get_success_color(self) -> str: return self._success_color
-    def get_warning_color(self) -> str: return self._warning_color
-    def get_error_color(self)   -> str: return self._error_color
+    def get_success_color(self) -> str:  return self._success_color
+    def get_warning_color(self) -> str:  return self._warning_color
+    def get_error_color(self)   -> str:  return self._error_color
 
-    def is_trace_debug(self)    -> str: return self._trace_debug
-    def is_debug(self)          -> str: return self._debug
+    def is_trace_debug(self)    -> str:  return self._trace_debug
+    def is_debug(self)          -> str:  return self._debug
     def is_dirty_start(self)    -> bool: return self._dirty_start
     def clear_pid(self): self._clean_pid()
 

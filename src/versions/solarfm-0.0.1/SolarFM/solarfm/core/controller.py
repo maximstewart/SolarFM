@@ -13,6 +13,9 @@ from gi.repository import GLib
 from .controller_data import Controller_Data
 from .mixins.signals_mixins import SignalsMixins
 
+from widgets.popups.plugins_popup_widget import PluginsPopupWidget
+from widgets.popups.io_popup_widget import IOPopupWidget
+
 from widgets.context_menu_widget import ContextMenuWidget
 from widgets.new_file_widget import NewFileWidget
 from widgets.rename_widget import RenameWidget
@@ -53,6 +56,8 @@ class Controller(UI, SignalsMixins, Controller_Data):
     # NOTE: Really we will move these to the UI/(New) Window 'base' controller
     #       after we're done cleaning and refactoring to use fewer mixins.
     def _load_widgets(self):
+        PluginsPopupWidget()
+        IOPopupWidget()
         ContextMenuWidget()
         NewFileWidget()
         RenameWidget()
@@ -159,8 +164,14 @@ class Controller(UI, SignalsMixins, Controller_Data):
             self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
+
         if action == "about_page":
             event_system.emit("show_about_page")
+        if action == "io_popup":
+            event_system.emit("show_io_popup")
+        if action == "plugins_popup":
+            event_system.emit("show_plugins_popup")
+
 
 
     @endpoint_registry.register(rule="go_home")

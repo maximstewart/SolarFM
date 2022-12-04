@@ -367,10 +367,11 @@
                 <child>
                   <object class="GtkButton" id="plugins_button">
                     <property name="label" translatable="yes">Plugins</property>
+                    <property name="name">plugins_popup</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <signal name="released" handler="show_plugins_popup" swapped="no"/>
+                    <signal name="released" handler="do_action_from_menu_controls" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -445,12 +446,13 @@
                 <child>
                   <object class="GtkButton" id="io_button">
                     <property name="label" translatable="yes">I/O</property>
+                    <property name="name">io_popup</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="image">io_img</property>
                     <property name="always-show-image">True</property>
-                    <signal name="released" handler="show_io_popup" swapped="no"/>
+                    <signal name="released" handler="do_action_from_menu_controls" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -899,23 +901,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkPopover" id="io_popup">
-    <property name="can-focus">False</property>
-    <property name="relative-to">io_button</property>
-    <property name="position">bottom</property>
-    <child>
-      <object class="GtkBox" id="io_list">
-        <property name="width-request">320</property>
-        <property name="height-request">320</property>
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </child>
-  </object>
   <object class="GtkPopover" id="message_popup_widget">
     <property name="width-request">320</property>
     <property name="can-focus">False</property>
@@ -1000,22 +985,6 @@
               </object>
             </child>
           </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="plugin_controls">
-    <property name="can-focus">False</property>
-    <property name="relative-to">plugins_button</property>
-    <signal name="button-release-event" handler="hide_plugins_popup" swapped="no"/>
-    <signal name="key-release-event" handler="hide_plugins_popup" swapped="no"/>
-    <child>
-      <object class="GtkBox" id="plugin_control_list">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>
