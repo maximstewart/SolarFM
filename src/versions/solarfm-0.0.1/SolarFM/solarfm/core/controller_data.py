@@ -12,12 +12,9 @@ from gi.repository import Gtk
 from gi.repository import GLib
 
 # Application imports
-from widgets.new_file_widget import NewFileWidget
-from widgets.rename_widget import RenameWidget
-from widgets.file_exists_widget import FileExistsWidget
-from widgets.context_menu_widget import ContextMenuWidget
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
+
 
 
 
@@ -39,17 +36,12 @@ class Controller_Data:
     __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
     def setup_controller_data(self) -> None:
-        self.builder             = settings.get_builder()
-        self.keybindings         = settings.get_keybindings()
+        self.builder            = settings.get_builder()
+        self.keybindings        = settings.get_keybindings()
 
-        NewFileWidget()
-        RenameWidget()
-        FileExistsWidget()
-        ContextMenuWidget()
-
-        self.fm_controller       = WindowController()
-        self.plugins             = PluginsController()
-        self.fm_controller_data  = self.fm_controller.get_state_from_file()
+        self.fm_controller      = WindowController()
+        self.plugins            = PluginsController()
+        self.fm_controller_data = self.fm_controller.get_state_from_file()
 
         self.window             = settings.get_main_window()
         self.window1            = self.builder.get_object("window_1")

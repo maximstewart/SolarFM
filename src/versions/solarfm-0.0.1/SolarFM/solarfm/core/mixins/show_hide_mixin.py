@@ -15,16 +15,6 @@ class ShowHideMixin:
     def stop_file_searching(self, widget=None, eve=None):
         self.is_searching = False
 
-    def show_about_page(self, widget=None, eve=None):
-        about_page = self.builder.get_object("about_page")
-        response   = about_page.run()
-        if response in [Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT]:
-            self.hide_about_page()
-
-    def hide_about_page(self, widget=None, eve=None):
-        self.builder.get_object("about_page").hide()
-
-
     def show_appchooser_menu(self, widget=None, eve=None):
         appchooser_menu   = self.builder.get_object("appchooser_menu")
         appchooser_widget = self.builder.get_object("appchooser_widget")

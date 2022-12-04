@@ -12,6 +12,13 @@ from gi.repository import GLib
 # Application imports
 from .controller_data import Controller_Data
 from .mixins.signals_mixins import SignalsMixins
+
+from widgets.context_menu_widget import ContextMenuWidget
+from widgets.new_file_widget import NewFileWidget
+from widgets.rename_widget import RenameWidget
+from widgets.file_exists_widget import FileExistsWidget
+from widgets.about_widget import AboutWidget
+
 from .ui import UI
 
 
@@ -20,7 +27,11 @@ from .ui import UI
 class Controller(UI, SignalsMixins, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
     def __init__(self, args, unknownargs):
+        self._setup_styling()
+        self._setup_signals()
         self._subscribe_to_events()
+        self._load_widgets()
+
         self.setup_controller_data()
         self.generate_windows(self.fm_controller_data)
 
@@ -32,6 +43,21 @@ class Controller(UI, SignalsMixins, Controller_Data):
                 message = f"FILE|{arg}"
                 event_system.emit("post_file_to_ipc", message)
 
+    def _setup_styling(self):
+        ...
+
+    def _setup_signals(self):
+        ...
+
+    # NOTE: Really we will move these to the UI/(New) Window
+    #       'base' controller after we're done cleaning and refactoring
+    #       to use fewer mixins.
+    def _load_widgets(self):
+        ContextMenuWidget()
+        NewFileWidget()
+        RenameWidget()
+        FileExistsWidget()
+        AboutWidget()
 
     def _subscribe_to_events(self):
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
@@ -129,6 +155,8 @@ class Controller(UI, SignalsMixins, Controller_Data):
             self.create_files()
         if action in ["save_session", "save_session_as", "load_session"]:
             self.save_load_session(action)
+        if action == "about_page":
+            event_system.emit("show_about_page")
 
 
     @endpoint_registry.register(rule="go_home")
