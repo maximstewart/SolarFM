@@ -101,14 +101,14 @@ class Plugin(PluginBase):
         state    = self._fm_state
         uris     = state.selected_files
         response = None
-
-        state.warning_alert.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
+        
+        state.message_dialog.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
         for uri in uris:
             file = Gio.File.new_for_path(uri)
 
             if not response:
-                response = state.warning_alert.run()
-                state.warning_alert.hide()
+                response = state.message_dialog.run()
+                state.message_dialog.hide()
             if response == Gtk.ResponseType.YES:
                 type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
