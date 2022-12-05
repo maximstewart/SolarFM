@@ -20,6 +20,8 @@ from plugins.plugins_controller import PluginsController
 
 @dataclass(slots=True)
 class State:
+    fm_controller: any = None
+    notebooks: any     = None
     wid: int  = None
     tid: int  = None
     tab: type = None
@@ -28,7 +30,7 @@ class State:
     selected_files: [] = None
     to_copy_files:  [] = None
     to_cut_files:   [] = None
-    warning_alert: type = None
+    message_dialog: type = None
 
 
 class Controller_Data:
@@ -108,11 +110,13 @@ class Controller_Data:
                         state (obj): State
         '''
         state                = State()
+        state.fm_controller  = self.fm_controller
+        state.notebooks      = self.notebooks
         state.wid, state.tid = self.fm_controller.get_active_wid_and_tid()
         state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
         state.store          = state.icon_grid.get_model()
-        state.warning_alert  = self.warning_alert
+        state.message_dialog  = self.message_dialog
 
         selected_files       = state.icon_grid.get_selected_items()
         if selected_files:
@@ -152,6 +156,15 @@ class Controller_Data:
     def has_method(self, obj, name) -> type:
         ''' Checks if a given method exists. '''
         return callable(getattr(obj, name, None))
+
+
+    def clear_notebooks(self) -> None:
+        self.ctrl_down  = False
+        self.shift_down = False
+        self.alt_down   = False
+
+        for notebook in self.notebooks:
+            self.clear_children(notebook)
 
     def clear_children(self, widget: type) -> None:
         ''' Clear children of a gtk widget. '''

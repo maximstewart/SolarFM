@@ -13,7 +13,7 @@ from gi.repository import Gio
 
 
 # Application imports
-from widgets.io_widget import IOWidget
+from ...ui.io_widget import IOWidget
 
 
 

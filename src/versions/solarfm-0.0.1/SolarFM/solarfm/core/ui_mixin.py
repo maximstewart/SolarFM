@@ -9,5 +9,5 @@ from .mixins.ui.window_mixin import WindowMixin
 
 
 
-class UI(PaneMixin, WindowMixin):
+class UIMixin(PaneMixin, WindowMixin):
     ...
