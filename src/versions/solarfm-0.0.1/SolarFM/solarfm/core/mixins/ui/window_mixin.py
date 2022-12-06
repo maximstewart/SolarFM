@@ -171,14 +171,11 @@ class WindowMixin(TabMixin):
                 if self.dnd_left_primed > 1:
                     self.dnd_left_primed = 0
                     self.selected_files.clear()
-                    return
 
                 # NOTE: Likely trying dnd, just readd to selection the former set.
                 #       Prevents losing highlighting of grid selected.
                 for path in self.selected_files:
                     icons_grid.select_path(path)
-
-                return
 
         if size > 0:
             self.selected_files = icons_grid.get_selected_items()

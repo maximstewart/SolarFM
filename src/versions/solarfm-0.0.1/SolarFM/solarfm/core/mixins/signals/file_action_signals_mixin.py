@@ -127,6 +127,7 @@ class FileActionSignalsMixin:
     def open_files(self):
         state = self.get_current_state()
         uris  = self.format_to_uris(state.store, state.wid, state.tid, self.selected_files, True)
+
         for file in uris:
             state.tab.open_file_locally(file)
 

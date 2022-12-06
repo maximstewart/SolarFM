@@ -1,5 +1,6 @@
 # Python imports
-import builtins, threading
+import builtins
+import threading
 
 # Lib imports
 
