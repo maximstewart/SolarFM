@@ -8,6 +8,7 @@ import gi, cairo
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
+from gi.repository import GLib
 from gi.repository import Gdk
 
 # Application imports
@@ -34,6 +35,8 @@ class Settings:
         self._CONTEXT_MENU    = f"{self._CONFIG_PATH}/contexct_menu.json"
         self._PID_FILE        = f"{self._CONFIG_PATH}/{app_name.lower()}.pid"
         self._ICON_THEME      = Gtk.IconTheme.get_default()
+        self._TRASH_FILES_PATH = f"{GLib.get_user_data_dir()}/Trash/files"
+        self._TRASH_INFO_PATH  = f"{GLib.get_user_data_dir()}/Trash/info"
 
         if not os.path.exists(self._CONFIG_PATH):
             os.mkdir(self._CONFIG_PATH)
@@ -149,27 +152,30 @@ class Settings:
         return monitors
 
 
-    def get_context_menu_data(self) -> Gtk.Builder:           return self._context_menu_data
     def get_main_window(self)       -> Gtk.ApplicationWindow: return self._main_window
     def get_builder(self)           -> Gtk.Builder:           return self._builder
-    def get_ui_widgets_path(self)   -> Gtk.Builder:           return self._UI_WIDEGTS_PATH
+    def get_context_menu_data(self) -> str:                   return self._context_menu_data
+    def get_ui_widgets_path(self)   -> str:                   return self._UI_WIDEGTS_PATH
+    def get_trash_files_path(self)  -> str:                   return self._TRASH_FILES_PATH
+    def get_trash_info_path(self)   -> str:                   return self._TRASH_INFO_PATH
+    def get_plugins_path(self)      -> str:                   return self._PLUGINS_PATH
+
     def get_logger(self)        -> Logger:      return self._logger
     def get_keybindings(self)   -> Keybindings: return self._keybindings
-    def get_plugins_path(self)  -> str:         return self._PLUGINS_PATH
     def get_icon_theme(self)    -> str:         return self._ICON_THEME
 
-    def get_success_color(self) -> str:  return self._success_color
-    def get_warning_color(self) -> str:  return self._warning_color
-    def get_error_color(self)   -> str:  return self._error_color
+    def get_success_color(self) -> str:         return self._success_color
+    def get_warning_color(self) -> str:         return self._warning_color
+    def get_error_color(self)   -> str:         return self._error_color
 
-    def is_trace_debug(self)    -> str:  return self._trace_debug
-    def is_debug(self)          -> str:  return self._debug
-    def is_dirty_start(self)    -> bool: return self._dirty_start
+    def is_trace_debug(self)    -> bool:        return self._trace_debug
+    def is_debug(self)          -> bool:        return self._debug
+    def is_dirty_start(self)    -> bool:        return self._dirty_start
     def clear_pid(self): self._clean_pid()
 
 
-    def set_trace_debug(self, trace_debug):
+    def set_trace_debug(self, trace_debug: bool):
         self._trace_debug = trace_debug
 
-    def set_debug(self, debug):
+    def set_debug(self, debug: bool):
         self._debug = debug

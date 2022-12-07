@@ -59,7 +59,7 @@ class GridMixin:
             gio_file  = Gio.File.new_for_path(filename)
             info      = gio_file.query_info('standard::icon' , 0, None)
             icon      = info.get_icon().get_names()[0]
-            icon_path = self.icon_theme.lookup_icon(icon , size , 0).get_filename()
+            icon_path = settings.get_icon_theme().lookup_icon(icon , size , 0).get_filename()
 
             return GdkPixbuf.Pixbuf.new_from_file(icon_path)
         except Exception:

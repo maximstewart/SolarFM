@@ -344,7 +344,7 @@ class FileActionSignalsMixin:
             except GObject.GError as e:
                 raise OSError(e)
 
-        self.exists_file_rename_bttn.set_sensitive(False)
+        self.builder.get_object("exists_file_rename_bttn").set_sensitive(False)
 
     def rename_proc(self, gio_file):
         full_path = gio_file.get_path()

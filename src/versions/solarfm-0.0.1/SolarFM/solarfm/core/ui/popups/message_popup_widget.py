@@ -79,7 +79,7 @@ class MessagePopupWidget(Gtk.Popover):
         data      = f"Exec Type:  {exec_type}  <-->  Value:  {value}\n\n{trace}\n\n\n\n"
         start_itr = self._message_buffer.get_start_iter()
         self._message_buffer.place_cursor(start_itr)
-        self.display_message(self.error_color, data)
+        self.display_message(settings.get_error_color(), data)
 
     def display_message(self, type, text, seconds=None):
         self._message_buffer.insert_at_cursor(text)
@@ -90,7 +90,6 @@ class MessagePopupWidget(Gtk.Popover):
     @threaded
     def hide_message_timeout(self, seconds=3):
         time.sleep(seconds)
-        # GLib.idle_add(self.message_popup_widget.popdown)
         GLib.idle_add(event_system.emit, ("hide_messages_popup"))
 
     def save_debug_alerts(self, widget=None, eve=None):

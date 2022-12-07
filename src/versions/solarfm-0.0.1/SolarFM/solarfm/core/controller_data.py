@@ -25,11 +25,11 @@ class State:
     wid: int  = None
     tid: int  = None
     tab: type = None
-    icon_grid: gi.overrides.Gtk.IconView  = None
-    store: gi.overrides.Gtk.ListStore     = None
-    selected_files: [] = None
-    to_copy_files:  [] = None
-    to_cut_files:   [] = None
+    icon_grid: gi.overrides.Gtk.IconView = None
+    store: gi.overrides.Gtk.ListStore    = None
+    selected_files: []   = None
+    to_copy_files:  []   = None
+    to_cut_files:   []   = None
     message_dialog: type = None
 
 
@@ -50,22 +50,11 @@ class Controller_Data:
         self.window2            = self.builder.get_object("window_2")
         self.window3            = self.builder.get_object("window_3")
         self.window4            = self.builder.get_object("window_4")
-        self.message_popup_widget = self.builder.get_object("message_popup_widget")
-        self.message_text_view  = self.builder.get_object("message_text_view")
-        self.message_buffer     = self.builder.get_object("message_buffer")
-        self.arc_command_buffer = self.builder.get_object("arc_command_buffer")
 
-        self.exists_file_rename_bttn = self.builder.get_object("exists_file_rename_bttn")
-        self.warning_alert      = self.builder.get_object("warning_alert")
-        self.path_entry         = self.builder.get_object("path_entry")
-
+        self.path_entry              = self.builder.get_object("path_entry")
         self.bottom_size_label       = self.builder.get_object("bottom_size_label")
         self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
         self.bottom_path_label       = self.builder.get_object("bottom_path_label")
-
-        self.trash_files_path        = f"{GLib.get_user_data_dir()}/Trash/files"
-        self.trash_info_path         = f"{GLib.get_user_data_dir()}/Trash/info"
-        self.icon_theme              = settings.get_icon_theme()
 
         self.notebooks          = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files     = []
@@ -81,14 +70,9 @@ class Controller_Data:
         self.is_pane4_hidden    = False
 
         self.override_drop_dest = None
-
         self.ctrl_down          = False
         self.shift_down         = False
         self.alt_down           = False
-
-        self.success_color      = settings.get_success_color()
-        self.warning_color      = settings.get_warning_color()
-        self.error_color        = settings.get_error_color()
 
         # sys.excepthook = self.custom_except_hook
         self.window.connect("delete-event", self.tear_down)

@@ -94,7 +94,7 @@ class WindowMixin(TabMixin):
         formatted_mount_size = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
 
         # NOTE: Hides empty trash and other desired buttons based on context.
-        if self.trash_files_path == current_directory:
+        if settings.get_trash_files_path() == current_directory:
             event_system.emit("show_trash_buttons")
         else:
             event_system.emit("hide_trash_buttons")
@@ -202,7 +202,7 @@ class WindowMixin(TabMixin):
 
         except WindowException as e:
             print(repr(e))
-            self.display_message(self.error_color, f"{repr(e)}")
+            self.display_message(settings.get_error_color(), f"{repr(e)}")
 
     def grid_icon_double_click(self, icons_grid, item, data=None):
         try:
@@ -231,7 +231,7 @@ class WindowMixin(TabMixin):
                 self.open_files()
         except WindowException as e:
             traceback.print_exc()
-            self.display_message(self.error_color, f"{repr(e)}")
+            self.display_message(settings.get_error_color(), f"{repr(e)}")
 
 
 
