@@ -95,7 +95,7 @@ class Plugin(PluginBase):
     def _process_changes(self, state):
         self._fm_state = None
 
-        if len(state.selected_files) == 1:
+        if len(state.uris) == 1:
             self._fm_state = state
             self._set_ui_data()
             response   = self._thumbnailer_dialog.run()
@@ -115,7 +115,7 @@ class Plugin(PluginBase):
         print(video_data["videos"]) if not keys in ("", None) and "videos" in keys else ...
 
     def get_video_data(self):
-        uri            = self._fm_state.selected_files[0]
+        uri            = self._fm_state.uris[0]
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
         _title         = parts[ len(parts) - 1 ]

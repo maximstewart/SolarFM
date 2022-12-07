@@ -98,8 +98,8 @@ class Plugin(PluginBase):
     def _process_changes(self, state):
         self._fm_state = None
 
-        if len(state.selected_files) == 1:
-            if state.selected_files[0].lower().endswith(state.tab.fvideos):
+        if len(state.uris) == 1:
+            if state.uris[0].lower().endswith(state.tab.fvideos):
                 self._fm_state = state
                 self._set_ui_data()
                 response   = self._thumbnailer_dialog.run()
@@ -132,7 +132,7 @@ class Plugin(PluginBase):
 
 
     def _set_ui_data(self):
-        uri            = self._fm_state.selected_files[0]
+        uri            = self._fm_state.uris[0]
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
 

@@ -27,6 +27,7 @@ class State:
     tab: type = None
     icon_grid: gi.overrides.Gtk.IconView = None
     store: gi.overrides.Gtk.ListStore    = None
+    uris:           []   = None
     selected_files: []   = None
     to_copy_files:  []   = None
     to_cut_files:   []   = None
@@ -100,11 +101,13 @@ class Controller_Data:
         state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
         state.store          = state.icon_grid.get_model()
-        state.message_dialog  = self.message_dialog
+        state.message_dialog = self.message_dialog
 
         selected_files       = state.icon_grid.get_selected_items()
         if selected_files:
-            state.selected_files = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
+            state.uris = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
+
+        state.selected_files = self.selected_files
 
         # if self.to_copy_files:
         #     state.to_copy_files  = self.format_to_uris(state.store, state.wid, state.tid, self.to_copy_files, True)

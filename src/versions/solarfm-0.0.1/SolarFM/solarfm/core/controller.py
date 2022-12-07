@@ -10,6 +10,7 @@ from gi.repository import GLib
 
 # Application imports
 from .controller_data import Controller_Data
+from .fs_actions.file_system_actions import FileSystemActions
 from .mixins.signals_mixins import SignalsMixins
 
 from .ui.dialogs.about_widget import AboutWidget
@@ -57,17 +58,16 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         ...
 
     def _setup_signals(self):
-        ...
+        FileSystemActions()
 
     def _subscribe_to_events(self):
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
+        event_system.subscribe("generate_windows", self.generate_windows)
         event_system.subscribe("clear_notebooks", self.clear_notebooks)
         event_system.subscribe("get_current_state", self.get_current_state)
         event_system.subscribe("go_to_path", self.go_to_path)
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
-        # NOTE: Needs to be moved (probably just to file actions class) after reducing mixins usage
-        event_system.subscribe("open_with_files", self.open_with_files)
-        event_system.subscribe("generate_windows", self.generate_windows)
+        event_system.subscribe("set_clipboard_data", self.set_clipboard_data)
 
     # NOTE: Really we will move these to the UI/(New) Window 'base' controller
     #       after we're done cleaning and refactoring to use fewer mixins.
@@ -96,36 +96,39 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         Gtk.main_quit()
 
 
-    def do_action_from_menu_controls(self, widget, eve = None):
-        if not isinstance(widget, str):
-            action = widget.get_name()
+    def do_action_from_menu_controls(self, _action=None, eve=None):
+        if not _action:
+            return
+
+        if not isinstance(_action, str):
+            action = _action.get_name()
         else:
-            action = widget
+            action = _action
 
         event_system.emit("hide_context_menu")
         event_system.emit("hide_new_file_menu")
         event_system.emit("hide_rename_file_menu")
 
         if action == "open":
-            self.open_files()
+            event_system.emit("open_files")
         if action == "open_with":
             event_system.emit("show_appchooser_menu")
         if action == "execute":
-            self.execute_files()
+            event_system.emit("execute_files")
         if action == "execute_in_terminal":
-            self.execute_files(in_terminal=True)
+            event_system.emit("execute_files", (True,))
         if action == "rename":
-            self.rename_files()
+            event_system.emit("rename_files")
         if action == "cut":
-            self.cut_files()
+            event_system.emit("cut_files")
         if action == "copy":
-            self.copy_files()
+            event_system.emit("copy_files")
         if action == "copy_name":
-            self.copy_name()
+            event_system.emit("copy_name")
         if action == "paste":
-            self.paste_files()
+            event_system.emit("paste_files")
         if action == "create":
-            self.create_files()
+            event_system.emit("create_files")
         if action in ["save_session", "save_session_as", "load_session"]:
             event_system.emit("save_load_session", (action))
 
@@ -166,5 +169,5 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         tab.execute([f"{tab.terminal_app}"], start_dir=tab.get_current_directory())
 
-    def go_to_path(self, path):
+    def go_to_path(self, path: str):
         self.path_entry.set_text(path)

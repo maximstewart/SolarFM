@@ -165,12 +165,14 @@ class WindowMixin(TabMixin):
 
         if size == 1:
             # NOTE: If already in selection, likely dnd else not so wont readd
-            if items[0] in self.selected_files:
+            # if items[0] in self.selected_files:
+            if items[0] in event_system.emit_and_await("get_selected_files"):
                 self.dnd_left_primed += 1
                 # NOTE: If in selection but trying to just select an already selected item.
                 if self.dnd_left_primed > 1:
                     self.dnd_left_primed = 0
-                    self.selected_files.clear()
+                    event_system.emit_and_await("get_selected_files").clear()
+                    # self.selected_files.clear()
 
                 # NOTE: Likely trying dnd, just readd to selection the former set.
                 #       Prevents losing highlighting of grid selected.
@@ -178,10 +180,11 @@ class WindowMixin(TabMixin):
                     icons_grid.select_path(path)
 
         if size > 0:
-            self.selected_files = icons_grid.get_selected_items()
+            # self.selected_files = icons_grid.get_selected_items()
+            event_system.emit("set_selected_files", (icons_grid.get_selected_items(),))
         else:
             self.dnd_left_primed = 0
-            self.selected_files.clear()
+            event_system.emit_and_await("get_selected_files").clear()
 
     def grid_icon_single_click(self, icons_grid, eve):
         try:
@@ -228,7 +231,7 @@ class WindowMixin(TabMixin):
                 state.tab.set_path(file)
                 self.update_tab(tab_label, state.tab, state.store, state.wid, state.tid)
             else:
-                self.open_files()
+                event_system.emit("open_files")
         except WindowException as e:
             traceback.print_exc()
             self.display_message(settings.get_error_color(), f"{repr(e)}")
@@ -282,7 +285,7 @@ class WindowMixin(TabMixin):
 
             from_uri = '/'.join(uris[0].replace("file://", "").split("/")[:-1])
             if from_uri != dest:
-                self.move_files(uris, dest)
+                event_system.emit("move_files", (uris, dest))
 
 
     def create_new_tab_notebook(self, widget=None, wid=None, path=None):

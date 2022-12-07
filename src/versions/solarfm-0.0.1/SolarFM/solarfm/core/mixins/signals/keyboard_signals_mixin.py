@@ -50,7 +50,11 @@ class KeyboardSignalsMixin:
         if mapping:
             try:
                 # See if in filemanager scope
-                getattr(self, mapping)()
+                try:
+                    getattr(self, mapping)()
+                except Exception as e:
+                    event_system.emit(mapping)
+
                 return True
             except Exception:
                 # Must be plugins scope or we forgot to add method to file manager scope

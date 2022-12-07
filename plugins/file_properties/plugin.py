@@ -123,8 +123,8 @@ class Plugin(PluginBase):
         GLib.idle_add(self._process_changes, (state))
 
     def _process_changes(self, state):
-        if len(state.selected_files) == 1:
-            uri  = state.selected_files[0]
+        if len(state.uris) == 1:
+            uri  = state.uris[0]
             path = state.tab.get_current_directory()
 
 

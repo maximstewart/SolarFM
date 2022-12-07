@@ -99,9 +99,9 @@ class Plugin(PluginBase):
     def delete_files(self, widget = None, eve = None):
         self._event_system.emit("get_current_state")
         state    = self._fm_state
-        uris     = state.selected_files
+        uris     = state.uris
         response = None
-        
+
         state.message_dialog.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
         for uri in uris:
             file = Gio.File.new_for_path(uri)
@@ -122,13 +122,13 @@ class Plugin(PluginBase):
     def trash_files(self, widget = None, eve = None, verbocity = False):
         self._event_system.emit("get_current_state")
         state = self._fm_state
-        for uri in state.selected_files:
+        for uri in state.uris:
             self.trashman.trash(uri, verbocity)
 
     def restore_trash_files(self, widget = None, eve = None, verbocity = False):
         self._event_system.emit("get_current_state")
         state = self._fm_state
-        for uri in state.selected_files:
+        for uri in state.uris:
             self.trashman.restore(filename=uri.split("/")[-1], verbose = verbocity)
 
     def empty_trash(self, widget = None, eve = None, verbocity = False):

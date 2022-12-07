@@ -113,7 +113,7 @@ class Plugin(PluginBase):
         self._archiver_dialogue.hide()
 
     def archive_files(self, save_target, state):
-        paths       = [shlex.quote(p) for p in state.selected_files]
+        paths       = [shlex.quote(p) for p in state.uris]
 
         sItr, eItr  = self._arc_command_buffer.get_bounds()
         pre_command = self._arc_command_buffer.get_text(sItr, eItr, False)
