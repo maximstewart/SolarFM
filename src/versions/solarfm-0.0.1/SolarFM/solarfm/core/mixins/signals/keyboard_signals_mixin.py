@@ -48,17 +48,18 @@ class KeyboardSignalsMixin:
 
         mapping = self.keybindings.lookup(event)
         if mapping:
+            # See if in filemanager scope
             try:
-                # See if in filemanager scope
-                try:
-                    getattr(self, mapping)()
-                except Exception as e:
-                    event_system.emit(mapping)
-
+                getattr(self, mapping)()
                 return True
             except Exception:
-                # Must be plugins scope or we forgot to add method to file manager scope
-                sender, eve_type = mapping.split("||")
+                # Must be plugins scope, event call, OR we forgot to add method to file manager scope
+                if "||" in mapping:
+                    sender, eve_type = mapping.split("||")
+                else:
+                    sender = ""
+                    eve_type = mapping
+
                 self.handle_plugin_key_event(sender, eve_type)
         else:
             if settings.is_debug():

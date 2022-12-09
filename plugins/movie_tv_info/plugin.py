@@ -95,7 +95,7 @@ class Plugin(PluginBase):
     def _process_changes(self, state):
         self._fm_state = None
 
-        if len(state.uris) == 1:
+        if state.uris and len(state.uris) == 1:
             self._fm_state = state
             self._set_ui_data()
             response   = self._thumbnailer_dialog.run()

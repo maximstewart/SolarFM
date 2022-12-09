@@ -28,6 +28,7 @@ class State:
     icon_grid: gi.overrides.Gtk.IconView = None
     store: gi.overrides.Gtk.ListStore    = None
     uris:           []   = None
+    uris_raw:       []   = None
     selected_files: []   = None
     to_copy_files:  []   = None
     to_cut_files:   []   = None
@@ -105,9 +106,10 @@ class Controller_Data:
 
         selected_files       = state.icon_grid.get_selected_items()
         if selected_files:
-            state.uris = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
+            state.uris     = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
+            state.uris_raw = self.format_to_uris(state.store, state.wid, state.tid, selected_files)
 
-        state.selected_files = self.selected_files
+        state.selected_files = event_system.emit_and_await("get_selected_files")
 
         # if self.to_copy_files:
         #     state.to_copy_files  = self.format_to_uris(state.store, state.wid, state.tid, self.to_copy_files, True)

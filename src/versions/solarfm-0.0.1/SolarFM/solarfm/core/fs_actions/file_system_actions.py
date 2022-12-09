@@ -84,7 +84,7 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
 
     def open_with_files(self, app_info):
         state = event_system.emit_and_await("get_current_state")
-        state.tab.app_chooser_exec(app_info, state.uris)
+        state.tab.app_chooser_exec(app_info, state.uris_raw)
 
     def execute_files(self, in_terminal=False):
         state       = event_system.emit_and_await("get_current_state")

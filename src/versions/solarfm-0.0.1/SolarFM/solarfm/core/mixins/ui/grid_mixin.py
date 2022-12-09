@@ -13,9 +13,9 @@ from gi.repository import Gio
 from gi.repository import GdkPixbuf
 
 # Application imports
-from ...ui.tab_header_widget import TabHeaderWidget
-from ...ui.icon_grid_widget import IconGridWidget
-from ...ui.icon_tree_widget import IconTreeWidget
+from ...widgets.tab_header_widget import TabHeaderWidget
+from ...widgets.icon_grid_widget import IconGridWidget
+from ...widgets.icon_tree_widget import IconTreeWidget
 
 
 

@@ -13,20 +13,20 @@ from .controller_data import Controller_Data
 from .fs_actions.file_system_actions import FileSystemActions
 from .mixins.signals_mixins import SignalsMixins
 
-from .ui.dialogs.about_widget import AboutWidget
-from .ui.dialogs.appchooser_widget import AppchooserWidget
-from .ui.dialogs.file_exists_widget import FileExistsWidget
-from .ui.dialogs.new_file_widget import NewFileWidget
-from .ui.dialogs.message_widget import MessageWidget
-from .ui.dialogs.rename_widget import RenameWidget
-from .ui.dialogs.save_load_widget import SaveLoadWidget
+from .widgets.dialogs.about_widget import AboutWidget
+from .widgets.dialogs.appchooser_widget import AppchooserWidget
+from .widgets.dialogs.file_exists_widget import FileExistsWidget
+from .widgets.dialogs.new_file_widget import NewFileWidget
+from .widgets.dialogs.message_widget import MessageWidget
+from .widgets.dialogs.rename_widget import RenameWidget
+from .widgets.dialogs.save_load_widget import SaveLoadWidget
 
-from .ui.popups.message_popup_widget import MessagePopupWidget
-from .ui.popups.path_menu_popup_widget import PathMenuPopupWidget
-from .ui.popups.plugins_popup_widget import PluginsPopupWidget
-from .ui.popups.io_popup_widget import IOPopupWidget
+from .widgets.popups.message_popup_widget import MessagePopupWidget
+from .widgets.popups.path_menu_popup_widget import PathMenuPopupWidget
+from .widgets.popups.plugins_popup_widget import PluginsPopupWidget
+from .widgets.popups.io_popup_widget import IOPopupWidget
 
-from .ui.context_menu_widget import ContextMenuWidget
+from .widgets.context_menu_widget import ContextMenuWidget
 
 from .ui_mixin import UIMixin
 
@@ -94,6 +94,9 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         settings.clear_pid()
         time.sleep(event_sleep_time)
         Gtk.main_quit()
+
+    def reload_plugins(self, widget=None, eve=None):
+        self.plugins.reload_plugins()
 
 
     def do_action_from_menu_controls(self, _action=None, eve=None):

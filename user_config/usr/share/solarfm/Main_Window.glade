@@ -27,6 +27,11 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-execute</property>
   </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-redo</property>
+  </object>
   <object class="GtkImage" id="io_img">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -120,6 +125,16 @@
                           <object class="GtkSeparatorMenuItem">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImageMenuItem">
+                            <property name="label">Reload Plugins</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="image">image6</property>
+                            <property name="use-stock">False</property>
+                            <signal name="button-release-event" handler="reload_plugins" swapped="no"/>
                           </object>
                         </child>
                         <child>

@@ -117,4 +117,11 @@ class PluginsController:
         self._plugin_collection.append(plugin)
 
     def reload_plugins(self, file: str = None) -> None:
-        print(f"Reloading plugins... stub.")
+        print(f"Reloading plugins...")
+        parent_path = os.getcwd()
+
+        for plugin in self._plugin_collection:
+            os.chdir(plugin.path)
+            plugin.reference.reload_package(f"{plugin.path}/plugin.py")
+
+        os.chdir(parent_path)

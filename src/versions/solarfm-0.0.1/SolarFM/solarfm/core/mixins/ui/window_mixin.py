@@ -5,7 +5,9 @@ from os.path import isdir
 
 # Lib imports
 import gi
+gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gio
 
@@ -160,31 +162,29 @@ class WindowMixin(TabMixin):
         path_entry.set_text(tab.get_current_directory())
 
     def grid_set_selected_items(self, icons_grid):
-        items = icons_grid.get_selected_items()
-        size  = len(items)
+        new_items      = icons_grid.get_selected_items()
+        items_size     = len(new_items)
+        selected_items = event_system.emit_and_await("get_selected_files")
 
-        if size == 1:
+        if items_size == 1:
             # NOTE: If already in selection, likely dnd else not so wont readd
-            # if items[0] in self.selected_files:
-            if items[0] in event_system.emit_and_await("get_selected_files"):
+            if new_items[0] in selected_items:
                 self.dnd_left_primed += 1
                 # NOTE: If in selection but trying to just select an already selected item.
                 if self.dnd_left_primed > 1:
                     self.dnd_left_primed = 0
-                    event_system.emit_and_await("get_selected_files").clear()
-                    # self.selected_files.clear()
+                    selected_items.clear()
 
                 # NOTE: Likely trying dnd, just readd to selection the former set.
                 #       Prevents losing highlighting of grid selected.
-                for path in self.selected_files:
+                for path in selected_items:
                     icons_grid.select_path(path)
 
-        if size > 0:
-            # self.selected_files = icons_grid.get_selected_items()
-            event_system.emit("set_selected_files", (icons_grid.get_selected_items(),))
+        if items_size > 0:
+            event_system.emit("set_selected_files", (new_items,))
         else:
             self.dnd_left_primed = 0
-            event_system.emit_and_await("get_selected_files").clear()
+            selected_items.clear()
 
     def grid_icon_single_click(self, icons_grid, eve):
         try:
@@ -244,7 +244,7 @@ class WindowMixin(TabMixin):
         store     = icons_grid.get_model()
         treePaths = icons_grid.get_selected_items()
         # NOTE: Need URIs as URI format for DnD to work. Will strip 'file://'
-        # further down call chain when doing internal fm stuff.
+        #       further down call chain when doing internal fm stuff.
         uris      = self.format_to_uris(store, wid, tid, treePaths)
         uris_text = '\n'.join(uris)
 
@@ -273,13 +273,9 @@ class WindowMixin(TabMixin):
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
         if info == 80:
-            wid, tid  = self.fm_controller.get_active_wid_and_tid()
-            notebook  = self.builder.get_object(f"window_{wid}")
-            store, tab_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
-            tab       = self.get_fm_window(wid).get_tab_by_id(tid)
-
-            uris = data.get_uris()
-            dest = f"{tab.get_current_directory()}" if not self.override_drop_dest else self.override_drop_dest
+            uris  = data.get_uris()
+            state = event_system.emit_and_await("get_current_state")
+            dest  = f"{state.tab.get_current_directory()}" if not self.override_drop_dest else self.override_drop_dest
             if len(uris) == 0:
                 uris = data.get_text().split("\n")
 

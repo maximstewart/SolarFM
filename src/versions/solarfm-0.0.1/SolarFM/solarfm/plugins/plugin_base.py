@@ -63,3 +63,19 @@ class PluginBase:
             Is intended to be used to setup internal signals or custom Gtk Builders/UI logic.
         """
         raise PluginBaseException("Method hasn't been overriden...")
+
+    def reload_package(self, plugin_path, module_dict_main=locals()):
+        import importlib
+        from pathlib import Path
+
+        def reload_package_recursive(current_dir, module_dict):
+            for path in current_dir.iterdir():
+                if "__init__" in str(path) or path.stem not in module_dict:
+                    continue
+
+                if path.is_file() and path.suffix == ".py":
+                    importlib.reload(module_dict[path.stem])
+                elif path.is_dir():
+                    reload_package_recursive(path, module_dict[path.stem].__dict__)
+
+        reload_package_recursive(Path(plugin_path).parent, module_dict_main["module_dict_main"])
