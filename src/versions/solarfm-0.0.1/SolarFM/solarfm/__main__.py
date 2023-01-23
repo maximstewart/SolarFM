@@ -6,10 +6,6 @@ import faulthandler
 import traceback
 from setproctitle import setproctitle
 
-import tracemalloc
-tracemalloc.start()
-
-
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
