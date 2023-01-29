@@ -1,3 +1,3 @@
 """
-Icons mixins module
+    Icons mixins module
 """

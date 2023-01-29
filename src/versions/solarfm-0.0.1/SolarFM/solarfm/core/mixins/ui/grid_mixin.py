@@ -1,16 +1,11 @@
 # Python imports
-import os
 
 # Lib imports
 import gi
 
 gi.require_version("Gtk", "3.0")
-gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GLib
-from gi.repository import Gio
-from gi.repository import GdkPixbuf
 
 # Application imports
 from ...widgets.tab_header_widget import TabHeaderWidget
@@ -45,31 +40,11 @@ class GridMixin:
 
     def create_icon(self, i, tab, store, dir, file):
         icon = tab.create_icon(dir, file)
-        GLib.idle_add(self.update_store, *(i, store, icon, tab, dir, file,))
+        GLib.idle_add(self.update_store, *(i, store, icon,))
 
-    def update_store(self, i, store, icon, tab, dir, file):
-        if not icon:
-            path = f"{dir}/{file}"
-            icon = self.get_system_thumbnail(path, tab.sys_icon_wh[0])
-
-        if not icon:
-            icon = GdkPixbuf.Pixbuf.new_from_file(tab.DEFAULT_ICON)
-
+    def update_store(self, i, store, icon):
         itr = store.get_iter(i)
         store.set_value(itr, 0, icon)
-
-    def get_system_thumbnail(self, filename, size):
-        try:
-            gio_file  = Gio.File.new_for_path(filename)
-            info      = gio_file.query_info('standard::icon' , 0, None)
-            icon      = info.get_icon().get_names()[0]
-            icon_path = settings.get_icon_theme().lookup_icon(icon , size , 0).get_filename()
-
-            return GdkPixbuf.Pixbuf.new_from_file(icon_path)
-        except Exception:
-            ...
-
-        return None
 
 
     def create_tab_widget(self, tab):

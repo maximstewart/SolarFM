@@ -65,6 +65,7 @@ class GrepSearchMixin:
 
     def _exec_grep_query(self, widget=None, eve=None):
         query = widget.get_text()
+
         if not query.strip() in ("", None):
             self.grep_query = query
 

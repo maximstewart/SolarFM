@@ -1,4 +1,4 @@
-# System import
+# Python imports
 import json
 import os
 from os import path
@@ -7,6 +7,7 @@ from os import path
 
 
 # Apoplication imports
+
 
 
 
@@ -22,8 +23,9 @@ class Settings:
     GTK_ORIENTATION   = 1    # HORIZONTAL (0) VERTICAL (1)
     DEFAULT_ICONS     = f"{CONFIG_PATH}/icons"
     DEFAULT_ICON      = f"{DEFAULT_ICONS}/text.png"
-    FFMPG_THUMBNLR    = f"{CONFIG_PATH}/ffmpegthumbnailer" # Thumbnail generator binary
-    REMUX_FOLDER      = f"{USER_HOME}/.remuxs"             # Remuxed files folder
+    FFMPG_THUMBNLR    = f"{CONFIG_PATH}/ffmpegthumbnailer"    # Thumbnail generator binary
+    BLENDER_THUMBNLR  =  f"{CONFIG_PATH}/blender-thumbnailer" # Blender thumbnail generator binary
+    REMUX_FOLDER      = f"{USER_HOME}/.remuxs"                # Remuxed files folder
 
     ICON_DIRS         = ["/usr/share/icons", f"{USER_HOME}/.icons" "/usr/share/pixmaps"]
     BASE_THUMBS_PTH   = f"{USER_HOME}/.thumbnails"         # Used for thumbnail generation
@@ -53,7 +55,8 @@ class Settings:
 
         subpath           = config["base_of_home"]
         STEAM_CDN_URL     = config["steam_cdn_url"]
-        FFMPG_THUMBNLR    = FFMPG_THUMBNLR if config["thumbnailer_path"] == "" else config["thumbnailer_path"]
+        FFMPG_THUMBNLR    = FFMPG_THUMBNLR   if config["thumbnailer_path"] == "" else config["thumbnailer_path"]
+        BLENDER_THUMBNLR  = BLENDER_THUMBNLR if config["blender_thumbnailer_path"] == "" else config["blender_thumbnailer_path"]
         HIDE_HIDDEN_FILES = True if config["hide_hidden_files"] == "true" else False
         go_past_home      = True if config["go_past_home"] == "" else config["go_past_home"]
         lock_folder       = True if config["lock_folder"] == "true" else False
@@ -75,6 +78,7 @@ class Settings:
 
         # Filters
         filters = settings["filters"]
+        fmeshs  = tuple(filters["meshs"])
         fcode   = tuple(filters["code"])
         fvideos = tuple(filters["videos"])
         foffice = tuple(filters["office"])

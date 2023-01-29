@@ -1,5 +1,6 @@
 # Python imports
-import threading, json
+import threading
+import json
 from os import path
 
 # Lib imports
@@ -8,10 +9,6 @@ from os import path
 from .window import Window
 
 
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 class WindowController:

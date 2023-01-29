@@ -1,3 +1,3 @@
 """
-Icons module
+    Icons module
 """

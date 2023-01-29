@@ -1,12 +1,12 @@
 # Python imports
 from random import randint
 
-
 # Lib imports
-
 
 # Application imports
 from .tabs.tab import Tab
+
+
 
 
 class Window:

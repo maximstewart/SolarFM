@@ -3,6 +3,7 @@
         "base_of_home": "",
         "hide_hidden_files": "true",
         "thumbnailer_path": "ffmpegthumbnailer",
+        "blender_thumbnailer_path": "",
         "go_past_home": "true",
         "lock_folder": "false",
         "locked_folders": "venv::::flasks",
@@ -23,6 +24,7 @@
         "remux_folder_max_disk_usage": "8589934592"
     },
     "filters": {
+        "meshs":  [".dae", ".fbx", ".gltf", ".obj", ".stl"],
         "code":   [".cpp", ".css", ".c", ".go", ".html", ".htm", ".java", ".js", ".json", ".lua", ".md", ".py", ".rs", ".toml", ".xml", ".pom"],
         "videos": [".mkv", ".mp4", ".webm", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".wmv", ".flv"],
         "office": [".doc", ".docx", ".xls", ".xlsx", ".xlt", ".xltx", ".xlm", ".ppt", ".pptx", ".pps", ".ppsx", ".odt", ".rtf"],

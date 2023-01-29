@@ -1,21 +1,22 @@
 # Python imports
-import hashlib, re
+import hashlib
+import re
 from os import listdir
-from os.path import isdir, isfile, join
-
+from os.path import isdir
+from os.path import isfile
+from os.path import join
 from random import randint
 
-
 # Lib imports
-
 
 # Application imports
 from .utils.settings import Settings
 from .utils.launcher import Launcher
 from .utils.filehandler import FileHandler
-
 from .icons.icon import Icon
 from .path import Path
+
+
 
 
 class Tab(Settings, FileHandler, Launcher, Icon, Path):

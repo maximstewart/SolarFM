@@ -1,3 +1,3 @@
 """
-Tabs module
+    Tabs module
 """

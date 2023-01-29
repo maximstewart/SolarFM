@@ -1,22 +1,24 @@
-# Python Imports
+# Python imports
 import subprocess
 
-# Gtk imports
+# Lib imports
 
 # Application imports
 
 
+
+
 class VideoIconMixin:
-    def generate_video_thumbnail(self, full_path, hash_img_pth, scrub_percent = "65%"):
+    def generate_video_thumbnail(self, full_path, hash_img_path, scrub_percent = "65%"):
         try:
-            proc = subprocess.Popen([self.FFMPG_THUMBNLR, "-t", scrub_percent, "-s", "300", "-c", "jpg", "-i", full_path, "-o", hash_img_pth])
+            proc = subprocess.Popen([self.FFMPG_THUMBNLR, "-t", scrub_percent, "-s", "300", "-c", "jpg", "-i", full_path, "-o", hash_img_path])
             proc.wait()
         except Exception as e:
             self.logger.debug(repr(e))
-            self.ffprobe_generate_video_thumbnail(full_path, hash_img_pth)
+            self.ffprobe_generate_video_thumbnail(full_path, hash_img_path)
 
 
-    def ffprobe_generate_video_thumbnail(self, full_path, hash_img_pth):
+    def ffprobe_generate_video_thumbnail(self, full_path, hash_img_path):
         proc = None
         try:
             # Stream duration
@@ -44,7 +46,7 @@ class VideoIconMixin:
 
             # Get frame roughly 35% through video
             grabTime = str( int( float( duration.split(".")[0] ) * 0.35) )
-            command  = ["ffmpeg", "-ss", grabTime, "-an", "-i", full_path, "-s", "320x180", "-vframes", "1", hash_img_pth]
+            command  = ["ffmpeg", "-ss", grabTime, "-an", "-i", full_path, "-s", "320x180", "-vframes", "1", hash_img_path]
             proc     = subprocess.Popen(command, stdout=subprocess.PIPE)
             proc.wait()
         except Exception as e:

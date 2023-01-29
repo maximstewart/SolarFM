@@ -1,5 +1,6 @@
 # Python imports
-import os, shutil
+import os
+import shutil
 
 # Lib imports
 
