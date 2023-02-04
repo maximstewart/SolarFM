@@ -12,14 +12,16 @@ class PluginBaseException(Exception):
 
 
 class PluginBase:
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
         self.name               = "Example Plugin"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                                     #       where self.name should not be needed for message comms
-
         self._builder           = None
         self._ui_objects        = None
         self._fm_state          = None
         self._event_system      = None
+
 
 
     def set_fm_event_system(self, fm_event_system):

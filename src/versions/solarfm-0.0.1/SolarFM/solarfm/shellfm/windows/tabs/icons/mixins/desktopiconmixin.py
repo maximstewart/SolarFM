@@ -17,7 +17,7 @@ from .xdg.DesktopEntry import DesktopEntry
 
 
 class DesktopIconMixin:
-    def parse_desktop_files(self, full_path):
+    def find_thumbnail_from_desktop_file(self, full_path):
         try:
             xdgObj        = DesktopEntry(full_path)
             icon          = xdgObj.getIcon()

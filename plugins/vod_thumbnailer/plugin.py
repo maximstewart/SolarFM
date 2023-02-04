@@ -115,9 +115,7 @@ class Plugin(PluginBase):
         hash_img_pth  = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
 
         try:
-            os.remove(hash_img_pth) if os.path.isfile(hash_img_pth) else ...
-
-            self._fm_state.tab.create_thumbnail(dir, file, f"{scrub_percent}%")
+            self._fm_state.tab.create_video_thumbnail(f"{dir}/{file}", f"{scrub_percent}%", True)
             preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
             self._thumbnail_preview_img.set_from_pixbuf(preview_pixbuf)
 
@@ -135,8 +133,7 @@ class Plugin(PluginBase):
         uri            = self._fm_state.uris[0]
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
-
-        file_hash      = hashlib.sha256(str.encode(uri)).hexdigest()
+        file_hash      = self._fm_state.tab.fast_hash(uri)
         hash_img_pth   = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
         preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
 

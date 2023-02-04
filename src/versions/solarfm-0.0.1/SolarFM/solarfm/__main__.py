@@ -3,6 +3,7 @@
 # Python imports
 import argparse
 import faulthandler
+import locale
 import traceback
 from setproctitle import setproctitle
 
@@ -20,6 +21,8 @@ from app import Application
 
 def run():
     try:
+        locale.setlocale(locale.LC_NUMERIC, 'C')
+
         setproctitle(f"{app_name}")
         faulthandler.enable()  # For better debug info
 
