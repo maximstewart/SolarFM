@@ -1,9 +1,11 @@
 # Python imports
-import os, threading, time
+import os
+import time
 from multiprocessing.connection import Client
 from multiprocessing.connection import Listener
 
 # Lib imports
+from gi.repository import GLib
 
 # Application imports
 
@@ -56,7 +58,7 @@ class IPCServer:
         while True:
             conn       = listener.accept()
             start_time = time.perf_counter()
-            self._handle_ipc_message(conn, start_time)
+            GLib.idle_add(self._handle_ipc_message, *(conn, start_time,))
 
         listener.close()
 
