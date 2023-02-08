@@ -224,10 +224,13 @@ class Tab(Settings, FileHandler, Launcher, Icon, Path):
         return self._dir_watcher
 
     def _atoi(self, text):
-        return int(text) if text.isdigit() else text
+        return int(text) if text.isnumeric() else text
+
+    def _atof(self, text):
+        return float(text) if text.isnumeric() else text
 
     def _natural_keys(self, text):
-        return [ self._atoi(c) for c in re.split('(\d+)',text) ]
+        return [ self._atof(c) for c in re.split('(\d+)', text) ]
 
     def _hash_text(self, text) -> str:
         return hashlib.sha256(str.encode(text)).hexdigest()[:18]

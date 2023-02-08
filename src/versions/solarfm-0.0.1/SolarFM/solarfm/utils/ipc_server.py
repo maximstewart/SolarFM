@@ -56,9 +56,12 @@ class IPCServer:
     @daemon_threaded
     def _run_ipc_loop(self, listener) -> None:
         while True:
-            conn       = listener.accept()
-            start_time = time.perf_counter()
-            GLib.idle_add(self._handle_ipc_message, *(conn, start_time,))
+            try:
+                conn       = listener.accept()
+                start_time = time.perf_counter()
+                GLib.idle_add(self._handle_ipc_message, *(conn, start_time,))
+            except Exception as e:
+                ...
 
         listener.close()
 

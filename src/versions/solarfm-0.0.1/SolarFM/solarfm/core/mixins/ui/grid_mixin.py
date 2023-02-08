@@ -26,18 +26,16 @@ class GridMixin:
         for file in files:
             store.append([None, file[0]])
 
-        self.load_icons(tab, store, dir, files)
+        Gtk.main_iteration()
+        for i, file in enumerate(files):
+            self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state and not trace_debug:
             self.fm_controller.save_state()
 
 
-    @threaded
-    def load_icons(self, tab, store, dir, files):
-        for i, file in enumerate(files):
-            self.create_icon(i, tab, store, dir, file[0])
-
+    @daemon_threaded
     def create_icon(self, i, tab, store, dir, file):
         icon = tab.create_icon(dir, file)
         GLib.idle_add(self.update_store, *(i, store, icon,))
@@ -45,7 +43,6 @@ class GridMixin:
     def update_store(self, i, store, icon):
         itr = store.get_iter(i)
         store.set_value(itr, 0, icon)
-
 
     def create_tab_widget(self, tab):
         return TabHeaderWidget(tab, self.close_tab)
