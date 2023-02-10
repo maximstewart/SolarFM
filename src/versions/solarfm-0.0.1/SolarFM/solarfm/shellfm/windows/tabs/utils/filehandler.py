@@ -12,9 +12,9 @@ import shutil
 class FileHandler:
     def create_file(self, nFile, type):
         try:
-            if TYPE == "dir":
+            if type == "dir":
                 os.mkdir(nFile)
-            elif TYPE == "file":
+            elif type == "file":
                 open(nFile, 'a').close()
         except Exception as e:
             print("An error occured creating the file/dir:")

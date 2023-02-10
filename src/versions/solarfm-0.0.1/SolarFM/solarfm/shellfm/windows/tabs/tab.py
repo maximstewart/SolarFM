@@ -1,4 +1,5 @@
 # Python imports
+import os
 import hashlib
 import re
 from os import listdir
@@ -17,6 +18,23 @@ from .icons.icon import Icon
 from .path import Path
 
 
+try:
+    get_file_size("/")
+except Exception as e:
+    import os
+
+    def sizeof_fmt_def(num, suffix="B"):
+        for unit in ["", "K", "M", "G", "T", "Pi", "Ei", "Zi"]:
+            if abs(num) < 1024.0:
+                return f"{num:3.1f} {unit}{suffix}"
+            num /= 1024.0
+        return f"{num:.1f} Yi{suffix}"
+
+    def _get_file_size(file):
+        return "4K" if isdir(file) else sizeof_fmt_def(os.path.getsize(file))
+
+    get_file_size = _get_file_size
+
 
 
 class Tab(Settings, FileHandler, Launcher, Icon, Path):
@@ -26,6 +44,7 @@ class Tab(Settings, FileHandler, Launcher, Icon, Path):
 
         self._id: str           = ""
         self._wid: str          = None
+        self.error_message: str = None
         self._dir_watcher       = None
         self._hide_hidden: bool = self.HIDE_HIDDEN_FILES
         self._files: list       = []
@@ -50,6 +69,7 @@ class Tab(Settings, FileHandler, Launcher, Icon, Path):
         self._files     = []
 
         if not isdir(path):
+            self._set_error_message("Path can not be accessed.")
             self.set_to_home()
             return ""
 
@@ -145,6 +165,15 @@ class Tab(Settings, FileHandler, Launcher, Icon, Path):
             }
         }
 
+    def get_video_icons(self) -> list:
+        data = []
+        dir  = self.get_current_directory()
+        for file in self._vids:
+            img_hash, hash_img_path = self.create_video_thumbnail(full_path=f"{dir}/{file}", returnHashInstead=True)
+            data.append([img_hash, hash_img_path])
+
+        return data
+
     def get_pixbuf_icon_str_combo(self):
         data = []
         dir  = self.get_current_directory()
@@ -153,7 +182,6 @@ class Tab(Settings, FileHandler, Launcher, Icon, Path):
             data.append([icon, file])
 
         return data
-
 
     def get_gtk_icon_str_combo(self) -> list:
         data = []
@@ -223,23 +251,30 @@ class Tab(Settings, FileHandler, Launcher, Icon, Path):
     def get_dir_watcher(self):
         return self._dir_watcher
 
-    def _atoi(self, text):
-        return int(text) if text.isnumeric() else text
+    def get_error_message(self):
+        return self.error_message
 
-    def _atof(self, text):
-        return float(text) if text.isnumeric() else text
+    def unset_error_message(self):
+        self.error_message = None
+
+    def _atoi(self, text):
+        return int(text) if text.isdigit() else text
 
     def _natural_keys(self, text):
-        return [ self._atof(c) for c in re.split('(\d+)', text) ]
+        return [ self._atoi(c) for c in re.split('(\d+)',text) ]
 
     def _hash_text(self, text) -> str:
         return hashlib.sha256(str.encode(text)).hexdigest()[:18]
 
     def _hash_set(self, arry: list) -> list:
+        path = self.get_current_directory()
         data = []
         for arr in arry:
-            data.append([arr, self._hash_text(arr)])
+            file = f"{path}/{arr}"
+            size = get_file_size(file)
+            data.append([arr, self._hash_text(arr), size])
         return data
+
 
     def _random_with_N_digits(self, n: int) -> int:
         range_start = 10**(n-1)
@@ -248,3 +283,6 @@ class Tab(Settings, FileHandler, Launcher, Icon, Path):
 
     def _generate_id(self) -> str:
         self._id = str(self._random_with_N_digits(self._id_length))
+
+    def _set_error_message(self, text: str):
+        self.error_message = text

@@ -57,11 +57,14 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
 
         return self.get_generic_icon()
 
-    def create_blender_thumbnail(self, full_path):
+    def create_blender_thumbnail(self, full_path, returnHashInstead=False):
         try:
-            path_exists, hash_img_path = self.generate_hash_and_path(full_path)
+            path_exists, img_hash, hash_img_path = self.generate_hash_and_path(full_path)
             if not path_exists:
                 self.generate_blender_thumbnail(full_path, hash_img_path)
+
+            if returnHashInstead:
+                return img_hash, hash_img_path
 
             return self.create_scaled_image(hash_img_path, self.video_icon_wh)
         except IconException as e:
@@ -70,15 +73,18 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
 
         return None
 
-    def create_video_thumbnail(self, full_path, scrub_percent = "65%", replace=False):
+    def create_video_thumbnail(self, full_path, scrub_percent = "65%", replace=False, returnHashInstead=False):
         try:
-            path_exists, hash_img_path = self.generate_hash_and_path(full_path)
+            path_exists, img_hash, hash_img_path = self.generate_hash_and_path(full_path)
             if path_exists and replace:
                 os.remove(hash_img_path)
                 path_exists = False
 
             if not path_exists:
                 self.generate_video_thumbnail(full_path, hash_img_path, scrub_percent)
+
+            if returnHashInstead:
+                return img_hash, hash_img_path
 
             return self.create_scaled_image(hash_img_path, self.video_icon_wh)
         except IconException as e:
@@ -150,11 +156,11 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
         return GdkPixbuf.Pixbuf.new_from_file(self.DEFAULT_ICON)
 
     def generate_hash_and_path(self, full_path):
-        file_hash     = self.fast_hash(full_path)
-        hash_img_path = f"{self.ABS_THUMBS_PTH}/{file_hash}.jpg"
+        img_hash      = self.fast_hash(full_path)
+        hash_img_path = f"{self.ABS_THUMBS_PTH}/{img_hash}.jpg"
         path_exists   = True if isfile(hash_img_path) else False
 
-        return path_exists, hash_img_path
+        return path_exists, img_hash, hash_img_path
 
 
     def fast_hash(self, filename, hash_factory=hashlib.md5, chunk_num_blocks=128, i=1):

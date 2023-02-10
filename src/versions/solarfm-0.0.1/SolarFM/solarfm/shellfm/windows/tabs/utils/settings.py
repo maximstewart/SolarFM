@@ -5,7 +5,6 @@ from os import path
 
 # Lib imports
 
-
 # Apoplication imports
 
 
@@ -13,7 +12,6 @@ from os import path
 
 class Settings:
     logger            = None
-
     USR_SOLARFM       = "/usr/share/solarfm"
     USER_HOME         = path.expanduser('~')
     CONFIG_PATH       = f"{USER_HOME}/.config/solarfm"
@@ -24,7 +22,7 @@ class Settings:
     DEFAULT_ICONS     = f"{CONFIG_PATH}/icons"
     DEFAULT_ICON      = f"{DEFAULT_ICONS}/text.png"
     FFMPG_THUMBNLR    = f"{CONFIG_PATH}/ffmpegthumbnailer"    # Thumbnail generator binary
-    BLENDER_THUMBNLR  =  f"{CONFIG_PATH}/blender-thumbnailer" # Blender thumbnail generator binary
+    BLENDER_THUMBNLR  = f"{CONFIG_PATH}/blender-thumbnailer"  # Blender thumbnail generator binary
     REMUX_FOLDER      = f"{USER_HOME}/.remuxs"                # Remuxed files folder
 
     ICON_DIRS         = ["/usr/share/icons", f"{USER_HOME}/.icons" "/usr/share/pixmaps"]
@@ -57,9 +55,9 @@ class Settings:
         STEAM_CDN_URL     = config["steam_cdn_url"]
         FFMPG_THUMBNLR    = FFMPG_THUMBNLR   if config["thumbnailer_path"] == "" else config["thumbnailer_path"]
         BLENDER_THUMBNLR  = BLENDER_THUMBNLR if config["blender_thumbnailer_path"] == "" else config["blender_thumbnailer_path"]
-        HIDE_HIDDEN_FILES = True if config["hide_hidden_files"] == "true" else False
-        go_past_home      = True if config["go_past_home"] == "" else config["go_past_home"]
-        lock_folder       = True if config["lock_folder"] == "true" else False
+        HIDE_HIDDEN_FILES = True  if config["hide_hidden_files"] in ["true", ""] else False
+        go_past_home      = True  if config["go_past_home"] in ["true", ""] else False
+        lock_folder       = False if config["lock_folder"] in ["false", ""] else True
         locked_folders    = config["locked_folders"].split("::::")
         mplayer_options   = config["mplayer_options"].split()
         music_app         = config["music_app"]
