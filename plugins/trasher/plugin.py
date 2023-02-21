@@ -1,8 +1,5 @@
 # Python imports
 import os
-import threading
-import subprocess
-import inspect
 
 # Lib imports
 import gi
@@ -14,19 +11,6 @@ from gi.repository import Gio
 # Application imports
 from plugins.plugin_base import PluginBase
 from .xdgtrash import XDGTrash
-
-
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 

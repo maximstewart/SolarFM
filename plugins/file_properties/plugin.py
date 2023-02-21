@@ -24,12 +24,6 @@ def threaded(fn):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
     return wrapper
 
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
-
 
 
 
@@ -51,10 +45,10 @@ class Plugin(PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.path               = os.path.dirname(os.path.realpath(__file__))
-        self._GLADE_FILE        = f"{self.path}/file_properties.glade"
         self.name               = "Properties"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                                 #       where self.name should not be needed for message comms
+        self.path               = os.path.dirname(os.path.realpath(__file__))
+        self._GLADE_FILE        = f"{self.path}/file_properties.glade"
 
         self._properties_dialog = None
         self._file_name         = None
@@ -91,8 +85,9 @@ class Plugin(PluginBase):
 
 
     def run(self):
-        self._builder           = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
+        self._connect_builder_signals(self, self._builder)
 
         self._properties_dialog = self._builder.get_object("file_properties_dialog")
         self._file_name     = self._builder.get_object("file_name")

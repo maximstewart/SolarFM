@@ -157,7 +157,7 @@ class TabMixin(GridMixin):
 
                 self.clear_children(path_menu_buttons)
                 show_path_menu = False
-                for file, hash in files:
+                for file, hash, size in files:
                     if os.path.isdir(f"{dir}{file}"):
                         if query.lower() in file.lower():
                             button = Gtk.Button(label=file)

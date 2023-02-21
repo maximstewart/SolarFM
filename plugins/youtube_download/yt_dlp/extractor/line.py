@@ -1,7 +1,3 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
-
 from .common import InfoExtractor
 from ..compat import compat_str
 from ..utils import (
@@ -38,7 +34,7 @@ class LineLiveBaseIE(InfoExtractor):
             'timestamp': int_or_none(item.get('createdAt')),
             'channel': channel.get('name'),
             'channel_id': channel_id,
-            'channel_url': format_field(channel_id, template='https://live.line.me/channels/%s'),
+            'channel_url': format_field(channel_id, None, 'https://live.line.me/channels/%s'),
             'duration': int_or_none(item.get('archiveDuration')),
             'view_count': int_or_none(item.get('viewerCount')),
             'comment_count': int_or_none(item.get('chatCount')),
@@ -102,7 +98,6 @@ class LineLiveIE(LineLiveBaseIE):
             archive_status = item.get('archiveStatus')
             if archive_status != 'ARCHIVED':
                 self.raise_no_formats('this video has been ' + archive_status.lower(), expected=True)
-        self._sort_formats(formats)
         info['formats'] = formats
         return info
 

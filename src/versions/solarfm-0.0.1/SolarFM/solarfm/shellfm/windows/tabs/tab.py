@@ -31,7 +31,10 @@ except Exception as e:
         return f"{num:.1f} Yi{suffix}"
 
     def _get_file_size(file):
-        return "4K" if isdir(file) else sizeof_fmt_def(os.path.getsize(file))
+        try:
+            return "4K" if isdir(file) else sizeof_fmt_def(os.path.getsize(file))
+        except Exception as e:
+            return "0K"
 
     get_file_size = _get_file_size
 

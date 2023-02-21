@@ -13,6 +13,7 @@ from os import path
 class Settings:
     logger            = None
     USR_SOLARFM       = "/usr/share/solarfm"
+    SHIM_PATH         = "/dev/shm/solarfm"
     USER_HOME         = path.expanduser('~')
     CONFIG_PATH       = f"{USER_HOME}/.config/solarfm"
     CONFIG_FILE       = f"{CONFIG_PATH}/settings.json"
@@ -23,14 +24,19 @@ class Settings:
     DEFAULT_ICON      = f"{DEFAULT_ICONS}/text.png"
     FFMPG_THUMBNLR    = f"{CONFIG_PATH}/ffmpegthumbnailer"    # Thumbnail generator binary
     BLENDER_THUMBNLR  = f"{CONFIG_PATH}/blender-thumbnailer"  # Blender thumbnail generator binary
-    REMUX_FOLDER      = f"{USER_HOME}/.remuxs"                # Remuxed files folder
+    # REMUX_FOLDER      = f"{USER_HOME}/.remuxs"              # Remuxed files folder
+    REMUX_FOLDER      = f"{SHIM_PATH}/.remuxs"                # Remuxed files folder
 
     ICON_DIRS         = ["/usr/share/icons", f"{USER_HOME}/.icons" "/usr/share/pixmaps"]
-    BASE_THUMBS_PTH   = f"{USER_HOME}/.thumbnails"         # Used for thumbnail generation
-    ABS_THUMBS_PTH    = f"{BASE_THUMBS_PTH}/normal"        # Used for thumbnail generation
+    # BASE_THUMBS_PTH   = f"{USER_HOME}/.thumbnails"         # Used for thumbnail generation
+    BASE_THUMBS_PTH   = f"{SHIM_PATH}/.thumbnails"           # Used for thumbnail generation
+    ABS_THUMBS_PTH    = f"{BASE_THUMBS_PTH}/normal"          # Used for thumbnail generation
     STEAM_ICONS_PTH   = f"{BASE_THUMBS_PTH}/steam_icons"
 
     # Dir structure check
+    if not path.isdir(SHIM_PATH):
+        os.mkdir(SHIM_PATH)
+
     if not path.isdir(REMUX_FOLDER):
         os.mkdir(REMUX_FOLDER)
 

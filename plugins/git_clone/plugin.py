@@ -1,5 +1,8 @@
 # Python imports
-import os, threading, subprocess, time
+import os
+import threading
+import subprocess
+import time
 
 # Lib imports
 import gi
@@ -16,12 +19,6 @@ def threaded(fn):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
     return wrapper
 
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
-
 
 
 
@@ -29,9 +26,9 @@ class Plugin(PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.path              = os.path.dirname(os.path.realpath(__file__))
         self.name              = "Git Clone"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                               #       where self.name should not be needed for message comms
+        self.path              = os.path.dirname(os.path.realpath(__file__))
 
     def generate_reference_ui_element(self):
         button = Gtk.Button(label=self.name)

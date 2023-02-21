@@ -3,7 +3,6 @@ import os
 import threading
 import subprocess
 import time
-import inspect
 import hashlib
 from datetime import datetime
 
@@ -24,12 +23,6 @@ from plugins.plugin_base import PluginBase
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
 
@@ -53,20 +46,9 @@ class Plugin(PluginBase):
 
 
     def run(self):
-        self._builder           = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        self._connect_builder_signals(self, self._builder)
 
         self._thumbnailer_dialog    = self._builder.get_object("thumbnailer_dialog")
         self._scrub_step            = self._builder.get_object("scrub_step")

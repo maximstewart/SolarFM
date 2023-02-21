@@ -1,7 +1,5 @@
 # Python imports
 import os
-import threading
-import inspect
 import time
 
 # Lib imports
@@ -18,28 +16,14 @@ from .utils.ipc_server import IPCServer
 
 
 
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
-
-
-
 
 class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.path               = os.path.dirname(os.path.realpath(__file__))
         self.name               = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                             #       where self.name should not be needed for message comms
+        self.path               = os.path.dirname(os.path.realpath(__file__))
         self._GLADE_FILE        = f"{self.path}/search_dialog.glade"
 
         self.update_list_ui_buffer = ()
@@ -59,20 +43,9 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
 
 
     def run(self):
-        self._builder          = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        self._connect_builder_signals(self, self._builder)
 
         self._search_dialog = self._builder.get_object("search_dialog")
         self.fsearch        = self._builder.get_object("fsearch")

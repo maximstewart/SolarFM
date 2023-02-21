@@ -1,6 +1,3 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import re
 
 from .common import InfoExtractor
@@ -10,12 +7,6 @@ from ..compat import compat_urlparse
 
 class TuneInBaseIE(InfoExtractor):
     _API_BASE_URL = 'http://tunein.com/tuner/tune/'
-
-    @staticmethod
-    def _extract_urls(webpage):
-        return re.findall(
-            r'<iframe[^>]+src=["\'](?P<url>(?:https?://)?tunein\.com/embed/player/[pst]\d+)',
-            webpage)
 
     def _real_extract(self, url):
         content_id = self._match_id(url)
@@ -58,7 +49,6 @@ class TuneInBaseIE(InfoExtractor):
                 'source_preference': reliability,
                 'format_note': format_note,
             })
-        self._sort_formats(formats)
 
         return {
             'id': content_id,
@@ -89,6 +79,7 @@ class TuneInClipIE(TuneInBaseIE):
 class TuneInStationIE(TuneInBaseIE):
     IE_NAME = 'tunein:station'
     _VALID_URL = r'https?://(?:www\.)?tunein\.com/(?:radio/.*?-s|station/.*?StationId=|embed/player/s)(?P<id>\d+)'
+    _EMBED_REGEX = [r'<iframe[^>]+src=["\'](?P<url>(?:https?://)?tunein\.com/embed/player/[pst]\d+)']
     _API_URL_QUERY = '?tuneType=Station&stationId=%s'
 
     @classmethod

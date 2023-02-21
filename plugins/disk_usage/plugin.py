@@ -2,7 +2,6 @@
 import os
 import subprocess
 import time
-import inspect
 
 # Lib imports
 import gi
@@ -29,20 +28,9 @@ class Plugin(PluginBase):
 
 
     def run(self):
-        self._builder    = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        self._connect_builder_signals(self, self._builder)
 
         self._du_dialog = self._builder.get_object("du_dialog")
         self._du_store  = self._builder.get_object("du_store")

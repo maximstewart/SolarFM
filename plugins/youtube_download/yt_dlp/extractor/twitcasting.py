@@ -1,11 +1,9 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
+import base64
 import itertools
 import re
 
 from .common import InfoExtractor
-from ..downloader.websocket import has_websockets
+from ..dependencies import websockets
 from ..utils import (
     clean_html,
     ExtractorError,
@@ -40,7 +38,7 @@ class TwitCastingIE(InfoExtractor):
             'description': 'Twitter Oficial da cantora brasileira Ivete Sangalo.',
             'thumbnail': r're:^https?://.*\.jpg$',
             'upload_date': '20110822',
-            'timestamp': 1314010824,
+            'timestamp': 1313978424,
             'duration': 32,
             'view_count': int,
         },
@@ -54,10 +52,10 @@ class TwitCastingIE(InfoExtractor):
             'ext': 'mp4',
             'title': 'Live playing something #3689740',
             'uploader_id': 'mttbernardini',
-            'description': 'Salve, io sono Matto (ma con la e). Questa è la mia presentazione, in quanto sono letteralmente matto (nel senso di strano), con qualcosa in più.',
+            'description': 'md5:1dc7efa2f1ab932fcd119265cebeec69',
             'thumbnail': r're:^https?://.*\.jpg$',
-            'upload_date': '20120212',
-            'timestamp': 1329028024,
+            'upload_date': '20120211',
+            'timestamp': 1328995624,
             'duration': 681,
             'view_count': int,
         },
@@ -66,36 +64,64 @@ class TwitCastingIE(InfoExtractor):
             'videopassword': 'abc',
         },
     }, {
-        'note': 'archive is split in 2 parts',
         'url': 'https://twitcasting.tv/loft_heaven/movie/685979292',
         'info_dict': {
             'id': '685979292',
             'ext': 'mp4',
-            'title': '南波一海のhear_here “ナタリー望月哲さんに聞く編集と「渋谷系狂騒曲」”',
-            'duration': 6964.599334,
+            'title': '【無料配信】南波一海のhear/here “ナタリー望月哲さんに聞く編集と「渋谷系狂騒曲」”',
+            'uploader_id': 'loft_heaven',
+            'description': 'md5:3a0c7b53019df987ce545c935538bacf',
+            'upload_date': '20210604',
+            'timestamp': 1622802114,
+            'thumbnail': r're:^https?://.*\.jpg$',
+            'duration': 6964,
+            'view_count': int,
         },
-        'playlist_mincount': 2,
+        'params': {
+            'skip_download': True,
+        },
     }]
+
+    def _parse_data_movie_playlist(self, dmp, video_id):
+        # attempt 1: parse as JSON directly
+        try:
+            return self._parse_json(dmp, video_id)
+        except ExtractorError:
+            pass
+        # attempt 2: decode reversed base64
+        decoded = base64.b64decode(dmp[::-1])
+        return self._parse_json(decoded, video_id)
 
     def _real_extract(self, url):
         uploader_id, video_id = self._match_valid_url(url).groups()
 
+        webpage, urlh = self._download_webpage_handle(url, video_id)
         video_password = self.get_param('videopassword')
         request_data = None
         if video_password:
             request_data = urlencode_postdata({
                 'password': video_password,
+                **self._hidden_inputs(webpage),
             }, encoding='utf-8')
-        webpage = self._download_webpage(
-            url, video_id, data=request_data,
-            headers={'Origin': 'https://twitcasting.tv'})
+            webpage, urlh = self._download_webpage_handle(
+                url, video_id, data=request_data,
+                headers={'Origin': 'https://twitcasting.tv'},
+                note='Trying video password')
+        if urlh.geturl() != url and request_data:
+            webpage = self._download_webpage(
+                urlh.geturl(), video_id, data=request_data,
+                headers={'Origin': 'https://twitcasting.tv'},
+                note='Retrying authentication')
+        # has to check here as the first request can contain password input form even if the password is correct
+        if re.search(r'<form\s+method="POST">\s*<input\s+[^>]+?name="password"', webpage):
+            raise ExtractorError('This video is protected by a password, use the --video-password option', expected=True)
 
         title = (clean_html(get_element_by_id('movietitle', webpage))
                  or self._html_search_meta(['og:title', 'twitter:title'], webpage, fatal=True))
 
         video_js_data = try_get(
             webpage,
-            lambda x: self._parse_json(self._search_regex(
+            lambda x: self._parse_data_movie_playlist(self._search_regex(
                 r'data-movie-playlist=\'([^\']+?)\'',
                 x, 'movie playlist', default=None), video_id)['2'], list)
 
@@ -106,7 +132,7 @@ class TwitCastingIE(InfoExtractor):
         duration = (try_get(video_js_data, lambda x: sum(float_or_none(y.get('duration')) for y in x) / 1000)
                     or parse_duration(clean_html(get_element_by_class('tw-player-duration-time', webpage))))
         view_count = str_to_int(self._search_regex(
-            (r'Total\s*:\s*([\d,]+)\s*Views', r'総視聴者\s*:\s*([\d,]+)\s*</'), webpage, 'views', None))
+            (r'Total\s*:\s*Views\s*([\d,]+)', r'総視聴者\s*:\s*([\d,]+)\s*</'), webpage, 'views', None))
         timestamp = unified_timestamp(self._search_regex(
             r'data-toggle="true"[^>]+datetime="([^"]+)"',
             webpage, 'datetime', None))
@@ -149,13 +175,14 @@ class TwitCastingIE(InfoExtractor):
                 m3u8_url, video_id, ext='mp4', m3u8_id='hls',
                 live=True, headers=self._M3U8_HEADERS)
 
-            formats.extend(self._extract_m3u8_formats(
-                m3u8_url, video_id, ext='mp4', m3u8_id='source',
-                live=True, query={'mode': 'source'},
-                note='Downloading source quality m3u8',
-                headers=self._M3U8_HEADERS, fatal=False))
+            if traverse_obj(stream_server_data, ('hls', 'source')):
+                formats.extend(self._extract_m3u8_formats(
+                    m3u8_url, video_id, ext='mp4', m3u8_id='source',
+                    live=True, query={'mode': 'source'},
+                    note='Downloading source quality m3u8',
+                    headers=self._M3U8_HEADERS, fatal=False))
 
-            if has_websockets:
+            if websockets:
                 qq = qualities(['base', 'mobilesource', 'main'])
                 streams = traverse_obj(stream_server_data, ('llfmp4', 'streams')) or {}
                 for mode, ws_url in streams.items():
@@ -164,14 +191,22 @@ class TwitCastingIE(InfoExtractor):
                         'format_id': 'ws-%s' % mode,
                         'ext': 'mp4',
                         'quality': qq(mode),
+                        'source_preference': -10,
                         # TwitCasting simply sends moof atom directly over WS
                         'protocol': 'websocket_frag',
                     })
 
-            self._sort_formats(formats)
-
             infodict = {
-                'formats': formats
+                'formats': formats,
+                '_format_sort_fields': ('source', ),
+            }
+        elif len(m3u8_urls) == 1:
+            formats = self._extract_m3u8_formats(
+                m3u8_urls[0], video_id, 'mp4', headers=self._M3U8_HEADERS)
+            infodict = {
+                # No problem here since there's only one manifest
+                'formats': formats,
+                'http_headers': self._M3U8_HEADERS,
             }
         else:
             infodict = {
@@ -213,6 +248,17 @@ class TwitCastingLiveIE(InfoExtractor):
             (r'data-type="movie" data-id="(\d+)">',
              r'tw-sound-flag-open-link" data-id="(\d+)" style=',),
             webpage, 'current live ID', default=None)
+        if not current_live:
+            # fetch unfiltered /show to find running livestreams; we can't get ID of the password-protected livestream above
+            webpage = self._download_webpage(
+                f'https://twitcasting.tv/{uploader_id}/show/', uploader_id,
+                note='Downloading live history')
+            is_live = self._search_regex(r'(?s)(<span\s*class="tw-movie-thumbnail-badge"\s*data-status="live">\s*LIVE)', webpage, 'is live?', default=None)
+            if is_live:
+                # get the first live; running live is always at the first
+                current_live = self._search_regex(
+                    r'(?s)<a\s+class="tw-movie-thumbnail"\s*href="/[^/]+/movie/(?P<video_id>\d+)"\s*>.+?</a>',
+                    webpage, 'current live ID 2', default=None, group='video_id')
         if not current_live:
             raise ExtractorError('The user is not currently live')
         return self.url_result('https://twitcasting.tv/%s/movie/%s' % (uploader_id, current_live))

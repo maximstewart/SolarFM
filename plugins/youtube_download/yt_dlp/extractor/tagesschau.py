@@ -1,6 +1,3 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import re
 
 from .common import InfoExtractor
@@ -141,8 +138,6 @@ class TagesschauIE(InfoExtractor):
         thumbnail = self._og_search_thumbnail(webpage) or video_info.get('thumbnail')
         timestamp = video_info.get('timestamp')
         title = title or video_info.get('description')
-
-        self._sort_formats(formats)
 
         return {
             'id': display_id,

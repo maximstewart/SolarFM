@@ -1,6 +1,3 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import re
 
 from .common import InfoExtractor
@@ -94,8 +91,6 @@ class OpencastBaseIE(InfoExtractor):
                         'preference': -2,
                     })
                 formats.append(track_obj)
-
-        self._sort_formats(formats)
 
         return {
             'id': video_id,

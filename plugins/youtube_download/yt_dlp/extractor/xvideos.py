@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import re
 
 from .common import InfoExtractor
@@ -150,8 +148,6 @@ class XVideosIE(InfoExtractor):
                     'format_id': '%s-%s' % (determine_ext(format_url, 'mp4'), format_id[3:]),
                     'quality': -2 if format_id.endswith('low') else None,
                 })
-
-        self._sort_formats(formats)
 
         return {
             'id': video_id,

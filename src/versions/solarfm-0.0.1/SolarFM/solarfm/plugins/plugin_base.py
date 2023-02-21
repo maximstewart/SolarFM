@@ -1,6 +1,7 @@
 # Python imports
 import os
 import time
+import inspect
 
 # Lib imports
 
@@ -65,6 +66,19 @@ class PluginBase:
             Is intended to be used to setup internal signals or custom Gtk Builders/UI logic.
         """
         raise PluginBaseException("Method hasn't been overriden...")
+
+    def _connect_builder_signals(self, caller_class, builder):
+        classes  = [caller_class]
+        handlers = {}
+        for c in classes:
+            methods = None
+            try:
+                methods = inspect.getmembers(c, predicate=inspect.ismethod)
+                handlers.update(methods)
+            except Exception as e:
+                print(repr(e))
+
+        builder.connect_signals(handlers)
 
     def reload_package(self, plugin_path, module_dict_main=locals()):
         import importlib
