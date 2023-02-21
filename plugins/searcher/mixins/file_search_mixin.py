@@ -1,4 +1,5 @@
 # Python imports
+import time
 import threading
 import subprocess
 import signal
@@ -33,11 +34,36 @@ def daemon_threaded(fn):
 
 class FileSearchMixin:
     def _run_find_file_query(self, widget=None, eve=None):
-        self._handle_find_file_query(query=widget)
+        self._queue_search = True
 
-    # TODO: Merge this logic with nearly the exact same thing in grep_search_mixin
+        if not self._search_watcher_running:
+            self._search_watcher_running = True
+
+            self._stop_fsearch_query()
+            self.reset_file_list_box()
+            self.run_fsearch_watcher(query=widget)
+
     @daemon_threaded
-    def _handle_find_file_query(self, widget=None, eve=None, query=None):
+    def run_fsearch_watcher(self, query):
+        while True:
+            if self._queue_search:
+                self._queue_search = False
+                time.sleep(1)
+
+                # NOTE: Hold call to translate if we're still typing/updating...
+                if self._queue_search:
+                    continue
+
+                # NOTE: If query create new process and do all new loop.
+                if query:
+                    self.pause_fifo_update = False
+                    GLib.idle_add(self._exec_find_file_query, query)
+
+                self._search_watcher_running = False
+
+            break
+
+    def _stop_fsearch_query(self, widget=None, eve=None):
         # NOTE: Freeze IPC consumption
         self.pause_fifo_update  = True
         self.search_query       = ""
@@ -53,14 +79,6 @@ class FileSearchMixin:
 
             self._list_proc = None
 
-        # NOTE: Clear children from ui and make sure ui thread redraws
-        GLib.idle_add(self.reset_file_list_box)
-
-        # NOTE: If query create new process and do all new loop.
-        if query:
-            self.pause_fifo_update = False
-            GLib.idle_add(self._exec_find_file_query, query)
-
     def _exec_find_file_query(self, widget=None, eve=None):
         query = widget.get_text()
 
@@ -69,6 +87,8 @@ class FileSearchMixin:
             target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
             command = ["python", f"{self.path}/utils/search.py", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
             self._list_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
+
+
 
     def _load_file_ui(self, data):
         Gtk.main_iteration()

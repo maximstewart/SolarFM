@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <object class="GtkDialog" id="search_dialog">
@@ -101,7 +101,7 @@
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <property name="use-stock">True</property>
-                        <signal name="released" handler="_handle_find_file_query" swapped="no"/>
+                        <signal name="released" handler="_stop_fsearch_query" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -193,7 +193,7 @@
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <property name="use-stock">True</property>
-                        <signal name="released" handler="_handle_grep_query" swapped="no"/>
+                        <signal name="released" handler="_stop_grep_query" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

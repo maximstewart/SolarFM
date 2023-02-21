@@ -112,7 +112,8 @@ class Plugin(PluginBase):
 
                 GLib.idle_add(self._translate)
                 self._watcher_running = False
-                break
+
+            break
 
     def _translate(self):
         start_itr, end_itr =  self._translate_from_buffer.get_bounds()

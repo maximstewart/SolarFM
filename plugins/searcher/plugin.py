@@ -36,10 +36,16 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self._grep_proc         = None
         self._list_proc         = None
         self.pause_fifo_update  = False
-        self.grep_time_stamp    = None
-        self.fsearch_time_stamp = None
-        self.grep_query         = ""
-        self.search_query       = ""
+
+        self.grep_query              = ""
+        self.grep_time_stamp         = None
+        self._queue_grep             = False
+        self._grep_watcher_running   = False
+
+        self.search_query            = ""
+        self.fsearch_time_stamp      = None
+        self._queue_search           = False
+        self._search_watcher_running = False
 
 
     def run(self):
@@ -56,7 +62,6 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self._event_system.subscribe("update-file-ui", self._load_file_ui)
         self._event_system.subscribe("update-grep-ui", self._load_grep_ui)
         self._event_system.subscribe("show_search_page", self._show_page)
-
 
         self.create_ipc_listener()
 

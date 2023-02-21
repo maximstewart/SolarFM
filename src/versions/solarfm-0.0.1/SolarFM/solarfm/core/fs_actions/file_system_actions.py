@@ -76,6 +76,10 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
             file_name = state.uris[0].split("/")[-1]
             event_system.emit("set_clipboard_data", (file_name,))
 
+    def copy_path(self):
+        state = event_system.emit_and_await("get_current_state")
+        dir   = state.tab.get_current_directory()
+        event_system.emit("set_clipboard_data", (file_name,))
 
     def open_files(self):
         state = event_system.emit_and_await("get_current_state")
