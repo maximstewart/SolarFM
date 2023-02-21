@@ -1,3 +1,0 @@
-"""
-Window module
-"""

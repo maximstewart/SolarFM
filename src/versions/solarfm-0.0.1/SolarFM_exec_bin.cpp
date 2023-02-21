@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-    chdir("/opt/SolarFM/");
-    system("python .");
+    chdir("/opt/");
+    system("python solarfm.zip");
 return 0;
 }

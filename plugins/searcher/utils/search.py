@@ -67,21 +67,26 @@ def grep_search(target=None, query=None):
     collection = {}
 
     for line in proc_data:
-        file, line_no, data = line.split(":", 2)
-        b64_file = base64.urlsafe_b64encode(file.encode('utf-8')).decode('utf-8')
-        b64_data = base64.urlsafe_b64encode(data.encode('utf-8')).decode('utf-8')
+        try:
+            parts    = line.split(":", 2)
+            if not len(parts) == 3:
+                continue
 
-        if b64_file in collection.keys():
-            collection[f"{b64_file}"][f"{line_no}"] = b64_data
-        else:
-            collection[f"{b64_file}"] = {}
-            collection[f"{b64_file}"] = { f"{line_no}": b64_data}
+            file, line_no, data = parts
+            b64_file = base64.urlsafe_b64encode(file.encode('utf-8')).decode('utf-8')
+            b64_data = base64.urlsafe_b64encode(data.encode('utf-8')).decode('utf-8')
 
-    try:
-        data = f"GREP|{ts}|{json.dumps(collection, separators=(',', ':'), indent=4)}"
-        send_ipc_message(data)
-    except Exception as e:
-        ...
+            if b64_file in collection.keys():
+                collection[f"{b64_file}"][f"{line_no}"] = b64_data
+            else:
+                collection[f"{b64_file}"] = {}
+                collection[f"{b64_file}"] = { f"{line_no}": b64_data}
+
+
+            data = f"GREP|{ts}|{json.dumps(collection, separators=(',', ':'), indent=4)}"
+            send_ipc_message(data)
+        except Exception as e:
+            traceback.print_exc()
 
     collection = {}
 

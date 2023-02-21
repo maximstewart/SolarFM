@@ -1,12 +1,11 @@
 # Python imports
-import ctypes
+import time
 import threading
 import subprocess
 import signal
 import json
 import shlex
 from datetime import datetime
-libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 
 # Lib imports
 import gi
