@@ -31,7 +31,7 @@ class Plugin(PluginBase):
                                         #       where self.name should not be needed for message comms
         self._GLADE_FILE = f"{self.path}/translate.glade"
 
-        self._link       = "https://duckduckgo.com/translation.js?vqd=4-79469202070473384659389009732578528471&query=translate&to=en"
+        self._link       = "https://duckduckgo.com/translation.js?"
         self._headers    = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
             'Accept': '*/*',
@@ -50,8 +50,19 @@ class Plugin(PluginBase):
             'Cache-Control': 'no-cache'
         }
 
+        self.vqd_link    = "https://duckduckgo.com/"
+        self.vqd_data    = {"q": "translate", "ia":"web"}
+        self.vqd_headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
+            "Referer": "https://duckduckgo.com/"
+        }
+
         self._queue_translate = False
         self._watcher_running = False
+        self._vqd_attrib      = None
+        self.from_trans       = "jp"
+        self.to_trans         = "en"
+        self.translate_tries  = 0
 
 
     def generate_reference_ui_element(self):
@@ -70,6 +81,9 @@ class Plugin(PluginBase):
         self._translate_from_buffer = self._builder.get_object("translate_from_buffer")
         self._translate_to_buffer   = self._builder.get_object("translate_to_buffer")
         self._detected_language_lbl = self._builder.get_object("detected_language_lbl")
+
+        self._detected_language_lbl.set_label(f"Selected Language: {self.from_trans}")
+        self.get_vqd()
 
 
     @threaded
@@ -116,20 +130,43 @@ class Plugin(PluginBase):
             break
 
     def _translate(self):
-        start_itr, end_itr =  self._translate_from_buffer.get_bounds()
-        from_translate     = self._translate_from_buffer.get_text(start_itr, end_itr, True).encode('utf-8')
+        start_itr, end_itr   =  self._translate_from_buffer.get_bounds()
+        from_translate       = self._translate_from_buffer.get_text(start_itr, end_itr, True).encode('utf-8')
 
         if from_translate in ("", None) or self._queue_translate:
             return
 
-        response = requests.post(self._link, headers=self._headers, data=from_translate)
+        self.translate_tries += 1
+        tlink    = f"https://duckduckgo.com/translation.js?vqd={self._vqd_attrib}&query=translate&from={self.from_trans}&to={self.to_trans}"
+        response = requests.post(self.tlink, headers=self._headers, data=from_translate)
+
         if response.status_code == 200:
             data = response.json()
             self._translate_to_buffer.set_text(data["translated"])
 
+            self.translate_tries = 0
             if "detected_language" in data.keys():
                 self._detected_language_lbl.set_label(f"Detected Language: {data['detected_language']}")
+            else:
+                self._detected_language_lbl.set_label(f"Selected Language: {self.from_trans}")
+        elif response.status_code >= 400 or response.status_code < 500:
+            self.get_vqd()
+            if not self.translate_tries > 4:
+                self._translate()
         else:
             msg = f"Could not translate... Response Code: {response.status_code}"
             self._translate_to_buffer.set_text(msg)
-            self._detected_language_lbl.set_label(f"Detected Language:")
+
+
+    def get_vqd(self):
+        response = requests.post(self.vqd_link, headers=self.vqd_headers, data=self.vqd_data, timeout=10)
+        if response.status_code == 200:
+            data             = response.content
+            vqd_start_index  = data.index(b"vqd='") + 5
+            vqd_end_index    = data.index(b"'", vqd_start_index)
+            self._vqd_attrib = data[vqd_start_index:vqd_end_index].decode("utf-8")
+
+            print(f"Translation VQD: {self._vqd_attrib}")
+        else:
+            msg = f"Could not get VQS attribute... Response Code: {response.status_code}"
+            self._translate_to_buffer.set_text(msg)

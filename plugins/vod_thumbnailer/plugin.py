@@ -58,7 +58,7 @@ class Plugin(PluginBase):
         self._file_hash             = self._builder.get_object("file_hash")
 
     def generate_reference_ui_element(self):
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(f"{self.path}/../../icons/video.png", 16, 16, True)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(f"/usr/share/solarfm/icons/video.png", 16, 16, True)
         icon   = Gtk.Image.new_from_pixbuf(pixbuf)
         item   = Gtk.ImageMenuItem(self.name)
 

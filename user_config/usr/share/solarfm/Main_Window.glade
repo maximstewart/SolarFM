@@ -61,453 +61,308 @@
     <property name="stock">gtk-apply</property>
     <property name="icon_size">3</property>
   </object>
-  <object class="GtkApplicationWindow" id="main_window">
-    <property name="width-request">800</property>
-    <property name="height-request">600</property>
+  <object class="GtkBox" id="core_widget">
+    <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="window-position">center</property>
-    <property name="default-width">1670</property>
-    <property name="default-height">830</property>
-    <property name="icon">icons/solarfm.png</property>
-    <property name="gravity">center</property>
-    <signal name="focus-out-event" handler="unset_keys_and_data" swapped="no"/>
-    <signal name="key-press-event" handler="on_global_key_press_controller" swapped="no"/>
-    <signal name="key-release-event" handler="on_global_key_release_controller" swapped="no"/>
+    <property name="orientation">vertical</property>
+    <property name="baseline-position">top</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="main_menu_bar">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="baseline-position">top</property>
         <child>
-          <object class="GtkBox" id="main_menu_bar">
+          <object class="GtkMenuBar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkMenuBar">
+              <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkMenuItem">
+                <property name="label" translatable="yes">_File</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">_File</property>
-                    <property name="use-underline">True</property>
-                    <child type="submenu">
-                      <object class="GtkMenu">
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-new</property>
+                        <property name="name">create</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-new</property>
-                            <property name="name">create</property>
+                        <property name="tooltip-text" translatable="yes">New File/Folder...</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-open</property>
+                        <property name="name">open</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Open...</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">Reload Plugins</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image6</property>
+                        <property name="use-stock">False</property>
+                        <signal name="button-release-event" handler="reload_plugins" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">Terminal</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image5</property>
+                        <property name="use-stock">False</property>
+                        <signal name="button-release-event" handler="open_terminal" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Session</property>
+                        <child type="submenu">
+                          <object class="GtkMenu">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="tooltip-text" translatable="yes">New File/Folder...</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-open</property>
-                            <property name="name">open</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="tooltip-text" translatable="yes">Open...</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkSeparatorMenuItem">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">Reload Plugins</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="image">image6</property>
-                            <property name="use-stock">False</property>
-                            <signal name="button-release-event" handler="reload_plugins" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">Terminal</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="image">image5</property>
-                            <property name="use-stock">False</property>
-                            <signal name="button-release-event" handler="open_terminal" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkMenuItem">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="label" translatable="yes">Session</property>
-                            <child type="submenu">
-                              <object class="GtkMenu">
+                            <child>
+                              <object class="GtkImageMenuItem">
+                                <property name="label">Save Session</property>
+                                <property name="name">save_session</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <child>
-                                  <object class="GtkImageMenuItem">
-                                    <property name="label">Save Session</property>
-                                    <property name="name">save_session</property>
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="tooltip-text" translatable="yes">New File/Folder...</property>
-                                    <property name="image">image4</property>
-                                    <property name="use-stock">False</property>
-                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkImageMenuItem">
-                                    <property name="label">Save Session As</property>
-                                    <property name="name">save_session_as</property>
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="tooltip-text" translatable="yes">New File/Folder...</property>
-                                    <property name="image">image1</property>
-                                    <property name="use-stock">False</property>
-                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkImageMenuItem">
-                                    <property name="label">Load Session</property>
-                                    <property name="name">load_session</property>
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="tooltip-text" translatable="yes">New File/Folder...</property>
-                                    <property name="image">image2</property>
-                                    <property name="use-stock">False</property>
-                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                                  </object>
-                                </child>
+                                <property name="tooltip-text" translatable="yes">New File/Folder...</property>
+                                <property name="image">image4</property>
+                                <property name="use-stock">False</property>
+                                <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImageMenuItem">
+                                <property name="label">Save Session As</property>
+                                <property name="name">save_session_as</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">New File/Folder...</property>
+                                <property name="image">image1</property>
+                                <property name="use-stock">False</property>
+                                <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImageMenuItem">
+                                <property name="label">Load Session</property>
+                                <property name="name">load_session</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">New File/Folder...</property>
+                                <property name="image">image2</property>
+                                <property name="use-stock">False</property>
+                                <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                               </object>
                             </child>
                           </object>
                         </child>
-                        <child>
-                          <object class="GtkMenuItem">
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Debug</property>
+                        <child type="submenu">
+                          <object class="GtkMenu">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes">Debug</property>
-                            <child type="submenu">
-                              <object class="GtkMenu">
+                            <child>
+                              <object class="GtkImageMenuItem">
+                                <property name="label">Show Errors</property>
+                                <property name="name">messages_popup</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <child>
-                                  <object class="GtkImageMenuItem">
-                                    <property name="label">Show Errors</property>
-                                    <property name="name">messages_popup</property>
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="image">image3</property>
-                                    <property name="use-stock">False</property>
-                                    <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                                  </object>
-                                </child>
+                                <property name="image">image3</property>
+                                <property name="use-stock">False</property>
+                                <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                               </object>
                             </child>
                           </object>
                         </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-quit</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="tear_down" swapped="no"/>
-                          </object>
-                        </child>
                       </object>
                     </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkMenuItem">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">_Edit</property>
-                    <property name="use-underline">True</property>
-                    <child type="submenu">
-                      <object class="GtkMenu">
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-quit</property>
+                        <property name="name">tear_down</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-cut</property>
-                            <property name="name">cut</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-copy</property>
-                            <property name="name">copy</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-paste</property>
-                            <property name="name">paste</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                       </object>
                     </child>
                   </object>
                 </child>
-                <child>
-                  <object class="GtkMenuItem">
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">_Help</property>
-                    <property name="use-underline">True</property>
-                    <child type="submenu">
-                      <object class="GtkMenu">
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-cut</property>
+                        <property name="name">cut</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <child>
-                          <object class="GtkImageMenuItem">
-                            <property name="label">gtk-about</property>
-                            <property name="name">about_page</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="use-stock">True</property>
-                            <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
-                          </object>
-                        </child>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-copy</property>
+                        <property name="name">copy</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-paste</property>
+                        <property name="name">paste</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
                       </object>
                     </child>
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
-              <object class="GtkButtonBox" id="main_menu_bttn_box_bar">
+              <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="spacing">5</property>
-                <property name="layout-style">start</property>
-                <child>
-                  <object class="GtkButton" id="plugins_button">
-                    <property name="label" translatable="yes">Plugins</property>
-                    <property name="name">plugins_popup</property>
+                <property name="label" translatable="yes">_Help</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <signal name="released" handler="do_action_from_menu_controls" swapped="no"/>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-about</property>
+                        <property name="name">about_page</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="button-release-event" handler="do_action_from_menu_controls" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="tggl_notebook_1">
-                    <property name="name">tggl_notebook_1</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="image">tggl_notebook_1_img</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="tggl_notebook_2">
-                    <property name="name">tggl_notebook_2</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="image">tggl_notebook_2_img</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="tggl_notebook_3">
-                    <property name="name">tggl_notebook_3</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="image">tggl_notebook_3_img</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="tggl_notebook_4">
-                    <property name="name">tggl_notebook_4</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="image">tggl_notebook_4_img</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="io_button">
-                    <property name="label" translatable="yes">I/O</property>
-                    <property name="name">io_popup</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="image">io_img</property>
-                    <property name="always-show-image">True</property>
-                    <signal name="released" handler="do_action_from_menu_controls" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">5</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes"> </property>
-                <property name="visible">True</property>
-                <property name="sensitive">False</property>
-                <property name="can-focus">False</property>
-                <property name="focus-on-click">False</property>
-                <property name="receives-default">False</property>
-                <property name="double-buffered">False</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="path_menu_bar">
+          <object class="GtkButtonBox" id="main_menu_bttn_box_bar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="spacing">5</property>
+            <property name="layout-style">start</property>
             <child>
-              <object class="GtkButton" id="go_home">
-                <property name="label">gtk-home</property>
-                <property name="name">go_home</property>
+              <object class="GtkButton" id="plugins_button">
+                <property name="label" translatable="yes">Plugins</property>
+                <property name="name">plugins_popup</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
-                <property name="always-show-image">True</property>
-                <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
+                <signal name="released" handler="do_action_from_menu_controls" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="create_tab">
-                <property name="label">gtk-add</property>
-                <property name="name">create_tab</property>
+              <object class="GtkToggleButton" id="tggl_notebook_1">
+                <property name="name">tggl_notebook_1</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
+                <property name="image">tggl_notebook_1_img</property>
                 <property name="always-show-image">True</property>
-                <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
+                <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="go_up">
-                <property name="label">gtk-go-up</property>
-                <property name="name">go_up</property>
+              <object class="GtkToggleButton" id="tggl_notebook_2">
+                <property name="name">tggl_notebook_2</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
+                <property name="image">tggl_notebook_2_img</property>
                 <property name="always-show-image">True</property>
-                <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
+                <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="path_entry">
-                <property name="name">path_entry</property>
+              <object class="GtkToggleButton" id="tggl_notebook_3">
+                <property name="name">tggl_notebook_3</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="placeholder-text" translatable="yes">Path...</property>
-                <signal name="changed" handler="do_action_from_bar_controls" swapped="no"/>
+                <property name="receives-default">True</property>
+                <property name="image">tggl_notebook_3_img</property>
+                <property name="always-show-image">True</property>
+                <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -516,20 +371,36 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="refresh_tab">
-                <property name="label">gtk-refresh</property>
-                <property name="name">refresh_view</property>
+              <object class="GtkToggleButton" id="tggl_notebook_4">
+                <property name="name">tggl_notebook_4</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
+                <property name="image">tggl_notebook_4_img</property>
                 <property name="always-show-image">True</property>
-                <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
+                <signal name="released" handler="toggle_notebook_pane" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="io_button">
+                <property name="label" translatable="yes">I/O</property>
+                <property name="name">io_popup</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">io_img</property>
+                <property name="always-show-image">True</property>
+                <signal name="released" handler="do_action_from_menu_controls" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">5</property>
               </packing>
             </child>
           </object>
@@ -540,260 +411,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkPaned" id="pane_master">
+          <object class="GtkButton">
+            <property name="label" translatable="yes"> </property>
             <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-            <property name="orientation">vertical</property>
-            <property name="wide-handle">True</property>
-            <child>
-              <object class="GtkPaned" id="pane_top">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="margin-bottom">5</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="wide-handle">True</property>
-                <child>
-                  <object class="GtkNotebook" id="window_1">
-                    <property name="name">notebook1</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="can-default">True</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="margin-bottom">5</property>
-                    <property name="show-border">False</property>
-                    <property name="scrollable">True</property>
-                    <property name="group-name">sfm_windows</property>
-                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
-                    <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
-                    <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child type="action-end">
-                      <object class="GtkSearchEntry" id="win1_search_field">
-                        <property name="name">window_1</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="primary-icon-name">edit-find-symbolic</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="primary-icon-sensitive">False</property>
-                        <property name="placeholder-text" translatable="yes">Search...</property>
-                        <signal name="changed" handler="do_file_search" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="tab-fill">False</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="resize">False</property>
-                    <property name="shrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkNotebook" id="window_2">
-                    <property name="name">notebook2</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="can-default">True</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="margin-bottom">5</property>
-                    <property name="show-border">False</property>
-                    <property name="scrollable">True</property>
-                    <property name="group-name">sfm_windows</property>
-                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
-                    <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
-                    <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child type="action-end">
-                      <object class="GtkSearchEntry" id="win2_search_field">
-                        <property name="name">window_2</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="primary-icon-name">edit-find-symbolic</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="primary-icon-sensitive">False</property>
-                        <property name="placeholder-text" translatable="yes">Search...</property>
-                        <signal name="changed" handler="do_file_search" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="tab-fill">False</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="resize">False</property>
-                    <property name="shrink">False</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="resize">True</property>
-                <property name="shrink">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkPaned" id="pane_bottom">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="margin-top">5</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="wide-handle">True</property>
-                <child>
-                  <object class="GtkNotebook" id="window_3">
-                    <property name="name">notebook3</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="can-default">True</property>
-                    <property name="margin-left">5</property>
-                    <property name="margin-right">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="margin-bottom">5</property>
-                    <property name="show-border">False</property>
-                    <property name="scrollable">True</property>
-                    <property name="group-name">sfm_windows</property>
-                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
-                    <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
-                    <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child type="action-end">
-                      <object class="GtkSearchEntry" id="win3_search_field">
-                        <property name="name">window_3</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="primary-icon-name">edit-find-symbolic</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="primary-icon-sensitive">False</property>
-                        <property name="placeholder-text" translatable="yes">Search...</property>
-                        <signal name="changed" handler="do_file_search" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="tab-fill">False</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="resize">False</property>
-                    <property name="shrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkNotebook" id="window_4">
-                    <property name="name">notebook4</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="can-default">True</property>
-                    <property name="margin-right">5</property>
-                    <property name="margin-top">5</property>
-                    <property name="margin-bottom">5</property>
-                    <property name="show-border">False</property>
-                    <property name="scrollable">True</property>
-                    <property name="group-name">sfm_windows</property>
-                    <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
-                    <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
-                    <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child type="action-end">
-                      <object class="GtkSearchEntry" id="win4_search_field">
-                        <property name="name">window_4</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="primary-icon-name">edit-find-symbolic</property>
-                        <property name="primary-icon-activatable">False</property>
-                        <property name="primary-icon-sensitive">False</property>
-                        <property name="placeholder-text" translatable="yes">Search...</property>
-                        <signal name="changed" handler="do_file_search" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="tab-fill">False</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="resize">False</property>
-                    <property name="shrink">False</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="resize">True</property>
-                <property name="shrink">True</property>
-              </packing>
-            </child>
+            <property name="sensitive">False</property>
+            <property name="can-focus">False</property>
+            <property name="focus-on-click">False</property>
+            <property name="receives-default">False</property>
+            <property name="double-buffered">False</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -801,59 +426,420 @@
             <property name="position">2</property>
           </packing>
         </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="path_menu_bar">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
         <child>
-          <object class="GtkStatusbar" id="bottom_status_info">
+          <object class="GtkButton" id="go_home">
+            <property name="label">gtk-home</property>
+            <property name="name">go_home</property>
             <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="margin-left">10</property>
-            <property name="margin-right">10</property>
-            <property name="margin-start">10</property>
-            <property name="margin-end">10</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
-            <property name="spacing">15</property>
-            <property name="baseline-position">top</property>
-            <child>
-              <object class="GtkLabel" id="bottom_size_label">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="bottom_file_count_label">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="bottom_path_label">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="use-stock">True</property>
+            <property name="always-show-image">True</property>
+            <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="create_tab">
+            <property name="label">gtk-add</property>
+            <property name="name">create_tab</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="use-stock">True</property>
+            <property name="always-show-image">True</property>
+            <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="go_up">
+            <property name="label">gtk-go-up</property>
+            <property name="name">go_up</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="use-stock">True</property>
+            <property name="always-show-image">True</property>
+            <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="path_entry">
+            <property name="name">path_entry</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="placeholder-text" translatable="yes">Path...</property>
+            <signal name="changed" handler="do_action_from_bar_controls" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">3</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkButton" id="refresh_tab">
+            <property name="label">gtk-refresh</property>
+            <property name="name">refresh_view</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="use-stock">True</property>
+            <property name="always-show-image">True</property>
+            <signal name="released" handler="do_action_from_bar_controls" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
       </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkPaned" id="pane_master">
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="orientation">vertical</property>
+        <property name="wide-handle">True</property>
+        <child>
+          <object class="GtkPaned" id="pane_top">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="margin-bottom">5</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="wide-handle">True</property>
+            <child>
+              <object class="GtkNotebook" id="window_1">
+                <property name="name">notebook1</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="margin-left">5</property>
+                <property name="margin-right">5</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
+                <property name="show-border">False</property>
+                <property name="scrollable">True</property>
+                <property name="group-name">sfm_windows</property>
+                <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
+                <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
+                <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child type="action-end">
+                  <object class="GtkSearchEntry" id="win1_search_field">
+                    <property name="name">window_1</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="primary-icon-name">edit-find-symbolic</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="primary-icon-sensitive">False</property>
+                    <property name="placeholder-text" translatable="yes">Search...</property>
+                    <signal name="changed" handler="do_file_search" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="tab-fill">False</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkNotebook" id="window_2">
+                <property name="name">notebook2</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="margin-left">5</property>
+                <property name="margin-right">5</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
+                <property name="show-border">False</property>
+                <property name="scrollable">True</property>
+                <property name="group-name">sfm_windows</property>
+                <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
+                <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
+                <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child type="action-end">
+                  <object class="GtkSearchEntry" id="win2_search_field">
+                    <property name="name">window_2</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="primary-icon-name">edit-find-symbolic</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="primary-icon-sensitive">False</property>
+                    <property name="placeholder-text" translatable="yes">Search...</property>
+                    <signal name="changed" handler="do_file_search" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="tab-fill">False</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">False</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="resize">True</property>
+            <property name="shrink">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkPaned" id="pane_bottom">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="margin-top">5</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="wide-handle">True</property>
+            <child>
+              <object class="GtkNotebook" id="window_3">
+                <property name="name">notebook3</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="margin-left">5</property>
+                <property name="margin-right">5</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
+                <property name="show-border">False</property>
+                <property name="scrollable">True</property>
+                <property name="group-name">sfm_windows</property>
+                <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
+                <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
+                <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child type="action-end">
+                  <object class="GtkSearchEntry" id="win3_search_field">
+                    <property name="name">window_3</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="primary-icon-name">edit-find-symbolic</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="primary-icon-sensitive">False</property>
+                    <property name="placeholder-text" translatable="yes">Search...</property>
+                    <signal name="changed" handler="do_file_search" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="tab-fill">False</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkNotebook" id="window_4">
+                <property name="name">notebook4</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="can-default">True</property>
+                <property name="margin-right">5</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
+                <property name="show-border">False</property>
+                <property name="scrollable">True</property>
+                <property name="group-name">sfm_windows</property>
+                <signal name="create-window" handler="on_tab_dnded" swapped="no"/>
+                <signal name="page-reordered" handler="on_tab_reorder" swapped="no"/>
+                <signal name="switch-page" handler="on_tab_switch_update" swapped="no"/>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child type="action-end">
+                  <object class="GtkSearchEntry" id="win4_search_field">
+                    <property name="name">window_4</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="primary-icon-name">edit-find-symbolic</property>
+                    <property name="primary-icon-activatable">False</property>
+                    <property name="primary-icon-sensitive">False</property>
+                    <property name="placeholder-text" translatable="yes">Search...</property>
+                    <signal name="changed" handler="do_file_search" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="tab-fill">False</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">False</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="resize">True</property>
+            <property name="shrink">True</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkStatusbar" id="bottom_status_info">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="margin-left">10</property>
+        <property name="margin-right">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+        <property name="spacing">15</property>
+        <property name="baseline-position">top</property>
+        <child>
+          <object class="GtkLabel" id="bottom_size_label">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="bottom_file_count_label">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="bottom_path_label">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">3</property>
+      </packing>
     </child>
   </object>
 </interface>

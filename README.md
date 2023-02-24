@@ -9,7 +9,7 @@ Copy the share/solarfm folder to your user .config/ directory too.
 
 <h6>Install Setup</h6>
 ```
-sudo apt-get install python3.8 wget python3-setproctitle python3-gi ffmpegthumbnailer steamcmd
+sudo apt-get install python3.8 python3-setproctitle python3-gi wget ffmpegthumbnailer steamcmd
 ```
 
 # Known Issues

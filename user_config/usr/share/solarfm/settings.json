@@ -32,6 +32,14 @@
         "text":   [".txt", ".text", ".sh", ".cfg", ".conf", ".log"],
         "music":  [".psf", ".mp3", ".ogg", ".flac", ".m4a"],
         "pdf":    [".pdf"]
-
+   },
+   "theming":{
+       "success_color": "#88cc27",
+       "warning_color": "#ffa800",
+       "error_color":   "#ff0000"
+   },
+   "debugging": {
+       "ch_log_lvl": 20,
+       "fh_log_lvl": 10
    }
 }
