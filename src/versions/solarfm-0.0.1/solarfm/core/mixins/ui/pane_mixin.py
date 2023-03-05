@@ -45,16 +45,14 @@ class PaneMixin:
         state = self.run_flag_toggle(pane_index)
         if self.is_pane1_hidden and self.is_pane2_hidden and self.is_pane3_hidden and self.is_pane4_hidden:
             state = self.run_flag_toggle(pane_index)
-            self._save_state(state, pane_index)
+            self._set_fm_state(state, pane_index)
             return
 
         child = pane.get_child1() if pane_index in [1, 3] else pane.get_child2()
 
         self.toggle_pane(child)
-        self._save_state(state, pane_index)
+        self._set_fm_state(state, pane_index)
 
-    def _save_state(self, state, pane_index):
+    def _set_fm_state(self, state, pane_index):
         window = self.fm_controller.get_window_by_index(pane_index - 1)
         window.set_is_hidden(state)
-        if not settings.is_trace_debug():
-            self.fm_controller.save_state()

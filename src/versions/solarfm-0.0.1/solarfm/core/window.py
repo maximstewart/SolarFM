@@ -52,6 +52,9 @@ class Window(Gtk.ApplicationWindow):
         event_system.subscribe("tear_down", self._tear_down)
 
     def _load_widgets(self, args, unknownargs):
+        if settings.is_debug():
+            self.set_interactive_debugging(True)
+
         self._controller = Controller(args, unknownargs)
 
         if not self._controller:

@@ -9,6 +9,9 @@ from gi.repository import Gtk
 # Application imports
 
 
+class SaveLoadWidgetException(Exception):
+    ...
+
 
 
 class SaveLoadWidget:
@@ -52,7 +55,7 @@ class SaveLoadWidget:
         elif action == "load_session":
             self.save_load_dialog.set_action(Gtk.FileChooserAction.OPEN)
         else:
-            raise Exception(f"Unknown action given:  {action}")
+            raise SaveLoadWidgetException(f"Unknown action given:  {action}")
 
         self.save_load_dialog.set_current_folder(state.tab.get_current_directory())
         self.save_load_dialog.set_current_name("session.json")

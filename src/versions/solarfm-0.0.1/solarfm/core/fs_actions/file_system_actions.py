@@ -15,6 +15,7 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
 
     def __init__(self):
         super(FileSystemActions, self).__init__()
+
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()

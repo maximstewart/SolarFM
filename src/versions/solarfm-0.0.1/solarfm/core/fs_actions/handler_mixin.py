@@ -12,6 +12,9 @@ from gi.repository import Gio
 from ..widgets.io_widget import IOWidget
 
 
+class HandlerMixinException(Exception):
+    ...
+
 
 
 class HandlerMixin:
@@ -35,7 +38,7 @@ class HandlerMixin:
                 file = Gio.File.new_for_path(path)
                 if _target_path:
                     if file.get_parent().get_path() == _target_path:
-                        raise Exception("Parent dir of target and file locations are the same! Won't copy or move!")
+                        raise HandlerMixinException("Parent dir of target and file locations are the same! Won't copy or move!")
 
                     if os.path.isdir(_target_path):
                         info    = file.query_info("standard::display-name", 0, cancellable=None)
@@ -153,7 +156,7 @@ class HandlerMixin:
                 value     = file_name[(file_name.find(start)+len(start)):]
                 int(value)
                 file_name = file_name.split(start)[0]
-            except Exception as e:
+            except HandlerMixinException as e:
                 pass
 
             target = Gio.File.new_for_path(f"{base_path}/{file_name}-copy{i}{extension}")

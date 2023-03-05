@@ -17,7 +17,6 @@ from .widgets.dialogs.about_widget import AboutWidget
 from .widgets.dialogs.appchooser_widget import AppchooserWidget
 from .widgets.dialogs.file_exists_widget import FileExistsWidget
 from .widgets.dialogs.new_file_widget import NewFileWidget
-from .widgets.dialogs.message_widget import MessageWidget
 from .widgets.dialogs.rename_widget import RenameWidget
 from .widgets.dialogs.save_load_widget import SaveLoadWidget
 
@@ -92,6 +91,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
     #       after we're done cleaning and refactoring to use fewer mixins.
     def _load_widgets(self):
         BottomStatusInfoWidget()
+
         IOPopupWidget()
         MessagePopupWidget()
         PathMenuPopupWidget()
@@ -104,7 +104,6 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         RenameWidget()
         FileExistsWidget()
         SaveLoadWidget()
-        self.message_dialog = MessageWidget()
 
 
     def reload_plugins(self, widget=None, eve=None):
@@ -187,4 +186,4 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         tab.execute([f"{tab.terminal_app}"], start_dir=tab.get_current_directory())
 
     def go_to_path(self, path: str):
-        self.path_entry.set_text(path)
+        self.builder.get_object("path_entry").set_text(path)

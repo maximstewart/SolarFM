@@ -1,5 +1,4 @@
 # Python imports
-import sys
 import os
 import subprocess
 from dataclasses import dataclass
@@ -10,9 +9,10 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 # Application imports
+from .widgets.dialogs.message_widget import MessageWidget
+
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
-
 
 
 
@@ -52,11 +52,6 @@ class Controller_Data:
         self.window3            = self.builder.get_object("window_3")
         self.window4            = self.builder.get_object("window_4")
 
-        self.path_entry              = self.builder.get_object("path_entry")
-        # self.bottom_size_label       = self.builder.get_object("bottom_size_label")
-        # self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
-        # self.bottom_path_label       = self.builder.get_object("bottom_path_label")
-
         self.notebooks          = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files     = []
         self.to_copy_files      = []
@@ -74,19 +69,6 @@ class Controller_Data:
         self.ctrl_down          = False
         self.shift_down         = False
         self.alt_down           = False
-
-        # sys.excepthook = self.custom_except_hook
-        if settings.is_debug():
-            self.window.set_interactive_debugging(True)
-
-
-    def custom_except_hook(self, exc_type, exc_value, exc_traceback):
-        if issubclass(exc_type, KeyboardInterrupt):
-            sys.__excepthook__(exc_type, exc_value, exc_traceback)
-            return
-
-        logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
-
 
 
     def get_current_state(self) -> State:
@@ -106,7 +88,7 @@ class Controller_Data:
         state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
         state.store          = state.icon_grid.get_model()
-        state.message_dialog = self.message_dialog
+        state.message_dialog = MessageWidget()
 
         selected_files       = state.icon_grid.get_selected_items()
         if selected_files:

@@ -18,6 +18,7 @@ class MessageWidget(Gtk.MessageDialog):
 
         self._setup_styling()
         self._setup_signals()
+        self._subscribe_to_events()
         self._load_widgets()
 
 
@@ -25,6 +26,9 @@ class MessageWidget(Gtk.MessageDialog):
         self.type = Gtk.MessageType.WARNING
 
     def _setup_signals(self):
+        ...
+
+    def _subscribe_to_events(self):
         ...
 
     def _load_widgets(self):
