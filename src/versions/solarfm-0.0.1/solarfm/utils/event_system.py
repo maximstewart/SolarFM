@@ -38,11 +38,17 @@ class EventSystem:
     def emit_and_await(self, event_type, data = None):
         """ NOTE: Should be used when signal has only one listener and vis-a-vis """
         if event_type in self.subscribers:
+            response = None
             for fn in self.subscribers[event_type]:
                 if data:
                     if hasattr(data, '__iter__') and not type(data) is str:
-                        return fn(*data)
+                        response = fn(*data)
                     else:
-                        return fn(data)
+                        response = fn(data)
                 else:
-                    return fn()
+                    response = fn()
+
+                if not response in (None, ''):
+                    break
+
+            return response

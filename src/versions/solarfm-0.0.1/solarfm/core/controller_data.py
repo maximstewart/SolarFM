@@ -37,7 +37,7 @@ class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
     __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
-    def setup_controller_data(self) -> None:
+    def _setup_controller_data(self) -> None:
         self.window        = settings.get_main_window()
         self.builder       = None
         self.core_widget   = None
@@ -87,6 +87,7 @@ class Controller_Data:
         state.wid, state.tid = self.fm_controller.get_active_wid_and_tid()
         state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
+        # state.icon_grid      = event_system.emit_and_await("get_files_view_icon_grid", (state.wid, state.tid))
         state.store          = state.icon_grid.get_model()
         state.message_dialog = MessageWidget()
 
@@ -103,7 +104,7 @@ class Controller_Data:
         # if self.to_cut_files:
         #     state.to_cut_files   = self.format_to_uris(state.store, state.wid, state.tid, self.to_cut_files, True)
 
-        event_system.emit("update_state_info_plugins", state)
+        event_system.emit("update_state_info_plugins", state) # NOTE: Need to remove after we convert plugins to use emit_and_await
         return state
 
     def format_to_uris(self, store, wid, tid, treePaths, use_just_path=False):
@@ -124,6 +125,20 @@ class Controller_Data:
             uris.append(fpath)
 
         return uris
+
+
+    def get_fm_window(self, wid):
+        return self.fm_controller.get_window_by_nickname(f"window_{wid}")
+
+    def _unset_selected_files_views(self):
+        for _notebook in self.notebooks:
+            ctx = _notebook.get_style_context()
+            ctx.remove_class("notebook-selected-focus")
+            ctx.add_class("notebook-unselected-focus")
+
+    def _set_window_title(self, dir):
+        self.window.set_title(f"{app_name} ~ {dir}")
+
 
     def clear_console(self) -> None:
         ''' Clears the terminal screen. '''

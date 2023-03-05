@@ -37,14 +37,14 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
 
     def __init__(self, args, unknownargs):
-        self.setup_controller_data()
+        self._setup_controller_data()
 
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()
         self._load_widgets()
 
-        self.generate_windows(self.fm_controller_data)
+        self._generate_file_views(self.fm_controller_data)
 
         if args.no_plugins == "false":
             self.plugins.launch_plugins()
@@ -65,8 +65,10 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
     def _subscribe_to_events(self):
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
-        event_system.subscribe("generate_windows", self.generate_windows)
+        event_system.subscribe("generate_file_views", self._generate_file_views)
         event_system.subscribe("clear_notebooks", self.clear_notebooks)
+        event_system.subscribe("set_window_title", self._set_window_title)
+        event_system.subscribe("unset_selected_files_views", self._unset_selected_files_views)
         event_system.subscribe("get_current_state", self.get_current_state)
         event_system.subscribe("go_to_path", self.go_to_path)
         event_system.subscribe("format_to_uris", self.format_to_uris)
@@ -104,7 +106,6 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         RenameWidget()
         FileExistsWidget()
         SaveLoadWidget()
-
 
     def reload_plugins(self, widget=None, eve=None):
         self.plugins.reload_plugins()

@@ -34,22 +34,17 @@ class WindowMixin(TabMixin):
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         dir      = tab.get_current_directory()
 
-        for _notebook in self.notebooks:
-            ctx = _notebook.get_style_context()
-            ctx.remove_class("notebook-selected-focus")
-            ctx.add_class("notebook-unselected-focus")
-
-        ctx = notebook.get_style_context()
+        event_system.emit("unset_selected_files_views")
+        ctx = self.files_view.get_style_context()
         ctx.remove_class("notebook-unselected-focus")
         ctx.add_class("notebook-selected-focus")
 
-        self.window.set_title(f"{app_name} ~ {dir}")
+        event_system.emit("set_window_title", (dir,))
         self.set_bottom_labels(tab)
 
     def set_path_text(self, wid, tid):
-        path_entry = self.builder.get_object("path_entry")
-        tab        = self.get_fm_window(wid).get_tab_by_id(tid)
-        path_entry.set_text(tab.get_current_directory())
+        tab = self.get_fm_window(wid).get_tab_by_id(tid)
+        event_system.emit("go_to_path", (tab.get_current_directory(),))
 
     def grid_set_selected_items(self, icons_grid):
         new_items      = icons_grid.get_selected_items()

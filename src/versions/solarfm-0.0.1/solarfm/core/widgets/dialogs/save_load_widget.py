@@ -80,5 +80,5 @@ class SaveLoadWidget:
         state = event_system.emit_and_await("get_current_state")
         event_system.emit("clear_notebooks")
         state.fm_controller.unload_tabs_and_windows()
-        event_system.emit("generate_windows", (session_json,))
+        event_system.emit("generate_file_views", (session_json,))
         gc.collect()
