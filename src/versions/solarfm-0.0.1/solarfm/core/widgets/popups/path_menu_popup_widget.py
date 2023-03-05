@@ -15,8 +15,8 @@ class PathMenuPopupWidget(Gtk.Popover):
 
     def __init__(self):
         super(PathMenuPopupWidget, self).__init__()
-        self.builder = settings.get_builder()
 
+        self.builder = settings.get_builder()
         self.builder.expose_object(f"path_menu", self)
 
         self._setup_styling()
@@ -49,6 +49,7 @@ class PathMenuPopupWidget(Gtk.Popover):
         scroll_window.add(view_port)
         scroll_window.show_all()
         self.add(scroll_window)
+
 
     def show_path_menu(self, widget=None, eve=None):
         self.popup()

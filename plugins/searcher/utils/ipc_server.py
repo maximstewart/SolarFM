@@ -59,23 +59,27 @@ class IPCServer:
         while True:
             msg  = conn.recv()
 
-            if "SEARCH|" in msg:
-                ts, file = msg.split("SEARCH|")[1].strip().split("|", 1)
-                try:
+            try:
+                if "SEARCH_DONE|" in msg:
+                    ts, ret_code = msg.split("SEARCH_DONE|")[1].strip().split("|", 1)
                     timestamp = float(ts)
-                    if timestamp > self.fsearch_time_stamp and file:
-                        GLib.idle_add(self._load_file_ui, file, priority=GLib.PRIORITY_LOW)
-                except Exception as e:
-                    ...
+                    if self.fsearch_time_stamp or self.grep_time_stamp:
+                        if (timestamp > self.fsearch_time_stamp) or (timestamp > self.grep_time_stamp):
+                            GLib.idle_add(self.stop_spinner, (ret_code,), priority=GLib.PRIORITY_HIGH_IDLE)
 
-            if "GREP|" in msg:
-                ts, data = msg.split("GREP|")[1].strip().split("|", 1)
-                try:
+                if "SEARCH|" in msg:
+                    ts, file = msg.split("SEARCH|")[1].strip().split("|", 1)
                     timestamp = float(ts)
-                    if timestamp > self.grep_time_stamp and data:
-                        GLib.idle_add(self._load_grep_ui, data, priority=GLib.PRIORITY_LOW)
-                except Exception as e:
-                    ...
+                    if file and (timestamp > self.fsearch_time_stamp):
+                        GLib.idle_add(self._load_file_ui, file, priority=GLib.PRIORITY_HIGH_IDLE)
+
+                if "GREP|" in msg:
+                    ts, data = msg.split("GREP|")[1].strip().split("|", 1)
+                    timestamp = float(ts)
+                    if data and (timestamp > self.grep_time_stamp):
+                        GLib.idle_add(self._load_grep_ui, data, priority=GLib.PRIORITY_HIGH_IDLE)
+            except Exception as e:
+                print( repr(e) )
 
 
             conn.close()

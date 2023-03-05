@@ -72,75 +72,8 @@ class WindowMixin(TabMixin):
     def get_fm_window(self, wid):
         return self.fm_controller.get_window_by_nickname(f"window_{wid}")
 
-    def format_to_uris(self, store, wid, tid, treePaths, use_just_path=False):
-        tab  = self.get_fm_window(wid).get_tab_by_id(tid)
-        dir  = tab.get_current_directory()
-        uris = []
-
-        for path in treePaths:
-            itr   = store.get_iter(path)
-            file  = store.get(itr, 1)[0]
-            fpath = ""
-
-            if not use_just_path:
-                fpath = f"file://{dir}/{file}"
-            else:
-                fpath = f"{dir}/{file}"
-
-            uris.append(fpath)
-
-        return uris
-
-
     def set_bottom_labels(self, tab):
-        state                = self.get_current_state()
-        selected_files       = state.icon_grid.get_selected_items()
-        current_directory    = tab.get_current_directory()
-        path_file            = Gio.File.new_for_path(current_directory)
-        mount_file           = path_file.query_filesystem_info(attributes="filesystem::*", cancellable=None)
-        formatted_mount_free = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::free")) )
-        formatted_mount_size = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
-
-        # NOTE: Hides empty trash and other desired buttons based on context.
-        if settings.get_trash_files_path() == current_directory:
-            event_system.emit("show_trash_buttons")
-        else:
-            event_system.emit("hide_trash_buttons")
-
-        # If something selected
-        self.bottom_size_label.set_label(f"{formatted_mount_free} free / {formatted_mount_size}")
-        self.bottom_path_label.set_label(tab.get_current_directory())
-        if selected_files:
-            uris          = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
-            combined_size = 0
-            for uri in uris:
-                try:
-                    file_info = Gio.File.new_for_path(uri).query_info(attributes="standard::size",
-                                                        flags=Gio.FileQueryInfoFlags.NONE,
-                                                        cancellable=None)
-                    file_size = file_info.get_size()
-                    combined_size += file_size
-                except WindowException as e:
-                    logger.debug(repr(e))
-
-            formatted_size = sizeof_fmt(combined_size)
-            if tab.is_hiding_hidden():
-                self.bottom_path_label.set_label(f" {len(uris)} / {tab.get_files_count()} ({formatted_size})")
-            else:
-                self.bottom_path_label.set_label(f" {len(uris)} / {tab.get_not_hidden_count()} ({formatted_size})")
-
-            return
-
-        # If nothing selected
-        if tab.is_hiding_hidden():
-            if tab.get_hidden_count() > 0:
-                self.bottom_file_count_label.set_label(f"{tab.get_not_hidden_count()} visible ({tab.get_hidden_count()} hidden)")
-            else:
-                self.bottom_file_count_label.set_label(f"{tab.get_files_count()} items")
-        else:
-            self.bottom_file_count_label.set_label(f"{tab.get_files_count()} items")
-
-
+        event_system.emit("set_bottom_labels", (tab,))
 
     def set_window_title(self):
         wid, tid = self.fm_controller.get_active_wid_and_tid()

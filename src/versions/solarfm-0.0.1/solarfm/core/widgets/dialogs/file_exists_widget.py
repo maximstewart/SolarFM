@@ -1,5 +1,4 @@
 # Python imports
-import inspect
 
 # Lib imports
 import gi
@@ -17,11 +16,26 @@ class FileExistsWidget:
 
     def __init__(self):
         super(FileExistsWidget, self).__init__()
-        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/file_exists_ui.glade"
-        builder       = settings.get_builder()
-        self._builder = Gtk.Builder()
 
+        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/file_exists_ui.glade"
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(_GLADE_FILE)
+
+        self._setup_styling()
+        self._setup_signals()
+        self._load_widgets()
+
+
+    def _setup_styling(self):
+        ...
+
+    def _setup_signals(self):
+        event_system.subscribe("setup_exists_data", self.setup_exists_data)
+        event_system.subscribe("show_exists_page", self.show_exists_page)
+        settings.register_signals_to_builder([self,], self._builder)
+
+    def _load_widgets(self):
+        builder = settings.get_builder()
 
         self.file_exists_dialog       = self._builder.get_object("file_exists_dialog")
         self._exists_file_label       = self._builder.get_object("exists_file_label")
@@ -38,33 +52,6 @@ class FileExistsWidget:
         builder.expose_object(f"exists_file_field", self._exists_file_field)
         builder.expose_object(f"exists_file_rename_bttn", self._exists_file_rename_bttn)
 
-        self._setup_styling()
-        self._setup_signals()
-        self._load_widgets()
-
-
-    def _setup_styling(self):
-        ...
-
-    def _setup_signals(self):
-        event_system.subscribe("setup_exists_data", self.setup_exists_data)
-        event_system.subscribe("show_exists_page", self.show_exists_page)
-
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                logger.debug(repr(e))
-
-        self._builder.connect_signals(handlers)
-
-    def _load_widgets(self):
-        ...
 
     def show_exists_page(self, widget=None, eve=None):
         response = self.file_exists_dialog.run()

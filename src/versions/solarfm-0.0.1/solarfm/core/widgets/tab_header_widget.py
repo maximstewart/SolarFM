@@ -15,12 +15,14 @@ class TabHeaderWidget(Gtk.ButtonBox):
 
     def __init__(self, tab, close_tab):
         super(TabHeaderWidget, self).__init__()
+
         self._tab       = tab
         self._close_tab = close_tab # NOTE: Close method in tab_mixin
 
         self._setup_styling()
         self._setup_signals()
         self._load_widgets()
+
 
     def _setup_styling(self):
         self.set_orientation(0)

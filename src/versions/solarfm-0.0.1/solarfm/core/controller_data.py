@@ -13,8 +13,6 @@ from gi.repository import Gtk
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
 
-# from factories.split_view_widget import SplitViewWidget
-
 
 
 
@@ -49,21 +47,15 @@ class Controller_Data:
         self.plugins            = PluginsController()
         self.fm_controller_data = self.fm_controller.get_state_from_file()
 
-
-        # self.pane_master        = self.builder.get_object("pane_master")
-        # self.pane_master.pack1(SplitViewWidget(), True, True)
-        # self.pane_master.pack2(SplitViewWidget(), True, True)
-
-
         self.window1            = self.builder.get_object("window_1")
         self.window2            = self.builder.get_object("window_2")
         self.window3            = self.builder.get_object("window_3")
         self.window4            = self.builder.get_object("window_4")
 
         self.path_entry              = self.builder.get_object("path_entry")
-        self.bottom_size_label       = self.builder.get_object("bottom_size_label")
-        self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
-        self.bottom_path_label       = self.builder.get_object("bottom_path_label")
+        # self.bottom_size_label       = self.builder.get_object("bottom_size_label")
+        # self.bottom_file_count_label = self.builder.get_object("bottom_file_count_label")
+        # self.bottom_path_label       = self.builder.get_object("bottom_path_label")
 
         self.notebooks          = [self.window1, self.window2, self.window3, self.window4]
         self.selected_files     = []
@@ -132,6 +124,24 @@ class Controller_Data:
         event_system.emit("update_state_info_plugins", state)
         return state
 
+    def format_to_uris(self, store, wid, tid, treePaths, use_just_path=False):
+        tab  = self.get_fm_window(wid).get_tab_by_id(tid)
+        dir  = tab.get_current_directory()
+        uris = []
+
+        for path in treePaths:
+            itr   = store.get_iter(path)
+            file  = store.get(itr, 1)[0]
+            fpath = ""
+
+            if not use_just_path:
+                fpath = f"file://{dir}/{file}"
+            else:
+                fpath = f"{dir}/{file}"
+
+            uris.append(fpath)
+
+        return uris
 
     def clear_console(self) -> None:
         ''' Clears the terminal screen. '''

@@ -29,8 +29,6 @@ class IconGridWidget(Gtk.IconView):
 
         self.show_all()
 
-    def get_store(self):
-        return self._store
 
     def _setup_styling(self):
         self.set_pixbuf_column(0)
@@ -74,3 +72,7 @@ class IconGridWidget(Gtk.IconView):
         action           = Gdk.DragAction.COPY
         self.enable_model_drag_dest(targets, action)
         self.enable_model_drag_source(0, targets, action)
+
+
+    def get_store(self):
+        return self._store

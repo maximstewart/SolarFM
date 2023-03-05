@@ -28,6 +28,7 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
 
         self.update_list_ui_buffer = ()
         self._search_dialog     = None
+        self._spinner           = None
         self._active_path       = None
         self.file_list_parent   = None
         self.grep_list_parent   = None
@@ -55,6 +56,7 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
 
         self._search_dialog = self._builder.get_object("search_dialog")
         self.fsearch        = self._builder.get_object("fsearch")
+        self._spinner       = self._builder.get_object("spinner")
 
         self.grep_list_parent = self._builder.get_object("grep_list_parent")
         self.file_list_parent = self._builder.get_object("file_list_parent")
@@ -71,6 +73,10 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         item.connect("activate", self._show_page)
         item.set_always_show_image(True)
         return item
+
+    def stop_spinner(self, ret_code):
+        print(f"Return Code: {ret_code}")
+        self._spinner.stop()
 
 
     def _show_page(self, widget=None, eve=None):

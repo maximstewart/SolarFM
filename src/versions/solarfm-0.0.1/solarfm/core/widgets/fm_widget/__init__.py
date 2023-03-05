@@ -1,3 +1,0 @@
-"""
-    FileView module
-"""

@@ -1,5 +1,4 @@
 # Python imports
-import inspect
 
 # Lib imports
 import gi
@@ -16,8 +15,8 @@ class PluginsPopupWidget(Gtk.Popover):
 
     def __init__(self):
         super(PluginsPopupWidget, self).__init__()
-        self.builder = settings.get_builder()
 
+        self.builder = settings.get_builder()
         self.builder.expose_object(f"plugin_controls", self)
 
         self._setup_styling()
@@ -42,6 +41,7 @@ class PluginsPopupWidget(Gtk.Popover):
         vbox.set_orientation(Gtk.Orientation.VERTICAL)
         self.builder.expose_object(f"plugin_control_list", vbox)
         self.add(vbox)
+
 
     def show_plugins_popup(self, widget=None, eve=None):
         self.popup()

@@ -46,14 +46,24 @@ class Settings(StartCheckMixin):
 
         if not os.path.exists(self._DEFAULT_ICONS):
             self._DEFAULT_ICONS = f"{self._USR_PATH}/icons"
+            if not os.path.exists(self._DEFAULT_ICONS):
+                raise MissingConfigError("Unable to find the application icons directory.")
         if not os.path.exists(self._GLADE_FILE):
             self._GLADE_FILE    = f"{self._USR_PATH}/Main_Window.glade"
+            if not os.path.exists(self._GLADE_FILE):
+                raise MissingConfigError("Unable to find the application Glade file.")
         if not os.path.exists(self._KEY_BINDINGS_FILE):
             self._KEY_BINDINGS_FILE = f"{self._USR_PATH}/key-bindings.json"
+            if not os.path.exists(self._KEY_BINDINGS_FILE):
+                raise MissingConfigError("Unable to find the application Keybindings file.")
         if not os.path.exists(self._CSS_FILE):
             self._CSS_FILE      = f"{self._USR_PATH}/stylesheet.css"
+            if not os.path.exists(self._CSS_FILE):
+                raise MissingConfigError("Unable to find the application Stylesheet file.")
         if not os.path.exists(self._WINDOW_ICON):
             self._WINDOW_ICON   = f"{self._USR_PATH}/icons/{app_name.lower()}.png"
+            if not os.path.exists(self._WINDOW_ICON):
+                raise MissingConfigError("Unable to find the application icon.")
 
 
         self._UI_WIDEGTS_PATH  = f"{self._USR_PATH}/ui_widgets"
@@ -73,6 +83,8 @@ class Settings(StartCheckMixin):
             self._context_menu_data = json.load(file)
 
         self._main_window   = None
+        self._main_window_w = 1670
+        self._main_window_h = 830
         self._builder       = None
 
         self._trace_debug   = False
@@ -82,7 +94,7 @@ class Settings(StartCheckMixin):
         self.load_settings()
 
 
-    def register_signals_to_builder(self, classes=None):
+    def register_signals_to_builder(self, classes=None, builder=None):
         handlers = {}
 
         for c in classes:
@@ -93,8 +105,7 @@ class Settings(StartCheckMixin):
             except Exception as e:
                 print(repr(e))
 
-        self._builder.connect_signals(handlers)
-
+        builder.connect_signals(handlers)
 
     def get_monitor_data(self) -> list:
         screen = self._main_window.get_screen()
@@ -108,8 +119,10 @@ class Settings(StartCheckMixin):
     def set_builder(self, builder) -> any:  self._builder = builder
     def set_main_window(self, window): self._main_window = window
 
-    def get_main_window(self)       -> Gtk.ApplicationWindow: return self._main_window
-    def get_builder(self)           -> Gtk.Builder:           return self._builder
+    def get_main_window(self)       -> Gtk.ApplicationWindow:  return self._main_window
+    def get_main_window_width(self) -> Gtk.ApplicationWindow:  return self._main_window_w
+    def get_main_window_height(self) -> Gtk.ApplicationWindow: return self._main_window_h
+    def get_builder(self)           -> Gtk.Builder:            return self._builder
     def get_glade_file(self)        -> str: return self._GLADE_FILE
     def get_icon_theme(self)        -> str: return self._ICON_THEME
     def get_css_file(self)          -> str: return self._CSS_FILE

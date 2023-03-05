@@ -1,5 +1,4 @@
 # Python imports
-import inspect
 
 # Lib imports
 import gi
@@ -16,16 +15,10 @@ class AppchooserWidget:
 
     def __init__(self):
         super(AppchooserWidget, self).__init__()
+
         _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/appchooser_ui.glade"
-        builder       = settings.get_builder()
         self._builder = Gtk.Builder()
-
         self._builder.add_from_file(_GLADE_FILE)
-        self._appchooser_menu   = self._builder.get_object("appchooser_menu")
-        self._appchooser_widget = self._builder.get_object("appchooser_widget")
-
-        builder.expose_object(f"appchooser_menu", self._appchooser_menu)
-        builder.expose_object(f"appchooser_widget", self._appchooser_widget)
 
         self._setup_styling()
         self._setup_signals()
@@ -39,21 +32,17 @@ class AppchooserWidget:
         event_system.subscribe("show_appchooser_menu", self.show_appchooser_menu)
         event_system.subscribe("hide_appchooser_menu", self.hide_appchooser_menu)
         event_system.subscribe("run_appchooser_launch", self.run_appchooser_launch)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        settings.register_signals_to_builder([self,], self._builder)
 
     def _load_widgets(self):
-        ...
+        builder = settings.get_builder()
+
+        self._appchooser_menu   = self._builder.get_object("appchooser_menu")
+        self._appchooser_widget = self._builder.get_object("appchooser_widget")
+
+        builder.expose_object(f"appchooser_menu", self._appchooser_menu)
+        builder.expose_object(f"appchooser_widget", self._appchooser_widget)
+
 
     def show_appchooser_menu(self, widget=None, eve=None):
         response = self._appchooser_menu.run()

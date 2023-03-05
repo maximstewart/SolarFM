@@ -1,5 +1,4 @@
 # Python imports
-import inspect
 
 # Lib imports
 import gi
@@ -17,11 +16,9 @@ class MessageWidget(Gtk.MessageDialog):
     def __init__(self):
         super(MessageWidget, self).__init__()
 
-
         self._setup_styling()
         self._setup_signals()
         self._load_widgets()
-
 
 
     def _setup_styling(self):
@@ -29,7 +26,6 @@ class MessageWidget(Gtk.MessageDialog):
 
     def _setup_signals(self):
         ...
-
 
     def _load_widgets(self):
         message_area = self.get_message_area()

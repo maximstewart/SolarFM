@@ -1,5 +1,4 @@
 # Python imports
-import inspect
 
 # Lib imports
 import gi
@@ -16,8 +15,8 @@ class IOPopupWidget(Gtk.Popover):
 
     def __init__(self):
         super(IOPopupWidget, self).__init__()
-        self._builder = settings.get_builder()
 
+        self._builder = settings.get_builder()
         self._builder.expose_object(f"io_popup", self)
 
         self._setup_styling()
@@ -41,6 +40,7 @@ class IOPopupWidget(Gtk.Popover):
         vbox.set_orientation(Gtk.Orientation.VERTICAL)
         self._builder.expose_object(f"io_list", vbox)
         self.add(vbox)
+
 
     def show_io_popup(self, widget=None, eve=None):
         self.popup()

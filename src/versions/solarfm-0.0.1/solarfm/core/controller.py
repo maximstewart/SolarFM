@@ -27,6 +27,7 @@ from .widgets.popups.plugins_popup_widget import PluginsPopupWidget
 from .widgets.popups.io_popup_widget import IOPopupWidget
 
 from .widgets.context_menu_widget import ContextMenuWidget
+from .widgets.bottom_status_info_widget import BottomStatusInfoWidget
 
 from .ui_mixin import UIMixin
 
@@ -56,7 +57,9 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
 
     def _setup_styling(self):
-        ...
+        self.window.connect("focus-out-event", self.unset_keys_and_data)
+        self.window.connect("key-press-event", self.on_global_key_press_controller)
+        self.window.connect("key-release-event", self.on_global_key_release_controller)
 
     def _setup_signals(self):
         FileSystemActions()
@@ -67,6 +70,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         event_system.subscribe("clear_notebooks", self.clear_notebooks)
         event_system.subscribe("get_current_state", self.get_current_state)
         event_system.subscribe("go_to_path", self.go_to_path)
+        event_system.subscribe("format_to_uris", self.format_to_uris)
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
         event_system.subscribe("set_clipboard_data", self.set_clipboard_data)
 
@@ -78,7 +82,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         self.core_widget = self.builder.get_object("core_widget")
 
         settings.set_builder(self.builder)
-        settings.register_signals_to_builder([self,])
+        settings.register_signals_to_builder([self,], self.builder)
 
     def get_core_widget(self):
         return self.core_widget
@@ -87,6 +91,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
     # NOTE: Really we will move these to the UI/(New) Window 'base' controller
     #       after we're done cleaning and refactoring to use fewer mixins.
     def _load_widgets(self):
+        BottomStatusInfoWidget()
         IOPopupWidget()
         MessagePopupWidget()
         PathMenuPopupWidget()

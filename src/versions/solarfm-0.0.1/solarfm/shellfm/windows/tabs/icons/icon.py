@@ -35,11 +35,11 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
 
     def get_icon_image(self, dir, file, full_path):
         try:
-            thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
+            thumbnl = None
 
             if file.lower().endswith(self.fmeshs):               # 3D Mesh icon
                 ...
-            if file.lower().endswith(self.fvideos):              # Video icon
+            elif file.lower().endswith(self.fvideos):            # Video icon
                 thumbnl = self.create_video_thumbnail(full_path)
             elif file.lower().endswith(self.fimages):            # Image Icon
                 thumbnl = self.create_scaled_image(full_path)
@@ -49,7 +49,10 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
                 thumbnl = self.find_thumbnail_from_desktop_file(full_path)
 
             if not thumbnl:
-                raise IconException("No known icons found.")
+                thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
+                if not thumbnl:
+                    raise IconException("No known icons found.")
+
 
             return thumbnl
         except IconException:

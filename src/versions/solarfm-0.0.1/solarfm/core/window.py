@@ -37,7 +37,8 @@ class Window(Gtk.ApplicationWindow):
 
 
     def _setup_styling(self):
-        self.set_default_size(1670, 830)
+        self.set_default_size(settings.get_main_window_width(),
+                                settings.get_main_window_height())
         self.set_title(f"{app_name}")
         self.set_icon_from_file( settings.get_window_icon() )
         self.set_gravity(5)  # 5 = CENTER
@@ -45,11 +46,6 @@ class Window(Gtk.ApplicationWindow):
 
     def _setup_signals(self):
         self.connect("delete-event", self._tear_down)
-
-        # self.connect("focus-out-event", self._controller.unset_keys_and_data)
-        # self.connect("key-press-event", self._controller.on_global_key_press_controller)
-        # self.connect("key-release-event", self._controller.on_global_key_release_controller)
-
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self._tear_down)
 
     def _subscribe_to_events(self):

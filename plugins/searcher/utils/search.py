@@ -82,12 +82,11 @@ def grep_search(target=None, query=None):
                 collection[f"{b64_file}"] = {}
                 collection[f"{b64_file}"] = { f"{line_no}": b64_data}
 
-
-            data = f"GREP|{ts}|{json.dumps(collection, separators=(',', ':'), indent=4)}"
-            send_ipc_message(data)
         except Exception as e:
             traceback.print_exc()
 
+    data = f"GREP|{ts}|{json.dumps(collection, separators=(',', ':'), indent=4)}"
+    send_ipc_message(data)
     collection = {}
 
 
@@ -112,5 +111,11 @@ if __name__ == "__main__":
         # Read arguments (If any...)
         args = parser.parse_args()
         search(args)
+
+        data = f"SEARCH_DONE|{ts}|0"
+        send_ipc_message(data)
     except Exception as e:
         traceback.print_exc()
+
+        data = f"SEARCH_DONE|{ts}|1"
+        send_ipc_message(data)

@@ -16,6 +16,7 @@ class IOWidget(Gtk.Box):
 
     def __init__(self, action, file):
         super(IOWidget, self).__init__()
+
         self._action    = action
         self._file      = file
         self._basename  = self._file.get_basename()
@@ -58,6 +59,7 @@ class IOWidget(Gtk.Box):
         stats.add(self.progress)
         self.add(label)
         self.add(stats)
+
 
     def do_cancel(self, widget, container, eve):
         logger.info(f"Canceling: [{self._action}] of {self._basename} ...")

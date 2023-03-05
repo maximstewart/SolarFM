@@ -1,5 +1,4 @@
 # Python imports
-import inspect
 
 # Lib imports
 import gi
@@ -16,6 +15,7 @@ class ContextMenuWidget(Gtk.Menu):
 
     def __init__(self):
         super(ContextMenuWidget, self).__init__()
+
         self.builder            = settings.get_builder()
         self._builder           = Gtk.Builder()
         self._context_menu_data = settings.get_context_menu_data()
@@ -32,21 +32,13 @@ class ContextMenuWidget(Gtk.Menu):
     def _setup_signals(self):
         event_system.subscribe("show_context_menu", self.show_context_menu)
         event_system.subscribe("hide_context_menu", self.hide_context_menu)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                logger.debug(repr(e))
-
-        self._builder.connect_signals(handlers)
+        settings.register_signals_to_builder([self,], self._builder)
 
     def _load_widgets(self):
         self.build_context_menu()
+
+    def _emit(self, menu_item, type):
+        event_system.emit("do_action_from_menu_controls", type)
 
 
     def make_submenu(self, name, data, keys):
@@ -93,9 +85,6 @@ class ContextMenuWidget(Gtk.Menu):
         self.builder.expose_object("context_menu", self)
         if plugins_entry:
             self.builder.expose_object("context_menu_plugins", plugins_entry.get_submenu())
-
-    def _emit(self, menu_item, type):
-        event_system.emit("do_action_from_menu_controls", type)
 
     def show_context_menu(self, widget=None, eve=None):
         self.builder.get_object("context_menu").popup_at_pointer(None)

@@ -20,9 +20,10 @@ class MessagePopupWidget(Gtk.Popover):
 
     def __init__(self):
         super(MessagePopupWidget, self).__init__()
-        self.builder = settings.get_builder()
 
+        self.builder = settings.get_builder()
         self.builder.expose_object(f"message_popup_widget", self)
+
         self._message_buffer = None
 
         self._setup_styling()
@@ -39,7 +40,6 @@ class MessagePopupWidget(Gtk.Popover):
     def _setup_signals(self):
         event_system.subscribe("show_messages_popup", self.show_messages_popup)
         event_system.subscribe("hide_messages_popup", self.hide_messages_popup)
-
 
     def _load_widgets(self):
         self._message_buffer = Gtk.TextBuffer()
@@ -65,6 +65,7 @@ class MessagePopupWidget(Gtk.Popover):
         scroll_window.add(message_text_view)
         vbox.add(scroll_window)
         self.add(vbox)
+
 
     def show_messages_popup(self):
         self.popup()

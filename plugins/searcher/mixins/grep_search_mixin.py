@@ -64,6 +64,8 @@ class GrepSearchMixin:
             break
 
     def _stop_grep_query(self, widget=None, eve=None):
+        self._spinner.stop()
+
         # NOTE: Freeze IPC consumption
         self.pause_fifo_update = True
         self.grep_query        = ""
@@ -88,6 +90,7 @@ class GrepSearchMixin:
 
             target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
             command = ["python", f"{self.path}/utils/search.py", "-t", "grep_search", "-d", f"{target_dir}", "-q", f"{query}"]
+            self._spinner.start()
             self._grep_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
     def _load_grep_ui(self, data):

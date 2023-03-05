@@ -60,7 +60,7 @@ class Plugin(PluginBase):
         self._queue_translate = False
         self._watcher_running = False
         self._vqd_attrib      = None
-        self.from_trans       = "jp"
+        self.from_trans       = "ja"
         self.to_trans         = "en"
         self.translate_tries  = 0
 
@@ -138,14 +138,14 @@ class Plugin(PluginBase):
 
         self.translate_tries += 1
         tlink    = f"https://duckduckgo.com/translation.js?vqd={self._vqd_attrib}&query=translate&from={self.from_trans}&to={self.to_trans}"
-        response = requests.post(self.tlink, headers=self._headers, data=from_translate)
+        response = requests.post(tlink, headers=self._headers, data=from_translate)
 
         if response.status_code == 200:
             data = response.json()
             self._translate_to_buffer.set_text(data["translated"])
 
             self.translate_tries = 0
-            if "detected_language" in data.keys():
+            if data["detected_language"]:
                 self._detected_language_lbl.set_label(f"Detected Language: {data['detected_language']}")
             else:
                 self._detected_language_lbl.set_label(f"Selected Language: {self.from_trans}")
@@ -157,7 +157,7 @@ class Plugin(PluginBase):
             msg = f"Could not translate... Response Code: {response.status_code}"
             self._translate_to_buffer.set_text(msg)
 
-
+    # NOTE: https://github.com/deedy5/duckduckgo_search/blob/72acb900a346be576f0917dd3d6c0fbd618a71bf/duckduckgo_search/utils.py
     def get_vqd(self):
         response = requests.post(self.vqd_link, headers=self.vqd_headers, data=self.vqd_data, timeout=10)
         if response.status_code == 200:

@@ -1,5 +1,4 @@
 # Python imports
-import inspect
 import gc
 
 # Lib imports
@@ -17,14 +16,10 @@ class SaveLoadWidget:
 
     def __init__(self):
         super(SaveLoadWidget, self).__init__()
+
         _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/save_load_ui.glade"
-        builder       = settings.get_builder()
         self._builder = Gtk.Builder()
-
         self._builder.add_from_file(_GLADE_FILE)
-        self.save_load_dialog = self._builder.get_object("save_load_dialog")
-
-        builder.expose_object(f"save_load_dialog", self.save_load_dialog)
 
         self._setup_styling()
         self._setup_signals()
@@ -38,7 +33,10 @@ class SaveLoadWidget:
         event_system.subscribe("save_load_session", self.save_load_session)
 
     def _load_widgets(self):
-        ...
+        builder = settings.get_builder()
+
+        self.save_load_dialog = self._builder.get_object("save_load_dialog")
+        builder.expose_object(f"save_load_dialog", self.save_load_dialog)
 
 
     def save_load_session(self, action="save_session"):
