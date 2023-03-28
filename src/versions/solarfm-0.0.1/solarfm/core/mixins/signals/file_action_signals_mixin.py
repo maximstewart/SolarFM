@@ -36,18 +36,17 @@ class FileActionSignalsMixin:
     # NOTE: Too lazy to impliment a proper update handler and so just regen store and update tab.
     #       Use a lock system to prevent too many update calls for certain instances but user can manually refresh if they have urgency
     def dir_watch_updates(self, file_monitor, file, other_file=None, eve_type=None, data=None):
-        if eve_type == Gio.FileMonitorEvent.CHANGES_DONE_HINT:
-            if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
-                            Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
-                            Gio.FileMonitorEvent.MOVED_OUT]:
-                logger.debug(eve_type)
+        if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
+                        Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
+                        Gio.FileMonitorEvent.MOVED_OUT]:
+            logger.debug(eve_type)
 
-                if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
-                    self.update_on_soft_lock_end(data[0])
-                elif data[0] in self.soft_update_lock.keys():
-                    self.soft_update_lock[data[0]]["last_update_time"] = time.time()
-                else:
-                    self.soft_lock_countdown(data[0])
+            if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
+                self.update_on_soft_lock_end(data[0])
+            elif data[0] in self.soft_update_lock.keys():
+                self.soft_update_lock[data[0]]["last_update_time"] = time.time()
+            else:
+                self.soft_lock_countdown(data[0])
 
     @threaded
     def soft_lock_countdown(self, tab_widget):

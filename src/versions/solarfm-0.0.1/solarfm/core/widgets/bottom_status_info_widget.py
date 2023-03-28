@@ -10,6 +10,10 @@ from gi.repository import Gio
 
 
 
+class BottomStatusInfoException(Exception):
+    ...
+
+
 
 class BottomStatusInfoWidget:
     """docstring for BottomStatusInfoWidget."""
@@ -80,7 +84,7 @@ class BottomStatusInfoWidget:
                                                         cancellable=None)
                     file_size = file_info.get_size()
                     combined_size += file_size
-                except WindowException as e:
+                except BottomStatusInfoException as e:
                     logger.debug(repr(e))
 
             formatted_size = sizeof_fmt(combined_size)
