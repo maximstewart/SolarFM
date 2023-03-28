@@ -5,6 +5,7 @@ import subprocess
 import time
 
 # Lib imports
+from . import pexpect
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -19,6 +20,10 @@ def threaded(fn):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
     return wrapper
 
+
+
+class GitClonePluginException(Exception):
+    ...
 
 
 
@@ -42,9 +47,38 @@ class Plugin(PluginBase):
     def _do_download(self, widget=None, eve=None):
         self._event_system.emit("get_current_state")
 
-        dir = self._fm_state.tab.get_current_directory()
-        self._download(dir)
+        self.get_user_and_pass()
+        dir    = self._fm_state.tab.get_current_directory()
+        events = {
+                    '(?i)Username': self.get_user(),
+                    '(?i)Password': self.get_pass()
+                }
+
+        self._download(dir, events)
 
     @threaded
-    def _download(self, dir):
-        subprocess.Popen([f'{self.path}/download.sh', dir])
+    def _download(self, dir, _events):
+        git_clone_link = self.get_clipboard_data()
+        pexpect.run(f"git clone {git_clone_link}", cwd = dir, events=_events)
+
+
+    def get_user_and_pass(self):
+        response = self._fm_state.user_pass_dialog.run()
+        if response in (-4, -6):
+            raise GitClonePluginException("User canceled request...")
+
+
+    def get_user(self):
+        user   = self._fm_state.user_pass_dialog.user_input.get_text()
+        return f"{user}\n"
+
+    def get_pass(self):
+        passwd = self._fm_state.user_pass_dialog.pass_input.get_text()
+        return f"{passwd}\n"
+
+
+    def get_clipboard_data(self, encoding="utf-8") -> str:
+        proc    = subprocess.Popen(['xclip','-selection', 'clipboard', '-o'], stdout=subprocess.PIPE)
+        retcode = proc.wait()
+        data    = proc.stdout.read()
+        return data.decode(encoding).strip()

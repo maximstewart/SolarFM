@@ -10,6 +10,7 @@ from os.path import isdir
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from gi.repository import GLib
 from gi.repository import Gio
 
 # Application imports
@@ -52,6 +53,7 @@ class PluginsController:
                                                     Gio.FileMonitorEvent.MOVED_OUT]:
             self.reload_plugins(file)
 
+    @daemon_threaded
     def load_plugins(self, file: str = None) -> None:
         logger.info(f"Loading plugins...")
         parent_path = os.getcwd()
@@ -66,7 +68,9 @@ class PluginsController:
 
                 plugin, loading_data = manifest.get_loading_data()
                 module               = self.load_plugin_module(path, folder, target)
-                self.execute_plugin(module, plugin, loading_data)
+
+                GLib.idle_add(self.execute_plugin, *(module, plugin, loading_data))
+                # self.execute_plugin(module, plugin, loading_data)
             except InvalidPluginException as e:
                 logger.info(f"Malformed Plugin: Not loading -->: '{folder}' !")
                 logger.debug("Trace: ", traceback.print_exc())

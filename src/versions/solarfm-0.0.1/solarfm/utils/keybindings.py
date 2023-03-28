@@ -7,20 +7,20 @@ gi.require_version('Gdk', '3.0')
 from gi.repository import Gdk
 
 # Application imports
+from .singleton import Singleton
 
 
 
-def err(log = ""):
-    """Print an error message"""
+def logger(log = ""):
     print(log)
 
 
 class KeymapError(Exception):
-    """Custom exception for errors in keybinding configurations"""
+    """ Custom exception for errors in keybinding configurations """
 
 MODIFIER = re.compile('<([^<]+)>')
-class Keybindings:
-    """Class to handle loading and lookup of Terminator keybindings"""
+class Keybindings(Singleton):
+    """ Class to handle loading and lookup of Terminator keybindings """
 
     modifiers = {
         'ctrl':     Gdk.ModifierType.CONTROL_MASK,
@@ -46,7 +46,7 @@ class Keybindings:
         print(self.keys)
 
     def append_bindings(self, combos):
-        """Accept new binding(s) and reload"""
+        """ Accept new binding(s) and reload """
         for item in combos:
             method, keys = item.split(":")
             self.keys[method] = keys
@@ -54,12 +54,12 @@ class Keybindings:
         self.reload()
 
     def configure(self, bindings):
-        """Accept new bindings and reconfigure with them"""
+        """ Accept new bindings and reconfigure with them """
         self.keys = bindings
         self.reload()
 
     def reload(self):
-        """Parse bindings and mangle into an appropriate form"""
+        """ Parse bindings and mangle into an appropriate form """
         self._lookup = {}
         self._masks  = 0
 
@@ -77,9 +77,9 @@ class Keybindings:
                 try:
                     keyval, mask = self._parsebinding(binding)
                     # Does much the same, but with poorer error handling.
-                    #keyval, mask = Gtk.accelerator_parse(binding)
+                    # keyval, mask = Gtk.accelerator_parse(binding)
                 except KeymapError as e:
-                  err ("keybinding reload failed to parse binding '%s': %s" % (binding, e))
+                  logger(f"Keybinding reload failed to parse binding '{binding}': {e}")
                 else:
                     if mask & Gdk.ModifierType.SHIFT_MASK:
                         if keyval == Gdk.KEY_Tab:
@@ -98,7 +98,7 @@ class Keybindings:
                     self._masks |= mask
 
     def _parsebinding(self, binding):
-        """Parse an individual binding using Gtk's binding function"""
+        """ Parse an individual binding using Gtk's binding function """
         mask = 0
         modifiers = re.findall(MODIFIER, binding)
 
@@ -113,25 +113,25 @@ class Keybindings:
         keyval = Gdk.keyval_from_name(key)
 
         if keyval == 0:
-            raise KeymapError("Key '%s' is unrecognised..." % key)
+            raise KeymapError(f"Key '{key}' is unrecognised...")
         return (keyval, mask)
 
     def _lookup_modifier(self, modifier):
-        """Map modifier names to gtk values"""
+        """ Map modifier names to gtk values """
         try:
             return self.modifiers[modifier.lower()]
         except KeyError:
-            raise KeymapError("Unhandled modifier '<%s>'" % modifier)
+            raise KeymapError(f"Unhandled modifier '<{modifier}>'")
 
     def lookup(self, event):
-        """Translate a keyboard event into a mapped key"""
+        """ Translate a keyboard event into a mapped key """
         try:
             _found, keyval, _egp, _lvl, consumed = self.keymap.translate_keyboard_state(
                                               event.hardware_keycode,
                                               Gdk.ModifierType(event.get_state() & ~Gdk.ModifierType.LOCK_MASK),
                                               event.group)
         except TypeError:
-            err ("Keybinding lookup failed to translate keyboard event: %s" % dir(event))
+            logger("Keybinding lookup failed to translate keyboard event: {dir(event)}")
             return None
 
         mask = (event.get_state() & ~consumed) & self._masks

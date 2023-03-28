@@ -4,11 +4,11 @@ from collections import defaultdict
 # Lib imports
 
 # Application imports
+from .singleton import Singleton
 
 
 
-
-class EventSystem:
+class EventSystem(Singleton):
     """ Create event system. """
 
     def __init__(self):

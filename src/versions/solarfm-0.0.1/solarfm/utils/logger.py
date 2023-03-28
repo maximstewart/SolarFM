@@ -3,9 +3,11 @@ import os
 import logging
 
 # Application imports
+from .singleton import Singleton
 
 
-class Logger:
+
+class Logger(Singleton):
     """
         Create a new logging object and return it.
         :note:

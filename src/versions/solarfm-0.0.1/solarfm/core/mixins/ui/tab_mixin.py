@@ -54,6 +54,9 @@ class TabMixin(GridMixin):
 
     def close_tab(self, button, eve=None):
         notebook = button.get_parent().get_parent()
+        if notebook.get_n_pages() == 1:
+            return
+
         wid      = int(notebook.get_name()[-1])
         tid      = self.get_id_from_tab_box(button.get_parent())
         scroll   = self.builder.get_object(f"{wid}|{tid}")

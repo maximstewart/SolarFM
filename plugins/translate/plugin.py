@@ -3,6 +3,8 @@ import os
 import time
 import threading
 import requests
+import json
+from . import brotli
 
 # Lib imports
 import gi
@@ -141,25 +143,45 @@ class Plugin(PluginBase):
         response = requests.post(tlink, headers=self._headers, data=from_translate)
 
         if response.status_code == 200:
-            data = response.json()
-            self._translate_to_buffer.set_text(data["translated"])
-
+            data = self.get_data(response)
             self.translate_tries = 0
+            self._translate_to_buffer.set_text(data["translated"])
             if data["detected_language"]:
                 self._detected_language_lbl.set_label(f"Detected Language: {data['detected_language']}")
             else:
                 self._detected_language_lbl.set_label(f"Selected Language: {self.from_trans}")
         elif response.status_code >= 400 or response.status_code < 500:
             self.get_vqd()
-            if not self.translate_tries > 4:
+            if not self.translate_tries > 2:
                 self._translate()
         else:
             msg = f"Could not translate... Response Code: {response.status_code}"
             self._translate_to_buffer.set_text(msg)
 
+    def get_data(self, response):
+        data = None
+
+        try:
+            data = response.json()
+        except Exception as e:
+            ...
+
+        try:
+            data = json.loads(response.text)
+        except Exception as e:
+            ...
+
+        try:
+            decompress_str = brotli.decompress(response.content).decode("utf-8")
+            data = json.loads(decompress_str)
+        except Exception as e:
+            ...
+
+        return data
+
     # NOTE: https://github.com/deedy5/duckduckgo_search/blob/72acb900a346be576f0917dd3d6c0fbd618a71bf/duckduckgo_search/utils.py
     def get_vqd(self):
-        response = requests.post(self.vqd_link, headers=self.vqd_headers, data=self.vqd_data, timeout=10)
+        response = requests.post(self.vqd_link, headers=self.vqd_headers, data=self.vqd_data, timeout=2)
         if response.status_code == 200:
             data             = response.content
             vqd_start_index  = data.index(b"vqd='") + 5

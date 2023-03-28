@@ -3,11 +3,11 @@
 # Lib imports
 
 # Application imports
+from .singleton import Singleton
 
 
 
-
-class EndpointRegistry():
+class EndpointRegistry(Singleton):
     def __init__(self):
         self._endpoints = {}
 

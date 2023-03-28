@@ -49,6 +49,8 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
                 thumbnl = self.find_thumbnail_from_desktop_file(full_path)
 
             if not thumbnl:
+                # TODO: Detect if not in a thread and use directly for speed get_system_thumbnail
+                # thumbnl = self.get_system_thumbnail(full_path, full_path, self.sys_icon_wh[0])
                 thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
                 if not thumbnl:
                     raise IconException("No known icons found.")
@@ -110,7 +112,13 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
                 elif full_path.lower().endswith(".webp") and PImage:
                     return self.image2pixbuf(full_path, wxh)
 
-                return GdkPixbuf.Pixbuf.new_from_file_at_scale(full_path, wxh[0], wxh[1], True)
+                pixbuf = None
+                try:
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(full_path, wxh[0], wxh[1], True)
+                except Exception as e:
+                    ...
+
+                return pixbuf
             except IconException as e:
                 print("Image Scaling Issue:")
                 print( repr(e) )

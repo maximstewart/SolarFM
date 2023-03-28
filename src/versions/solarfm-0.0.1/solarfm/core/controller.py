@@ -56,11 +56,12 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
 
     def _setup_styling(self):
+        ...
+
+    def _setup_signals(self):
         self.window.connect("focus-out-event", self.unset_keys_and_data)
         self.window.connect("key-press-event", self.on_global_key_press_controller)
         self.window.connect("key-release-event", self.on_global_key_release_controller)
-
-    def _setup_signals(self):
         FileSystemActions()
 
     def _subscribe_to_events(self):

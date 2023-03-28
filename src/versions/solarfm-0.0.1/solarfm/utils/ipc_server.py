@@ -8,11 +8,11 @@ from multiprocessing.connection import Listener
 from gi.repository import GLib
 
 # Application imports
+from .singleton import Singleton
 
 
 
-
-class IPCServer:
+class IPCServer(Singleton):
     """ Create a listener so that other SolarFM instances send requests back to existing instance. """
     def __init__(self, ipc_address: str = '127.0.0.1', conn_type: str = "socket"):
         self.is_ipc_alive     = False

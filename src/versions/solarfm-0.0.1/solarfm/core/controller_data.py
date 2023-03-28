@@ -10,6 +10,7 @@ from gi.repository import Gtk
 
 # Application imports
 from .widgets.dialogs.message_widget import MessageWidget
+from .widgets.dialogs.user_pass_widget import UserPassWidget
 
 from shellfm.windows.controller import WindowController
 from plugins.plugins_controller import PluginsController
@@ -30,7 +31,8 @@ class State:
     selected_files: []   = None
     to_copy_files:  []   = None
     to_cut_files:   []   = None
-    message_dialog: type = None
+    message_dialog: type    = None
+    user_pass_dialog: type  = None
 
 
 class Controller_Data:
@@ -81,17 +83,18 @@ class Controller_Data:
                 Returns:
                         state (obj): State
         '''
-        state                = State()
-        state.fm_controller  = self.fm_controller
-        state.notebooks      = self.notebooks
-        state.wid, state.tid = self.fm_controller.get_active_wid_and_tid()
-        state.tab            = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
-        state.icon_grid      = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
-        # state.icon_grid      = event_system.emit_and_await("get_files_view_icon_grid", (state.wid, state.tid))
-        state.store          = state.icon_grid.get_model()
-        state.message_dialog = MessageWidget()
+        state                  = State()
+        state.fm_controller    = self.fm_controller
+        state.notebooks        = self.notebooks
+        state.wid, state.tid   = self.fm_controller.get_active_wid_and_tid()
+        state.tab              = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
+        state.icon_grid        = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
+        # state.icon_grid        = event_system.emit_and_await("get_files_view_icon_grid", (state.wid, state.tid))
+        state.store            = state.icon_grid.get_model()
+        state.message_dialog   = MessageWidget()
+        state.user_pass_dialog = UserPassWidget()
 
-        selected_files       = state.icon_grid.get_selected_items()
+        selected_files     = state.icon_grid.get_selected_items()
         if selected_files:
             state.uris     = self.format_to_uris(state.store, state.wid, state.tid, selected_files, True)
             state.uris_raw = self.format_to_uris(state.store, state.wid, state.tid, selected_files)

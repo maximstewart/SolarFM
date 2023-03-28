@@ -11,11 +11,12 @@ from gi.repository import Gtk
 from gi.repository import GLib
 
 # Application imports
+from ..singleton import Singleton
 from .start_check_mixin import StartCheckMixin
 
 
 
-class Settings(StartCheckMixin):
+class Settings(StartCheckMixin, Singleton):
     def __init__(self):
         self._SCRIPT_PTH        = os.path.dirname(os.path.realpath(__file__))
         self._USER_HOME         = path.expanduser('~')
@@ -31,6 +32,12 @@ class Settings(StartCheckMixin):
         self._KEY_BINDINGS_FILE = f"{self._HOME_CONFIG_PATH}/key-bindings.json"
         self._PID_FILE          = f"{self._HOME_CONFIG_PATH}/{app_name.lower()}.pid"
         self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/icons/{app_name.lower()}.png"
+        self._UI_WIDEGTS_PATH   = f"{self._HOME_CONFIG_PATH}/ui_widgets"
+        self._CONTEXT_MENU      = f"{self._HOME_CONFIG_PATH}/contexct_menu.json"
+        self._TRASH_FILES_PATH  = f"{GLib.get_user_data_dir()}/Trash/files"
+        self._TRASH_INFO_PATH   = f"{GLib.get_user_data_dir()}/Trash/info"
+        self._ICON_THEME        = Gtk.IconTheme.get_default()
+
 
         if not os.path.exists(self._HOME_CONFIG_PATH):
             os.mkdir(self._HOME_CONFIG_PATH)
@@ -64,23 +71,25 @@ class Settings(StartCheckMixin):
             self._WINDOW_ICON   = f"{self._USR_PATH}/icons/{app_name.lower()}.png"
             if not os.path.exists(self._WINDOW_ICON):
                 raise MissingConfigError("Unable to find the application icon.")
-
-
-        self._UI_WIDEGTS_PATH  = f"{self._USR_PATH}/ui_widgets"
-        self._CONTEXT_MENU     = f"{self._USR_PATH}/contexct_menu.json"
-        self._TRASH_FILES_PATH = f"{GLib.get_user_data_dir()}/Trash/files"
-        self._TRASH_INFO_PATH  = f"{GLib.get_user_data_dir()}/Trash/info"
-        self._ICON_THEME       = Gtk.IconTheme.get_default()
-
+        if not os.path.exists(self._UI_WIDEGTS_PATH):
+            self._UI_WIDEGTS_PATH  = f"{self._USR_PATH}/ui_widgets"
         if not os.path.exists(self._CONTEXT_MENU):
             self._CONTEXT_MENU  = f"{self._USR_PATH}/contexct_menu.json"
 
-        with open(self._KEY_BINDINGS_FILE) as file:
-            bindings = json.load(file)["keybindings"]
-            keybindings.configure(bindings)
 
-        with open(self._CONTEXT_MENU) as file:
-            self._context_menu_data = json.load(file)
+        try:
+            with open(self._KEY_BINDINGS_FILE) as file:
+                bindings = json.load(file)["keybindings"]
+                keybindings.configure(bindings)
+        except Exception as e:
+            print( f"Settings: {self._KEY_BINDINGS_FILE}\n\t\t{repr(e)}" )
+
+        try:
+            with open(self._CONTEXT_MENU) as file:
+                self._context_menu_data = json.load(file)
+        except Exception as e:
+            print( f"Settings: {self._CONTEXT_MENU}\n\t\t{repr(e)}" )
+
 
         self._main_window   = None
         self._main_window_w = 1670
@@ -119,8 +128,8 @@ class Settings(StartCheckMixin):
     def set_builder(self, builder) -> any:  self._builder = builder
     def set_main_window(self, window): self._main_window = window
 
-    def get_main_window(self)       -> Gtk.ApplicationWindow:  return self._main_window
-    def get_main_window_width(self) -> Gtk.ApplicationWindow:  return self._main_window_w
+    def get_main_window(self)        -> Gtk.ApplicationWindow: return self._main_window
+    def get_main_window_width(self)  -> Gtk.ApplicationWindow: return self._main_window_w
     def get_main_window_height(self) -> Gtk.ApplicationWindow: return self._main_window_h
     def get_builder(self)           -> Gtk.Builder:            return self._builder
     def get_glade_file(self)        -> str: return self._GLADE_FILE
