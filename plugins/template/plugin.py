@@ -37,16 +37,16 @@ class Plugin(PluginBase):
         # self._GLADE_FILE = f"{self.path}/glade_file.glade"
 
 
-    def generate_reference_ui_element(self):
-        button = Gtk.Button(label=self.name)
-        button.connect("button-release-event", self.send_message)
-        return button
-
     def run(self):
         # self._builder = Gtk.Builder()
         # self._builder.add_from_file(self._GLADE_FILE)
         # self._connect_builder_signals(self, self._builder)
         ...
+
+    def generate_reference_ui_element(self):
+        button = Gtk.Button(label=self.name)
+        button.connect("button-release-event", self.send_message)
+        return button
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"

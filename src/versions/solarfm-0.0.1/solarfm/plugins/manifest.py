@@ -2,6 +2,7 @@
 import os
 import json
 from os.path import join
+from dataclasses import dataclass
 
 # Lib imports
 
@@ -14,6 +15,7 @@ class ManifestProcessorException(Exception):
     ...
 
 
+@dataclass(slots=True)
 class PluginInfo:
     path: str       = None
     name: str       = None

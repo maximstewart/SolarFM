@@ -34,14 +34,14 @@ class FileHandler:
 
         return True
 
-    def delete_file(self, toDeleteFile):
+    def delete_file(self, to_delete_file):
         try:
-            print(f"Deleting:  {toDeleteFile}")
-            if os.path.exists(toDeleteFile):
-                if os.path.isfile(toDeleteFile):
-                    os.remove(toDeleteFile)
-                elif os.path.isdir(toDeleteFile):
-                    shutil.rmtree(toDeleteFile)
+            print(f"Deleting:  {to_delete_file}")
+            if os.path.exists(to_delete_file):
+                if os.path.isfile(to_delete_file):
+                    os.remove(to_delete_file)
+                elif os.path.isdir(to_delete_file):
+                    shutil.rmtree(to_delete_file)
                 else:
                     print("An error occured deleting the file:")
                     return False
@@ -73,7 +73,7 @@ class FileHandler:
 
         return True
 
-    def copy_file(self,fFile, tFile, symlinks=False, ignore=None):
+    def copy_file(self, fFile, tFile, symlinks = False, ignore = None):
         try:
             if os.path.isdir(fFile):
                 shutil.copytree(fFile, tFile, symlinks, ignore)

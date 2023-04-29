@@ -18,7 +18,6 @@ from app import Application
 
 
 
-
 def run():
     try:
         locale.setlocale(locale.LC_NUMERIC, 'C')

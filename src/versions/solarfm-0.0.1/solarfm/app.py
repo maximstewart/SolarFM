@@ -1,26 +1,25 @@
 # Python imports
+import signal
 import os
-import inspect
 
 # Lib imports
 
 # Application imports
-
+from utils.debugging import debug_signal_handler
 from utils.ipc_server import IPCServer
 from core.window import Window
+
 
 
 class AppLaunchException(Exception):
     ...
 
 
-
 class Application(IPCServer):
-    """ Inherit from IPCServer; create Controller classe; bind any signal(s) to Builder. """
+    """ docstring for Application. """
 
     def __init__(self, args, unknownargs):
         super(Application, self).__init__()
-        self.args, self.unknownargs = args, unknownargs
 
         if not settings.is_trace_debug():
             try:
@@ -35,5 +34,15 @@ class Application(IPCServer):
                         self.send_ipc_message(message)
 
                 raise AppLaunchException(f"{app_name} IPC Server Exists: Will send path(s) to it and close...")
+
+        try:
+            # kill -SIGUSR2 <pid> from Linux/Unix or SIGBREAK signal from Windows
+            signal.signal(
+                vars(signal).get("SIGBREAK") or vars(signal).get("SIGUSR1"),
+                debug_signal_handler
+            )
+        except ValueError:
+            # Typically: ValueError: signal only works in main thread
+            ...
 
         Window(args, unknownargs)
