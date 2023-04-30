@@ -144,13 +144,17 @@ class WindowMixin(TabMixin):
         path_at_loc = None
 
         try:
-            path_at_loc           = icons_grid.get_item_at_pos(x, y)[0]
+            data = icons_grid.get_dest_item_at_pos(x, y)
+            path_at_loc   = data[0]
+            drop_position = data[1]
             highlighted_item_path = icons_grid.get_drag_dest_item().path
-            if path_at_loc and path_at_loc == highlighted_item_path:
+            if path_at_loc and path_at_loc == highlighted_item_path and drop_position == Gtk.IconViewDropPosition.DROP_INTO:
                 uri = self.format_to_uris(store, wid, tid, highlighted_item_path)[0].replace("file://", "")
                 self.override_drop_dest = uri if isdir(uri) else None
+            else:
+                self.override_drop_dest = None
         except Exception as e:
-            ...
+            self.override_drop_dest = None
 
         if target not in current:
             self.fm_controller.set_wid_and_tid(wid, tid)

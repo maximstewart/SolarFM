@@ -41,6 +41,7 @@ class StartCheckMixin:
     def _write_new_pid(self):
         pid = os.getpid()
         self._write_pid(pid)
+        print(f"{app_name} PID:  {pid}")
 
     def _clean_pid(self):
         os.unlink(self._PID_FILE)

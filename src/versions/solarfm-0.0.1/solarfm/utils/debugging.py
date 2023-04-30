@@ -19,12 +19,29 @@ def debug_signal_handler(signal, frame):
         rpdb2.setbreak(depth=1)
         return
     except StandardError:
-        pass
+        ...
 
     try:
         from rfoo.utils import rconsole
         logger.debug("\n\nStarting embedded rconsole debugger...\n\n")
         rconsole.spawn_server()
+        return
+    except StandardError as ex:
+        ...
+
+    try:
+        from pudb import set_trace
+        logger.debug("\n\nStarting PuDB debugger...\n\n")
+        set_trace(paused = True)
+        return
+    except StandardError as ex:
+        ...
+
+    try:
+        import pdb
+        logger.debug("\n\nStarting embedded PDB debugger...\n\n")
+        pdb.Pdb(skip=['gi.*']).set_trace()
+        return
     except StandardError as ex:
         ...
 
