@@ -18,7 +18,7 @@ from ...widgets.icon_tree_widget import IconTreeWidget
 class GridMixin:
     """docstring for GridMixin"""
 
-    def load_store(self, tab, store, save_state=False):
+    def load_store(self, tab, store, save_state = False):
         store.clear()
         dir   = tab.get_current_directory()
         files = tab.get_files()

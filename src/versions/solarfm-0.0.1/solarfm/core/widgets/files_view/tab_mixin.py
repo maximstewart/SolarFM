@@ -52,21 +52,41 @@ class TabMixin(GridMixin):
         self.set_file_watcher(tab)
 
 
-    def close_tab(self, button, eve=None):
+    def close_tab(self, button, eve = None):
         notebook = button.get_parent().get_parent()
         if notebook.get_n_pages() == 1:
             return
 
-        wid      = int(notebook.get_name()[-1])
-        tid      = self.get_id_from_tab_box(button.get_parent())
-        scroll   = self.builder.get_object(f"{wid}|{tid}")
-        page     = notebook.page_num(scroll)
-        tab      = self.get_fm_window(wid).get_tab_by_id(tid)
-        watcher  = tab.get_dir_watcher()
+        tab_box   = button.get_parent()
+        wid       = int(notebook.get_name()[-1])
+        tid       = self.get_id_from_tab_box(tab_box)
+        scroll    = self.builder.get_object(f"{wid}|{tid}")
+        icon_grid = scroll.get_children()[0]
+        store     = icon_grid.get_model()
+        page_num  = notebook.page_num(scroll)
+        tab       = self.get_fm_window(wid).get_tab_by_id(tid)
+        watcher   = tab.get_dir_watcher()
 
         watcher.cancel()
         self.get_fm_window(wid).delete_tab_by_id(tid)
-        notebook.remove_page(page)
+
+        icon_grid = scroll.get_children()[0]
+        store     = icon_grid.get_model()
+
+        store.clear()
+        icon_grid.destroy()
+        scroll.destroy()
+        tab_box.destroy()
+        notebook.remove_page(page_num)
+
+        del page_num
+        del store
+        del icon_grid
+        del scroll
+        del tab_box
+        del watcher
+        del tab
+
         if not settings.is_trace_debug():
             self.fm_controller.save_state()
         self.set_window_title()
