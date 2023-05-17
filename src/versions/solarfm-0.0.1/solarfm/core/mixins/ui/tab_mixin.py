@@ -50,8 +50,6 @@ class TabMixin(GridMixin):
         self.set_file_watcher(tab)
 
 
-
-
     def close_tab(self, button, eve = None):
         notebook = button.get_parent().get_parent()
         if notebook.get_n_pages() == 1:
@@ -63,7 +61,6 @@ class TabMixin(GridMixin):
         scroll    = self.builder.get_object(f"{wid}|{tid}")
         icon_grid = scroll.get_children()[0]
         store     = icon_grid.get_model()
-        page_num  = notebook.page_num(scroll)
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
         watcher   = tab.get_dir_watcher()
 
@@ -71,12 +68,14 @@ class TabMixin(GridMixin):
         self.get_fm_window(wid).delete_tab_by_id(tid)
 
         store.clear()
+        # store.run_dispose()
         icon_grid.destroy()
+        # icon_grid.run_dispose()
         scroll.destroy()
+        scroll.run_dispose()
         tab_box.destroy()
-        notebook.remove_page(page_num)
+        tab_box.run_dispose()
 
-        del page_num
         del store
         del icon_grid
         del scroll

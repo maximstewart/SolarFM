@@ -14,11 +14,10 @@ from ...widgets.icon_tree_widget import IconTreeWidget
 
 
 
-
 class GridMixin:
     """docstring for GridMixin"""
 
-    def load_store(self, tab, store, save_state = False):
+    def load_store(self, tab, store, save_state = False, use_generator = False):
         store.clear()
         dir   = tab.get_current_directory()
         files = tab.get_files()
@@ -27,17 +26,31 @@ class GridMixin:
             store.append([None, file[0]])
 
         Gtk.main_iteration()
-        for i, file in enumerate(files):
-            self.create_icon(i, tab, store, dir, file[0])
+        if use_generator:
+            # NOTE: tab > icon > _get_system_thumbnail_gtk_thread must not be used
+            # as the attempted promotion back to gtk threading stalls the generator. (We're already in main gtk thread)
+            for i, icon in enumerate( self.create_icons_generator(tab, dir, files) ):
+                self.load_icon(i, store, icon)
+        else:
+            for i, file in enumerate(files):
+                self.create_icon(i, tab, store, dir, file[0])
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state and not trace_debug:
             self.fm_controller.save_state()
 
+    def create_icons_generator(self, tab, dir, files):
+        for file in files:
+            icon = tab.create_icon(dir, file[0])
+            yield icon
 
     @daemon_threaded
     def create_icon(self, i, tab, store, dir, file):
         icon = tab.create_icon(dir, file)
+        GLib.idle_add(self.update_store, *(i, store, icon,))
+
+    @daemon_threaded
+    def load_icon(self, i, store, icon):
         GLib.idle_add(self.update_store, *(i, store, icon,))
 
     def update_store(self, i, store, icon):

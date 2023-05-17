@@ -11,6 +11,8 @@
         "Cut":       ["STOCK_CUT", "cut"],
         "Copy":      ["STOCK_COPY", "copy"],
         "Copy Name": ["STOCK_COPY", "copy_name"],
+        "Copy Path":      ["STOCK_COPY", "copy_path"],
+        "Copy Path+Name": ["STOCK_COPY", "copy_path_name"],
         "Paste":     ["STOCK_PASTE", "paste"]
     },
     "Plugins": {}

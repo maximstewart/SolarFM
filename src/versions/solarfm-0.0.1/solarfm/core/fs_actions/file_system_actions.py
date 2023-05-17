@@ -47,6 +47,8 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
         event_system.subscribe("paste_files", self.paste_files)
         event_system.subscribe("move_files", self.move_files)
         event_system.subscribe("copy_name", self.copy_name)
+        event_system.subscribe("copy_path", self.copy_path)
+        event_system.subscribe("copy_path_name", self.copy_path_name)
         event_system.subscribe("create_files", self.create_files)
         event_system.subscribe("rename_files", self.rename_files)
 
@@ -79,8 +81,16 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
 
     def copy_path(self):
         state = event_system.emit_and_await("get_current_state")
-        dir   = state.tab.get_current_directory()
-        event_system.emit("set_clipboard_data", (file_name,))
+        path  = state.tab.get_current_directory()
+        print(path)
+        event_system.emit("set_clipboard_data", (path,))
+
+    def copy_path_name(self):
+        state = event_system.emit_and_await("get_current_state")
+        if len(state.uris) == 1:
+            file  = state.uris[0].replace("file://")
+            print(file)
+            event_system.emit("set_clipboard_data", (file,))
 
     def open_files(self):
         state = event_system.emit_and_await("get_current_state")

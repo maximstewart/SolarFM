@@ -39,19 +39,21 @@ class Plugin(PluginBase):
         trash_a = Gtk.MenuItem("Trash Actions")
         trash_menu = Gtk.Menu()
 
-        self.restore = Gtk.MenuItem("Restore From Trash")
+        self.restore = Gtk.ImageMenuItem("Restore From Trash")
+        self.restore.set_image( Gtk.Image.new_from_icon_name("gtk-undelete", 3) )
         self.restore.connect("activate", self.restore_trash_files)
 
-        self.empty = Gtk.MenuItem("Empty Trash")
+        self.empty = Gtk.ImageMenuItem("Empty Trash")
+        self.empty.set_image( Gtk.Image.new_from_icon_name("gtk-delete", 3) )
         self.empty.connect("activate", self.empty_trash)
 
         trash = Gtk.ImageMenuItem("Trash")
-        trash.set_image( Gtk.Image.new_from_icon_name("user-trash", 16) )
+        trash.set_image( Gtk.Image.new_from_icon_name("user-trash", 3) )
         trash.connect("activate", self.trash_files)
         trash.set_always_show_image(True)
 
         go_to = Gtk.ImageMenuItem("Go To Trash")
-        go_to.set_image( Gtk.Image.new_from_icon_name("user-trash", 16) )
+        go_to.set_image( Gtk.Image.new_from_icon_name("gtk-go-forward", 3) )
         go_to.connect("activate", self.go_to_trash)
         go_to.set_always_show_image(True)
 

@@ -63,23 +63,21 @@ class TabMixin(GridMixin):
         scroll    = self.builder.get_object(f"{wid}|{tid}")
         icon_grid = scroll.get_children()[0]
         store     = icon_grid.get_model()
-        page_num  = notebook.page_num(scroll)
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
         watcher   = tab.get_dir_watcher()
 
         watcher.cancel()
         self.get_fm_window(wid).delete_tab_by_id(tid)
 
-        icon_grid = scroll.get_children()[0]
-        store     = icon_grid.get_model()
-
         store.clear()
+        store.run_dispose()
         icon_grid.destroy()
+        icon_grid.run_dispose()
         scroll.destroy()
+        scroll.run_dispose()
         tab_box.destroy()
-        notebook.remove_page(page_num)
+        tab_box.run_dispose()
 
-        del page_num
         del store
         del icon_grid
         del scroll
@@ -89,6 +87,7 @@ class TabMixin(GridMixin):
 
         if not settings.is_trace_debug():
             self.fm_controller.save_state()
+
         self.set_window_title()
 
     # NOTE: Not actually getting called even tho set in the glade file...
