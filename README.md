@@ -13,8 +13,11 @@ sudo apt-get install python3.8 python3-setproctitle python3-gi wget ffmpegthumbn
 ```
 
 # Known Issues
-Doing Ctrl+D when in Terminator (maybe other terminals too) somehow propagates the signal to SolarFM too.
-A selected file in the active quad-pane will move to trash since it is the defaul keybinding for that action.
+<ul>
+<li>There's a memory leak. Still analyzing where exactly.</li>
+<li>Doing Ctrl+D when in Terminator (maybe other terminals too) somehow propagates the signal to SolarFM too.
+A selected file in the active quad-pane will move to trash since it is the default key-binding for that action.</li>
+</ul>
 
 # TODO
 <ul>
