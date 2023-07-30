@@ -16,7 +16,7 @@ class PluginsPopupWidget(Gtk.Popover):
     def __init__(self):
         super(PluginsPopupWidget, self).__init__()
 
-        self.builder = settings.get_builder()
+        self.builder = settings_manager.get_builder()
         self.builder.expose_object(f"plugin_controls", self)
 
         self._setup_styling()

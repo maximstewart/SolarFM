@@ -31,8 +31,8 @@ class PluginsController:
         path                      = os.path.dirname(os.path.realpath(__file__))
         sys.path.insert(0, path)  # NOTE: I think I'm not using this correctly...
 
-        self._builder             = settings.get_builder()
-        self._plugins_path        = settings.get_plugins_path()
+        self._builder             = settings_manager.get_builder()
+        self._plugins_path        = settings_manager.get_plugins_path()
 
         self._plugins_dir_watcher = None
         self._plugin_collection   = []

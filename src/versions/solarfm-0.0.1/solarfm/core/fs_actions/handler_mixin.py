@@ -144,7 +144,7 @@ class HandlerMixin:
         target    = Gio.File.new_for_path(full_path)
         start     = "-copy"
 
-        if settings.is_debug():
+        if settings_manager.is_debug():
             logger.debug(f"Path:  {full_path}")
             logger.debug(f"Base Path:  {base_path}")
             logger.debug(f'Name:  {file_name}')

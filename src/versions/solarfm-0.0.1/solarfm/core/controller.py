@@ -78,13 +78,13 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
     def _load_glade_file(self):
         self.builder = Gtk.Builder()
-        self.builder.add_from_file(settings.get_glade_file())
+        self.builder.add_from_file(settings_manager.get_glade_file())
         self.builder.expose_object("main_window", self.window)
 
         self.core_widget = self.builder.get_object("core_widget")
 
-        settings.set_builder(self.builder)
-        settings.register_signals_to_builder([self,], self.builder)
+        settings_manager.set_builder(self.builder)
+        settings_manager.register_signals_to_builder([self,], self.builder)
 
     def get_core_widget(self):
         return self.core_widget

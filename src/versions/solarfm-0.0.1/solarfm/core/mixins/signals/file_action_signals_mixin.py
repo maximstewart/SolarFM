@@ -20,7 +20,7 @@ class FileActionSignalsMixin:
         if tab.get_dir_watcher():
             watcher = tab.get_dir_watcher()
             watcher.cancel()
-            if settings.is_debug():
+            if settings_manager.is_debug():
                 logger.debug(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
 
         cur_dir = tab.get_current_directory()

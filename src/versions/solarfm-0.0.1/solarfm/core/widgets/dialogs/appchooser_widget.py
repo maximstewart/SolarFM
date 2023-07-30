@@ -16,7 +16,7 @@ class AppchooserWidget:
     def __init__(self):
         super(AppchooserWidget, self).__init__()
 
-        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/appchooser_ui.glade"
+        _GLADE_FILE   = f"{settings_manager.get_ui_widgets_path()}/appchooser_ui.glade"
         self._builder = Gtk.Builder()
         self._builder.add_from_file(_GLADE_FILE)
 
@@ -32,10 +32,10 @@ class AppchooserWidget:
         event_system.subscribe("show_appchooser_menu", self.show_appchooser_menu)
         event_system.subscribe("hide_appchooser_menu", self.hide_appchooser_menu)
         event_system.subscribe("run_appchooser_launch", self.run_appchooser_launch)
-        settings.register_signals_to_builder([self,], self._builder)
+        settings_manager.register_signals_to_builder([self,], self._builder)
 
     def _load_widgets(self):
-        builder = settings.get_builder()
+        builder = settings_manager.get_builder()
 
         self._appchooser_menu   = self._builder.get_object("appchooser_menu")
         self._appchooser_widget = self._builder.get_object("appchooser_widget")

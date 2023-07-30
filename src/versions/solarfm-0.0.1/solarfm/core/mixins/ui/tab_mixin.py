@@ -72,9 +72,9 @@ class TabMixin(GridMixin):
         icon_grid.destroy()
         # icon_grid.run_dispose()
         scroll.destroy()
-        scroll.run_dispose()
+        #scroll.run_dispose()
         tab_box.destroy()
-        tab_box.run_dispose()
+        # tab_box.run_dispose()
 
         del store
         del icon_grid
@@ -83,7 +83,7 @@ class TabMixin(GridMixin):
         del watcher
         del tab
 
-        if not settings.is_trace_debug():
+        if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
         self.set_window_title()
@@ -106,7 +106,7 @@ class TabMixin(GridMixin):
 
         tab = window.get_tab_by_id(tid)
         self.set_file_watcher(tab)
-        if not settings.is_trace_debug():
+        if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
     def on_tab_switch_update(self, notebook, content=None, index=None):
@@ -142,7 +142,7 @@ class TabMixin(GridMixin):
         tab_label.set_label(tab.get_end_of_path())
         self.set_window_title()
         self.set_file_watcher(tab)
-        if not settings.is_trace_debug():
+        if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
     def do_action_from_bar_controls(self, widget, eve=None):
@@ -155,7 +155,7 @@ class TabMixin(GridMixin):
         if action == "create_tab":
             dir = tab.get_current_directory()
             self.create_tab(wid, None, dir)
-            if not settings.is_trace_debug():
+            if not settings_manager.is_trace_debug():
                 self.fm_controller.save_state()
 
             return

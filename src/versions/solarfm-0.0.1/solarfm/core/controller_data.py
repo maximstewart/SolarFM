@@ -40,7 +40,7 @@ class Controller_Data:
     __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
     def _setup_controller_data(self) -> None:
-        self.window        = settings.get_main_window()
+        self.window        = settings_manager.get_main_window()
         self.builder       = None
         self.core_widget   = None
 

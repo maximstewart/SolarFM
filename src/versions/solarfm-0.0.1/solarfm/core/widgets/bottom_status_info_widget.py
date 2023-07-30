@@ -21,7 +21,7 @@ class BottomStatusInfoWidget:
     def __init__(self):
         super(BottomStatusInfoWidget, self).__init__()
 
-        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/bottom_status_info_ui.glade"
+        _GLADE_FILE   = f"{settings_manager.get_ui_widgets_path()}/bottom_status_info_ui.glade"
         self._builder = Gtk.Builder()
         self._builder.add_from_file(_GLADE_FILE)
 
@@ -41,7 +41,7 @@ class BottomStatusInfoWidget:
         event_system.subscribe("set_bottom_labels", self.set_bottom_labels)
 
     def _load_widgets(self):
-        builder = settings.get_builder()
+        builder = settings_manager.get_builder()
 
         self.bottom_status_info      = self._builder.get_object("bottom_status_info")
         self.bottom_size_label       = self._builder.get_object("bottom_size_label")
@@ -66,7 +66,7 @@ class BottomStatusInfoWidget:
         formatted_mount_size = sizeof_fmt( int(mount_file.get_attribute_as_string("filesystem::size")) )
 
         # NOTE: Hides empty trash and other desired buttons based on context.
-        if settings.get_trash_files_path() == current_directory:
+        if settings_manager.get_trash_files_path() == current_directory:
             event_system.emit("show_trash_buttons")
         else:
             event_system.emit("hide_trash_buttons")

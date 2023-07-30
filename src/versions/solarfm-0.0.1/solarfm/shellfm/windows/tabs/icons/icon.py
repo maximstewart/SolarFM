@@ -151,7 +151,7 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
             gio_file  = Gio.File.new_for_path(full_path)
             info      = gio_file.query_info('standard::icon' , 0, None)
             icon      = info.get_icon().get_names()[0]
-            data      = settings.get_icon_theme().lookup_icon(icon , size , 0)
+            data      = settings_manager.get_icon_theme().lookup_icon(icon , size , 0)
 
             if data:
                 icon_path = data.get_filename()

@@ -20,7 +20,7 @@ class SaveLoadWidget:
     def __init__(self):
         super(SaveLoadWidget, self).__init__()
 
-        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/save_load_ui.glade"
+        _GLADE_FILE   = f"{settings_manager.get_ui_widgets_path()}/save_load_ui.glade"
         self._builder = Gtk.Builder()
         self._builder.add_from_file(_GLADE_FILE)
 
@@ -36,7 +36,7 @@ class SaveLoadWidget:
         event_system.subscribe("save_load_session", self.save_load_session)
 
     def _load_widgets(self):
-        builder = settings.get_builder()
+        builder = settings_manager.get_builder()
 
         self.save_load_dialog = self._builder.get_object("save_load_dialog")
         builder.expose_object(f"save_load_dialog", self.save_load_dialog)
@@ -46,7 +46,7 @@ class SaveLoadWidget:
         state = event_system.emit_and_await("get_current_state")
 
         if action == "save_session":
-            if not settings.is_trace_debug():
+            if not settings_manager.is_trace_debug():
                 state.fm_controller.save_state()
 
             return
@@ -74,7 +74,7 @@ class SaveLoadWidget:
         self.save_load_dialog.hide()
 
     def load_session(self, session_json):
-        if settings.is_debug():
+        if settings_manager.is_debug():
             logger.debug(f"Session Data: {session_json}")
 
         state = event_system.emit_and_await("get_current_state")

@@ -90,7 +90,7 @@ class WindowMixin(TabMixin):
 
         except WindowException as e:
             logger.info(repr(e))
-            self.display_message(settings.get_error_color(), f"{repr(e)}")
+            self.display_message(settings.theming.error_color, f"{repr(e)}")
 
     def grid_icon_double_click(self, icons_grid, item, data=None):
         try:
@@ -119,7 +119,7 @@ class WindowMixin(TabMixin):
                 event_system.emit("open_files")
         except WindowException as e:
             traceback.print_exc()
-            self.display_message(settings.get_error_color(), f"{repr(e)}")
+            self.display_message(settings.theming.error_color, f"{repr(e)}")
 
 
 

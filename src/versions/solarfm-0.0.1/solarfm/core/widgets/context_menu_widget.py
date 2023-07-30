@@ -16,10 +16,10 @@ class ContextMenuWidget(Gtk.Menu):
     def __init__(self):
         super(ContextMenuWidget, self).__init__()
 
-        self.builder            = settings.get_builder()
+        self.builder            = settings_manager.get_builder()
         self._builder           = Gtk.Builder()
-        self._context_menu_data = settings.get_context_menu_data()
-        self._window            = settings.get_main_window()
+        self._context_menu_data = settings_manager.get_context_menu_data()
+        self._window            = settings_manager.get_main_window()
 
         self._setup_styling()
         self._setup_signals()
@@ -32,7 +32,7 @@ class ContextMenuWidget(Gtk.Menu):
     def _setup_signals(self):
         event_system.subscribe("show_context_menu", self.show_context_menu)
         event_system.subscribe("hide_context_menu", self.hide_context_menu)
-        settings.register_signals_to_builder([self,], self._builder)
+        settings_manager.register_signals_to_builder([self,], self._builder)
 
     def _load_widgets(self):
         self.build_context_menu()

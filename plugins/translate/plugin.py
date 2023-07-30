@@ -52,7 +52,7 @@ class Plugin(PluginBase):
             'Cache-Control': 'no-cache'
         }
 
-        self.vqd_link    = "https://duckduckgo.com/"
+        self.vqd_link    = "https://duckduckgo.com/?hps=1&q=translate&ia=web"
         self.vqd_data    = {"q": "translate", "ia":"web"}
         self.vqd_headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',

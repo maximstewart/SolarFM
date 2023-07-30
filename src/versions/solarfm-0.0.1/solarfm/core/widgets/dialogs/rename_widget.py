@@ -18,7 +18,7 @@ class RenameWidget:
     def __init__(self):
         super(RenameWidget, self).__init__()
 
-        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/rename_ui.glade"
+        _GLADE_FILE   = f"{settings_manager.get_ui_widgets_path()}/rename_ui.glade"
         self._builder = Gtk.Builder()
         self._builder.add_from_file(_GLADE_FILE)
 
@@ -33,10 +33,10 @@ class RenameWidget:
     def _setup_signals(self):
         event_system.subscribe("show_rename_file_menu", self.show_rename_file_menu)
         event_system.subscribe("hide_rename_file_menu", self.hide_rename_file_menu)
-        settings.register_signals_to_builder([self,], self._builder)
+        settings_manager.register_signals_to_builder([self,], self._builder)
 
     def _load_widgets(self):
-        builder = settings.get_builder()
+        builder = settings_manager.get_builder()
 
         self._rename_file_menu     = self._builder.get_object("rename_file_menu")
         self._rename_fname         = self._builder.get_object("rename_fname")

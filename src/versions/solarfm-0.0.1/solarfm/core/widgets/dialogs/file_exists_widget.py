@@ -17,7 +17,7 @@ class FileExistsWidget:
     def __init__(self):
         super(FileExistsWidget, self).__init__()
 
-        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/file_exists_ui.glade"
+        _GLADE_FILE   = f"{settings_manager.get_ui_widgets_path()}/file_exists_ui.glade"
         self._builder = Gtk.Builder()
         self._builder.add_from_file(_GLADE_FILE)
 
@@ -32,10 +32,10 @@ class FileExistsWidget:
     def _setup_signals(self):
         event_system.subscribe("setup_exists_data", self.setup_exists_data)
         event_system.subscribe("show_exists_page", self.show_exists_page)
-        settings.register_signals_to_builder([self,], self._builder)
+        settings_manager.register_signals_to_builder([self,], self._builder)
 
     def _load_widgets(self):
-        builder = settings.get_builder()
+        builder = settings_manager.get_builder()
 
         self.file_exists_dialog       = self._builder.get_object("file_exists_dialog")
         self._exists_file_label       = self._builder.get_object("exists_file_label")

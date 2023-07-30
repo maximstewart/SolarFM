@@ -23,7 +23,7 @@ class MessagePopupWidget(Gtk.Popover):
     def __init__(self):
         super(MessagePopupWidget, self).__init__()
 
-        self.builder = settings.get_builder()
+        self.builder = settings_manager.get_builder()
         self.builder.expose_object(f"message_popup_widget", self)
 
         self._message_buffer = None
@@ -90,7 +90,7 @@ class MessagePopupWidget(Gtk.Popover):
         current_time = datetime.datetime.now()
         data         = f"{current_time}\nExec Type:  {exc_type}  <-->  Value:  {exc_value}\n\n{trace}\n\n"
 
-        self.display_message(settings.get_error_color(), data)
+        self.display_message(settings.theming.error_color, data)
 
     def display_message(self, type, text, seconds=None):
         # start_itr = self._message_buffer.get_start_iter()
@@ -110,7 +110,7 @@ class MessagePopupWidget(Gtk.Popover):
 
     def save_debug_alerts(self, widget=None, eve=None):
         start_itr, end_itr   = self._message_buffer.get_bounds()
-        save_location_prompt = Gtk.FileChooserDialog("Choose Save Folder", settings.get_main_window(), \
+        save_location_prompt = Gtk.FileChooserDialog("Choose Save Folder", settings_manager.get_main_window(), \
                                                         action  = Gtk.FileChooserAction.SAVE, \
                                                         buttons = (Gtk.STOCK_CANCEL, \
                                                                     Gtk.ResponseType.CANCEL, \

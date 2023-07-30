@@ -25,7 +25,7 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
         self._to_copy_files  = []
         self._to_cut_files   = []
 
-        self._builder        = settings.get_builder()
+        self._builder        = settings_manager.get_builder()
 
 
     def _setup_styling(self):

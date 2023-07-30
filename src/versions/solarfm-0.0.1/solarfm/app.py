@@ -21,7 +21,7 @@ class Application(IPCServer):
     def __init__(self, args, unknownargs):
         super(Application, self).__init__()
 
-        if not settings.is_trace_debug():
+        if not settings_manager.is_trace_debug():
             try:
                 self.create_ipc_listener()
             except Exception:

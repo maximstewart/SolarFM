@@ -18,7 +18,7 @@ class NewFileWidget:
     def __init__(self):
         super(NewFileWidget, self).__init__()
 
-        _GLADE_FILE   = f"{settings.get_ui_widgets_path()}/new_file_ui.glade"
+        _GLADE_FILE   = f"{settings_manager.get_ui_widgets_path()}/new_file_ui.glade"
         self._builder = Gtk.Builder()
         self._builder.add_from_file(_GLADE_FILE)
 
@@ -33,10 +33,10 @@ class NewFileWidget:
     def _setup_signals(self):
         event_system.subscribe("show_new_file_menu", self.show_new_file_menu)
         event_system.subscribe("hide_new_file_menu", self.hide_new_file_menu)
-        settings.register_signals_to_builder([self,], self._builder)
+        settings_manager.register_signals_to_builder([self,], self._builder)
 
     def _load_widgets(self):
-        builder = settings.get_builder()
+        builder = settings_manager.get_builder()
 
         self._new_file_menu   = self._builder.get_object("new_file_menu")
         self._new_fname_field = self._builder.get_object("new_fname_field")

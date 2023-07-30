@@ -16,7 +16,7 @@ class IOPopupWidget(Gtk.Popover):
     def __init__(self):
         super(IOPopupWidget, self).__init__()
 
-        self._builder = settings.get_builder()
+        self._builder = settings_manager.get_builder()
         self._builder.expose_object(f"io_popup", self)
 
         self._setup_styling()
