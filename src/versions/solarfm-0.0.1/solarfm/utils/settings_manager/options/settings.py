@@ -1,5 +1,6 @@
 # Python imports
 from dataclasses import dataclass
+from dataclasses import asdict
 
 # Gtk imports
 
@@ -22,3 +23,6 @@ class Settings:
         self.filters   = Filters(**self.filters)
         self.theming   = Theming(**self.theming)
         self.debugging = Debugging(**self.debugging)
+
+    def as_dict(self):
+        return asdict(self)
