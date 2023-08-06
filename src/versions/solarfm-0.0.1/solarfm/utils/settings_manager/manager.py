@@ -47,13 +47,6 @@ class SettingsManager(StartCheckMixin, Singleton):
         if not os.path.exists(self._PLUGINS_PATH):
             os.mkdir(self._PLUGINS_PATH)
 
-        if not os.path.exists(self._CONFIG_FILE):
-            import shutil
-            try:
-                shutil.copyfile(self._USR_CONFIG_FILE, self._CONFIG_FILE)
-            except Exception as e:
-                raise
-
         if not os.path.exists(self._DEFAULT_ICONS):
             self._DEFAULT_ICONS = f"{self._USR_PATH}/icons"
             if not os.path.exists(self._DEFAULT_ICONS):
@@ -158,8 +151,13 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._debug = debug
 
     def load_settings(self):
+        if not os.path.exists(self._CONFIG_FILE):
+            self.settings = Settings()
+            return
+
         with open(self._CONFIG_FILE) as file:
             data          = json.load(file)
+            data["load_defaults"] = False
             self.settings = Settings(**data)
 
     def save_settings(self):

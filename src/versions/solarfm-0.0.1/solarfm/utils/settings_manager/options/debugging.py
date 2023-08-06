@@ -8,5 +8,5 @@ from dataclasses import dataclass
 
 @dataclass
 class Debugging:
-   ch_log_lvl: int
-   fh_log_lvl: int
+   ch_log_lvl: int = 10
+   fh_log_lvl: int = 20
