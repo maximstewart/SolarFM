@@ -16,6 +16,9 @@ from core.controller import Controller
 
 
 
+class ControllerStartException(Exception):
+    ...
+
 
 class Window(Gtk.ApplicationWindow):
     """docstring for Window."""

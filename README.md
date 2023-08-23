@@ -7,6 +7,9 @@ SolarFM is a Gtk+ Python file manager.
 Additionally, if not building a .deb then just move the contents of user_config to their respective folders.
 Copy the share/solarfm folder to your user .config/ directory too.
 
+`pyrightconfig.json`
+<p>The pyrightconfig file needs to stay on same level as the .git folders in order to have settings detected when using pyright with lsp functionality.</p>
+
 <h6>Install Setup</h6>
 ```
 sudo apt-get install python3.8 python3-setproctitle python3-gi wget ffmpegthumbnailer steamcmd
