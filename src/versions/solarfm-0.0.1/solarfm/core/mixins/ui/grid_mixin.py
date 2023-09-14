@@ -18,7 +18,6 @@ class GridMixin:
     """docstring for GridMixin"""
 
     def load_store(self, tab, store, save_state = False, use_generator = False):
-        store.clear()
         dir   = tab.get_current_directory()
         files = tab.get_files()
 
@@ -116,3 +115,10 @@ class GridMixin:
                 tab_label = notebook.get_tab_label(obj).get_children()[0]
 
         return store, tab_label
+
+    def get_icon_grid_from_notebook(self, notebook, _name):
+        for obj in notebook.get_children():
+            icon_grid = obj.get_children()[0]
+            name      = icon_grid.get_name()
+            if name == _name:
+                return icon_grid

@@ -73,7 +73,8 @@ class FileActionSignalsMixin:
         _store, tab_widget_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
 
         tab.load_directory()
-        self.load_store(tab, store)
+        icon_grid.clear_and_set_new_store()
+        self.load_store(tab, icon_grid.get_store())
 
         tab_widget_label.set_label(tab.get_end_of_path())
         state = self.get_current_state()

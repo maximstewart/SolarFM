@@ -20,7 +20,7 @@ class IconGridWidget(Gtk.IconView):
     def __init__(self):
         super(IconGridWidget, self).__init__()
 
-        self._store = None
+        # self._store = None
 
         self._setup_styling()
         self._setup_signals()
@@ -62,8 +62,7 @@ class IconGridWidget(Gtk.IconView):
         self.connect("drag-motion",          grid_on_drag_motion)
 
     def _load_widgets(self):
-        self._store = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
-        self.set_model(self._store)
+        self.clear_and_set_new_store()
 
     def _set_up_dnd(self):
         URI_TARGET_TYPE  = 80
@@ -75,4 +74,9 @@ class IconGridWidget(Gtk.IconView):
 
 
     def get_store(self):
-        return self._store
+        return self.get_model()
+
+    def clear_and_set_new_store(self):
+        self.set_model(None)
+        store = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
+        self.set_model(store)

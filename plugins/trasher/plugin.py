@@ -115,7 +115,7 @@ class Plugin(PluginBase):
         self._event_system.emit("get_current_state")
         state = self._fm_state
         for uri in state.uris:
-            self.trashman.restore(filename=uri.split("/")[-1], verbose = verbocity)
+            self.trashman.restore(filename = uri.split("/")[-1], verbose = verbocity)
 
     def empty_trash(self, widget = None, eve = None, verbocity = False):
         self.trashman.empty(verbose = verbocity)

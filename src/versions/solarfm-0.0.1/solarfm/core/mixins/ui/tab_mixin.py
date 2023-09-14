@@ -1,5 +1,6 @@
 # Python imports
 import os
+import gc
 
 # Lib imports
 import gi
@@ -60,7 +61,7 @@ class TabMixin(GridMixin):
         tid       = self.get_id_from_tab_box(tab_box)
         scroll    = self.builder.get_object(f"{wid}|{tid}")
         icon_grid = scroll.get_children()[0]
-        store     = icon_grid.get_model()
+        store     = icon_grid.get_store()
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
         watcher   = tab.get_dir_watcher()
 
@@ -83,6 +84,7 @@ class TabMixin(GridMixin):
         del watcher
         del tab
 
+        gc.collect()
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
@@ -199,7 +201,9 @@ class TabMixin(GridMixin):
             if not tab.set_path(path):
                 return
 
-        self.update_tab(tab_label, tab, store, wid, tid)
+        icon_grid = self.get_icon_grid_from_notebook(notebook, f"{wid}|{tid}")
+        icon_grid.clear_and_set_new_store()
+        self.update_tab(tab_label, tab, icon_grid.get_store(), wid, tid)
 
         try:
             widget.grab_focus_without_selecting()

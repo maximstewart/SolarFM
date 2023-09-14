@@ -108,10 +108,9 @@ class WindowMixin(TabMixin):
                 self.execute_files()
                 return
 
-
             state      = self.get_current_state()
             notebook   = self.builder.get_object(f"window_{state.wid}")
-            tab_label  = self.get_tab_label(notebook, icons_grid)
+            tab_label  = self.get_tab_label(notebook, state.icon_grid)
 
             fileName   = state.store[item][1]
             dir        = state.tab.get_current_directory()
@@ -119,7 +118,8 @@ class WindowMixin(TabMixin):
 
             if isdir(file):
                 state.tab.set_path(file)
-                self.update_tab(tab_label, state.tab, state.store, state.wid, state.tid)
+                state.icon_grid.clear_and_set_new_store()
+                self.update_tab(tab_label, state.tab, state.icon_grid.get_store(), state.wid, state.tid)
             else:
                 event_system.emit("open_files")
         except WindowException as e:
