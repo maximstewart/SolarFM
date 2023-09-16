@@ -94,4 +94,5 @@ class Window(Gtk.ApplicationWindow):
 
         settings_manager.clear_pid()
         time.sleep(event_sleep_time)
+
         Gtk.main_quit()

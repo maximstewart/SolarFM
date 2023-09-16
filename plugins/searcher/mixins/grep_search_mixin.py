@@ -87,11 +87,13 @@ class GrepSearchMixin:
 
         if not query.strip() in ("", None):
             self.grep_query = query
+            target_dir      = shlex.quote( self._fm_state.tab.get_current_directory() )
+            command         = ["python", f"{self.path}/utils/search.py", "-t", "grep_search", "-d", f"{target_dir}", "-q", f"{query}"]
 
-            target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
-            command = ["python", f"{self.path}/utils/search.py", "-t", "grep_search", "-d", f"{target_dir}", "-q", f"{query}"]
             self._spinner.start()
+
             self._grep_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
+
 
     def _load_grep_ui(self, data):
         Gtk.main_iteration()

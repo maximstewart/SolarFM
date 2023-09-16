@@ -81,14 +81,17 @@ class FileSearchMixin:
 
             self._list_proc = None
 
+
     def _exec_find_file_query(self, widget=None, eve=None):
         query = widget.get_text()
 
         if not query in ("", None):
             self.search_query = query
-            target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
-            command = ["python", f"{self.path}/utils/search.py", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
+            target_dir        = shlex.quote( self._fm_state.tab.get_current_directory() )
+            command           = ["python", f"{self.path}/utils/search.py", "-t", "file_search", "-d", f"{target_dir}", "-q", f"{query}"]
+
             self._spinner.start()
+
             self._list_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
 
 

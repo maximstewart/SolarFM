@@ -1,15 +1,16 @@
 # Python imports
 import os
 import gc
+import time
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from gi.repository import GLib
 
 # Application imports
 from .grid_mixin import GridMixin
-
 
 
 
@@ -173,27 +174,7 @@ class TabMixin(GridMixin):
             path        = widget.get_text()
 
             if isinstance(focused_obj, Gtk.Entry):
-                path_menu_buttons  = self.builder.get_object("path_menu_buttons")
-                query              = widget.get_text().replace(dir, "")
-                files              = tab.get_files() + tab.get_hidden()
-
-                self.clear_children(path_menu_buttons)
-                show_path_menu = False
-                for file, hash, size in files:
-                    if os.path.isdir(f"{dir}{file}"):
-                        if query.lower() in file.lower():
-                            button = Gtk.Button(label=file)
-                            button.show()
-                            button.connect("clicked", self.set_path_entry)
-                            path_menu_buttons.add(button)
-                            show_path_menu = True
-
-                if not show_path_menu:
-                    event_system.emit("hide_path_menu")
-                else:
-                    event_system.emit("show_path_menu")
-                    widget.grab_focus_without_selecting()
-                    widget.set_position(-1)
+                self.process_path_menu(widget, tab, dir)
 
             if path.endswith(".") or path == dir:
                 return
@@ -205,20 +186,51 @@ class TabMixin(GridMixin):
         icon_grid.clear_and_set_new_store()
         self.update_tab(tab_label, tab, icon_grid.get_store(), wid, tid)
 
-        try:
-            widget.grab_focus_without_selecting()
-            widget.set_position(-1)
-        except Exception as e:
-            pass
+    def process_path_menu(self, gtk_entry, tab, dir):
+        path_menu_buttons  = self.builder.get_object("path_menu_buttons")
+        query              = gtk_entry.get_text().replace(dir, "")
+        files              = tab.get_files() + tab.get_hidden()
 
-    def set_path_entry(self, button=None, eve=None):
+        self.clear_children(path_menu_buttons)
+        show_path_menu = False
+        for file, hash, size in files:
+            if os.path.isdir(f"{dir}{file}"):
+                if query.lower() in file.lower():
+                    button = Gtk.Button(label=file)
+                    button.show()
+                    button.connect("clicked", self.set_path_entry)
+                    path_menu_buttons.add(button)
+                    show_path_menu = True
+
+        if not show_path_menu:
+            event_system.emit("hide_path_menu")
+        else:
+            event_system.emit("show_path_menu")
+            buttons = path_menu_buttons.get_children()
+
+            if len(buttons) == 1:
+                self.slowed_focus(buttons[0])
+
+    @daemon_threaded
+    def slowed_focus(self, button):
+        time.sleep(0.05)
+        GLib.idle_add(self.do_focused_click, *(button,))
+
+    def do_focused_click(self, button):
+        button.grab_focus()
+        button.clicked()
+
+    def set_path_entry(self, button = None, eve = None):
+        self.path_auto_filled = True
         state      = self.get_current_state()
         path       = f"{state.tab.get_current_directory()}/{button.get_label()}"
         path_entry = self.builder.get_object("path_entry")
+
         path_entry.set_text(path)
         path_entry.grab_focus_without_selecting()
         path_entry.set_position(-1)
         event_system.emit("hide_path_menu")
+
 
     def show_hide_hidden_files(self):
         wid, tid = self.fm_controller.get_active_wid_and_tid()

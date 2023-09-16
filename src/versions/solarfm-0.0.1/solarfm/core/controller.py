@@ -113,8 +113,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
 
     def do_action_from_menu_controls(self, _action=None, eve=None):
-        if not _action:
-            return
+        if not _action: return
 
         if not isinstance(_action, str):
             action = _action.get_name()

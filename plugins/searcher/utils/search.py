@@ -32,8 +32,12 @@ dt = datetime.now()
 ts = datetime.timestamp(dt)
 
 
+def _log(message: str = "No message passed in...") -> None:
+    print(message)
+
+
 def send_ipc_message(message) -> None:
-    conn = Client(address=_ipc_address, family="AF_UNIX", authkey=_ipc_authkey)
+    conn = Client(address = _ipc_address, family = "AF_UNIX", authkey = _ipc_authkey)
     conn.send(message)
     conn.close()
 
@@ -41,9 +45,11 @@ def send_ipc_message(message) -> None:
     time.sleep(0.05)
 
 
-def file_search(path, query):
+def file_search(path: str = None, query: str = None) -> None:
+    if not path or not query: return
+
     try:
-        for _path, _dir, _files in os.walk(path, topdown = True):
+        for _path, _dir, _files in os.walk(path, topdown = True, onerror = _log, followlinks = True):
              for file in _files:
                  if query in file.lower():
                      target = os.path.join(_path, file)
@@ -54,14 +60,13 @@ def file_search(path, query):
         traceback.print_exc()
 
 
-def grep_search(target=None, query=None):
-    if not query or not target:
-        return
+def grep_search(target: str = None, query: str = None):
+    if not target or not query: return
 
     # NOTE: -n = provide line numbers, -R = Search recursive in given target
     #       -i = insensitive, -F = don't do regex parsing. (Treat as raw string)
     command    = ["grep", "-n", "-R", "-i", "-F", query, target]
-    proc       = subprocess.Popen(command, stdout=subprocess.PIPE, encoding="utf-8")
+    proc       = subprocess.Popen(command, stdout = subprocess.PIPE, encoding = "utf-8")
     raw_data   = proc.communicate()[0].strip()
     proc_data  = raw_data.split("\n")   # NOTE: Will return data AFTER completion (if any)
     collection = {}
@@ -85,17 +90,23 @@ def grep_search(target=None, query=None):
         except Exception as e:
             traceback.print_exc()
 
+    proc.terminate()
     data = f"GREP|{ts}|{json.dumps(collection, separators=(',', ':'), indent=4)}"
     send_ipc_message(data)
     collection = {}
 
 
 def search(args):
+    path = args.dir
+    if (path[0] == "'" and path[-1] == "'") or \
+        path[0] == '"' and path[-1] == '"':
+            path = path[1:-1]
+
     if args.type == "file_search":
-        file_search(args.dir, args.query.lower())
+        file_search(path, args.query.lower())
 
     if args.type == "grep_search":
-        grep_search(args.dir, args.query.encode("utf-8"))
+        grep_search(path, args.query.encode("utf-8"))
 
 
 if __name__ == "__main__":
