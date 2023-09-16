@@ -30,3 +30,7 @@ class Config:
     sys_icon_wh: list                = field(default_factory=lambda: [56, 56])
     steam_cdn_url: str               = "https://steamcdn-a.akamaihd.net/steam/apps/"
     remux_folder_max_disk_usage: str = "8589934592"
+    application_dirs: list           = field(default_factory=lambda: [
+        "/usr/share/applications",
+        f"{settings_manager.get_home_path()}/.local/share/applications"
+    ])

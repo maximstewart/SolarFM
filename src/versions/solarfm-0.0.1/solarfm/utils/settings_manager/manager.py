@@ -1,8 +1,8 @@
 # Python imports
-import os
 import inspect
 import json
 from os import path
+from os import mkdir
 
 # Gtk imports
 import gi
@@ -22,7 +22,7 @@ class MissingConfigError(Exception):
 
 class SettingsManager(StartCheckMixin, Singleton):
     def __init__(self):
-        self._SCRIPT_PTH        = os.path.dirname(os.path.realpath(__file__))
+        self._SCRIPT_PTH        = path.dirname(path.realpath(__file__))
         self._USER_HOME         = path.expanduser('~')
         self._USR_PATH          = f"/usr/share/{app_name.lower()}"
 
@@ -42,34 +42,34 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._TRASH_INFO_PATH   = f"{GLib.get_user_data_dir()}/Trash/info"
         self._ICON_THEME        = Gtk.IconTheme.get_default()
 
-        if not os.path.exists(self._HOME_CONFIG_PATH):
-            os.mkdir(self._HOME_CONFIG_PATH)
-        if not os.path.exists(self._PLUGINS_PATH):
-            os.mkdir(self._PLUGINS_PATH)
+        if not path.exists(self._HOME_CONFIG_PATH):
+            mkdir(self._HOME_CONFIG_PATH)
+        if not path.exists(self._PLUGINS_PATH):
+            mkdir(self._PLUGINS_PATH)
 
-        if not os.path.exists(self._DEFAULT_ICONS):
+        if not path.exists(self._DEFAULT_ICONS):
             self._DEFAULT_ICONS = f"{self._USR_PATH}/icons"
-            if not os.path.exists(self._DEFAULT_ICONS):
+            if not path.exists(self._DEFAULT_ICONS):
                 raise MissingConfigError("Unable to find the application icons directory.")
-        if not os.path.exists(self._GLADE_FILE):
+        if not path.exists(self._GLADE_FILE):
             self._GLADE_FILE    = f"{self._USR_PATH}/Main_Window.glade"
-            if not os.path.exists(self._GLADE_FILE):
+            if not path.exists(self._GLADE_FILE):
                 raise MissingConfigError("Unable to find the application Glade file.")
-        if not os.path.exists(self._KEY_BINDINGS_FILE):
+        if not path.exists(self._KEY_BINDINGS_FILE):
             self._KEY_BINDINGS_FILE = f"{self._USR_PATH}/key-bindings.json"
-            if not os.path.exists(self._KEY_BINDINGS_FILE):
+            if not path.exists(self._KEY_BINDINGS_FILE):
                 raise MissingConfigError("Unable to find the application Keybindings file.")
-        if not os.path.exists(self._CSS_FILE):
+        if not path.exists(self._CSS_FILE):
             self._CSS_FILE      = f"{self._USR_PATH}/stylesheet.css"
-            if not os.path.exists(self._CSS_FILE):
+            if not path.exists(self._CSS_FILE):
                 raise MissingConfigError("Unable to find the application Stylesheet file.")
-        if not os.path.exists(self._WINDOW_ICON):
+        if not path.exists(self._WINDOW_ICON):
             self._WINDOW_ICON   = f"{self._USR_PATH}/icons/{app_name.lower()}.png"
-            if not os.path.exists(self._WINDOW_ICON):
+            if not path.exists(self._WINDOW_ICON):
                 raise MissingConfigError("Unable to find the application icon.")
-        if not os.path.exists(self._UI_WIDEGTS_PATH):
+        if not path.exists(self._UI_WIDEGTS_PATH):
             self._UI_WIDEGTS_PATH  = f"{self._USR_PATH}/ui_widgets"
-        if not os.path.exists(self._CONTEXT_MENU):
+        if not path.exists(self._CONTEXT_MENU):
             self._CONTEXT_MENU  = f"{self._USR_PATH}/contexct_menu.json"
 
 
@@ -96,8 +96,6 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._trace_debug       = False
         self._debug             = False
         self._dirty_start       = False
-
-        self.load_settings()
 
 
     def register_signals_to_builder(self, classes=None, builder=None):
@@ -136,6 +134,7 @@ class SettingsManager(StartCheckMixin, Singleton):
     def get_window_icon(self)       -> str: return self._WINDOW_ICON
 
     def get_context_menu_data(self) -> str: return self._context_menu_data
+    def get_home_path(self)         -> str: return self._USER_HOME
     def get_ui_widgets_path(self)   -> str: return self._UI_WIDEGTS_PATH
     def get_trash_files_path(self)  -> str: return self._TRASH_FILES_PATH
     def get_trash_info_path(self)   -> str: return self._TRASH_INFO_PATH
@@ -151,7 +150,7 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._debug = debug
 
     def load_settings(self):
-        if not os.path.exists(self._CONFIG_FILE):
+        if not path.exists(self._CONFIG_FILE):
             self.settings = Settings()
             return
 
