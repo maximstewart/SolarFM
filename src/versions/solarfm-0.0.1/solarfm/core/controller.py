@@ -138,8 +138,12 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
             event_system.emit("cut_files")
         if action == "copy":
             event_system.emit("copy_files")
+        if action == "copy_path":
+            event_system.emit("copy_path")
         if action == "copy_name":
             event_system.emit("copy_name")
+        if action == "copy_path_name":
+            event_system.emit("copy_path_name")
         if action == "paste":
             event_system.emit("paste_files")
         if action == "create":
