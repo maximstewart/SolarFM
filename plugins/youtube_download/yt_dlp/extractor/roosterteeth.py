@@ -1,6 +1,5 @@
-# coding: utf-8
 from .common import InfoExtractor
-from ..compat import compat_HTTPError
+from ..networking.exceptions import HTTPError
 from ..utils import (
     ExtractorError,
     int_or_none,
@@ -21,10 +20,7 @@ class RoosterTeethBaseIE(InfoExtractor):
     _API_BASE = 'https://svod-be.roosterteeth.com'
     _API_BASE_URL = f'{_API_BASE}/api/v1'
 
-    def _login(self):
-        username, password = self._get_login_info()
-        if username is None:
-            return
+    def _perform_login(self, username, password):
         if self._get_cookies(self._API_BASE_URL).get('rt_access_token'):
             return
 
@@ -39,16 +35,13 @@ class RoosterTeethBaseIE(InfoExtractor):
                 }))
         except ExtractorError as e:
             msg = 'Unable to login'
-            if isinstance(e.cause, compat_HTTPError) and e.cause.code == 401:
-                resp = self._parse_json(e.cause.read().decode(), None, fatal=False)
+            if isinstance(e.cause, HTTPError) and e.cause.status == 401:
+                resp = self._parse_json(e.cause.response.read().decode(), None, fatal=False)
                 if resp:
                     error = resp.get('extra_info') or resp.get('error_description') or resp.get('error')
                     if error:
                         msg += ': ' + error
             self.report_warning(msg)
-
-    def _real_initialize(self):
-        self._login()
 
     def _extract_video_info(self, data):
         thumbnails = []
@@ -145,15 +138,14 @@ class RoosterTeethIE(RoosterTeethBaseIE):
             m3u8_url = video_data['attributes']['url']
             # XXX: additional URL at video_data['links']['download']
         except ExtractorError as e:
-            if isinstance(e.cause, compat_HTTPError) and e.cause.code == 403:
-                if self._parse_json(e.cause.read().decode(), display_id).get('access') is False:
+            if isinstance(e.cause, HTTPError) and e.cause.status == 403:
+                if self._parse_json(e.cause.response.read().decode(), display_id).get('access') is False:
                     self.raise_login_required(
                         '%s is only available for FIRST members' % display_id)
             raise
 
         formats, subtitles = self._extract_m3u8_formats_and_subtitles(
             m3u8_url, display_id, 'mp4', 'm3u8_native', m3u8_id='hls')
-        self._sort_formats(formats)
 
         episode = self._download_json(
             api_episode_url, display_id,

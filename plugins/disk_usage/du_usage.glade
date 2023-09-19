@@ -60,9 +60,11 @@
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel" id="current_dir_lbl">
+              <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="margin-left">5</property>
+                <property name="margin-right">5</property>
                 <property name="margin-start">5</property>
                 <property name="margin-end">5</property>
                 <property name="margin-top">5</property>
@@ -74,6 +76,22 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="current_dir_lbl">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="margin-start">5</property>
+                <property name="margin-end">5</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -91,7 +109,7 @@
                       <object class="GtkTreeSelection"/>
                     </child>
                     <child>
-                      <object class="GtkTreeViewColumn">
+                      <object class="GtkTreeViewColumn" id="du_tree_view">
                         <property name="title" translatable="yes">Disk Usage</property>
                         <child>
                           <object class="GtkCellRendererText"/>
@@ -113,7 +131,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>

@@ -1,7 +1,5 @@
 # Python imports
 import os
-import threading
-import inspect
 import time
 
 # Lib imports
@@ -18,32 +16,19 @@ from .utils.ipc_server import IPCServer
 
 
 
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
-
-
-
 
 class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.path               = os.path.dirname(os.path.realpath(__file__))
         self.name               = "Search"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                             #       where self.name should not be needed for message comms
+        self.path               = os.path.dirname(os.path.realpath(__file__))
         self._GLADE_FILE        = f"{self.path}/search_dialog.glade"
 
         self.update_list_ui_buffer = ()
         self._search_dialog     = None
+        self._spinner           = None
         self._active_path       = None
         self.file_list_parent   = None
         self.grep_list_parent   = None
@@ -52,30 +37,26 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self._grep_proc         = None
         self._list_proc         = None
         self.pause_fifo_update  = False
-        self.grep_time_stamp    = None
-        self.fsearch_time_stamp = None
-        self.grep_query         = ""
-        self.search_query       = ""
+
+        self.grep_query              = ""
+        self.grep_time_stamp         = None
+        self._queue_grep             = False
+        self._grep_watcher_running   = False
+
+        self.search_query            = ""
+        self.fsearch_time_stamp      = None
+        self._queue_search           = False
+        self._search_watcher_running = False
 
 
     def run(self):
-        self._builder          = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        self._connect_builder_signals(self, self._builder)
 
         self._search_dialog = self._builder.get_object("search_dialog")
         self.fsearch        = self._builder.get_object("fsearch")
+        self._spinner       = self._builder.get_object("spinner")
 
         self.grep_list_parent = self._builder.get_object("grep_list_parent")
         self.file_list_parent = self._builder.get_object("file_list_parent")
@@ -83,7 +64,6 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         self._event_system.subscribe("update-file-ui", self._load_file_ui)
         self._event_system.subscribe("update-grep-ui", self._load_grep_ui)
         self._event_system.subscribe("show_search_page", self._show_page)
-
 
         self.create_ipc_listener()
 
@@ -93,6 +73,10 @@ class Plugin(IPCServer, FileSearchMixin, GrepSearchMixin, PluginBase):
         item.connect("activate", self._show_page)
         item.set_always_show_image(True)
         return item
+
+    def stop_spinner(self, ret_code):
+        print(f"Return Code: {ret_code}")
+        self._spinner.stop()
 
 
     def _show_page(self, widget=None, eve=None):

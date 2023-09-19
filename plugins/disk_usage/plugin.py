@@ -2,7 +2,6 @@
 import os
 import subprocess
 import time
-import inspect
 
 # Lib imports
 import gi
@@ -29,24 +28,17 @@ class Plugin(PluginBase):
 
 
     def run(self):
-        self._builder    = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
+        self._connect_builder_signals(self, self._builder)
 
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
-
-        self._du_dialog = self._builder.get_object("du_dialog")
-        self._du_store  = self._builder.get_object("du_store")
+        self._du_dialog    = self._builder.get_object("du_dialog")
+        self._du_tree_view = self._builder.get_object("du_tree_view")
+        self._du_store     = self._builder.get_object("du_store")
         self._current_dir_lbl  = self._builder.get_object("current_dir_lbl")
+
+        self._current_dir_lbl.set_line_wrap(False)
+        self._current_dir_lbl.set_ellipsize(1)  # NONE = 0¶, START = 1¶, MIDDLE = 2¶, END = 3¶
 
         self._event_system.subscribe("show_du_menu", self._show_du_menu)
 
@@ -61,7 +53,9 @@ class Plugin(PluginBase):
         self._event_system.emit("get_current_state")
 
     def _set_current_dir_lbl(self, widget=None, eve=None):
-        self._current_dir_lbl.set_label(f"Current Directory:\n{self._fm_state.tab.get_current_directory()}")
+        path = self._fm_state.tab.get_current_directory()
+        self._current_dir_lbl.set_label(path)
+        self._current_dir_lbl.set_tooltip_text(path)
 
     def _show_du_menu(self, widget=None, eve=None):
         self._fm_state = None
@@ -84,7 +78,7 @@ class Plugin(PluginBase):
 
         # NOTE: Last entry is curret dir. Move to top of list and pop off...
         size, file = parts[-1].split("\t")
-        self._du_store.append([size, file.split("/")[-1]])
+        self._du_tree_view.set_title(f"Disk Usage: {file.split('/')[-1]} ( {size} )")
         parts.pop()
 
         for part in parts:

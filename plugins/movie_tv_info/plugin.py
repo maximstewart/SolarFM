@@ -2,7 +2,6 @@
 import os
 import threading
 import subprocess
-import inspect
 import requests
 import shutil
 
@@ -38,9 +37,9 @@ class Plugin(PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.path                   = os.path.dirname(os.path.realpath(__file__))
         self.name                   = "Movie/TV Info"   # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                                         #       where self.name should not be needed for message comms
+        self.path                   = os.path.dirname(os.path.realpath(__file__))
         self._GLADE_FILE            = f"{self.path}/movie_tv_info.glade"
 
         self._dialog                = None
@@ -53,20 +52,9 @@ class Plugin(PluginBase):
 
 
     def run(self):
-        self._builder           = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        self._connect_builder_signals(self, self._builder)
 
         self._thumbnailer_dialog    = self._builder.get_object("info_dialog")
         self._overview              = self._builder.get_object("textbuffer")
@@ -95,7 +83,7 @@ class Plugin(PluginBase):
     def _process_changes(self, state):
         self._fm_state = None
 
-        if len(state.selected_files) == 1:
+        if state.uris and len(state.uris) == 1:
             self._fm_state = state
             self._set_ui_data()
             response   = self._thumbnailer_dialog.run()
@@ -115,7 +103,7 @@ class Plugin(PluginBase):
         print(video_data["videos"]) if not keys in ("", None) and "videos" in keys else ...
 
     def get_video_data(self):
-        uri            = self._fm_state.selected_files[0]
+        uri            = self._fm_state.uris[0]
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
         _title         = parts[ len(parts) - 1 ]

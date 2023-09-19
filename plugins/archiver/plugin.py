@@ -1,8 +1,5 @@
 # Python imports
 import os
-import threading
-import subprocess
-import inspect
 import shlex
 
 # Lib imports
@@ -14,28 +11,16 @@ from gi.repository import Gtk
 from plugins.plugin_base import PluginBase
 
 
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
-
-
 
 
 class Plugin(PluginBase):
     def __init__(self):
         super().__init__()
-        self.path               = os.path.dirname(os.path.realpath(__file__))
-        self._GLADE_FILE        = f"{self.path}/archiver.glade"
+
         self.name = "Archiver"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                 #       where self.name should not be needed for message comms
+        self.path               = os.path.dirname(os.path.realpath(__file__))
+        self._GLADE_FILE        = f"{self.path}/archiver.glade"
         self._archiver_dialogue  = None
         self._arc_command_buffer = None
 
@@ -67,20 +52,9 @@ class Plugin(PluginBase):
 
 
     def generate_reference_ui_element(self):
-        self._builder           = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        self._connect_builder_signals(self, self._builder)
 
         self._archiver_dialogue  = self._builder.get_object("archiver_dialogue")
         self._arc_command_buffer = self._builder.get_object("arc_command_buffer")
@@ -113,7 +87,7 @@ class Plugin(PluginBase):
         self._archiver_dialogue.hide()
 
     def archive_files(self, save_target, state):
-        paths       = [shlex.quote(p) for p in state.selected_files]
+        paths       = [shlex.quote(p) for p in state.uris]
 
         sItr, eItr  = self._arc_command_buffer.get_bounds()
         pre_command = self._arc_command_buffer.get_text(sItr, eItr, False)

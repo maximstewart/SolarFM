@@ -1,9 +1,5 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
-
 from .common import InfoExtractor
-from ..compat import compat_HTTPError
+from ..networking.exceptions import HTTPError
 from ..utils import (
     ExtractorError,
     int_or_none,
@@ -37,22 +33,15 @@ class AtresPlayerIE(InfoExtractor):
     ]
     _API_BASE = 'https://api.atresplayer.com/'
 
-    def _real_initialize(self):
-        self._login()
-
     def _handle_error(self, e, code):
-        if isinstance(e.cause, compat_HTTPError) and e.cause.code == code:
-            error = self._parse_json(e.cause.read(), None)
+        if isinstance(e.cause, HTTPError) and e.cause.status == code:
+            error = self._parse_json(e.cause.response.read(), None)
             if error.get('error') == 'required_registered':
                 self.raise_login_required()
             raise ExtractorError(error['error_description'], expected=True)
         raise
 
-    def _login(self):
-        username, password = self._get_login_info()
-        if username is None:
-            return
-
+    def _perform_login(self, username, password):
         self._request_webpage(
             self._API_BASE + 'login', None, 'Downloading login page')
 
@@ -95,7 +84,6 @@ class AtresPlayerIE(InfoExtractor):
             elif src_type == 'application/dash+xml':
                 formats, subtitles = self._extract_mpd_formats(
                     src, video_id, mpd_id='dash', fatal=False)
-        self._sort_formats(formats)
 
         heartbeat = episode.get('heartbeat') or {}
         omniture = episode.get('omniture') or {}

@@ -4,10 +4,23 @@ SolarFM is a Gtk+ Python file manager.
 # Notes
 <b>Still Work in  progress! Use at own risk!</b>
 
+Additionally, if not building a .deb then just move the contents of user_config to their respective folders.
+Copy the share/solarfm folder to your user .config/ directory too.
+
+`pyrightconfig.json`
+<p>The pyrightconfig file needs to stay on same level as the .git folders in order to have settings detected when using pyright with lsp functionality.</p>
+
 <h6>Install Setup</h6>
 ```
-sudo apt-get install python3.8 wget python3-setproctitle python3-gi ffmpegthumbnailer steamcmd
+sudo apt-get install python3.8 python3-setproctitle python3-gi wget ffmpegthumbnailer steamcmd
 ```
+
+# Known Issues
+<ul>
+<li>There's a memory leak. Still analyzing where exactly.</li>
+<li>Doing Ctrl+D when in Terminator (maybe other terminals too) somehow propagates the signal to SolarFM too.
+A selected file in the active quad-pane will move to trash since it is the default key-binding for that action.</li>
+</ul>
 
 # TODO
 <ul>

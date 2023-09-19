@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <object class="GtkDialog" id="file_properties_dialog">
@@ -14,7 +14,6 @@
     <property name="skip-taskbar-hint">True</property>
     <property name="skip-pager-hint">True</property>
     <property name="gravity">center</property>
-    <signal name="response" handler="on_filePropertiesDlg_response" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog_vbox">
         <property name="visible">True</property>

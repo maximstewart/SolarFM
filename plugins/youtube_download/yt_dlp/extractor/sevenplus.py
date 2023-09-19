@@ -1,14 +1,9 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import json
 import re
 
-from .brightcove import BrightcoveNewIE
-from ..compat import (
-    compat_HTTPError,
-    compat_str,
-)
+from .brightcove import BrightcoveNewBaseIE
+from ..compat import compat_str
+from ..networking.exceptions import HTTPError
 from ..utils import (
     ExtractorError,
     try_get,
@@ -16,7 +11,7 @@ from ..utils import (
 )
 
 
-class SevenPlusIE(BrightcoveNewIE):
+class SevenPlusIE(BrightcoveNewBaseIE):
     IE_NAME = '7plus'
     _VALID_URL = r'https?://(?:www\.)?7plus\.com\.au/(?P<path>[^?]+\?.*?\bepisode-id=(?P<id>[^&#]+))'
     _TESTS = [{
@@ -100,9 +95,9 @@ class SevenPlusIE(BrightcoveNewIE):
                     'videoType': 'vod',
                 }, headers=headers)['media']
         except ExtractorError as e:
-            if isinstance(e.cause, compat_HTTPError) and e.cause.code == 403:
+            if isinstance(e.cause, HTTPError) and e.cause.status == 403:
                 raise ExtractorError(self._parse_json(
-                    e.cause.read().decode(), episode_id)[0]['error_code'], expected=True)
+                    e.cause.response.read().decode(), episode_id)[0]['error_code'], expected=True)
             raise
 
         for source in media.get('sources', {}):

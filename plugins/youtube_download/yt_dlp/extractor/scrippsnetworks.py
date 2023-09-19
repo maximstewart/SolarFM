@@ -1,6 +1,3 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import json
 import hashlib
 
@@ -118,6 +115,7 @@ class ScrippsNetworksIE(InfoExtractor):
             'uploader': 'SCNI-SCND',
         },
         'add_ie': ['ThePlatform'],
+        'expected_warnings': ['No HLS formats found'],
     }, {
         'url': 'https://www.diynetwork.com/videos/diy-barnwood-tablet-stand-0265790',
         'only_matching': True,

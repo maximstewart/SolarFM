@@ -6,7 +6,7 @@
         "open_terminal"          : "F4",
         "refresh_tab"            : ["F5",
                                     "<Control>r"],
-        "tggl_top_main_menubar"  : "<Alt>h",
+        "tggl_top_main_menubar"  : "<Alt>Alt_L",
         "tear_down"              : "<Control>q",
         "go_up"                  : "<Control>Up",
         "go_home"                : "<Control>slash",

@@ -1,12 +1,11 @@
 # Python imports
-import ctypes
+import time
 import threading
 import subprocess
 import signal
 import json
 import shlex
 from datetime import datetime
-libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 
 # Lib imports
 import gi
@@ -35,11 +34,38 @@ def daemon_threaded(fn):
 
 class GrepSearchMixin:
     def _run_grep_query(self, widget=None, eve=None):
-        self._handle_grep_query(query=widget)
+        self._queue_grep = True
 
-    # TODO: Merge this logic with nearly the exact same thing in file_search_mixin
+        if not self._grep_watcher_running:
+            self._grep_watcher_running = True
+
+            self._stop_grep_query()
+            self.reset_grep_box()
+            self.run_grep_watcher(query=widget)
+
     @daemon_threaded
-    def _handle_grep_query(self, widget=None, eve=None, query=None):
+    def run_grep_watcher(self, query):
+        while True:
+            if self._queue_grep:
+                self._queue_grep = False
+                time.sleep(1)
+
+                # NOTE: Hold call to translate if we're still typing/updating...
+                if self._queue_grep:
+                    continue
+
+                # NOTE: If query create new process and do all new loop.
+                if query:
+                    self.pause_fifo_update = False
+                    GLib.idle_add(self._exec_grep_query, query)
+
+                self._grep_watcher_running = False
+
+            break
+
+    def _stop_grep_query(self, widget=None, eve=None):
+        self._spinner.stop()
+
         # NOTE: Freeze IPC consumption
         self.pause_fifo_update = True
         self.grep_query        = ""
@@ -55,22 +81,19 @@ class GrepSearchMixin:
 
             self._grep_proc = None
 
-        # NOTE: Clear children from ui and make sure ui thread redraws
-        GLib.idle_add(self.reset_grep_box)
-
-        # NOTE: If query create new process and do all new loop.
-        if query:
-            self.pause_fifo_update = False
-            GLib.idle_add(self._exec_grep_query, query)
 
     def _exec_grep_query(self, widget=None, eve=None):
         query = widget.get_text()
+
         if not query.strip() in ("", None):
             self.grep_query = query
+            target_dir      = shlex.quote( self._fm_state.tab.get_current_directory() )
+            command         = ["python", f"{self.path}/utils/search.py", "-t", "grep_search", "-d", f"{target_dir}", "-q", f"{query}"]
 
-            target_dir = shlex.quote( self._fm_state.tab.get_current_directory() )
-            command = ["python", f"{self.path}/utils/search.py", "-t", "grep_search", "-d", f"{target_dir}", "-q", f"{query}"]
+            self._spinner.start()
+
             self._grep_proc = subprocess.Popen(command, cwd=self.path, stdin=None, stdout=None, stderr=None)
+
 
     def _load_grep_ui(self, data):
         Gtk.main_iteration()

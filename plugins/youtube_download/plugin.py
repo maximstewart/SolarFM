@@ -1,5 +1,8 @@
 # Python imports
-import os, threading, subprocess, time
+import os
+import threading
+import subprocess
+import time
 
 # Lib imports
 import gi
@@ -14,12 +17,6 @@ from plugins.plugin_base import PluginBase
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
 

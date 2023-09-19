@@ -1,6 +1,3 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import re
 
 from .common import InfoExtractor
@@ -43,15 +40,7 @@ class NJPWWorldIE(InfoExtractor):
 
     _LOGIN_URL = 'https://front.njpwworld.com/auth/login'
 
-    def _real_initialize(self):
-        self._login()
-
-    def _login(self):
-        username, password = self._get_login_info()
-        # No authentication to be performed
-        if not username:
-            return True
-
+    def _perform_login(self, username, password):
         # Setup session (will set necessary cookies)
         self._request_webpage(
             'https://njpwworld.com/', None, note='Setting up session')
@@ -62,7 +51,7 @@ class NJPWWorldIE(InfoExtractor):
             data=urlencode_postdata({'login_id': username, 'pw': password}),
             headers={'Referer': 'https://front.njpwworld.com/auth'})
         # /auth/login will return 302 for successful logins
-        if urlh.geturl() == self._LOGIN_URL:
+        if urlh.url == self._LOGIN_URL:
             self.report_warning('unable to login')
             return False
 
@@ -79,8 +68,6 @@ class NJPWWorldIE(InfoExtractor):
             player_url = compat_urlparse.urljoin(url, player_path)
             formats += self._extract_m3u8_formats(
                 player_url, video_id, 'mp4', 'm3u8_native', m3u8_id=kind, fatal=False, quality=int(kind == 'high'))
-
-        self._sort_formats(formats)
 
         tag_block = get_element_by_class('tag-block', webpage)
         tags = re.findall(

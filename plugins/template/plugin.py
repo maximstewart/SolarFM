@@ -2,7 +2,6 @@
 import os
 import threading
 import subprocess
-import ime
 
 # Lib imports
 import gi
@@ -32,17 +31,22 @@ class Plugin(PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.name               = "Example Plugin"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
-                                                    #       where self.name should not be needed for message comms
+        self.name        = "Example Plugin"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
+                                             #       where self.name should not be needed for message comms
+        # self.path        = os.path.dirname(os.path.realpath(__file__))
+        # self._GLADE_FILE = f"{self.path}/glade_file.glade"
 
+
+    def run(self):
+        # self._builder = Gtk.Builder()
+        # self._builder.add_from_file(self._GLADE_FILE)
+        # self._connect_builder_signals(self, self._builder)
+        ...
 
     def generate_reference_ui_element(self):
         button = Gtk.Button(label=self.name)
         button.connect("button-release-event", self.send_message)
         return button
-
-    def run(self):
-        ...
 
     def send_message(self, widget=None, eve=None):
         message = "Hello, World!"

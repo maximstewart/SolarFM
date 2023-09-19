@@ -1,8 +1,5 @@
 # Python imports
 import os
-import threading
-import subprocess
-import inspect
 
 # Lib imports
 import gi
@@ -14,19 +11,6 @@ from gi.repository import Gio
 # Application imports
 from plugins.plugin_base import PluginBase
 from .xdgtrash import XDGTrash
-
-
-# NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-    return wrapper
 
 
 
@@ -55,19 +39,21 @@ class Plugin(PluginBase):
         trash_a = Gtk.MenuItem("Trash Actions")
         trash_menu = Gtk.Menu()
 
-        self.restore = Gtk.MenuItem("Restore From Trash")
+        self.restore = Gtk.ImageMenuItem("Restore From Trash")
+        self.restore.set_image( Gtk.Image.new_from_icon_name("gtk-undelete", 3) )
         self.restore.connect("activate", self.restore_trash_files)
 
-        self.empty = Gtk.MenuItem("Empty Trash")
+        self.empty = Gtk.ImageMenuItem("Empty Trash")
+        self.empty.set_image( Gtk.Image.new_from_icon_name("gtk-delete", 3) )
         self.empty.connect("activate", self.empty_trash)
 
         trash = Gtk.ImageMenuItem("Trash")
-        trash.set_image( Gtk.Image.new_from_icon_name("user-trash", 16) )
+        trash.set_image( Gtk.Image.new_from_icon_name("user-trash", 3) )
         trash.connect("activate", self.trash_files)
         trash.set_always_show_image(True)
 
         go_to = Gtk.ImageMenuItem("Go To Trash")
-        go_to.set_image( Gtk.Image.new_from_icon_name("user-trash", 16) )
+        go_to.set_image( Gtk.Image.new_from_icon_name("gtk-go-forward", 3) )
         go_to.connect("activate", self.go_to_trash)
         go_to.set_always_show_image(True)
 
@@ -99,16 +85,16 @@ class Plugin(PluginBase):
     def delete_files(self, widget = None, eve = None):
         self._event_system.emit("get_current_state")
         state    = self._fm_state
-        uris     = state.selected_files
+        uris     = state.uris
         response = None
 
-        state.warning_alert.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
+        state.message_dialog.format_secondary_text(f"Do you really want to delete the {len(uris)} file(s)?")
         for uri in uris:
             file = Gio.File.new_for_path(uri)
 
             if not response:
-                response = state.warning_alert.run()
-                state.warning_alert.hide()
+                response = state.message_dialog.run()
+                state.message_dialog.hide()
             if response == Gtk.ResponseType.YES:
                 type = file.query_file_type(flags=Gio.FileQueryInfoFlags.NONE)
 
@@ -122,14 +108,14 @@ class Plugin(PluginBase):
     def trash_files(self, widget = None, eve = None, verbocity = False):
         self._event_system.emit("get_current_state")
         state = self._fm_state
-        for uri in state.selected_files:
+        for uri in state.uris:
             self.trashman.trash(uri, verbocity)
 
     def restore_trash_files(self, widget = None, eve = None, verbocity = False):
         self._event_system.emit("get_current_state")
         state = self._fm_state
-        for uri in state.selected_files:
-            self.trashman.restore(filename=uri.split("/")[-1], verbose = verbocity)
+        for uri in state.uris:
+            self.trashman.restore(filename = uri.split("/")[-1], verbose = verbocity)
 
     def empty_trash(self, widget = None, eve = None, verbocity = False):
         self.trashman.empty(verbose = verbocity)

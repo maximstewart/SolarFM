@@ -3,7 +3,6 @@ import os
 import threading
 import subprocess
 import time
-import inspect
 import hashlib
 from datetime import datetime
 
@@ -24,12 +23,6 @@ from plugins.plugin_base import PluginBase
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-    return wrapper
-
-# NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
 
@@ -53,20 +46,9 @@ class Plugin(PluginBase):
 
 
     def run(self):
-        self._builder           = Gtk.Builder()
+        self._builder = Gtk.Builder()
         self._builder.add_from_file(self._GLADE_FILE)
-
-        classes  = [self]
-        handlers = {}
-        for c in classes:
-            methods = None
-            try:
-                methods = inspect.getmembers(c, predicate=inspect.ismethod)
-                handlers.update(methods)
-            except Exception as e:
-                print(repr(e))
-
-        self._builder.connect_signals(handlers)
+        self._connect_builder_signals(self, self._builder)
 
         self._thumbnailer_dialog    = self._builder.get_object("thumbnailer_dialog")
         self._scrub_step            = self._builder.get_object("scrub_step")
@@ -76,7 +58,7 @@ class Plugin(PluginBase):
         self._file_hash             = self._builder.get_object("file_hash")
 
     def generate_reference_ui_element(self):
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(f"{self.path}/../../icons/video.png", 16, 16, True)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(f"/usr/share/solarfm/icons/video.png", 16, 16, True)
         icon   = Gtk.Image.new_from_pixbuf(pixbuf)
         item   = Gtk.ImageMenuItem(self.name)
 
@@ -98,8 +80,8 @@ class Plugin(PluginBase):
     def _process_changes(self, state):
         self._fm_state = None
 
-        if len(state.selected_files) == 1:
-            if state.selected_files[0].lower().endswith(state.tab.fvideos):
+        if len(state.uris) == 1:
+            if state.uris[0].lower().endswith(state.tab.fvideos):
                 self._fm_state = state
                 self._set_ui_data()
                 response   = self._thumbnailer_dialog.run()
@@ -115,9 +97,7 @@ class Plugin(PluginBase):
         hash_img_pth  = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
 
         try:
-            os.remove(hash_img_pth) if os.path.isfile(hash_img_pth) else ...
-
-            self._fm_state.tab.create_thumbnail(dir, file, f"{scrub_percent}%")
+            self._fm_state.tab.create_video_thumbnail(f"{dir}/{file}", f"{scrub_percent}%", True)
             preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
             self._thumbnail_preview_img.set_from_pixbuf(preview_pixbuf)
 
@@ -132,11 +112,10 @@ class Plugin(PluginBase):
 
 
     def _set_ui_data(self):
-        uri            = self._fm_state.selected_files[0]
+        uri            = self._fm_state.uris[0]
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
-
-        file_hash      = hashlib.sha256(str.encode(uri)).hexdigest()
+        file_hash      = self._fm_state.tab.fast_hash(uri)
         hash_img_pth   = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
         preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
 
