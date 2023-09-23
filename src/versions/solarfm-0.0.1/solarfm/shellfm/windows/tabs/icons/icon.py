@@ -50,8 +50,8 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
 
             if not thumbnl:
                 # TODO: Detect if not in a thread and use directly for speed get_system_thumbnail
-                # thumbnl = self.get_system_thumbnail(full_path, self.sys_icon_wh[0])
-                thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
+                thumbnl = self.get_system_thumbnail(full_path, self.sys_icon_wh[0])
+                # thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
                 if not thumbnl:
                     raise IconException("No known icons found.")
 

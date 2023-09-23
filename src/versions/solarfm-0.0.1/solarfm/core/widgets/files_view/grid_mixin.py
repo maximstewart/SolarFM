@@ -1,4 +1,5 @@
 # Python imports
+import asyncio
 
 # Lib imports
 import gi
@@ -18,7 +19,6 @@ class GridMixin:
     """docstring for GridMixin"""
 
     def load_store(self, tab, store, save_state = False, use_generator = False):
-        store.clear()
         dir   = tab.get_current_directory()
         files = tab.get_files()
 
@@ -32,30 +32,52 @@ class GridMixin:
             for i, icon in enumerate( self.create_icons_generator(tab, dir, files) ):
                 self.load_icon(i, store, icon)
         else:
-            for i, file in enumerate(files):
-                self.create_icon(i, tab, store, dir, file[0])
+            # for i, file in enumerate(files):
+            #     self.create_icon(i, tab, store, dir, file[0])
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = None
+
+            if loop and loop.is_running():
+                loop.create_task( self.create_icons(tab, store, dir, files) )
+            else:
+                asyncio.run( self.create_icons(tab, store, dir, files) )
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state and not trace_debug:
             self.fm_controller.save_state()
+
+    async def create_icons(self, tab, store, dir, files):
+        tasks = [self.update_store(i, store, dir, tab, file[0]) for i, file in enumerate(files)]
+        await asyncio.gather(*tasks)
+
+    async def load_icon(self, i, store, icon):
+        self.update_store(i, store, icon)
+
+    async def update_store(self, i, store, dir, tab, file):
+        icon = tab.create_icon(dir, file)
+        itr  = store.get_iter(i)
+        store.set_value(itr, 0, icon)
+        return 1
 
     def create_icons_generator(self, tab, dir, files):
         for file in files:
             icon = tab.create_icon(dir, file[0])
             yield icon
 
-    @daemon_threaded
-    def create_icon(self, i, tab, store, dir, file):
-        icon = tab.create_icon(dir, file)
-        GLib.idle_add(self.update_store, *(i, store, icon,))
-
-    @daemon_threaded
-    def load_icon(self, i, store, icon):
-        GLib.idle_add(self.update_store, *(i, store, icon,))
-
-    def update_store(self, i, store, icon):
-        itr = store.get_iter(i)
-        store.set_value(itr, 0, icon)
+    # @daemon_threaded
+    # def create_icon(self, i, tab, store, dir, file):
+    #     icon = tab.create_icon(dir, file)
+    #     GLib.idle_add(self.update_store, *(i, store, icon,))
+    #
+    # @daemon_threaded
+    # def load_icon(self, i, store, icon):
+    #     GLib.idle_add(self.update_store, *(i, store, icon,))
+    #
+    # def update_store(self, i, store, icon):
+    #     itr = store.get_iter(i)
+    #     store.set_value(itr, 0, icon)
 
     def create_tab_widget(self, tab):
         return TabHeaderWidget(tab, self.close_tab)
