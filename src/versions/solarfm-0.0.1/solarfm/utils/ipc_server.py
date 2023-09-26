@@ -68,7 +68,7 @@ class IPCServer(Singleton):
     def _handle_ipc_message(self, conn, start_time) -> None:
         while True:
             msg = conn.recv()
-            if settings.is_debug():
+            if settings_manager.is_debug():
                 print(msg)
 
             if "FILE|" in msg:

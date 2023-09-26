@@ -82,7 +82,7 @@ class Window(Gtk.ApplicationWindow):
         styleContext.add_provider_for_screen(screen, cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     def _area_draw(self, widget: Gtk.ApplicationWindow, cr: cairo.Context) -> None:
-        cr.set_source_rgba(0, 0, 0, 0.54)
+        cr.set_source_rgba( *settings_manager.get_paint_bg_color() )
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         cr.set_operator(cairo.OPERATOR_OVER)
