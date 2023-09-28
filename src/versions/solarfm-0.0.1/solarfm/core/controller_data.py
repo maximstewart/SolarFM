@@ -35,13 +35,39 @@ class State:
     user_pass_dialog: type  = None
 
 
+
+class SFMBuilder(Gtk.Builder):
+    """docstring for SFMBuilder."""
+
+    def __init__(self):
+        super(SFMBuilder, self).__init__()
+
+        self.objects = {}
+
+    def get_object(self, id: str, use_gtk: bool = True) -> any:
+        if not use_gtk:
+            return self.objects[id]
+
+        return super(SFMBuilder, self).get_object(id)
+
+    def expose_object(self, id: str, object: any, use_gtk: bool = True) -> None:
+        if not use_gtk:
+            self.objects[id] = object
+        else:
+            super(SFMBuilder, self).expose_object(id, object)
+
+    def dereference_object(self, id: str) -> None:
+        del self.objects[id]
+
+
+
 class Controller_Data:
     """ Controller_Data contains most of the state of the app at ay given time. It also has some support methods. """
     __slots__ = "settings", "builder", "logger", "keybindings", "trashman", "fm_controller", "window", "window1", "window2", "window3", "window4"
 
     def _setup_controller_data(self) -> None:
         self.window        = settings_manager.get_main_window()
-        self.builder       = None
+        self.builder       = SFMBuilder()
         self.core_widget   = None
 
         self._load_glade_file()
@@ -88,7 +114,7 @@ class Controller_Data:
         state.notebooks        = self.notebooks
         state.wid, state.tid   = self.fm_controller.get_active_wid_and_tid()
         state.tab              = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
-        state.icon_grid        = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid")
+        state.icon_grid        = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid", use_gtk = False)
         # state.icon_grid        = event_system.emit_and_await("get_files_view_icon_grid", (state.wid, state.tid))
         state.store            = state.icon_grid.get_model()
         state.message_dialog   = MessageWidget()
@@ -110,7 +136,7 @@ class Controller_Data:
         event_system.emit("update_state_info_plugins", state) # NOTE: Need to remove after we convert plugins to use emit_and_await
         return state
 
-    def format_to_uris(self, store, wid, tid, treePaths, use_just_path=False):
+    def format_to_uris(self, store, wid, tid, treePaths, use_just_path = False):
         tab  = self.get_fm_window(wid).get_tab_by_id(tid)
         dir  = tab.get_current_directory()
         uris = []

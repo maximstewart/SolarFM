@@ -74,7 +74,7 @@ class KeyboardSignalsMixin:
     def keyboard_close_tab(self):
         wid, tid  = self.fm_controller.get_active_wid_and_tid()
         notebook  = self.builder.get_object(f"window_{wid}")
-        scroll    = self.builder.get_object(f"{wid}|{tid}")
+        scroll    = self.builder.get_object(f"{wid}|{tid}", use_gtk = False)
         page      = notebook.page_num(scroll)
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
         watcher   = tab.get_dir_watcher()

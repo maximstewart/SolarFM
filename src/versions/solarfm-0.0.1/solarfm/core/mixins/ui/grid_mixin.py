@@ -81,7 +81,7 @@ class GridMixin:
     def create_tab_widget(self, tab):
         return TabHeaderWidget(tab, self.close_tab)
 
-    def create_scroll_and_store(self, tab, wid, use_tree_view=False):
+    def create_scroll_and_store(self, tab, wid, use_tree_view = False):
         scroll = Gtk.ScrolledWindow()
 
         if not use_tree_view:
@@ -93,8 +93,8 @@ class GridMixin:
         scroll.add(grid)
         scroll.set_name(f"{wid}|{tab.get_id()}")
         grid.set_name(f"{wid}|{tab.get_id()}")
-        self.builder.expose_object(f"{wid}|{tab.get_id()}|icon_grid", grid)
-        self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll)
+        self.builder.expose_object(f"{wid}|{tab.get_id()}|icon_grid", grid, use_gtk = False)
+        self.builder.expose_object(f"{wid}|{tab.get_id()}", scroll, use_gtk = False)
 
         return scroll, grid.get_store()
 

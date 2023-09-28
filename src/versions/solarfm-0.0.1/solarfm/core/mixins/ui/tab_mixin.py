@@ -17,7 +17,7 @@ from .grid_mixin import GridMixin
 class TabMixin(GridMixin):
     """docstring for TabMixin"""
 
-    def create_tab(self, wid=None, tid=None, path=None):
+    def create_tab(self, wid: int = None, tid: int = None, path: str = None):
         if not wid:
             wid, tid = self.fm_controller.get_active_wid_and_tid()
 
@@ -60,7 +60,7 @@ class TabMixin(GridMixin):
         tab_box   = button.get_parent()
         wid       = int(notebook.get_name()[-1])
         tid       = self.get_id_from_tab_box(tab_box)
-        scroll    = self.builder.get_object(f"{wid}|{tid}")
+        scroll    = self.builder.get_object(f"{wid}|{tid}", use_gtk = False)
         icon_grid = scroll.get_children()[0]
         store     = icon_grid.get_store()
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
@@ -68,6 +68,9 @@ class TabMixin(GridMixin):
 
         watcher.cancel()
         self.get_fm_window(wid).delete_tab_by_id(tid)
+
+        self.builder.dereference_object(f"{wid}|{tid}|icon_grid")
+        self.builder.dereference_object(f"{wid}|{tid}")
 
         store.clear()
         # store.run_dispose()
@@ -112,7 +115,7 @@ class TabMixin(GridMixin):
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
-    def on_tab_switch_update(self, notebook, content=None, index=None):
+    def on_tab_switch_update(self, notebook, content = None, index = None):
         self.selected_files.clear()
         wid, tid = content.get_children()[0].get_name().split("|")
         self.fm_controller.set_wid_and_tid(wid, tid)
@@ -131,7 +134,7 @@ class TabMixin(GridMixin):
     def get_tab_icon_grid_from_notebook(self, notebook):
         return notebook.get_children()[1].get_children()[0]
 
-    def refresh_tab(data=None):
+    def refresh_tab(data = None):
         state = self.get_current_state()
         state.tab.load_directory()
         self.load_store(state.tab, state.store)
@@ -148,7 +151,7 @@ class TabMixin(GridMixin):
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
-    def do_action_from_bar_controls(self, widget, eve=None):
+    def do_action_from_bar_controls(self, widget, eve = None):
         action    = widget.get_name()
         wid, tid  = self.fm_controller.get_active_wid_and_tid()
         notebook  = self.builder.get_object(f"window_{wid}")

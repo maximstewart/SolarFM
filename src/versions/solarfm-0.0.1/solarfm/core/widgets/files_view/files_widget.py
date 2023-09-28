@@ -54,7 +54,7 @@ class FilesWidget(FileActionSignalsMixin, WindowMixin):
         self.files_view.set_group_name("files_widget")
         self.builder.expose_object(f"{self.NAME}", self.files_view)
 
-    def _load_files_view_state(self, win_name=None, tabs=None):
+    def _load_files_view_state(self, win_name = None, tabs = None):
         if win_name == self.NAME:
             if tabs:
                 for tab in tabs:
@@ -62,9 +62,9 @@ class FilesWidget(FileActionSignalsMixin, WindowMixin):
             else:
                 self.create_new_tab_notebook(None, self.INDEX, None)
 
-    def _get_files_view_icon_grid(self, win_index=None, tid=None):
+    def _get_files_view_icon_grid(self, win_index = None, tid = None):
         if win_index == str(self.INDEX):
-            return self.builder.get_object(f"{self.INDEX}|{tid}|icon_grid")
+            return self.builder.get_object(f"{self.INDEX}|{tid}|icon_grid", use_gtk = False)
 
 
     def set_fm_controller(self, _fm_controller):
