@@ -35,7 +35,7 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._CSS_FILE          = f"{self._HOME_CONFIG_PATH}/stylesheet.css"
         self._KEY_BINDINGS_FILE = f"{self._HOME_CONFIG_PATH}/key-bindings.json"
         self._PID_FILE          = f"{self._HOME_CONFIG_PATH}/{app_name.lower()}.pid"
-        self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/icons/{app_name.lower()}.png"
+        self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
         self._UI_WIDEGTS_PATH   = f"{self._HOME_CONFIG_PATH}/ui_widgets"
         self._CONTEXT_MENU      = f"{self._HOME_CONFIG_PATH}/contexct_menu.json"
         self._TRASH_FILES_PATH  = f"{GLib.get_user_data_dir()}/Trash/files"
@@ -92,6 +92,7 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._main_window_w     = 1670
         self._main_window_h     = 830
         self._builder           = None
+        self.PAINT_BG_COLOR     = (0, 0, 0, 0.0)
 
         self._trace_debug       = False
         self._debug             = False
@@ -126,7 +127,9 @@ class SettingsManager(StartCheckMixin, Singleton):
     def get_main_window(self)        -> Gtk.ApplicationWindow: return self._main_window
     def get_main_window_width(self)  -> Gtk.ApplicationWindow: return self._main_window_w
     def get_main_window_height(self) -> Gtk.ApplicationWindow: return self._main_window_h
-    def get_builder(self)           -> Gtk.Builder:            return self._builder
+    def get_builder(self)            -> Gtk.Builder:           return self._builder
+    def get_paint_bg_color(self)     -> list:                  return self.PAINT_BG_COLOR
+
     def get_glade_file(self)        -> str: return self._GLADE_FILE
     def get_icon_theme(self)        -> str: return self._ICON_THEME
     def get_css_file(self)          -> str: return self._CSS_FILE

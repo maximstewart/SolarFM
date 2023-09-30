@@ -77,8 +77,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         event_system.subscribe("set_clipboard_data", self.set_clipboard_data)
 
     def _load_glade_file(self):
-        self.builder = Gtk.Builder()
-        self.builder.add_from_file(settings_manager.get_glade_file())
+        self.builder.add_from_file( settings_manager.get_glade_file() )
         self.builder.expose_object("main_window", self.window)
 
         self.core_widget = self.builder.get_object("core_widget")

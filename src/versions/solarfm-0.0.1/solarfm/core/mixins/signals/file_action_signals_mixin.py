@@ -35,7 +35,7 @@ class FileActionSignalsMixin:
 
     # NOTE: Too lazy to impliment a proper update handler and so just regen store and update tab.
     #       Use a lock system to prevent too many update calls for certain instances but user can manually refresh if they have urgency
-    def dir_watch_updates(self, file_monitor, file, other_file=None, eve_type=None, data=None):
+    def dir_watch_updates(self, file_monitor, file, other_file = None, eve_type = None, data = None):
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
                         Gio.FileMonitorEvent.MOVED_OUT]:
@@ -68,7 +68,7 @@ class FileActionSignalsMixin:
         wid, tid  = tab_widget.split("|")
         notebook  = self.builder.get_object(f"window_{wid}")
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
-        icon_grid = self.builder.get_object(f"{wid}|{tid}|icon_grid")
+        icon_grid = self.builder.get_object(f"{wid}|{tid}|icon_grid", use_gtk = False)
         store     = icon_grid.get_model()
         _store, tab_widget_label = self.get_store_and_label_from_notebook(notebook, f"{wid}|{tid}")
 
@@ -82,7 +82,7 @@ class FileActionSignalsMixin:
             self.set_bottom_labels(tab)
 
 
-    def do_file_search(self, widget, eve=None):
+    def do_file_search(self, widget, eve = None):
         if not self.ctrl_down and not self.shift_down and not self.alt_down:
             target    = widget.get_name()
             notebook  = self.builder.get_object(target)

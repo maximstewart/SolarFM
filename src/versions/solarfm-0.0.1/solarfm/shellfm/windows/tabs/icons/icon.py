@@ -50,8 +50,8 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
 
             if not thumbnl:
                 # TODO: Detect if not in a thread and use directly for speed get_system_thumbnail
-                # thumbnl = self.get_system_thumbnail(full_path, self.sys_icon_wh[0])
-                thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
+                thumbnl = self.get_system_thumbnail(full_path, self.sys_icon_wh[0])
+                # thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
                 if not thumbnl:
                     raise IconException("No known icons found.")
 
@@ -174,14 +174,15 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
         return path_exists, img_hash, hash_img_path
 
 
-    def fast_hash(self, filename, hash_factory=hashlib.md5, chunk_num_blocks=128, i=1):
+    def fast_hash(self, filename: str, hash_factory: callable = hashlib.md5, chunk_num_blocks: int = 128, i: int = 1) -> str:
         h = hash_factory()
         with open(filename,'rb') as f:
+            # NOTE: Jump to middle of file
             f.seek(0, 2)
             mid = int(f.tell() / 2)
             f.seek(mid, 0)
 
-            while chunk := f.read(chunk_num_blocks*h.block_size):
+            while chunk := f.read(chunk_num_blocks * h.block_size):
                 h.update(chunk)
                 if (i == 12):
                     break

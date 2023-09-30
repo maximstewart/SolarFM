@@ -36,6 +36,15 @@ class UIMixin(PaneMixin, WindowMixin):
             isHidden = True if session["window"]["isHidden"] == "True" else False
             event_system.emit("load_files_view_state", (nickname, tabs))
 
+    @daemon_threaded
+    def _focus_last_visible_notebook(self, icon_grid):
+        import time
+
+        window = settings_manager.get_main_window()
+        while not window.is_visible() and not window.get_realized():
+            time.sleep(0.1)
+
+        icon_grid.event(Gdk.Event().new(type = Gdk.EventType.BUTTON_RELEASE))
 
     def _current_loading_process(self, session_json = None):
         if session_json:
@@ -58,16 +67,17 @@ class UIMixin(PaneMixin, WindowMixin):
 
             try:
                 if not self.is_pane4_hidden:
-                    icon_grid = self.window4.get_children()[-1].get_children()[0]
+                    notebook = self.window4
                 elif not self.is_pane3_hidden:
-                    icon_grid = self.window3.get_children()[-1].get_children()[0]
+                    notebook = self.window3
                 elif not self.is_pane2_hidden:
-                    icon_grid = self.window2.get_children()[-1].get_children()[0]
+                    notebook = self.window2
                 elif not self.is_pane1_hidden:
-                    icon_grid = self.window1.get_children()[-1].get_children()[0]
+                    notebook = self.window1
 
-                icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
-                icon_grid.event(Gdk.Event().new(type=Gdk.EventType.BUTTON_RELEASE))
+                scroll_win = notebook.get_children()[-1]
+                icon_grid  = scroll_win.get_children()[0]
+                self._focus_last_visible_notebook(icon_grid)
             except UIMixinException as e:
                 logger.info("\n:  The saved session might be missing window data!  :\nLocation: ~/.config/solarfm/session.json\nFix: Back it up and delete it to reset.\n")
                 logger.debug(repr(e))
