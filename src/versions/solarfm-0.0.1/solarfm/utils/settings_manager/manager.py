@@ -35,7 +35,7 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._CSS_FILE          = f"{self._HOME_CONFIG_PATH}/stylesheet.css"
         self._KEY_BINDINGS_FILE = f"{self._HOME_CONFIG_PATH}/key-bindings.json"
         self._PID_FILE          = f"{self._HOME_CONFIG_PATH}/{app_name.lower()}.pid"
-        self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/icons/{app_name.lower()}.png"
+        self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
         self._UI_WIDEGTS_PATH   = f"{self._HOME_CONFIG_PATH}/ui_widgets"
         self._CONTEXT_MENU      = f"{self._HOME_CONFIG_PATH}/contexct_menu.json"
         self._TRASH_FILES_PATH  = f"{GLib.get_user_data_dir()}/Trash/files"
