@@ -22,10 +22,7 @@ class Application(IPCServer):
         super(Application, self).__init__()
 
         if not settings_manager.is_trace_debug():
-            try:
-                self.create_ipc_listener()
-            except Exception:
-                self.socket_realization_check()
+            self.socket_realization_check()
 
             if not self.is_ipc_alive:
                 for arg in unknownargs + [args.new_tab,]:
@@ -36,13 +33,19 @@ class Application(IPCServer):
                 raise AppLaunchException(f"{app_name} IPC Server Exists: Will send path(s) to it and close...")
 
         self.setup_debug_hook()
-
         Window(args, unknownargs)
 
 
     def socket_realization_check(self):
-        self.send_test_ipc_message()
-        self.create_ipc_listener()
+        try:
+            self.create_ipc_listener()
+        except Exception:
+            self.send_test_ipc_message()
+
+        try:
+            self.create_ipc_listener()
+        except Exception as e:
+            ...
 
     def setup_debug_hook(self):
         try:
