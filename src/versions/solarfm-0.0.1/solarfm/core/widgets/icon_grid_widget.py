@@ -20,8 +20,6 @@ class IconGridWidget(Gtk.IconView):
     def __init__(self):
         super(IconGridWidget, self).__init__()
 
-        # self._store = None
-
         self._setup_styling()
         self._setup_signals()
         self._set_up_dnd()

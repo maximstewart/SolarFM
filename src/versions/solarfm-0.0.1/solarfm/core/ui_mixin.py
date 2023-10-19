@@ -77,7 +77,7 @@ class UIMixin(PaneMixin, WindowMixin):
 
                 scroll_win = notebook.get_children()[-1]
                 icon_grid  = scroll_win.get_children()[0]
-                self._focus_last_visible_notebook(icon_grid)
+                # self._focus_last_visible_notebook(icon_grid)
             except UIMixinException as e:
                 logger.info("\n:  The saved session might be missing window data!  :\nLocation: ~/.config/solarfm/session.json\nFix: Back it up and delete it to reset.\n")
                 logger.debug(repr(e))

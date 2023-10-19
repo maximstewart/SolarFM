@@ -24,32 +24,12 @@ class PluginBase:
         self._event_system      = None
 
 
-    def set_fm_event_system(self, fm_event_system):
+    def run(self):
         """
-            Requests Key:  'pass_fm_events': "true"
-            Must define in plugin if "pass_fm_events" is set to "true" string.
+            Must define regardless if needed and can 'pass' if plugin doesn't need it.
+            Is intended to be used to setup internal signals or custom Gtk Builders/UI logic.
         """
-        self._event_system = fm_event_system
-
-    def set_ui_object_collection(self, ui_objects):
-        """
-            Requests Key:  "pass_ui_objects": [""]
-            Request reference to a UI component. Will be passed back as array to plugin.
-            Must define in plugin if set and an array of valid glade UI IDs is given.
-        """
-        self._ui_objects = ui_objects
-
-
-    def clear_children(self, widget: type) -> None:
-        """ Clear children of a gtk widget. """
-        for child in widget.get_children():
-            widget.remove(child)
-
-    def subscribe_to_events(self):
-        self._event_system.subscribe("update_state_info_plugins", self._update_fm_state_info)
-
-    def _update_fm_state_info(self, state):
-        self._fm_state = state
+        raise PluginBaseException("Method hasn't been overriden...")
 
     def generate_reference_ui_element(self):
         """
@@ -59,12 +39,26 @@ class PluginBase:
         """
         raise PluginBaseException("Method hasn't been overriden...")
 
-    def run(self):
+    def set_ui_object_collection(self, ui_objects):
         """
-            Must define regardless if needed and can 'pass' if plugin doesn't need it.
-            Is intended to be used to setup internal signals or custom Gtk Builders/UI logic.
+            Requests Key:  "pass_ui_objects": [""]
+            Request reference to a UI component. Will be passed back as array to plugin.
+            Must define in plugin if set and an array of valid glade UI IDs is given.
         """
-        raise PluginBaseException("Method hasn't been overriden...")
+        self._ui_objects = ui_objects
+
+    def set_fm_event_system(self, fm_event_system):
+        """
+            Requests Key:  'pass_fm_events': "true"
+            Must define in plugin if "pass_fm_events" is set to "true" string.
+        """
+        self._event_system = fm_event_system
+
+    def subscribe_to_events(self):
+        self._event_system.subscribe("update_state_info_plugins", self._update_fm_state_info)
+
+    def _update_fm_state_info(self, state):
+        self._fm_state = state
 
     def _connect_builder_signals(self, caller_class, builder):
         classes  = [caller_class]
@@ -94,3 +88,9 @@ class PluginBase:
                     reload_package_recursive(path, module_dict[path.stem].__dict__)
 
         reload_package_recursive(Path(plugin_path).parent, module_dict_main["module_dict_main"])
+
+
+    def clear_children(self, widget: type) -> None:
+        """ Clear children of a gtk widget. """
+        for child in widget.get_children():
+            widget.remove(child)

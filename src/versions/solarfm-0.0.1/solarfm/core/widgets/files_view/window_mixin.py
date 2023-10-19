@@ -80,7 +80,7 @@ class WindowMixin(TabMixin):
             self.set_window_title()
 
             if eve.type == Gdk.EventType.BUTTON_RELEASE and eve.button == 1:   # l-click
-                if self.ctrl_down:
+                if eve.state & Gdk.ModifierType.CONTROL_MASK:
                     self.dnd_left_primed = 0
 
                 if self.single_click_open: # FIXME: need to find a way to pass the model index

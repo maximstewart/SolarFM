@@ -65,9 +65,11 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         FileSystemActions()
 
     def _subscribe_to_events(self):
+        event_system.subscribe("shutting_down", self._shutting_down)
         event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
         event_system.subscribe("generate_file_views", self._generate_file_views)
         event_system.subscribe("clear_notebooks", self.clear_notebooks)
+
         event_system.subscribe("set_window_title", self._set_window_title)
         event_system.subscribe("unset_selected_files_views", self._unset_selected_files_views)
         event_system.subscribe("get_current_state", self.get_current_state)
@@ -106,6 +108,10 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         RenameWidget()
         FileExistsWidget()
         SaveLoadWidget()
+
+    def _shutting_down(self):
+        if not settings_manager.is_trace_debug():
+            self.fm_controller.save_state()
 
     def reload_plugins(self, widget=None, eve=None):
         self.plugins.reload_plugins()
@@ -162,28 +168,22 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
             event_system.emit("tear_down")
 
 
-    @endpoint_registry.register(rule="go_home")
     def go_home(self, widget=None, eve=None):
         self.builder.get_object("go_home").released()
 
-    @endpoint_registry.register(rule="refresh_tab")
     def refresh_tab(self, widget=None, eve=None):
         self.builder.get_object("refresh_tab").released()
 
-    @endpoint_registry.register(rule="go_up")
     def go_up(self, widget=None, eve=None):
         self.builder.get_object("go_up").released()
 
-    @endpoint_registry.register(rule="grab_focus_path_entry")
     def grab_focus_path_entry(self, widget=None, eve=None):
         self.builder.get_object("path_entry").grab_focus()
 
-    @endpoint_registry.register(rule="tggl_top_main_menubar")
     def tggl_top_main_menubar(self, widget=None, eve=None):
         top_main_menubar = self.builder.get_object("top_main_menubar")
         top_main_menubar.hide() if top_main_menubar.is_visible() else top_main_menubar.show()
 
-    @endpoint_registry.register(rule="open_terminal")
     def open_terminal(self, widget=None, eve=None):
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)

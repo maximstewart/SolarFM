@@ -1,7 +1,6 @@
 # Python imports
 import os
 import subprocess
-from dataclasses import dataclass
 
 # Lib imports
 import gi
@@ -9,55 +8,13 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 # Application imports
+from .sfm_builder import SFMBuilder
 from .widgets.dialogs.message_widget import MessageWidget
 from .widgets.dialogs.user_pass_widget import UserPassWidget
 
-from shellfm.windows.controller import WindowController
+from utils.types.state import State
 from plugins.plugins_controller import PluginsController
-
-
-
-@dataclass(slots=True)
-class State:
-    fm_controller: any = None
-    notebooks: any     = None
-    wid: int  = None
-    tid: int  = None
-    tab: type = None
-    icon_grid: gi.overrides.Gtk.IconView = None
-    store: gi.overrides.Gtk.ListStore    = None
-    uris:           []   = None
-    uris_raw:       []   = None
-    selected_files: []   = None
-    to_copy_files:  []   = None
-    to_cut_files:   []   = None
-    message_dialog: type    = None
-    user_pass_dialog: type  = None
-
-
-
-class SFMBuilder(Gtk.Builder):
-    """docstring for SFMBuilder."""
-
-    def __init__(self):
-        super(SFMBuilder, self).__init__()
-
-        self.objects = {}
-
-    def get_object(self, id: str, use_gtk: bool = True) -> any:
-        if not use_gtk:
-            return self.objects[id]
-
-        return super(SFMBuilder, self).get_object(id)
-
-    def expose_object(self, id: str, object: any, use_gtk: bool = True) -> None:
-        if not use_gtk:
-            self.objects[id] = object
-        else:
-            super(SFMBuilder, self).expose_object(id, object)
-
-    def dereference_object(self, id: str) -> None:
-        del self.objects[id]
+from shellfm.windows.controller import WindowController
 
 
 

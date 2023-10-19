@@ -88,11 +88,7 @@ class Window(Gtk.ApplicationWindow):
         cr.set_operator(cairo.OPERATOR_OVER)
 
 
-    def _tear_down(self, widget=None, eve=None):
-        if not settings_manager.is_trace_debug():
-            self._controller.fm_controller.save_state()
-
+    def _tear_down(self, widget = None, eve = None):
+        event_system.emit("shutting_down")
         settings_manager.clear_pid()
-        time.sleep(event_sleep_time)
-
         Gtk.main_quit()
