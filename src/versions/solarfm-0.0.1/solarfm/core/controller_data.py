@@ -55,6 +55,10 @@ class Controller_Data:
         self.shift_down         = False
         self.alt_down           = False
 
+        self._state           = State()
+        self.message_dialog   = MessageWidget()
+        self.user_pass_dialog = UserPassWidget()
+
 
     def get_current_state(self) -> State:
         '''
@@ -66,7 +70,8 @@ class Controller_Data:
                 Returns:
                         state (obj): State
         '''
-        state                  = State()
+        # state                  = State()
+        state                  = self._state
         state.fm_controller    = self.fm_controller
         state.notebooks        = self.notebooks
         state.wid, state.tid   = self.fm_controller.get_active_wid_and_tid()
@@ -74,8 +79,14 @@ class Controller_Data:
         state.icon_grid        = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid", use_gtk = False)
         # state.icon_grid        = event_system.emit_and_await("get_files_view_icon_grid", (state.wid, state.tid))
         state.store            = state.icon_grid.get_model()
-        state.message_dialog   = MessageWidget()
-        state.user_pass_dialog = UserPassWidget()
+
+        # NOTE: Need to watch this as I thought we had issues with just using single reference upon closing it.
+        # But, I found that not doing it this way caused objects to generate upon every click... (Because we're getting state info, duh)
+        # Yet interactive debug view shows them just pilling on and never clearing...
+        state.message_dialog   = self.message_dialog
+        state.user_pass_dialog = self.user_pass_dialog
+        # state.message_dialog   = MessageWidget()
+        # state.user_pass_dialog = UserPassWidget()
 
         selected_files     = state.icon_grid.get_selected_items()
         if selected_files:

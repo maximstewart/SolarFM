@@ -26,14 +26,15 @@ class GridMixin:
             store.append([None, file[0]])
 
         Gtk.main_iteration()
+        # for i, file in enumerate(files):
+        #     self.create_icon(i, tab, store, dir, file[0])
+
         if use_generator:
             # NOTE: tab > icon > _get_system_thumbnail_gtk_thread must not be used
             # as the attempted promotion back to gtk threading stalls the generator. (We're already in main gtk thread)
             for i, icon in enumerate( self.create_icons_generator(tab, dir, files) ):
                 self.load_icon(i, store, icon)
         else:
-            # for i, file in enumerate(files):
-            #     self.create_icon(i, tab, store, dir, file[0])
             try:
                 loop = asyncio.get_running_loop()
             except RuntimeError:

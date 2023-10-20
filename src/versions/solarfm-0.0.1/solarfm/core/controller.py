@@ -164,6 +164,8 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
             event_system.emit("show_plugins_popup")
         if action == "messages_popup":
             event_system.emit("show_messages_popup")
+        if action == "ui_debug":
+            event_system.emit("load_interactive_debug")
         if action == "tear_down":
             event_system.emit("tear_down")
 

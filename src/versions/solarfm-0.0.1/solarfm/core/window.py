@@ -53,6 +53,7 @@ class Window(Gtk.ApplicationWindow):
 
     def _subscribe_to_events(self):
         event_system.subscribe("tear_down", self._tear_down)
+        event_system.subscribe("load_interactive_debug", self._load_interactive_debug)
 
     def _load_widgets(self, args, unknownargs):
         if settings_manager.is_debug():
@@ -86,6 +87,9 @@ class Window(Gtk.ApplicationWindow):
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         cr.set_operator(cairo.OPERATOR_OVER)
+    
+    def _load_interactive_debug(self):
+        self.set_interactive_debugging(True)
 
 
     def _tear_down(self, widget = None, eve = None):
