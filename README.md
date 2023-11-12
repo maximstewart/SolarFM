@@ -17,7 +17,7 @@ sudo apt-get install xclip python3.8 python3-setproctitle python3-gi wget ffmpeg
 
 # Known Issues
 <ul>
-<li>There's a memory leak. Still analyzing where exactly.</li>
+<li>The memory leak has now been mostly mitigated in that it doesn't balloon to 2GB'. Still working out where the smaller one(s) is/are.</li>
 <li>Doing Ctrl+D when in Terminator (maybe other terminals too) somehow propagates the signal to SolarFM too.
 A selected file in the active quad-pane will move to trash since it is the default key-binding for that action.</li>
 </ul>

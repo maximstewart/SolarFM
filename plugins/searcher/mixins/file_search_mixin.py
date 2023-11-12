@@ -43,6 +43,50 @@ class FileSearchMixin:
             self.reset_file_list_box()
             self.run_fsearch_watcher(query=widget)
 
+
+
+
+
+
+
+
+# Need to implement this over the threaded stuffs....
+
+
+    def cancel_timer(self):
+		if self.timer:
+			self.timer.cancel()
+			GLib.idle_remove_by_data(None)
+
+	def delay_search_Glib(self):
+		GLib.idle_add(self._do_highlight)
+
+	def delay_search(self):
+		wait_time = self.search_time / len(self.search_text)
+		wait_time = max(wait_time, 0.05)
+
+		self.timer = threading.Timer(wait_time, self.delay_search_Glib)
+		self.timer.daemon = True
+		self.timer.start()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @daemon_threaded
     def run_fsearch_watcher(self, query):
         while True:
