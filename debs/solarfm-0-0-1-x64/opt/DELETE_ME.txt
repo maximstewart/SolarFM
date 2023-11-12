@@ -1,0 +1,1 @@
+Place the zipped up solarfm zip here amnd run the build script.

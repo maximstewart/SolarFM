@@ -12,6 +12,14 @@ function main() {
     cd "${call_path}"
     echo "Working Dir: " $(pwd)
 
-    python /opt/solarfm.zip "$@"
+    files=()
+    for f in "$@"; do
+        target=$(readlink -f "${f}")
+        i="${#files[@]}"
+        size=$(($i + 1))
+        files[$size]="${target}"
+    done
+
+    python /opt/solarfm.zip "${files[@]}"
 }
 main "$@";

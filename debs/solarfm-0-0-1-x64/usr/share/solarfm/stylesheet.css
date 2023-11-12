@@ -1,4 +1,10 @@
 /* Set fm to have transparent window */
+
+/* * {*/
+/*     background: rgba(39, 43, 52, 0.24);*/
+/*     color: rgba(255, 255, 255, 1);*/
+/* }*/
+
 box,
 iconview,
 notebook,
@@ -9,7 +15,45 @@ treeview.view,
 .content-view,
 .view {
     background: rgba(19, 21, 25, 0.14);
+    /* background: rgba(39, 43, 52, 0.14); */
     color: rgba(255, 255, 255, 1);
+}
+
+button:hover {
+    background-color: rgba(255, 185, 25, 0.34);
+}
+
+/* ----  top controls  ---- */
+window > box > box > button,
+window > box > box > buttonbox > button {
+    background: rgba(39, 43, 52, 0.64);
+}
+
+buttonbox > button * {
+    background: rgba(116, 0, 0, 0.0);
+    color: rgba(255, 255, 255, 1.0);
+}
+
+
+buttonbox > button:checked {
+    background-color: rgba(255, 125, 25, 0.34);
+}
+
+buttonbox > button:hover {
+    background-color: rgba(255, 185, 25, 0.34);
+}
+
+/* ----  notebook headers  ---- */
+notebook > header {
+    background: rgba(39, 43, 52, 0.46);
+}
+
+notebook > header > tabs > tab {
+    color: rgba(255, 255, 255, 1);
+}
+
+notebook > header > tabs > tab:active {
+    background: rgba(0, 0, 0, 0.0);
 }
 
 notebook > header > tabs > tab:checked {
@@ -20,6 +64,41 @@ notebook > header > tabs > tab:checked {
 
     color: rgba(255, 255, 255, 0.8);
 }
+
+popover {
+    background: rgba(39, 43, 52, 0.86);
+    color: rgba(255, 255, 255, 1);
+}
+
+/* ----  make text selection slightly transparent  ---- */
+* selection {
+    background-color: rgba(0, 115, 115, 0.34);
+    /* Bergundy */
+    /* background-color: rgba(116, 0, 0, 0.64); */
+    color: rgba(255, 255, 255, 0.5);
+}
+
+
+/* ----  notebook tab buttons  ---- */
+tab > box > button {
+    background: rgba(116, 0, 0, 0.64);
+}
+
+tab > box > button:hover {
+    background: rgba(256, 0, 0, 0.64);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 #message_view {
     font: 16px "Monospace";
