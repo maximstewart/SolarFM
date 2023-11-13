@@ -15,6 +15,7 @@ class AppLaunchException(Exception):
     ...
 
 
+
 class Application(IPCServer):
     """ docstring for Application. """
 
@@ -30,7 +31,7 @@ class Application(IPCServer):
                         message = f"FILE|{arg}"
                         self.send_ipc_message(message)
 
-                raise AppLaunchException(f"{app_name} IPC Server Exists: Will send path(s) to it and close...")
+                raise AppLaunchException(f"{app_name} IPC Server Exists: Have sent path(s) to it and closing...")
 
         self.setup_debug_hook()
         Window(args, unknownargs)
