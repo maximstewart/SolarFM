@@ -16,13 +16,17 @@ from utils.settings_manager.manager import SettingsManager
 # NOTE: Threads WILL NOT die with parent's destruction.
 def threaded_wrapper(fn):
     def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
+        thread = threading.Thread(target = fn, args = args, kwargs = kwargs, daemon = False)
+        thread.start()
+        return thread
     return wrapper
 
 # NOTE: Threads WILL die with parent's destruction.
 def daemon_threaded_wrapper(fn):
     def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
+        thread = threading.Thread(target = fn, args = args, kwargs = kwargs, daemon = True)
+        thread.start()
+        return thread
     return wrapper
 
 def sizeof_fmt_def(num, suffix="B"):

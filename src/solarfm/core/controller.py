@@ -78,6 +78,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
         event_system.subscribe("set_clipboard_data", self.set_clipboard_data)
 
+
     def _load_glade_file(self):
         self.builder.add_from_file( settings_manager.get_glade_file() )
         self.builder.expose_object("main_window", self.window)
@@ -112,6 +113,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
     def _shutting_down(self):
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
+
 
     def reload_plugins(self, widget=None, eve=None):
         self.plugins.reload_plugins()

@@ -34,7 +34,9 @@ class UIMixin(PaneMixin, WindowMixin):
             nickname = session["window"]["Nickname"]
             tabs     = session["window"]["tabs"]
             isHidden = True if session["window"]["isHidden"] == "True" else False
-            event_system.emit("load_files_view_state", (nickname, tabs))
+            event_system.emit("load_files_view_state", (nickname, tabs, isHidden))
+
+
 
     @daemon_threaded
     def _focus_last_visible_notebook(self, icon_grid):

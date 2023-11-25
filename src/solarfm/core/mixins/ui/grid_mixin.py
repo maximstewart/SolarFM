@@ -26,7 +26,7 @@ class GridMixin:
             store.append([None, file[0]])
 
         Gtk.main_iteration()
-        self.generate_icons(tab, store, dir, files)
+        thread = self.generate_icons(tab, store, dir, files)
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state and not trace_debug:
@@ -48,13 +48,10 @@ class GridMixin:
         tasks = [self.update_store(i, store, dir, tab, file[0]) for i, file in enumerate(files)]
         await asyncio.gather(*tasks)
 
-    async def load_icon(self, i, store, icon):
-        GLib.idle_add(self.update_store, i, store, icon )
-
     async def update_store(self, i, store, dir, tab, file):
         icon = tab.create_icon(dir, file)
         itr  = store.get_iter(i)
-        store.set_value(itr, 0, icon)
+        GLib.idle_add(store.set_value, itr, 0, icon)
 
     def create_tab_widget(self, tab):
         return TabHeaderWidget(tab, self.close_tab)
