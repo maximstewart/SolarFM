@@ -6,6 +6,7 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GLib
 
 # Application imports
 from .mixins.ui.pane_mixin import PaneMixin
@@ -37,14 +38,12 @@ class UIMixin(PaneMixin, WindowMixin):
             event_system.emit("load_files_view_state", (nickname, tabs, isHidden))
 
 
-
-    @daemon_threaded
     def _focus_last_visible_notebook(self, icon_grid):
         import time
 
         window = settings_manager.get_main_window()
         while not window.is_visible() and not window.get_realized():
-            time.sleep(0.1)
+            time.sleep(0.2)
 
         icon_grid.event(Gdk.Event().new(type = Gdk.EventType.BUTTON_RELEASE))
 
@@ -79,7 +78,7 @@ class UIMixin(PaneMixin, WindowMixin):
 
                 scroll_win = notebook.get_children()[-1]
                 icon_grid  = scroll_win.get_children()[0]
-                self._focus_last_visible_notebook(icon_grid)
+                GLib.Thread("", self._focus_last_visible_notebook, icon_grid)
             except UIMixinException as e:
                 logger.info("\n:  The saved session might be missing window data!  :\nLocation: ~/.config/solarfm/session.json\nFix: Back it up and delete it to reset.\n")
                 logger.debug(repr(e))

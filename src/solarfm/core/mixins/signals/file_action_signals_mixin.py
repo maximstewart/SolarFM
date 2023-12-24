@@ -48,7 +48,7 @@ class FileActionSignalsMixin:
             else:
                 self.soft_lock_countdown(data[0])
 
-    @threaded
+    @daemon_threaded
     def soft_lock_countdown(self, tab_widget):
         self.soft_update_lock[tab_widget] = { "last_update_time": time.time()}
 

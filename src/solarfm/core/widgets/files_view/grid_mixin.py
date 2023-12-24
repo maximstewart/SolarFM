@@ -26,13 +26,12 @@ class GridMixin:
             store.append([None, file[0]])
 
         Gtk.main_iteration()
-        thread = self.generate_icons(tab, store, dir, files)
+        GLib.Thread("", self.generate_icons, tab, store, dir, files)
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state and not trace_debug:
             self.fm_controller.save_state()
 
-    @daemon_threaded
     def generate_icons(self, tab, store, dir, files):
         try:
             loop = asyncio.get_running_loop()

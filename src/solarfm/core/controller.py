@@ -135,6 +135,8 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
             event_system.emit("open_files")
         if action == "open_with":
             event_system.emit("show_appchooser_menu")
+        if action == "open_2_new_tab":
+            event_system.emit("open_2_new_tab")
         if action == "execute":
             event_system.emit("execute_files")
         if action == "execute_in_terminal":
