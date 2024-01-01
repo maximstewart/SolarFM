@@ -7,6 +7,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import GLib
+from gi.repository import Gio
 
 # Application imports
 from ...widgets.tab_header_widget import TabHeaderWidget
@@ -19,6 +20,18 @@ class GridMixin:
     """docstring for GridMixin"""
 
     def load_store(self, tab, store, save_state = False, use_generator = False):
+        # dir      = tab.get_current_directory()
+        # file     = Gio.File.new_for_path(dir)
+        # dir_list = Gtk.DirectoryList.new("standard::*", file)
+        # store.set(dir_list)
+
+        # file  = Gio.File.new_for_path(dir)
+        # for file in file.enumerate_children("standard::*", Gio.FILE_ATTRIBUTE_STANDARD_NAME, None):
+        #     store.append(file)
+
+        # return
+
+
         dir   = tab.get_current_directory()
         files = tab.get_files()
 
@@ -45,14 +58,24 @@ class GridMixin:
             asyncio.run( self.create_icons(tab, store, dir, files) )
 
     async def create_icons(self, tab, store, dir, files):
-        tasks = [self.update_store(i, store, dir, tab, file[0]) for i, file in enumerate(files)]
+        icons = [self.get_icon(tab, dir, file[0]) for file in files]
+        data  = await asyncio.gather(*icons)
+        tasks = [self.update_store(i, store, icon) for i, icon in enumerate(data)]
         await asyncio.gather(*tasks)
+
         GLib.idle_add(Gtk.main_iteration)
 
-    async def update_store(self, i, store, dir, tab, file):
-        icon = tab.create_icon(dir, file)
+    async def update_store(self, i, store, icon):
         itr  = store.get_iter(i)
-        GLib.idle_add(store.set_value, itr, 0, icon)
+        GLib.idle_add(self.insert_store, store, itr, icon)
+
+    def insert_store(self, store, itr, icon):
+        store.set_value(itr, 0, icon)
+        # Note:  If the function returns GLib.SOURCE_REMOVE or False it is automatically removed from the list of event sources and will not be called again.
+        return False
+
+    async def get_icon(self, tab, dir, file):
+        return tab.create_icon(dir, file)
 
     def create_tab_widget(self, tab):
         return TabHeaderWidget(tab, self.close_tab)

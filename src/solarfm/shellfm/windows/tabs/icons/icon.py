@@ -138,6 +138,7 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
         def _call_gtk_thread(event, result):
             result.append( self.get_system_thumbnail(full_path, size) )
             event.set()
+            return False
 
         result  = []
         event   = threading.Event()
