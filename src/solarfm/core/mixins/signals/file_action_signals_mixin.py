@@ -80,6 +80,8 @@ class FileActionSignalsMixin:
         if [wid, tid] in [state.wid, state.tid]:
             self.set_bottom_labels(tab)
 
+        return False
+
 
     def do_file_search(self, widget, eve = None):
         if not self.ctrl_down and not self.shift_down and not self.alt_down:

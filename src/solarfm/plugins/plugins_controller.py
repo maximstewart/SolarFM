@@ -119,6 +119,8 @@ class PluginsController:
         plugin.reference.run()
         self._plugin_collection.append(plugin)
 
+        return False
+
     def reload_plugins(self, file: str = None) -> None:
         logger.info(f"Reloading plugins...")
         parent_path = os.getcwd()

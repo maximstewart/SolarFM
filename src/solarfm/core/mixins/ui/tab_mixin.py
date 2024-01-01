@@ -218,6 +218,7 @@ class TabMixin(GridMixin):
     def do_focused_click(self, button):
         button.grab_focus()
         button.clicked()
+        return False
 
     def set_path_entry(self, button = None, eve = None):
         self.path_auto_filled = True

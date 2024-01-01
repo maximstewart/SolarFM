@@ -89,6 +89,8 @@ class IPCServer(Singleton):
                 conn.close()
                 break
 
+        return False
+
 
     def send_ipc_message(self, message: str = "Empty Data...") -> None:
         try:
