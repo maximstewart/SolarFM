@@ -8,9 +8,6 @@ import traceback
 from setproctitle import setproctitle
 
 # Lib imports
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
 # Application imports
 from __builtins__ import *
@@ -45,7 +42,6 @@ def run():
 
         settings_manager.do_dirty_start_check()
         Application(args, unknownargs)
-        Gtk.main()
     except Exception as e:
         traceback.print_exc()
         quit()

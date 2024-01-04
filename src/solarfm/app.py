@@ -34,7 +34,7 @@ class Application(IPCServer):
                 raise AppLaunchException(f"{app_name} IPC Server Exists: Have sent path(s) to it and closing...")
 
         self.setup_debug_hook()
-        Window(args, unknownargs)
+        Window(args, unknownargs).main()
 
 
     def socket_realization_check(self):

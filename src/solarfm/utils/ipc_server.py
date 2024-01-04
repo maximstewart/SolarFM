@@ -51,9 +51,10 @@ class IPCServer(Singleton):
             listener = Listener((self._ipc_address, self._ipc_port))
 
         self.is_ipc_alive = True
-        self._run_ipc_loop(listener)
+        # self._run_ipc_loop(listener)
+        GLib.Thread("", self._run_ipc_loop, listener)
 
-    @daemon_threaded
+    # @daemon_threaded
     def _run_ipc_loop(self, listener) -> None:
         while True:
             try:

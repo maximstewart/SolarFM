@@ -57,25 +57,32 @@ class GridMixin:
         else:
             asyncio.run( self.create_icons(tab, store, dir, files) )
 
+        thread = GLib.Thread.self()
+        thread.unref()
+
     async def create_icons(self, tab, store, dir, files):
         icons = [self.get_icon(tab, dir, file[0]) for file in files]
         data  = await asyncio.gather(*icons)
         tasks = [self.update_store(i, store, icon) for i, icon in enumerate(data)]
         await asyncio.gather(*tasks)
 
-        GLib.idle_add(Gtk.main_iteration)
+        GLib.idle_add(self.do_ui_update)
 
     async def update_store(self, i, store, icon):
         itr  = store.get_iter(i)
         GLib.idle_add(self.insert_store, store, itr, icon)
+
+    async def get_icon(self, tab, dir, file):
+        return tab.create_icon(dir, file)
 
     def insert_store(self, store, itr, icon):
         store.set_value(itr, 0, icon)
         # Note:  If the function returns GLib.SOURCE_REMOVE or False it is automatically removed from the list of event sources and will not be called again.
         return False
 
-    async def get_icon(self, tab, dir, file):
-        return tab.create_icon(dir, file)
+    def do_ui_update(self):
+        Gtk.main_iteration()
+        return False
 
     def create_tab_widget(self, tab):
         return TabHeaderWidget(tab, self.close_tab)

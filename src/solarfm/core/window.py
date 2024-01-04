@@ -87,12 +87,14 @@ class Window(Gtk.ApplicationWindow):
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         cr.set_operator(cairo.OPERATOR_OVER)
-    
+
     def _load_interactive_debug(self):
         self.set_interactive_debugging(True)
-
 
     def _tear_down(self, widget = None, eve = None):
         event_system.emit("shutting_down")
         settings_manager.clear_pid()
         Gtk.main_quit()
+
+    def main(self):
+        Gtk.main()
