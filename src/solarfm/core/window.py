@@ -25,17 +25,17 @@ class Window(Gtk.ApplicationWindow):
 
     def __init__(self, args, unknownargs):
         super(Window, self).__init__()
-
-        self._controller = None
         settings_manager.set_main_window(self)
 
-        self._set_window_data()
+        self._controller = None
+
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()
-
         self._load_widgets(args, unknownargs)
 
+        self._set_window_data()
+        self._set_size_constraints()
         self.show()
 
 
@@ -66,6 +66,18 @@ class Window(Gtk.ApplicationWindow):
 
         self.add( self._controller.get_core_widget() )
 
+    def _set_size_constraints(self):
+        _window_x   = settings.config.main_window_x
+        _window_y   = settings.config.main_window_y
+        _min_width  = settings.config.main_window_min_width
+        _min_height = settings.config.main_window_min_height
+        _width      = settings.config.main_window_width
+        _height     = settings.config.main_window_height
+
+        self.move(_window_x, _window_y - 28)
+        self.set_size_request(_min_width, _min_height)
+        self.set_default_size(_width, _height)
+
     def _set_window_data(self) -> None:
         screen = self.get_screen()
         visual = screen.get_rgba_visual()
@@ -91,8 +103,19 @@ class Window(Gtk.ApplicationWindow):
     def _load_interactive_debug(self):
         self.set_interactive_debugging(True)
 
+
     def _tear_down(self, widget = None, eve = None):
         event_system.emit("shutting_down")
+
+        size = self.get_size()
+        pos  = self.get_position()
+
+        settings_manager.set_main_window_width(size.width)
+        settings_manager.set_main_window_height(size.height)
+        settings_manager.set_main_window_x(pos.root_x)
+        settings_manager.set_main_window_y(pos.root_y)
+        settings_manager.save_settings()
+
         settings_manager.clear_pid()
         Gtk.main_quit()
 

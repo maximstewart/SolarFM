@@ -41,15 +41,13 @@ class FileActionSignalsMixin:
                         Gio.FileMonitorEvent.MOVED_OUT]:
 
             if eve_type in [Gio.FileMonitorEvent.MOVED_IN, Gio.FileMonitorEvent.MOVED_OUT]:
-                # self.update_on_soft_lock_end(data[0])
-                GLib.Thread("", self.soft_lock_countdown, data[0])
+                self.update_on_soft_lock_end(data[0])
             elif data[0] in self.soft_update_lock.keys():
                 self.soft_update_lock[data[0]]["last_update_time"] = time.time()
             else:
-                # self.soft_lock_countdown(data[0])
-                GLib.Thread("", self.soft_lock_countdown, data[0])
+                self.soft_lock_countdown(data[0])
 
-    # @daemon_threaded
+    @daemon_threaded
     def soft_lock_countdown(self, tab_widget):
         self.soft_update_lock[tab_widget] = { "last_update_time": time.time()}
 
@@ -63,9 +61,6 @@ class FileActionSignalsMixin:
 
         self.soft_update_lock.pop(tab_widget, None)
         GLib.idle_add(self.update_on_soft_lock_end, *(tab_widget,))
-        thread = GLib.Thread.self()
-        thread.unref()
-
 
     def update_on_soft_lock_end(self, tab_widget):
         wid, tid  = tab_widget.split("|")

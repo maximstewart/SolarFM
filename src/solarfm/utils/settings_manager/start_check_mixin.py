@@ -11,36 +11,48 @@ import inspect
 
 
 class StartCheckMixin:
-    def is_dirty_start(self) -> bool: return self._dirty_start
-    def clear_pid(self): self._clean_pid()
+    def is_dirty_start(self) -> bool:
+        return self._dirty_start
+
+    def clear_pid(self):
+        if not self.is_trace_debug():
+            self._clean_pid()
 
     def do_dirty_start_check(self):
-        if not os.path.exists(self._PID_FILE):
-            self._write_new_pid()
-        else:
-            with open(self._PID_FILE, "r") as _pid:
-                pid = _pid.readline().strip()
+        if self.is_trace_debug():
+            pid = os.getpid()
+            self._print_pid(pid)
+            return
+
+        if os.path.exists(self._PID_FILE):
+            with open(self._PID_FILE, "r") as f:
+                pid = f.readline().strip()
                 if pid not in ("", None):
-                    self._check_alive_status(int(pid))
-                else:
-                    self._write_new_pid()
+                    if self.is_pid_alive( int(pid) ):
+                        print("PID file exists and PID is alive... Letting downstream errors (sans debug args) handle app closure propigation.")
+                        return
+
+        self._write_new_pid()
 
     """ Check For the existence of a unix pid. """
-    def _check_alive_status(self, pid):
+    def is_pid_alive(self, pid):
         print(f"PID Found: {pid}")
+
         try:
             os.kill(pid, 0)
         except OSError:
-            print(f"{app_name} is starting dirty...")
+            print(f"{app_name} PID file exists but PID is irrelevant; starting dirty...")
             self._dirty_start = True
-            self._write_new_pid()
-            return
+            return False
 
-        print("PID is alive... Let downstream errors (sans debug args) handle app closure propigation.")
+        return True
 
     def _write_new_pid(self):
         pid = os.getpid()
         self._write_pid(pid)
+        self._print_pid(pid)
+
+    def _print_pid(self, pid):
         print(f"{app_name} PID:  {pid}")
 
     def _clean_pid(self):

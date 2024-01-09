@@ -21,7 +21,14 @@
         "sys_icon_wh":       [56, 56],
         "file_manager_app": "solarfm",
         "steam_cdn_url": "https://steamcdn-a.akamaihd.net/steam/apps/",
-        "remux_folder_max_disk_usage": "8589934592"
+        "remux_folder_max_disk_usage": "8589934592",
+        "make_transparent":0,
+        "main_window_x":721,
+        "main_window_y":465,
+        "main_window_min_width":720,
+        "main_window_min_height":480,
+        "main_window_width":800,
+        "main_window_height":600,
     },
     "filters": {
         "meshs":  [".dae", ".fbx", ".gltf", ".obj", ".stl"],

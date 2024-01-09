@@ -177,6 +177,10 @@ class WindowMixin(TabMixin):
             if from_uri != dest:
                 event_system.emit("move_files", (uris, dest))
 
+            Gtk.drag_finish(drag_context, True, False, time)
+            return
+
+        Gtk.drag_finish(drag_context, False, False, time)
 
     def create_new_tab_notebook(self, widget=None, wid=None, path=None):
         self.create_tab(wid, None, path)

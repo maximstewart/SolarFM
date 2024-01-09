@@ -39,13 +39,15 @@ class GridMixin:
             store.append([None, file[0]])
 
         Gtk.main_iteration()
-        GLib.Thread("", self.generate_icons, tab, store, dir, files)
+        self.generate_icons(tab, store, dir, files)
+        # GLib.Thread("", self.generate_icons, tab, store, dir, files)
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state and not trace_debug:
             self.fm_controller.save_state()
 
 
+    @daemon_threaded
     def generate_icons(self, tab, store, dir, files):
         try:
             loop = asyncio.get_running_loop()
@@ -56,9 +58,6 @@ class GridMixin:
             loop.create_task( self.create_icons(tab, store, dir, files) )
         else:
             asyncio.run( self.create_icons(tab, store, dir, files) )
-
-        thread = GLib.Thread.self()
-        thread.unref()
 
     async def create_icons(self, tab, store, dir, files):
         icons = [self.get_icon(tab, dir, file[0]) for file in files]
@@ -77,6 +76,7 @@ class GridMixin:
 
     def insert_store(self, store, itr, icon):
         store.set_value(itr, 0, icon)
+
         # Note:  If the function returns GLib.SOURCE_REMOVE or False it is automatically removed from the list of event sources and will not be called again.
         return False
 

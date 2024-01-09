@@ -146,6 +146,13 @@ class SettingsManager(StartCheckMixin, Singleton):
     def is_trace_debug(self)    -> bool:  return self._trace_debug
     def is_debug(self)          -> bool:  return self._debug
 
+    def set_main_window_x(self, x = 0):  self.settings.config.main_window_x  = x
+    def set_main_window_y(self, y = 0):  self.settings.config.main_window_y  = y
+    def set_main_window_width(self, width = 800):   self.settings.config.main_window_width  = width
+    def set_main_window_height(self, height = 600): self.settings.config.main_window_height = height
+    def set_main_window_min_width(self, width = 720):   self.settings.config.main_window_min_width  = width
+    def set_main_window_min_height(self, height = 480): self.settings.config.main_window_min_height = height
+
     def set_trace_debug(self, trace_debug: bool):
         self._trace_debug = trace_debug
 
