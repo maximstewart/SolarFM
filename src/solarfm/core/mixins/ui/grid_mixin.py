@@ -34,6 +34,7 @@ class GridMixin:
 
         dir   = tab.get_current_directory()
         files = tab.get_files()
+        store.clear()
 
         for file in files:
             store.append([None, file[0]])
@@ -84,8 +85,8 @@ class GridMixin:
         Gtk.main_iteration()
         return False
 
-    def create_tab_widget(self, tab):
-        return TabHeaderWidget(tab, self.close_tab)
+    def create_tab_widget(self):
+        return TabHeaderWidget(self.close_tab)
 
     def create_scroll_and_store(self, tab, wid, use_tree_view = False):
         scroll = Gtk.ScrolledWindow()

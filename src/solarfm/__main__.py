@@ -20,7 +20,7 @@ def run():
         locale.setlocale(locale.LC_NUMERIC, 'C')
 
         setproctitle(f"{app_name}")
-        faulthandler.enable()  # For better debug info
+        # faulthandler.enable()  # For better debug info
 
         parser = argparse.ArgumentParser()
         # Add long and short arguments

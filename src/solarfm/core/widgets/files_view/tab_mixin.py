@@ -34,7 +34,7 @@ class TabMixin(GridMixin):
         else:
             tab.set_path(path)
 
-        tab_widget    = self.create_tab_widget(tab)
+        tab_widget    = self.get_tab_widget(tab)
         scroll, store = self.create_scroll_and_store(tab, wid)
         index         = notebook.append_page(scroll, tab_widget)
         notebook.set_tab_detachable(scroll, True)
@@ -53,6 +53,14 @@ class TabMixin(GridMixin):
         event_system.emit("set_window_title", (tab.get_current_directory(),))
         self.set_file_watcher(tab)
 
+    def get_tab_widget(self, tab):
+        tab_widget        = self.create_tab_widget()
+        tab_widget.tab_id = tab.get_id()
+
+        tab_widget.label.set_label(f"{tab.get_end_of_path()}")
+        tab_widget.label.set_width_chars(len(tab.get_end_of_path()))
+
+        return tab_widget
 
     def close_tab(self, button, eve = None):
         notebook = button.get_parent().get_parent()
@@ -90,11 +98,12 @@ class TabMixin(GridMixin):
         del watcher
         del tab
 
-        gc.collect()
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
         self.set_window_title()
+
+        gc.collect()
 
     # NOTE: Not actually getting called even tho set in the glade file...
     def on_tab_dnded(self, notebook, page, x, y):
@@ -119,13 +128,13 @@ class TabMixin(GridMixin):
 
     def on_tab_switch_update(self, notebook, content = None, index = None):
         self.selected_files.clear()
-        wid, tid = content.get_children()[0].get_name().split("|")
+        wid, tid = content.get_children()[0].tab.get_name().split("|")
         self.fm_controller.set_wid_and_tid(wid, tid)
         self.set_path_text(wid, tid)
         self.set_window_title()
 
     def get_id_from_tab_box(self, tab_box):
-        return tab_box.get_children()[2].get_text()
+        return tab_box.tab.get_id()
 
     def get_tab_label(self, notebook, icon_grid):
         return notebook.get_tab_label(icon_grid.get_parent()).get_children()[0]

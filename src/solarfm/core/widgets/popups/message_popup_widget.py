@@ -103,7 +103,7 @@ class MessagePopupWidget(Gtk.Popover):
             self.popup()
             self.hide_message_timeout(seconds)
 
-    @threaded
+    @daemon_threaded
     def hide_message_timeout(self, seconds=3):
         time.sleep(seconds)
         GLib.idle_add(event_system.emit, ("hide_messages_popup"))
