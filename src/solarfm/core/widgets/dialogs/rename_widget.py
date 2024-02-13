@@ -50,6 +50,9 @@ class RenameWidget:
     def show_rename_file_menu(self, widget=None, eve=None):
         if widget:
             widget.grab_focus()
+            end_i = widget.get_text().rfind(".")
+            if end_i > 0:
+                widget.select_region(0, end_i)
 
         response = self._rename_file_menu.run()
         if response == Gtk.ResponseType.CLOSE:

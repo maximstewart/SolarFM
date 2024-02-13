@@ -83,13 +83,9 @@ class TabMixin(GridMixin):
         self.builder.dereference_object(f"{wid}|{tid}")
 
         store.clear()
-        # store.run_dispose()
         icon_grid.destroy()
-        # icon_grid.run_dispose()
         scroll.destroy()
-        #scroll.run_dispose()
         tab_box.destroy()
-        #tab_box.run_dispose()
 
         del store
         del icon_grid
