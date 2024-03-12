@@ -38,6 +38,7 @@ class TabMixin(GridMixin):
         scroll, store = self.create_scroll_and_store(tab, wid)
         index         = notebook.append_page(scroll, tab_widget)
         notebook.set_tab_detachable(scroll, True)
+        notebook.set_tab_reorderable(scroll, True)
 
         self.fm_controller.set_wid_and_tid(wid, tab.get_id())
         event_system.emit("go_to_path", (tab.get_current_directory(),)) # NOTE: Not efficent if I understand how
@@ -47,7 +48,6 @@ class TabMixin(GridMixin):
 
         ctx = notebook.get_style_context()
         ctx.add_class("notebook-unselected-focus")
-        notebook.set_tab_reorderable(scroll, True)
         self.load_store(tab, store)
         # self.set_window_title()
         event_system.emit("set_window_title", (tab.get_current_directory(),))
@@ -81,11 +81,12 @@ class TabMixin(GridMixin):
 
         self.builder.dereference_object(f"{wid}|{tid}|icon_grid")
         self.builder.dereference_object(f"{wid}|{tid}")
+        icon_grid.set_model(None)
 
-        store.clear()
-        icon_grid.destroy()
-        scroll.destroy()
-        tab_box.destroy()
+        store.run_dispose()
+        icon_grid.run_dispose()
+        scroll.run_dispose()
+        tab_box.run_dispose()
 
         del store
         del icon_grid

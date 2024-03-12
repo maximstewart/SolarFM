@@ -50,8 +50,8 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
 
             if not thumbnl:
                 # TODO: Detect if not in a thread and use directly for speed get_system_thumbnail
-                # thumbnl = self.get_system_thumbnail(full_path, self.sys_icon_wh[0])
-                thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
+                thumbnl = self.get_system_thumbnail(full_path, self.sys_icon_wh[0])
+                # thumbnl = self._get_system_thumbnail_gtk_thread(full_path, self.sys_icon_wh[0])
                 if not thumbnl:
                     raise IconException("No known icons found.")
 
@@ -152,11 +152,11 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
             gio_file  = Gio.File.new_for_path(full_path)
             info      = gio_file.query_info('standard::icon' , 0, None)
             icon      = info.get_icon().get_names()[0]
-            data      = settings_manager.get_icon_theme().lookup_icon(icon , size , 0)
+            data      = settings_manager.get_icon_theme().lookup_icon(icon , size, 0)
 
             if data:
                 icon_path = data.get_filename()
-                return GdkPixbuf.Pixbuf.new_from_file(icon_path)
+                return GdkPixbuf.Pixbuf.new_from_file_at_size(icon_path, width = size, height = size)
 
             raise IconException("No system icon found...")
         except IconException:
