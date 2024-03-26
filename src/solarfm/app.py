@@ -56,7 +56,7 @@ class Application:
         try:
             # kill -SIGUSR2 <pid> from Linux/Unix or SIGBREAK signal from Windows
             signal.signal(
-                vars(signal).get("SIGBREAK") or vars(signal).get("SIGUSR1"),
+                vars(signal).get("SIGBREAK") or vars(signal).get("SIGUSR2"),
                 debug_signal_handler
             )
         except ValueError:

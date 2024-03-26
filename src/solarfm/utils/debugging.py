@@ -18,7 +18,7 @@ def debug_signal_handler(signal, frame):
         rpdb2.start_embedded_debugger("foobar", True, True)
         rpdb2.setbreak(depth=1)
         return
-    except StandardError:
+    except Exception:
         ...
 
     try:
@@ -26,7 +26,7 @@ def debug_signal_handler(signal, frame):
         logger.debug("\n\nStarting embedded rconsole debugger...\n\n")
         rconsole.spawn_server()
         return
-    except StandardError as ex:
+    except Exception as ex:
         ...
 
     try:
@@ -34,7 +34,7 @@ def debug_signal_handler(signal, frame):
         logger.debug("\n\nStarting PuDB debugger...\n\n")
         set_trace(paused = True)
         return
-    except StandardError as ex:
+    except Exception as ex:
         ...
 
     try:
@@ -42,11 +42,11 @@ def debug_signal_handler(signal, frame):
         logger.debug("\n\nStarting embedded PDB debugger...\n\n")
         pdb.Pdb(skip=['gi.*']).set_trace()
         return
-    except StandardError as ex:
+    except Exception as ex:
         ...
 
     try:
         import code
         code.interact()
-    except StandardError as ex:
+    except Exception as ex:
         logger.debug(f"{ex}, returning to normal program flow...")
