@@ -53,9 +53,8 @@ class ManifestProcessor:
     def get_loading_data(self):
         loading_data = {}
         requests     = self._plugin.requests
-        keys         = requests.keys()
 
-        if "ui_target" in keys:
+        if "ui_target" in requests:
             if requests["ui_target"] in  [
                                             "none", "other", "main_Window", "main_menu_bar",
                                             "main_menu_bttn_box_bar", "path_menu_bar", "plugin_control_list",
@@ -63,7 +62,7 @@ class ManifestProcessor:
                                             "window_2", "window_3", "window_4"
                                         ]:
                 if requests["ui_target"] == "other":
-                    if "ui_target_id" in keys:
+                    if "ui_target_id" in requests:
                         loading_data["ui_target"] = self._builder.get_object(requests["ui_target_id"])
                         if loading_data["ui_target"] == None:
                             raise ManifestProcessorException('Invalid "ui_target_id" given in requests. Must have one if setting "ui_target" to "other"...')
@@ -74,11 +73,11 @@ class ManifestProcessor:
             else:
                 raise ManifestProcessorException('Unknown "ui_target" given in requests.')
 
-        if "pass_fm_events" in keys:
+        if "pass_fm_events" in requests:
             if requests["pass_fm_events"] in ["true"]:
                 loading_data["pass_fm_events"] = True
 
-        if "pass_ui_objects" in keys:
+        if "pass_ui_objects" in requests:
             if len(requests["pass_ui_objects"]) > 0:
                 loading_data["pass_ui_objects"] = []
                 for ui_id  in requests["pass_ui_objects"]:
@@ -87,7 +86,7 @@ class ManifestProcessor:
                     except ManifestProcessorException as e:
                         logger.error(repr(e))
 
-        if "bind_keys" in keys:
+        if "bind_keys" in requests:
             if isinstance(requests["bind_keys"], list):
                 loading_data["bind_keys"] = requests["bind_keys"]
 

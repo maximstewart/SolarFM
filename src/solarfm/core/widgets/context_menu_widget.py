@@ -40,16 +40,15 @@ class ContextMenuWidget(Gtk.Menu):
     def _emit(self, menu_item, type):
         event_system.emit("do_action_from_menu_controls", type)
 
-
-    def make_submenu(self, name, data, keys):
+    def make_submenu(self, name, data):
         menu      = Gtk.Menu()
         menu_item = Gtk.MenuItem(name)
 
-        for key in keys:
+        for key, value in data.items():
             if isinstance(data, dict):
-                entry = self.make_menu_item(key, data[key])
+                entry = self.make_menu_item(key, value)
             elif isinstance(data, list):
-                entry = self.make_menu_item(key, data)
+                entry = self.make_menu_item(key, value)
             else:
                 continue
 
@@ -58,11 +57,11 @@ class ContextMenuWidget(Gtk.Menu):
         menu_item.set_submenu(menu)
         return menu_item
 
-    def make_menu_item(self, name, data) -> Gtk.MenuItem:
+    def make_menu_item(self, label, data) -> Gtk.MenuItem:
         if isinstance(data, dict):
-            return self.make_submenu(name, data, data.keys())
+            return self.make_submenu(label, data)
         elif isinstance(data, list):
-            entry = Gtk.ImageMenuItem(name)
+            entry = Gtk.ImageMenuItem(label)
             icon  = getattr(Gtk, f"{data[0]}")
             entry.set_image( Gtk.Image(stock=icon) )
             entry.set_always_show_image(True)
@@ -71,18 +70,18 @@ class ContextMenuWidget(Gtk.Menu):
 
     def build_context_menu(self) -> None:
         data          = self._context_menu_data
-        dkeys         = data.keys()
         plugins_entry = None
 
-        for dkey in dkeys:
-            entry = self.make_menu_item(dkey, data[dkey])
+        for key, value in data.items():
+            entry = self.make_menu_item(key, value)
             self.append(entry)
-            if dkey == "Plugins":
+            if key == "Plugins":
                 plugins_entry = entry
 
         self.attach_to_widget(self._window, None)
-        self.show_all()
         self.builder.expose_object("context_menu", self)
+        self.show_all()
+
         if plugins_entry:
             self.builder.expose_object("context_menu_plugins", plugins_entry.get_submenu())
 

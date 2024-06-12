@@ -10,6 +10,7 @@ gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GLib
+from gi.repository import GObject
 
 # Application imports
 from core.controller import Controller
@@ -24,6 +25,8 @@ class Window(Gtk.ApplicationWindow):
     """docstring for Window."""
 
     def __init__(self, args, unknownargs):
+        GObject.threads_init()
+
         super(Window, self).__init__()
         settings_manager.set_main_window(self)
 
@@ -85,7 +88,7 @@ class Window(Gtk.ApplicationWindow):
         if visual != None and screen.is_composited():
             self.set_visual(visual)
             self.set_app_paintable(True)
-            self.connect("draw", self._area_draw)
+            # self.connect("draw", self._area_draw)
 
         # bind css file
         cssProvider  = Gtk.CssProvider()

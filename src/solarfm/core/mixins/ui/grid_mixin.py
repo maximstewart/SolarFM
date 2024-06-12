@@ -34,7 +34,6 @@ class GridMixin:
 
         dir   = tab.get_current_directory()
         files = tab.get_files()
-        store.clear()
 
         for file in files:
             store.append([None, file[0]])
@@ -48,32 +47,50 @@ class GridMixin:
             self.fm_controller.save_state()
 
 
-    @daemon_threaded
     def generate_icons(self, tab, store, dir, files):
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = None
+        for i, file in enumerate(files):
+            # GLib.Thread(f"{i}", self.make_and_load_icon, i, store, tab, dir, file[0])
+            self.make_and_load_icon( i, store, tab, dir, file[0])
 
-        if loop and loop.is_running():
-            loop.create_task( self.create_icons(tab, store, dir, files) )
-        else:
-            asyncio.run( self.create_icons(tab, store, dir, files) )
-
-    async def create_icons(self, tab, store, dir, files):
-        icons = [self.get_icon(tab, dir, file[0]) for file in files]
-        data  = await asyncio.gather(*icons)
-        tasks = [self.update_store(i, store, icon) for i, icon in enumerate(data)]
-        await asyncio.gather(*tasks)
-
-        GLib.idle_add(self.do_ui_update)
-
-    async def update_store(self, i, store, icon):
+    def update_store(self, i, store, icon):
         itr  = store.get_iter(i)
         GLib.idle_add(self.insert_store, store, itr, icon)
 
-    async def get_icon(self, tab, dir, file):
+    @daemon_threaded
+    def make_and_load_icon(self, i, store, tab, dir, file):
+        icon = tab.create_icon(dir, file)
+        self.update_store(i, store, icon)
+
+    def get_icon(self, tab, dir, file):
         return tab.create_icon(dir, file)
+
+
+    # @daemon_threaded
+    # def generate_icons(self, tab, store, dir, files):
+    #     try:
+    #         loop = asyncio.get_running_loop()
+    #     except RuntimeError:
+    #         loop = None
+
+    #     if loop and loop.is_running():
+    #         loop = asyncio.get_event_loop()
+    #         loop.create_task( self.create_icons(tab, store, dir, files) )
+    #     else:
+    #         asyncio.run( self.create_icons(tab, store, dir, files) )
+
+    # async def create_icons(self, tab, store, dir, files):
+    #     icons = [self.get_icon(tab, dir, file[0]) for file in files]
+    #     data  = await asyncio.gather(*icons)
+    #     tasks = [self.update_store(i, store, icon) for i, icon in enumerate(data)]
+    #     asyncio.gather(*tasks)
+
+    # async def update_store(self, i, store, icon):
+    #     itr  = store.get_iter(i)
+    #     GLib.idle_add(self.insert_store, store, itr, icon)
+
+    # async def get_icon(self, tab, dir, file):
+    #     return tab.create_icon(dir, file)
+
 
     def insert_store(self, store, itr, icon):
         store.set_value(itr, 0, icon)

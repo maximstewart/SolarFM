@@ -100,20 +100,19 @@ class PluginsController:
 
     def execute_plugin(self, module: type, plugin: PluginInfo, loading_data: []):
         plugin.reference = module.Plugin()
-        keys             = loading_data.keys()
 
-        if "ui_target" in keys:
+        if "ui_target" in loading_data:
             loading_data["ui_target"].add( plugin.reference.generate_reference_ui_element() )
             loading_data["ui_target"].show_all()
 
-        if "pass_ui_objects" in keys:
+        if "pass_ui_objects" in loading_data:
             plugin.reference.set_ui_object_collection( loading_data["pass_ui_objects"] )
 
-        if "pass_fm_events" in keys:
+        if "pass_fm_events" in loading_data:
             plugin.reference.set_fm_event_system(event_system)
             plugin.reference.subscribe_to_events()
 
-        if "bind_keys" in keys:
+        if "bind_keys" in loading_data:
             keybindings.append_bindings( loading_data["bind_keys"] )
 
         plugin.reference.run()

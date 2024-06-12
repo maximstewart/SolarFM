@@ -38,6 +38,14 @@ def debug_signal_handler(signal, frame):
         ...
 
     try:
+        import ipdb
+        logger.debug("\n\nStarting IPDB debugger...\n\n")
+        ipdb.set_trace()
+        return
+    except Exception as ex:
+        ...
+
+    try:
         import pdb
         logger.debug("\n\nStarting embedded PDB debugger...\n\n")
         pdb.Pdb(skip=['gi.*']).set_trace()

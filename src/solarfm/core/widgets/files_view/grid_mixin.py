@@ -55,6 +55,7 @@ class GridMixin:
             loop = None
 
         if loop and loop.is_running():
+            loop = asyncio.get_event_loop()
             loop.create_task( self.create_icons(tab, store, dir, files) )
         else:
             asyncio.run( self.create_icons(tab, store, dir, files) )
@@ -63,9 +64,7 @@ class GridMixin:
         icons = [self.get_icon(tab, dir, file[0]) for file in files]
         data  = await asyncio.gather(*icons)
         tasks = [self.update_store(i, store, icon) for i, icon in enumerate(data)]
-        await asyncio.gather(*tasks)
-
-        GLib.idle_add(self.do_ui_update)
+        asyncio.gather(*tasks)
 
     async def update_store(self, i, store, icon):
         itr  = store.get_iter(i)
