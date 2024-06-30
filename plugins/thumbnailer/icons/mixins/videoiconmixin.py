@@ -14,7 +14,7 @@ class VideoIconMixin:
             proc = subprocess.Popen([self.FFMPG_THUMBNLR, "-t", scrub_percent, "-s", "300", "-c", "jpg", "-i", full_path, "-o", hash_img_path])
             proc.wait()
         except Exception as e:
-            self.logger.debug(repr(e))
+            logger.info(repr(e))
             self.ffprobe_generate_video_thumbnail(full_path, hash_img_path)
 
 
@@ -51,5 +51,4 @@ class VideoIconMixin:
             proc.wait()
         except Exception as e:
             print("Video thumbnail generation issue in thread:")
-            print( repr(e) )
-            self.logger.debug(repr(e))
+            logger.info(repr(e))

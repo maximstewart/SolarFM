@@ -44,10 +44,13 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         self._subscribe_to_events()
         self._load_widgets()
 
+        if args.no_plugins == "false":
+            self.plugins_controller.pre_launch_plugins()
+
         self._generate_file_views(self.fm_controller_data)
 
         if args.no_plugins == "false":
-            self.plugins.launch_plugins()
+            self.plugins_controller.post_launch_plugins()
 
         for arg in unknownargs + [args.new_tab,]:
             if os.path.isdir(arg):
@@ -116,7 +119,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
 
     def reload_plugins(self, widget=None, eve=None):
-        self.plugins.reload_plugins()
+        self.plugins_controller.reload_plugins()
 
 
     def do_action_from_menu_controls(self, _action=None, eve=None):

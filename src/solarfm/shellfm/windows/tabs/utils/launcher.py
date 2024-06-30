@@ -41,11 +41,11 @@ class Launcher:
 
     def execute(self, command, start_dir=os.getenv("HOME"), use_shell=False):
         try:
-            self.logger.debug(command)
+            logger.debug(command)
             subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=None, stderr=None, close_fds=True)
         except ShellFMLauncherException as e:
-            self.logger.error(f"Couldn't execute: {command}")
-            self.logger.error(e)
+            logger.error(f"Couldn't execute: {command}")
+            logger.error(e)
 
     # TODO: Return std(out/in/err) handlers along with subprocess instead of sinking to null
     def execute_and_return_thread_handler(self, command, start_dir=os.getenv("HOME"), use_shell=False):
@@ -53,8 +53,8 @@ class Launcher:
             DEVNULL = open(os.devnull, 'w')
             return subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=False, stdout=DEVNULL, stderr=DEVNULL, close_fds=False)
         except ShellFMLauncherException as e:
-            self.logger.error(f"Couldn't execute and return thread: {command}")
-            self.logger.error(e)
+            logger.error(f"Couldn't execute and return thread: {command}")
+            logger.error(e)
             return None
 
     @threaded
@@ -63,7 +63,7 @@ class Launcher:
 
     def remux_video(self, hash, file):
         remux_vid_pth = "{self.REMUX_FOLDER}/{hash}.mp4"
-        self.logger.debug(remux_vid_pth)
+        logger.debug(remux_vid_pth)
 
         if not os.path.isfile(remux_vid_pth):
             self.check_remux_space()
@@ -83,8 +83,8 @@ class Launcher:
                 proc = subprocess.Popen(command)
                 proc.wait()
             except ShellFMLauncherException as e:
-                self.logger.error(message)
-                self.logger.error(e)
+                logger.error(message)
+                logger.error(e)
                 return False
 
         return True
@@ -94,7 +94,7 @@ class Launcher:
         try:
             limit = int(limit)
         except ShellFMLauncherException as e:
-            self.logger.debug(e)
+            logger.debug(e)
             return
 
         usage = self.get_remux_folder_usage(self.REMUX_FOLDER)

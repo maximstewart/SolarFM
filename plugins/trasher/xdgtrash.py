@@ -127,7 +127,7 @@ DeletionDate={}
         f.write(infofile)
         f.close()
 
-        self.regenerate()
+        # self.regenerate()
 
         if verbose:
             sys.stderr.write(_('trashed \'{}\'\n').format(filename))

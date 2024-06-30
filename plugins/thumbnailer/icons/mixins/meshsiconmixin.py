@@ -14,4 +14,4 @@ class MeshsIconMixin:
             proc = subprocess.Popen([self.BLENDER_THUMBNLR, full_path, hash_img_path])
             proc.wait()
         except Exception as e:
-            self.logger.debug(repr(e))
+            logger.debug(repr(e))

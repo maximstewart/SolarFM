@@ -15,38 +15,46 @@ class ManifestProcessorException(Exception):
     ...
 
 
-@dataclass(slots=True)
+@dataclass(slots = True)
 class PluginInfo:
-    path: str       = None
-    name: str       = None
-    author: str     = None
-    version: str    = None
-    support: str    = None
-    requests:{}     = None
-    reference: type = None
+    path: str        = None
+    name: str        = None
+    author: str      = None
+    version: str     = None
+    support: str     = None
+    requests:{}      = None
+    reference: type  = None
+    pre_launch: bool = False
 
 
 class ManifestProcessor:
     def __init__(self, path, builder):
-        manifest = join(path, "manifest.json")
-        if not os.path.exists(manifest):
+        manifest_pth = join(path, "manifest.json")
+        if not os.path.exists(manifest_pth):
             raise ManifestProcessorException("Invalid Plugin Structure: Plugin doesn't have 'manifest.json'. Aboarting load...")
 
         self._path    = path
         self._builder = builder
-        with open(manifest) as f:
+        with open(manifest_pth) as f:
             data           = json.load(f)
             self._manifest = data["manifest"]
             self._plugin   = self.collect_info()
 
+    def is_pre_launch(self) -> bool:
+        return self._plugin.pre_launch
+
     def collect_info(self) -> PluginInfo:
         plugin          = PluginInfo()
+
         plugin.path     = self._path
         plugin.name     = self._manifest["name"]
         plugin.author   = self._manifest["author"]
         plugin.version  = self._manifest["version"]
         plugin.support  = self._manifest["support"]
         plugin.requests = self._manifest["requests"]
+
+        if "pre_launch" in self._manifest.keys():
+            plugin.pre_launch = True if self._manifest["pre_launch"] == "true" else False
 
         return plugin
 

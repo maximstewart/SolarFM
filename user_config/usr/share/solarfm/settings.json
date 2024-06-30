@@ -2,8 +2,6 @@
     "config": {
         "base_of_home": "",
         "hide_hidden_files": "true",
-        "thumbnailer_path": "ffmpegthumbnailer",
-        "blender_thumbnailer_path": "",
         "go_past_home": "true",
         "lock_folder": "false",
         "locked_folders": "venv::::flasks",
@@ -16,11 +14,7 @@
         "code_app": "newton",
         "text_app": "mousepad",
         "terminal_app": "terminator",
-        "container_icon_wh": [128, 128],
-        "video_icon_wh":     [128, 64],
-        "sys_icon_wh":       [56, 56],
         "file_manager_app": "solarfm",
-        "steam_cdn_url": "https://steamcdn-a.akamaihd.net/steam/apps/",
         "remux_folder_max_disk_usage": "8589934592",
         "make_transparent":0,
         "main_window_x":721,
@@ -29,6 +23,9 @@
         "main_window_min_height":480,
         "main_window_width":800,
         "main_window_height":600,
+        "application_dirs":[
+            "/usr/share/applications"
+        ]
     },
     "filters": {
         "meshs":  [".dae", ".fbx", ".gltf", ".obj", ".stl"],

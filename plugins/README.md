@@ -14,6 +14,7 @@ class Manifest:
         'ui_target': "plugin_control_list",
         'pass_fm_events': "true"
     }
+    pre_launch: bool = False
 ```
 
 

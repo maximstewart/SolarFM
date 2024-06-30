@@ -43,4 +43,4 @@ class Trash(object):
 
     def restore(self, filename, verbose):
         """Restore a file from trash."""
-        raise NotImplementedError(_('Backend didn’t \ implement this functionality'))
+        raise NotImplementedError(_('Backend didn’t implement this functionality'))

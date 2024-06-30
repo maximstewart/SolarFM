@@ -31,7 +31,6 @@ class GridMixin:
 
         # return
 
-
         dir   = tab.get_current_directory()
         files = tab.get_files()
 

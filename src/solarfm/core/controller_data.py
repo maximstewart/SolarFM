@@ -29,7 +29,7 @@ class Controller_Data:
 
         self._load_glade_file()
         self.fm_controller      = WindowController()
-        self.plugins            = PluginsController()
+        self.plugins_controller = PluginsController()
         self.fm_controller_data = self.fm_controller.get_state_from_file()
 
         self.window1            = self.builder.get_object("window_1")
