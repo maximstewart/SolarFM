@@ -42,9 +42,16 @@ class WindowMixin(TabMixin):
         event_system.emit("set_window_title", (dir,))
         self.set_bottom_labels(tab)
 
+        wid, tid = None, None
+        notebook = None
+        tab      = None
+        dir      = None
+
     def set_path_text(self, wid, tid):
         tab = self.get_fm_window(wid).get_tab_by_id(tid)
         event_system.emit("go_to_path", (tab.get_current_directory(),))
+
+        tab = None
 
     def grid_set_selected_items(self, icons_grid):
         new_items      = icons_grid.get_selected_items()
@@ -159,6 +166,12 @@ class WindowMixin(TabMixin):
 
         if target not in current:
             self.fm_controller.set_wid_and_tid(wid, tid)
+
+        current     = None
+        target      = None
+        wid, tid    = None, None
+        store       = None
+        path_at_loc = None
 
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):

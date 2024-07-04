@@ -68,6 +68,14 @@ class FileActionSignalsMixin:
         if [wid, tid] in [state.wid, state.tid]:
             self.set_bottom_labels(tab)
 
+        wid, tid  = None, None
+        notebook  = None
+        tab       = None
+        icon_grid = None
+        store     = None
+        _store, tab_widget_id_label = None, None
+        state     = None
+
         return False
 
     def do_file_search(self, widget, eve = None):

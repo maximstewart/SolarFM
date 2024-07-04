@@ -114,6 +114,9 @@ class Controller_Data:
 
             uris.append(fpath)
 
+        tab = None
+        dir = None
+
         return uris
 
 

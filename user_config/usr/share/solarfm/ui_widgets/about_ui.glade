@@ -8,7 +8,7 @@
     <property name="can-focus">False</property>
     <property name="border-width">5</property>
     <property name="window-position">center-on-parent</property>
-    <property name="icon">../icons/solarfm.png</property>
+    <property name="icon">../icons/solarfm-64x64.png</property>
     <property name="type-hint">dialog</property>
     <property name="skip-taskbar-hint">True</property>
     <property name="skip-pager-hint">True</property>
@@ -19,6 +19,7 @@
     <property name="copyright" translatable="yes">Copyright (C) 2021   GPL2</property>
     <property name="comments" translatable="yes">by ITDominator</property>
     <property name="website">https://code.itdominator.com/itdominator/SolarFM</property>
+    <property name="website-label" translatable="yes">ITDominator</property>
     <property name="license" translatable="yes">SolarFM - Copyright (C) 2021 ITDominator  GPL2
 
 
@@ -367,7 +368,9 @@ Public License instead of this License.
 
 
 SolarFM is developed on Atom, git, and using Python 3+ with Gtk GObject introspection.</property>
-    <property name="translator-credits" translatable="yes" comments="Please replace this line with your own names, one name per line. ">translator-credits</property>
+    <property name="documenters">...</property>
+    <property name="translator-credits" translatable="yes" comments="Please replace this line with your own names, one name per line. ">...</property>
+    <property name="artists">...</property>
     <property name="logo">../icons/solarfm-64x64.png</property>
     <property name="wrap-license">True</property>
     <property name="license-type">custom</property>

@@ -61,7 +61,6 @@ class MessagePopupWidget(Gtk.Popover):
         scroll_window.set_hexpand(True)
         vbox.set_orientation(Gtk.Orientation.VERTICAL)
 
-        self.builder.expose_object(f"message_popup_widget", self)
         self.builder.expose_object(f"message_text_view", message_text_view)
 
         scroll_window.add(message_text_view)

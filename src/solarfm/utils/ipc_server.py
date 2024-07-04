@@ -60,7 +60,11 @@ class IPCServer(Singleton):
             try:
                 conn       = listener.accept()
                 start_time = time.perf_counter()
+
                 GLib.idle_add(self._handle_ipc_message, *(conn, start_time,))
+
+                conn       = None
+                start_time = None
             except Exception as e:
                 logger.debug( repr(e) )
 
@@ -74,19 +78,24 @@ class IPCServer(Singleton):
             if "FILE|" in msg:
                 file = msg.split("FILE|")[1].strip()
                 if file:
-                    event_system.emit("handle_file_from_ipc", file)
+                    event_system.emit_and_await("handle_file_from_ipc", file)
 
+                msg  = None
+                file = None
                 conn.close()
                 break
 
 
             if msg in ['close connection', 'close server']:
+                msg  = None
                 conn.close()
                 break
 
             # NOTE: Not perfect but insures we don't lock up the connection for too long.
             end_time = time.perf_counter()
             if (end_time - start_time) > self._ipc_timeout:
+                msg      = None
+                end_time = None
                 conn.close()
                 break
 

@@ -135,46 +135,48 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         event_system.emit("hide_rename_file_menu")
 
         if action == "open":
-            event_system.emit("open_files")
+            event_system.emit_and_await("open_files")
         if action == "open_with":
-            event_system.emit("show_appchooser_menu")
+            event_system.emit_and_await("show_appchooser_menu")
         if action == "open_2_new_tab":
-            event_system.emit("open_2_new_tab")
+            event_system.emit_and_await("open_2_new_tab")
         if action == "execute":
-            event_system.emit("execute_files")
+            event_system.emit_and_await("execute_files")
         if action == "execute_in_terminal":
-            event_system.emit("execute_files", (True,))
+            event_system.emit_and_await("execute_files", (True,))
         if action == "rename":
-            event_system.emit("rename_files")
+            event_system.emit_and_await("rename_files")
         if action == "cut":
-            event_system.emit("cut_files")
+            event_system.emit_and_await("cut_files")
         if action == "copy":
-            event_system.emit("copy_files")
+            event_system.emit_and_await("copy_files")
         if action == "copy_path":
-            event_system.emit("copy_path")
+            event_system.emit_and_await("copy_path")
         if action == "copy_name":
-            event_system.emit("copy_name")
+            event_system.emit_and_await("copy_name")
         if action == "copy_path_name":
-            event_system.emit("copy_path_name")
+            event_system.emit_and_await("copy_path_name")
         if action == "paste":
-            event_system.emit("paste_files")
+            event_system.emit_and_await("paste_files")
         if action == "create":
-            event_system.emit("create_files")
+            event_system.emit_and_await("create_files")
         if action in ["save_session", "save_session_as", "load_session"]:
-            event_system.emit("save_load_session", (action))
+            event_system.emit_and_await("save_load_session", (action))
 
         if action == "about_page":
-            event_system.emit("show_about_page")
+            event_system.emit_and_await("show_about_page")
         if action == "io_popup":
-            event_system.emit("show_io_popup")
+            event_system.emit_and_await("show_io_popup")
         if action == "plugins_popup":
-            event_system.emit("show_plugins_popup")
+            event_system.emit_and_await("show_plugins_popup")
         if action == "messages_popup":
-            event_system.emit("show_messages_popup")
+            event_system.emit_and_await("show_messages_popup")
         if action == "ui_debug":
-            event_system.emit("load_interactive_debug")
+            event_system.emit_and_await("load_interactive_debug")
         if action == "tear_down":
-            event_system.emit("tear_down")
+            event_system.emit_and_await("tear_down")
+
+        action = None
 
 
     def go_home(self, widget=None, eve=None):
@@ -192,11 +194,14 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
     def tggl_top_main_menubar(self, widget=None, eve=None):
         top_main_menubar = self.builder.get_object("top_main_menubar")
         top_main_menubar.hide() if top_main_menubar.is_visible() else top_main_menubar.show()
+        top_main_menubar = None
 
     def open_terminal(self, widget=None, eve=None):
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         tab.execute([f"{tab.terminal_app}"], start_dir=tab.get_current_directory())
+
+        wid, tid, tab = None, None, None
 
     def go_to_path(self, path: str):
         self.builder.get_object("path_entry").set_text(path)

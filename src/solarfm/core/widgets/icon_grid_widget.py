@@ -77,9 +77,18 @@ class IconGridWidget(Gtk.IconView):
     def clear_and_set_new_store(self):
         store = self.get_model()
         if store:
+            iter = store.get_iter_first()
+            while iter:
+                next_iter = store.iter_next(iter)
+                store.unref_node(iter)
+                iter = next_iter
+
+            store.clear()
             store.run_dispose()
+            store = None
 
         self.set_model(None)
         store = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
         # store = Gtk.ListStore(Gtk.DirectoryList)
         self.set_model(store)
+        store = None

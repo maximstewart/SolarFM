@@ -39,11 +39,10 @@ class AboutWidget:
         self.about_page = self._builder.get_object("about_page")
         builder.expose_object(f"about_page", self.about_page)
 
-
-    def show_about_page(self, widget=None, eve=None):
+    def show_about_page(self, widget = None, eve = None):
         response   = self.about_page.run()
         if response in [Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT]:
             self.hide_about_page()
 
-    def hide_about_page(self, widget=None, eve=None):
+    def hide_about_page(self, widget = None, eve = None):
         self.about_page.hide()

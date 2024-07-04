@@ -45,7 +45,10 @@ class GridMixin:
         if save_state and not trace_debug:
             self.fm_controller.save_state()
 
+        dir   = None
+        files = None
 
+    @daemon_threaded
     def generate_icons(self, tab, store, dir, files):
         for i, file in enumerate(files):
             # GLib.Thread(f"{i}", self.make_and_load_icon, i, store, tab, dir, file[0])
@@ -54,14 +57,16 @@ class GridMixin:
     def update_store(self, i, store, icon):
         itr  = store.get_iter(i)
         GLib.idle_add(self.insert_store, store, itr, icon)
+        itr  = None
 
     @daemon_threaded
     def make_and_load_icon(self, i, store, tab, dir, file):
         icon = tab.create_icon(dir, file)
         self.update_store(i, store, icon)
+        icon = None
 
     def get_icon(self, tab, dir, file):
-        return tab.create_icon(dir, file)
+         tab.create_icon(dir, file)
 
 
     # @daemon_threaded
@@ -159,6 +164,7 @@ class GridMixin:
                 store     = icon_grid.get_model()
                 tab_label = notebook.get_tab_label(obj).get_children()[0]
 
+        icon_grid = None
         return store, tab_label
 
     def get_icon_grid_from_notebook(self, notebook, _name):

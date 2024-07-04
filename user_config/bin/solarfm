@@ -20,6 +20,9 @@ function main() {
         files[$size]="${target}"
     done
 
+    G_SLICE=always-malloc
+    G_DEBUG=gc-friendly
+    GOBJECT_DEBUG=instance-count
     python /opt/solarfm.zip "${files[@]}"
 }
 main "$@";

@@ -35,7 +35,7 @@ class UIMixin(PaneMixin, WindowMixin):
             nickname = session["window"]["Nickname"]
             tabs     = session["window"]["tabs"]
             isHidden = True if session["window"]["isHidden"] == "True" else False
-            event_system.emit("load_files_view_state", (nickname, tabs, isHidden))
+            event_system.emit_and_await("load_files_view_state", (nickname, tabs, isHidden))
 
 
     def _focus_last_visible_notebook(self, icon_grid):
@@ -46,6 +46,8 @@ class UIMixin(PaneMixin, WindowMixin):
             time.sleep(0.2)
 
         icon_grid.event(Gdk.Event().new(type = Gdk.EventType.BUTTON_RELEASE))
+
+        window = None
 
     def _current_loading_process(self, session_json = None):
         if session_json:
