@@ -8,7 +8,7 @@ Additionally, if not building a .deb then just move the contents of user_config 
 Copy the share/solarfm folder to your user .config/ directory too.
 
 `pyrightconfig.json`
-<p>The pyrightconfig file needs to stay on same level as the .git folders in order to have settings detected when using pyright with lsp functionality.</p>
+<p>The pyrightconfig file needs to stay on same level as the .git folders in order to have settings detected when using pyright with lsp functionality. "pyrightconfig.json" can prompt IDEs such as Zed on settings to use and where imports are located- look at venvPath and venv. "venvPath" is parent path of "venv" where "venv" is just the name of the folder under the parent path that is the python created venv.
 
 <h6>Install Setup</h6>
 ```

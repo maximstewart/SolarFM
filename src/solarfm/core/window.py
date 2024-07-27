@@ -1,5 +1,4 @@
 # Python imports
-import time
 import signal
 
 # Lib imports
