@@ -110,26 +110,30 @@ class HandlerMixin:
                         tab.move_file(fPath, tPath)
                 else:
                     io_widget = IOWidget(action, file)
+                    io_list   = self._builder.get_object("io_list")
+
+                    io_list.add(io_widget)
+                    io_list.show_all()
 
                     if action == "copy":
                         file.copy_async(destination=target,
                                         flags=Gio.FileCopyFlags.BACKUP,
-                                        io_priority=98,
+                                        io_priority=45,
                                         cancellable=io_widget.cancle_eve,
                                         progress_callback=io_widget.update_progress,
                                         callback=io_widget.finish_callback)
 
-                        self._builder.get_object("io_list").add(io_widget)
                     if action == "move" or action == "rename":
                         file.move_async(destination=target,
                                         flags=Gio.FileCopyFlags.BACKUP,
-                                        io_priority=98,
+                                        io_priority=45,
                                         cancellable=io_widget.cancle_eve,
-                                        progress_callback=None,
                                         # NOTE: progress_callback here causes seg fault when set
+                                        progress_callback=None,
                                         callback=io_widget.finish_callback)
 
-                        self._builder.get_object("io_list").add(io_widget)
+                        io_widget = None
+                        io_list   = None
 
             except GObject.GError as e:
                 raise OSError(e)

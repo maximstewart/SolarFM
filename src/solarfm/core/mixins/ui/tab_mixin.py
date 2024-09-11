@@ -264,15 +264,16 @@ class TabMixin(GridMixin):
                     path_menu_buttons.add(button)
                     show_path_menu = True
 
-        path_menu_buttons  = None
-        query              = None
-        files              = None
+        query = None
+        files = None
 
         if not show_path_menu:
+            path_menu_buttons = None
             event_system.emit("hide_path_menu")
         else:
             event_system.emit("show_path_menu")
             buttons = path_menu_buttons.get_children()
+            path_menu_buttons = None
 
             if len(buttons) == 1:
                 self.slowed_focus(buttons[0])

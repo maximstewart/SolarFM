@@ -8,6 +8,6 @@
             "root": "./src/versions/solarfm-0.0.1/solarfm"
         }
     ],
-    "venvPath": ".",
-    "venv": ".venv"
+    "venvPath": "/home/abaddon/Portable_Apps/py-venvs/pylsp-venv/",
+    "venv": "venv"
 }

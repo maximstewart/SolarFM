@@ -56,8 +56,9 @@ class GridMixin:
 
     def update_store(self, i, store, icon):
         itr  = store.get_iter(i)
-        GLib.idle_add(self.insert_store, store, itr, icon)
+        GLib.idle_add(self.insert_store, store, itr, icon.copy())
         itr  = None
+        del icon
 
     @daemon_threaded
     def make_and_load_icon(self, i, store, tab, dir, file):

@@ -29,16 +29,16 @@ class PathMenuPopupWidget(Gtk.Popover):
         self.set_relative_to(path_entry)
         self.set_modal(False)
         self.set_position(Gtk.PositionType.BOTTOM)
-        self.set_size_request(240, 420)
+        self.set_size_request(480, 420)
 
     def _setup_signals(self):
         event_system.subscribe("show_path_menu", self.show_path_menu)
         event_system.subscribe("hide_path_menu", self.hide_path_menu)
 
     def _load_widgets(self):
-        path_menu_buttons = Gtk.ButtonBox()
-        scroll_window = Gtk.ScrolledWindow()
-        view_port = Gtk.Viewport()
+        scroll_window     = Gtk.ScrolledWindow()
+        view_port         = Gtk.Viewport()
+        path_menu_buttons = Gtk.Box()
 
         scroll_window.set_vexpand(True)
         scroll_window.set_hexpand(True)
@@ -47,12 +47,13 @@ class PathMenuPopupWidget(Gtk.Popover):
         self.builder.expose_object(f"path_menu_buttons", path_menu_buttons)
         view_port.add(path_menu_buttons)
         scroll_window.add(view_port)
-        scroll_window.show_all()
         self.add(scroll_window)
 
+        scroll_window.show_all()
 
-    def show_path_menu(self, widget=None, eve=None):
+
+    def show_path_menu(self, widget = None, eve = None):
         self.popup()
 
-    def hide_path_menu(self, widget=None, eve=None):
+    def hide_path_menu(self, widget = None, eve = None):
         self.popdown()

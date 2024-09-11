@@ -130,6 +130,10 @@ class WindowMixin(TabMixin):
                 self.update_tab(tab_label, state.tab, state.icon_grid.get_store(), state.wid, state.tid)
             else:
                 event_system.emit("open_files")
+
+            state     = None
+            notebook  = None
+            tab_label = None
         except WindowException as e:
             traceback.print_exc()
             self.display_message(settings.theming.error_color, f"{repr(e)}")
