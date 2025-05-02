@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 # Python imports
+import resource
 import argparse
 import faulthandler
 import traceback
@@ -17,8 +18,14 @@ from app import Application
 
 
 
+def limit_memory(maxsize): 
+    soft, hard = resource.getrlimit(resource.RLIMIT_AS) 
+    resource.setrlimit(resource.RLIMIT_AS, (maxsize, hard)) 
+
+
 def main(args, unknownargs):
     setproctitle(f'{app_name}')
+    # limit_memory(248 * (1024 * 1024 * 42))
 
     if args.debug == "true":
         settings_manager.set_debug(True)

@@ -1,5 +1,6 @@
 # Python imports
 import builtins
+import traceback
 import threading
 import sys
 
@@ -29,6 +30,18 @@ def daemon_threaded_wrapper(fn):
         return thread
     return wrapper
 
+def call_chain_wrapper(fn):
+    def wrapper(*args, **kwargs):
+        print()
+        print()
+        for line in traceback.format_stack():
+            print( line.strip() )
+        print()
+        print()
+
+        return fn(*args, **kwargs)
+    return wrapper
+
 def sizeof_fmt_def(num, suffix="B"):
     for unit in ["", "K", "M", "G", "T", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
@@ -54,6 +67,7 @@ builtins.logger            = Logger(settings_manager.get_home_config_path(), \
 
 builtins.threaded          = threaded_wrapper
 builtins.daemon_threaded   = daemon_threaded_wrapper
+builtins.call_chain        = call_chain_wrapper
 builtins.sizeof_fmt        = sizeof_fmt_def
 
 

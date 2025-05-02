@@ -9,7 +9,6 @@ gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GLib
-from gi.repository import GObject
 
 # Application imports
 from core.controller import Controller
@@ -24,9 +23,9 @@ class Window(Gtk.ApplicationWindow):
     """docstring for Window."""
 
     def __init__(self, args, unknownargs):
-        GObject.threads_init()
+        Gtk.ApplicationWindow.__init__(self)
+        # super(Window, self).__init__()
 
-        super(Window, self).__init__()
         settings_manager.set_main_window(self)
 
         self._controller = None

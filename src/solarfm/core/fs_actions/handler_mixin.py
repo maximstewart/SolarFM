@@ -116,21 +116,20 @@ class HandlerMixin:
                     io_list.show_all()
 
                     if action == "copy":
-                        file.copy_async(destination=target,
-                                        flags=Gio.FileCopyFlags.BACKUP,
-                                        io_priority=45,
-                                        cancellable=io_widget.cancle_eve,
-                                        progress_callback=io_widget.update_progress,
-                                        callback=io_widget.finish_callback)
+                        file.copy_async(target,
+                                        Gio.FileCopyFlags.BACKUP,
+                                        45,
+                                        io_widget.cancle_eve,
+                                        io_widget.update_progress,
+                                        io_widget.finish_callback)
 
                     if action == "move" or action == "rename":
-                        file.move_async(destination=target,
-                                        flags=Gio.FileCopyFlags.BACKUP,
-                                        io_priority=45,
-                                        cancellable=io_widget.cancle_eve,
-                                        # NOTE: progress_callback here causes seg fault when set
-                                        progress_callback=None,
-                                        callback=io_widget.finish_callback)
+                        file.move_async(target,
+                                        Gio.FileCopyFlags.BACKUP,
+                                        45,
+                                        io_widget.cancle_eve,
+                                        None,
+                                        io_widget.finish_callback)
 
                         io_widget = None
                         io_list   = None

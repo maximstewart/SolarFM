@@ -78,6 +78,7 @@ class UIMixin(PaneMixin, WindowMixin):
                 elif not self.is_pane1_hidden:
                     notebook = self.window1
 
+                # Todo: Maybe use 'realize' signal to focus widget instead...
                 scroll_win = notebook.get_children()[-1]
                 icon_grid  = scroll_win.get_children()[0]
                 GLib.Thread("", self._focus_last_visible_notebook, icon_grid)
