@@ -27,23 +27,98 @@
             "/usr/share/applications"
         ]
     },
-    "filters": {
-        "meshs":  [".dae", ".fbx", ".gltf", ".obj", ".stl"],
-        "code":   [".cpp", ".css", ".c", ".go", ".html", ".htm", ".java", ".js", ".json", ".lua", ".md", ".py", ".rs", ".toml", ".xml", ".pom"],
-        "videos": [".mkv", ".mp4", ".webm", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".wmv", ".flv"],
-        "office": [".doc", ".docx", ".xls", ".xlsx", ".xlt", ".xltx", ".xlm", ".ppt", ".pptx", ".pps", ".ppsx", ".odt", ".rtf"],
-        "images": [".png", ".jpg", ".jpeg", ".gif", ".ico", ".tga", ".webp"],
-        "text":   [".txt", ".text", ".sh", ".cfg", ".conf", ".log"],
-        "music":  [".psf", ".mp3", ".ogg", ".flac", ".m4a"],
-        "pdf":    [".pdf"]
-   },
-   "theming":{
-       "success_color": "#88cc27",
-       "warning_color": "#ffa800",
-       "error_color":   "#ff0000"
-   },
-   "debugging": {
-       "ch_log_lvl": 20,
-       "fh_log_lvl": 10
-   }
+    "filters":{
+        "meshs":[
+            ".dae",
+            ".fbx",
+            ".gltf",
+            ".obj",
+            ".stl"
+        ],
+        "code":[
+            ".cpp",
+            ".css",
+            ".c",
+            ".go",
+            ".html",
+            ".htm",
+            ".java",
+            ".js",
+            ".ts",
+            ".json",
+            ".lua",
+            ".md",
+            ".py",
+            ".rs",
+            ".toml",
+            ".xml",
+            ".pom"
+        ],
+        "videos":[
+            ".mkv",
+            ".mp4",
+            ".webm",
+            ".avi",
+            ".mov",
+            ".m4v",
+            ".mpg",
+            ".mpeg",
+            ".wmv",
+            ".flv",
+            ".m4b"
+        ],
+        "office":[
+            ".doc",
+            ".docx",
+            ".xls",
+            ".xlsx",
+            ".xlt",
+            ".xltx",
+            ".xlm",
+            ".ppt",
+            ".pptx",
+            ".pps",
+            ".ppsx",
+            ".odt",
+            ".rtf"
+        ],
+        "images":[
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".ico",
+            ".tga",
+            ".webp"
+        ],
+        "text":[
+            ".txt",
+            ".text",
+            ".sh",
+            ".cfg",
+            ".conf",
+            ".log",
+            ".yml",
+            ".yaml"
+        ],
+        "music":[
+            ".psf",
+            ".mp3",
+            ".ogg",
+            ".flac",
+            ".m4a"
+        ],
+        "pdf":[
+            ".pdf"
+        ]
+    },
+    "theming":{
+        "success_color": "#88cc27",
+        "warning_color": "#ffa800",
+        "error_color":   "#ff0000"
+    },
+    "debugging": {
+        "ch_log_lvl": 20,
+        "fh_log_lvl": 10
+    }
 }
