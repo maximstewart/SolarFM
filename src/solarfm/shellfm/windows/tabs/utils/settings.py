@@ -41,6 +41,7 @@ class Settings:
         lock_folder       = False if config["lock_folder"] in ["false", ""] else True
         locked_folders    = config["locked_folders"].split("::::")
         mplayer_options   = config["mplayer_options"].split()
+        use_defined_launchers = config["use_defined_launchers"]
         music_app         = config["music_app"]
         media_app         = config["media_app"]
         image_app         = config["image_app"]

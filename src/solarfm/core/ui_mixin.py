@@ -10,7 +10,7 @@ from gi.repository import GLib
 
 # Application imports
 from .mixins.ui.pane_mixin import PaneMixin
-from .mixins.ui.window_mixin import WindowMixin
+from .widgets.files_view.window_mixin import WindowMixin
 
 from .widgets.files_view.files_widget import FilesWidget
 

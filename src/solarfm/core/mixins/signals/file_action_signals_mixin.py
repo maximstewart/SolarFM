@@ -20,6 +20,8 @@ class FileActionSignalsMixin:
         if tab.get_dir_watcher():
             watcher = tab.get_dir_watcher()
             watcher.cancel()
+            watcher.disconnect(watcher.watch_id)
+            watcher.run_dispose()
             if settings_manager.is_debug():
                 logger.debug(f"Watcher Is Cancelled:  {watcher.is_cancelled()}")
 
@@ -30,8 +32,9 @@ class FileActionSignalsMixin:
 
         wid = tab.get_wid()
         tid = tab.get_id()
-        dir_watcher.connect("changed", self.dir_watch_updates, *(f"{wid}|{tid}",))
+        watch_id = dir_watcher.connect("changed", self.dir_watch_updates, *(f"{wid}|{tid}",))
         tab.set_dir_watcher(dir_watcher)
+        dir_watcher.watch_id = watch_id
 
     def dir_watch_updates(self, file_monitor, file, other_file = None, eve_type = None, tab_widget_id = None):
         if eve_type in  [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
@@ -46,7 +49,6 @@ class FileActionSignalsMixin:
             GLib.source_remove(timeout_id)
 
         timeout_id = GLib.timeout_add(0, self.update_on_soft_lock_end, 600, *(tab_widget_id,))
-        self.soft_update_lock[tab_widget_id] = { "timeout_id": timeout_id }
 
 
     def update_on_soft_lock_end(self, timout_ms, tab_widget_id):
@@ -67,14 +69,6 @@ class FileActionSignalsMixin:
         state = self.get_current_state()
         if [wid, tid] in [state.wid, state.tid]:
             self.set_bottom_labels(tab)
-
-        wid, tid  = None, None
-        notebook  = None
-        tab       = None
-        icon_grid = None
-        store     = None
-        _store, tab_widget_id_label = None, None
-        state     = None
 
         return False
 

@@ -34,7 +34,7 @@ class KeyboardSignalsMixin:
             self.alt_down     = False
 
     def on_global_key_press_controller(self, eve, user_data):
-        keyname = Gdk.keyval_name(user_data.keyval).lower()
+        keyname   = Gdk.keyval_name(user_data.keyval).lower()
         modifiers = Gdk.ModifierType(user_data.get_state() & ~Gdk.ModifierType.LOCK_MASK)
 
         self.was_midified_key = True if modifiers != 0 else False

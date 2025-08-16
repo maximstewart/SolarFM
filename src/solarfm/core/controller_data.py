@@ -54,6 +54,7 @@ class Controller_Data:
         self.ctrl_down          = False
         self.shift_down         = False
         self.alt_down           = False
+        self.was_midified_key   = None
 
         self._state           = State()
         self.message_dialog   = MessageWidget()
@@ -87,12 +88,6 @@ class Controller_Data:
             state.uris_raw = self.format_to_uris(state.store, state.wid, state.tid, selected_files)
 
         state.selected_files = event_system.emit_and_await("get_selected_files")
-
-        # if self.to_copy_files:
-        #     state.to_copy_files  = self.format_to_uris(state.store, state.wid, state.tid, self.to_copy_files, True)
-        #
-        # if self.to_cut_files:
-        #     state.to_cut_files   = self.format_to_uris(state.store, state.wid, state.tid, self.to_cut_files, True)
 
         event_system.emit("update_state_info_plugins", state) # NOTE: Need to remove after we convert plugins to use emit_and_await
         return state

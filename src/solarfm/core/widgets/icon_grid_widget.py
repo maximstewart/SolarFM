@@ -1,4 +1,5 @@
 # Python imports
+import gc
 
 # Lib imports
 import gi
@@ -19,6 +20,8 @@ class IconGridWidget(Gtk.IconView):
 
     def __init__(self):
         super(IconGridWidget, self).__init__()
+
+        self._handler_ids = []
 
         self._setup_styling()
         self._setup_signals()
@@ -52,12 +55,12 @@ class IconGridWidget(Gtk.IconView):
                                         grid_on_drag_data_received,
                                         grid_on_drag_motion):
 
-        self.connect("button_release_event", grid_icon_single_click)
-        self.connect("item-activated",       grid_icon_double_click)
-        self.connect("selection-changed",    grid_set_selected_items)
-        self.connect("drag-data-get",        grid_on_drag_set)
-        self.connect("drag-data-received",   grid_on_drag_data_received)
-        self.connect("drag-motion",          grid_on_drag_motion)
+        self._handler_ids.append(self.connect("button_release_event", grid_icon_single_click))
+        self._handler_ids.append(self.connect("item-activated",       grid_icon_double_click))
+        self._handler_ids.append(self.connect("selection-changed",    grid_set_selected_items))
+        self._handler_ids.append(self.connect("drag-data-get",        grid_on_drag_set))
+        self._handler_ids.append(self.connect("drag-data-received",   grid_on_drag_data_received))
+        self._handler_ids.append(self.connect("drag-motion",          grid_on_drag_motion))
 
     def _load_widgets(self):
         self.clear_and_set_new_store()
@@ -75,20 +78,45 @@ class IconGridWidget(Gtk.IconView):
         return self.get_model()
 
     def clear_and_set_new_store(self):
+        self._clear_store()
+        self.set_model(
+            Gtk.ListStore(
+                GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None
+            )
+        )
+
+    def clear_signals_and_data(self):
+        self.unset_model_drag_dest()
+        self.unset_model_drag_source()
+
+        for handle_id in self._handler_ids:
+            self.disconnect(handle_id)
+
+        self._handler_ids.clear()
+        self._clear_store()
+
+    def _clear_store(self):
         store = self.get_model()
-        if store:
-            iter = store.get_iter_first()
-            while iter:
-                next_iter = store.iter_next(iter)
-                store.unref_node(iter)
-                iter = next_iter
-
-            store.clear()
-            store.run_dispose()
-            store = None
-
         self.set_model(None)
-        store = Gtk.ListStore(GdkPixbuf.Pixbuf or GdkPixbuf.PixbufAnimation or None, str or None)
-        # store = Gtk.ListStore(Gtk.DirectoryList)
-        self.set_model(store)
-        store = None
+
+        if not store: return
+
+        iter = store.get_iter_first()
+        while iter:
+            icon = store.get_value(iter, 0)
+
+            store.set_value(iter, 0, None)
+            store.set_value(iter, 1, None)
+
+            iter = store.iter_next(iter)
+
+            if icon:
+                logger.debug(f"Reference count for icon is: {icon.__grefcount__}")
+                icon.run_dispose()
+                del icon
+
+        store.clear()
+        store.run_dispose()
+        del store
+
+        gc.collect()

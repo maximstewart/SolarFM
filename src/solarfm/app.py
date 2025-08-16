@@ -44,7 +44,8 @@ class Application:
     def ipc_realization_check(self, ipc_server):
         try:
             ipc_server.create_ipc_listener()
-        except Exception:
+        except Exception as e:
+            print(e)
             ipc_server.send_test_ipc_message()
 
         try:

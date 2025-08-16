@@ -17,22 +17,25 @@ class Launcher:
         lowerName = file.lower()
         command   = []
 
-        if lowerName.endswith(self.fvideos):
-            command = [self.media_app, file]
-        elif lowerName.endswith(self.fimages):
-            command = [self.image_app, file]
-        elif lowerName.endswith(self.fmusic):
-            command = [self.music_app, file]
-        elif lowerName.endswith(self.foffice):
-            command = [self.office_app, file]
-        elif lowerName.endswith(self.fcode):
-            command = [self.code_app, file]
-        elif lowerName.endswith(self.ftext):
-            command = [self.text_app, file]
-        elif lowerName.endswith(self.fpdf):
-            command = [self.pdf_app, file]
-        elif lowerName.endswith("placeholder-until-i-can-get-a-use-pref-fm-flag"):
-            command = [self.file_manager_app, file]
+        if self.use_defined_launchers:
+            if lowerName.endswith(self.fvideos):
+                command = [self.media_app, file]
+            elif lowerName.endswith(self.fimages):
+                command = [self.image_app, file]
+            elif lowerName.endswith(self.fmusic):
+                command = [self.music_app, file]
+            elif lowerName.endswith(self.foffice):
+                command = [self.office_app, file]
+            elif lowerName.endswith(self.fcode):
+                command = [self.code_app, file]
+            elif lowerName.endswith(self.ftext):
+                command = [self.text_app, file]
+            elif lowerName.endswith(self.fpdf):
+                command = [self.pdf_app, file]
+            elif lowerName.endswith("placeholder-until-i-can-get-a-use-pref-fm-flag"):
+                command = [self.file_manager_app, file]
+            else:
+                command = ["xdg-open", file]
         else:
             command = ["xdg-open", file]
 
@@ -42,7 +45,7 @@ class Launcher:
     def execute(self, command, start_dir=os.getenv("HOME"), use_shell=False):
         try:
             logger.debug(command)
-            subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=None, stderr=None, close_fds=True)
+            subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=True, stdout=subprocess.DEVNULL, stderr=None, close_fds=True)
         except ShellFMLauncherException as e:
             logger.error(f"Couldn't execute: {command}")
             logger.error(e)
@@ -50,8 +53,7 @@ class Launcher:
     # TODO: Return std(out/in/err) handlers along with subprocess instead of sinking to null
     def execute_and_return_thread_handler(self, command, start_dir=os.getenv("HOME"), use_shell=False):
         try:
-            DEVNULL = open(os.devnull, 'w')
-            return subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=False, stdout=DEVNULL, stderr=DEVNULL, close_fds=False)
+            return subprocess.Popen(command, cwd=start_dir, shell=use_shell, start_new_session=False, stdout=subprocess.DEVNULL, stderr=None, close_fds=False)
         except ShellFMLauncherException as e:
             logger.error(f"Couldn't execute and return thread: {command}")
             logger.error(e)
@@ -80,7 +82,7 @@ class Launcher:
 
             command += [remux_vid_pth]
             try:
-                proc = subprocess.Popen(command)
+                proc = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=None)
                 proc.wait()
             except ShellFMLauncherException as e:
                 logger.error(message)

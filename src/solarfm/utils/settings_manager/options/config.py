@@ -16,6 +16,7 @@ class Config:
     lock_folder: str                 = "false"
     locked_folders: list             = field(default_factory=lambda: ["venv", "flasks"])
     mplayer_options: str             = "-quiet -really-quiet -xy 1600 -geometry 50%:50%"
+    use_defined_launchers: bool      = False
     music_app: str                   = "deadbeef"
     media_app: str                   = "mpv"
     image_app: str                   = "mirage"
