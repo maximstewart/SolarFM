@@ -25,7 +25,6 @@ def limit_memory(maxsize):
 
 def main(args, unknownargs):
     setproctitle(f'{app_name}')
-    # limit_memory(248 * (1024 * 1024 * 42))
 
     if args.debug == "true":
         settings_manager.set_debug(True)
@@ -34,7 +33,9 @@ def main(args, unknownargs):
         settings_manager.set_trace_debug(True)
 
     settings_manager.do_dirty_start_check()
-    Application(args, unknownargs)
+
+    app = Application()
+    app.run()
 
 
 
@@ -52,6 +53,7 @@ if __name__ == "__main__":
 
     # Read arguments (If any...)
     args, unknownargs = parser.parse_known_args()
+    settings_manager.set_starting_args( args, unknownargs )
 
     try:
         faulthandler.enable()  # For better debug info

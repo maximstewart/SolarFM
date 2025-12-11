@@ -29,7 +29,7 @@ class StartCheckMixin:
                 pid = f.readline().strip()
                 if pid not in ("", None):
                     if self.is_pid_alive( int(pid) ):
-                        print("PID file exists and PID is alive... Letting downstream errors (sans debug args) handle app closure propigation.")
+                        print("PID file exists and PID is alive...")
                         return
 
         self._write_new_pid()

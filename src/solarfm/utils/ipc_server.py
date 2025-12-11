@@ -5,7 +5,6 @@ from multiprocessing.connection import Client
 from multiprocessing.connection import Listener
 
 # Lib imports
-from gi.repository import GLib
 
 # Application imports
 from .singleton import Singleton
@@ -14,7 +13,7 @@ from .singleton import Singleton
 
 class IPCServer(Singleton):
     """ Create a listener so that other SolarFM instances send requests back to existing instance. """
-    def __init__(self, ipc_address: str = '127.0.0.1', conn_type: str = "local_network_unsecured"):
+    def __init__(self, ipc_address: str = '127.0.0.1', conn_type: str = "socket"):
         self.is_ipc_alive     = False
         self._ipc_port        = 0 # Use 0 to let Listener chose port
         self._ipc_address     = ipc_address
@@ -43,30 +42,29 @@ class IPCServer(Singleton):
             if os.path.exists(self._ipc_address) and settings_manager.is_dirty_start():
                 os.unlink(self._ipc_address)
 
-            listener = Listener(address = self._ipc_address, family = "AF_UNIX", authkey = self._ipc_authkey)
-
+            listener = Listener(self._ipc_address, family = "AF_UNIX", authkey = self._ipc_authkey)
         elif "unsecured" not in self._conn_type:
             listener = Listener((self._ipc_address, self._ipc_port), authkey = self._ipc_authkey)
         else:
             listener = Listener((self._ipc_address, self._ipc_port))
 
         self.is_ipc_alive = True
-        # self._run_ipc_loop(listener)
-        GLib.Thread("", self._run_ipc_loop, listener)
+        self._run_ipc_loop(listener)
 
-    # @daemon_threaded
+    @daemon_threaded
     def _run_ipc_loop(self, listener) -> None:
         while True:
             try:
                 conn       = listener.accept()
                 start_time = time.perf_counter()
 
-                GLib.idle_add(self._handle_ipc_message, *(conn, start_time,))
-
-                conn       = None
-                start_time = None
+                self._handle_ipc_message(conn, start_time)
+            except EOFError as e:
+                logger.debug( repr(e) )
             except Exception as e:
                 logger.debug( repr(e) )
+            finally:
+                conn.close()
 
         listener.close()
 
@@ -80,26 +78,27 @@ class IPCServer(Singleton):
                 if file:
                     event_system.emit_and_await("handle_file_from_ipc", file)
 
-                msg  = None
-                file = None
+                conn.close()
+                break
+
+            if "DIR|" in msg:
+                file = msg.split("DIR|")[1].strip()
+                if file:
+                    event_system.emit_and_await("handle_dir_from_ipc", file)
+
                 conn.close()
                 break
 
 
-            if msg in ['close connection', 'close server']:
-                msg  = None
+            if msg in ['close connection', 'close server', 'Empty Data...']:
                 conn.close()
                 break
 
             # NOTE: Not perfect but insures we don't lock up the connection for too long.
             end_time = time.perf_counter()
             if (end_time - start_time) > self._ipc_timeout:
-                msg      = None
-                end_time = None
                 conn.close()
                 break
-
-        return False
 
 
     def send_ipc_message(self, message: str = "Empty Data...") -> None:

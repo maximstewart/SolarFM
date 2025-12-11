@@ -36,26 +36,14 @@ from .ui_mixin import UIMixin
 class Controller(UIMixin, SignalsMixins, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
 
-    def __init__(self, args, unknownargs):
+    def __init__(self):
         self._setup_controller_data()
 
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()
         self._load_widgets()
-
-        if args.no_plugins == "false":
-            self.plugins_controller.pre_launch_plugins()
-
-        self._generate_file_views(self.fm_controller_data)
-
-        if args.no_plugins == "false":
-            self.plugins_controller.post_launch_plugins()
-
-        for arg in unknownargs + [args.new_tab,]:
-            if os.path.isdir(arg):
-                message = f"FILE|{arg}"
-                event_system.emit("post_file_to_ipc", message)
+        self._load_plugins_and_files()
 
 
     def _setup_styling(self):
@@ -69,7 +57,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
     def _subscribe_to_events(self):
         event_system.subscribe("shutting_down", self._shutting_down)
-        event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
+        event_system.subscribe("handle_dir_from_ipc", self.handle_dir_from_ipc)
         event_system.subscribe("generate_file_views", self._generate_file_views)
         event_system.subscribe("clear_notebooks", self.clear_notebooks)
 
@@ -112,6 +100,22 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         RenameWidget()
         FileExistsWidget()
         SaveLoadWidget()
+
+    def _load_plugins_and_files(self):
+        args, unknownargs = settings_manager.get_starting_args()
+
+        if args.no_plugins == "false":
+            self.plugins_controller.pre_launch_plugins()
+
+        self._generate_file_views(self.fm_controller_data)
+
+        if args.no_plugins == "false":
+            self.plugins_controller.post_launch_plugins()
+
+        for arg in unknownargs + [args.new_tab,]:
+            if os.path.isdir(arg):
+                message = f"FILE|{arg}"
+                event_system.emit("post_file_to_ipc", message)
 
     def _shutting_down(self):
         if not settings_manager.is_trace_debug():

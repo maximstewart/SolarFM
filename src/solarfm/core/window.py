@@ -22,9 +22,8 @@ class ControllerStartException(Exception):
 class Window(Gtk.ApplicationWindow):
     """docstring for Window."""
 
-    def __init__(self, args, unknownargs):
+    def __init__(self):
         Gtk.ApplicationWindow.__init__(self)
-        # super(Window, self).__init__()
 
         settings_manager.set_main_window(self)
 
@@ -33,7 +32,7 @@ class Window(Gtk.ApplicationWindow):
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()
-        self._load_widgets(args, unknownargs)
+        self._load_widgets()
 
         self._set_window_data()
         self._set_size_constraints()
@@ -56,11 +55,11 @@ class Window(Gtk.ApplicationWindow):
         event_system.subscribe("tear_down", self._tear_down)
         event_system.subscribe("load_interactive_debug", self._load_interactive_debug)
 
-    def _load_widgets(self, args, unknownargs):
+    def _load_widgets(self):
         if settings_manager.is_debug():
             self.set_interactive_debugging(True)
 
-        self._controller = Controller(args, unknownargs)
+        self._controller = Controller()
 
         if not self._controller:
             raise ControllerStartException("Controller exited and doesn't exist...")
@@ -120,5 +119,5 @@ class Window(Gtk.ApplicationWindow):
         settings_manager.clear_pid()
         Gtk.main_quit()
 
-    def main(self):
+    def start(self):
         Gtk.main()
