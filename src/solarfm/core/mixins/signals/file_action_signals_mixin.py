@@ -47,13 +47,26 @@ class FileActionSignalsMixin:
         if tab_widget_id in self.soft_update_lock:
             timeout_id = self.soft_update_lock[tab_widget_id]["timeout_id"]
             GLib.source_remove(timeout_id)
+            self.soft_update_lock[tab_widget_id]["call_count"] += 1
+        else:
+            self.soft_update_lock[tab_widget_id] = {}
+            self.soft_update_lock[tab_widget_id]["call_count"] = 0
 
-        timeout_id = GLib.timeout_add(0, self.update_on_soft_lock_end, 600, *(tab_widget_id,))
+        timeout_id = GLib.timeout_add(
+            500 if self.soft_update_lock[tab_widget_id]["call_count"] <= 5 else 1000,
+            self.update_on_soft_lock_end,
+            tab_widget_id
+        )
+
+        self.soft_update_lock[tab_widget_id]["timeout_id"] = timeout_id
 
 
-    def update_on_soft_lock_end(self, timout_ms, tab_widget_id):
+    def update_on_soft_lock_end(self, tab_widget_id):
+        GLib.idle_add(self._update_interface, tab_widget_id)
         self.soft_update_lock.pop(tab_widget_id, None)
+        return False
 
+    def _update_interface(self, tab_widget_id):
         wid, tid  = tab_widget_id.split("|")
         notebook  = self.builder.get_object(f"window_{wid}")
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
@@ -69,8 +82,6 @@ class FileActionSignalsMixin:
         state = self.get_current_state()
         if [wid, tid] in [state.wid, state.tid]:
             self.set_bottom_labels(tab)
-
-        return False
 
     def do_file_search(self, widget, eve = None):
         if not self.ctrl_down and not self.shift_down and not self.alt_down:
