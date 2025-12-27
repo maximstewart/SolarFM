@@ -38,6 +38,7 @@ class IconController(Icon):
         self.BASE_THUMBS_PTH   = f"{USER_HOME}/.thumbnails"
         self.ABS_THUMBS_PTH    = f"{self.BASE_THUMBS_PTH}/normal"
         self.STEAM_ICONS_PTH   = f"{self.BASE_THUMBS_PTH}/steam_icons"
+        self.STEAM_CDN_URL     = ""
 
         if not path.isdir(self.BASE_THUMBS_PTH):
             os.mkdir(self.BASE_THUMBS_PTH)
@@ -60,6 +61,7 @@ class IconController(Icon):
             self.container_icon_wh = config["container_icon_wh"]
             self.video_icon_wh     = config["video_icon_wh"]
             self.sys_icon_wh       = config["sys_icon_wh"]
+            self.STEAM_CDN_URL     = config["steam_cdn_url"]
 
             # Filters
             filters = settings["filters"]

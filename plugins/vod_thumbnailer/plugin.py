@@ -117,8 +117,8 @@ class Plugin(PluginBase):
         uri            = self._fm_state.uris[0]
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
-        path_exists,
-        img_hash,
+        path_exists, \
+        img_hash,    \
         hash_img_pth   = self._event_system.emit_and_await("get-thumbnail-hash", (uri,))
 
         if not path_exists:
