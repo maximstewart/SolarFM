@@ -8,7 +8,7 @@ from subprocess import check_output
 
 
 
-pkg_config_args = ["gdk-pixbuf-2.0", "cairo", "gtk"]
+pkg_config_args = ["gdk-pixbuf-2.0", "cairo", "gtk+-3.0"]
 
 def get_pkgconfig_flags(flag_type):
     return check_output(["pkg-config", flag_type] + pkg_config_args).decode().split()

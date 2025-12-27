@@ -100,13 +100,15 @@ class TabMixin(GridMixin):
         icon_grid.unparent()
         scroll.unparent()
 
-        Gtk.main_iteration_do(False)
-        gc.collect()
-
         logger.debug(f"Reference count for tab_box is: {tab_box.__grefcount__}")
         logger.debug(f"Reference count for icon_grid is: {icon_grid.__grefcount__}")
         logger.debug(f"Reference count for scroll is: {scroll.__grefcount__}")
 
+        del tab_box
+        del icon_grid
+        del scroll
+
+        gc.collect()
 
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()

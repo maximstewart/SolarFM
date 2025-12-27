@@ -9,8 +9,8 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 
-
 # Application imports
+from utils.cbindings import gtkmemreaper
 
 
 
@@ -48,19 +48,23 @@ class IconGridWidget(Gtk.IconView):
     def _setup_signals(self):
         ...
 
-    def _setup_additional_signals(self, grid_icon_single_click,
-                                        grid_icon_double_click,
-                                        grid_set_selected_items,
-                                        grid_on_drag_set,
-                                        grid_on_drag_data_received,
-                                        grid_on_drag_motion):
+    def _setup_additional_signals(self,
+        grid_icon_single_click,
+        grid_icon_double_click,
+        grid_set_selected_items,
+        grid_on_drag_set,
+        grid_on_drag_data_received,
+        grid_on_drag_motion
+    ):
 
-        self._handler_ids.append(self.connect("button_release_event", grid_icon_single_click))
-        self._handler_ids.append(self.connect("item-activated",       grid_icon_double_click))
-        self._handler_ids.append(self.connect("selection-changed",    grid_set_selected_items))
-        self._handler_ids.append(self.connect("drag-data-get",        grid_on_drag_set))
-        self._handler_ids.append(self.connect("drag-data-received",   grid_on_drag_data_received))
-        self._handler_ids.append(self.connect("drag-motion",          grid_on_drag_motion))
+        self._handler_ids = [
+            self.connect("button_release_event", grid_icon_single_click),
+            self.connect("item-activated",       grid_icon_double_click),
+            self.connect("selection-changed",    grid_set_selected_items),
+            self.connect("drag-data-get",        grid_on_drag_set),
+            self.connect("drag-data-received",   grid_on_drag_data_received),
+            self.connect("drag-motion",          grid_on_drag_motion)
+        ]
 
     def _load_widgets(self):
         self.clear_and_set_new_store()
@@ -113,10 +117,14 @@ class IconGridWidget(Gtk.IconView):
             if icon:
                 logger.debug(f"Reference count for icon is: {icon.__grefcount__}")
                 icon.run_dispose()
+                # icon_ptr = int(hash(icon))  # WARNING: not stable across runs
+                # gtkmemreaper.free_pixbuf(icon_ptr)
                 del icon
 
         store.clear()
         store.run_dispose()
+        # store_ptr = int(hash(store))  # WARNING: not stable across runs
+        # gtkmemreaper.free_list_store(store)
         del store
 
         gc.collect()
