@@ -55,6 +55,7 @@ class WindowMixin(TabMixin):
         path_entry = self.builder.get_object("path_entry")
         tab        = self.get_fm_window(wid).get_tab_by_id(tid)
         path_entry.set_text(tab.get_current_directory())
+        path_entry.set_position(-1)
 
         path_entry = None
         tab        = None
