@@ -10,7 +10,7 @@ from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 
 # Application imports
-from utils.cbindings import gtkmemreaper
+# from utils.cbindings import gtkmemreaper
 
 
 
