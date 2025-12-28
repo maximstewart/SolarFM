@@ -2,9 +2,7 @@
 SolarFM is a Gtk+ Python file manager.
 
 # Notes
-<b>Still Work in  progress! Use at own risk!</b>
-
-Additionally, if not building a .deb then just move the contents of user_config to their respective folders.
+If not building a .deb then just move the contents of user_config to their respective folders.
 Copy the share/solarfm folder to your user .config/ directory too.
 
 `pyrightconfig.json`
@@ -17,7 +15,7 @@ sudo apt-get install xclip python3.8 python3-setproctitle python3-gi wget ffmpeg
 
 # Known Issues
 <ul>
-<li>The memory leak has now been mostly mitigated in that it doesn't balloon to 2GB'. Still working out where the smaller one(s) is/are.</li>
+<li>There is a memory leak that has been slowed down but can get to 2GB over a long enough time period OR active accessing image based dirs.</li>
 <li>Doing Ctrl+D when in Terminator (maybe other terminals too) somehow propagates the signal to SolarFM too.
 A selected file in the active quad-pane will move to trash since it is the default key-binding for that action.</li>
 </ul>
@@ -25,7 +23,6 @@ A selected file in the active quad-pane will move to trash since it is the defau
 # TODO
 <ul>
 <li>Add simpleish preview plugin for various file types.</li>
-<li>Add simpleish bulk-renamer.</li>
 </ul>
 
 # Images
