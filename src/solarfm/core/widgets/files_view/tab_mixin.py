@@ -1,7 +1,7 @@
 # Python imports
 import os
-import gc
 import time
+import gc
 
 # Lib imports
 import gi
@@ -22,9 +22,9 @@ class TabMixin(GridMixin):
             wid, tid = self.fm_controller.get_active_wid_and_tid()
 
         notebook    = self.builder.get_object(f"window_{wid}")
-        # path_entry  = self.builder.get_object(f"path_entry")
+        path_entry  = self.builder.get_object(f"path_entry")
         tab         = self.fm_controller.add_tab_for_window_by_nickname(f"window_{wid}")
-        # tab.logger  = logger
+        tab.logger  = logger
 
         tab.set_wid(wid)
         if not path:
@@ -34,71 +34,89 @@ class TabMixin(GridMixin):
         else:
             tab.set_path(path)
 
-        tab_widget    = self.create_tab_widget(tab)
+        tab_widget    = self.get_tab_widget(tab)
         scroll, store = self.create_scroll_and_store(tab, wid)
         index         = notebook.append_page(scroll, tab_widget)
         notebook.set_tab_detachable(scroll, True)
+        notebook.set_tab_reorderable(scroll, True)
 
         self.fm_controller.set_wid_and_tid(wid, tab.get_id())
-        event_system.emit("go_to_path", (tab.get_current_directory(),)) # NOTE: Not efficent if I understand how
-        # path_entry.set_text(tab.get_current_directory())
+        path_entry.set_text(tab.get_current_directory())
+        # event_system.emit("go_to_path", (tab.get_current_directory(),)) # NOTE: Not efficent if I understand how
         notebook.show_all()
         notebook.set_current_page(index)
 
         ctx = notebook.get_style_context()
         ctx.add_class("notebook-unselected-focus")
-        notebook.set_tab_reorderable(scroll, True)
         self.load_store(tab, store)
-        # self.set_window_title()
         event_system.emit("set_window_title", (tab.get_current_directory(),))
         self.set_file_watcher(tab)
 
 
+    def get_tab_widget(self, tab):
+        tab_widget     = self.create_tab_widget()
+        tab_widget.tab = tab
+
+        tab_widget.label.set_label(f"{tab.get_end_of_path()}")
+        tab_widget.label.set_width_chars(len(tab.get_end_of_path()))
+
+        return tab_widget
+
     def close_tab(self, button, eve = None):
         notebook = button.get_parent().get_parent()
-        if notebook.get_n_pages() == 1:
-            return
+        if notebook.get_n_pages() == 1: return
 
         tab_box   = button.get_parent()
         wid       = int(notebook.get_name()[-1])
         tid       = self.get_id_from_tab_box(tab_box)
         scroll    = self.builder.get_object(f"{wid}|{tid}", use_gtk = False)
         icon_grid = scroll.get_children()[0]
-        store     = icon_grid.get_model()
         tab       = self.get_fm_window(wid).get_tab_by_id(tid)
         watcher   = tab.get_dir_watcher()
 
         watcher.cancel()
+        watcher.disconnect(watcher.watch_id)
+        watcher.run_dispose()
         self.get_fm_window(wid).delete_tab_by_id(tid)
+
+        logger.debug(f"Reference count for watcher is: {watcher.__grefcount__}")
+        logger.debug(f"Reference count for tab_box is: {tab_box.__grefcount__}")
+        logger.debug(f"Reference count for icon_grid is: {icon_grid.__grefcount__}")
+        logger.debug(f"Reference count for scroll is: {scroll.__grefcount__}")
+
+        tab_box.clear_signals_and_data()
+        icon_grid.clear_signals_and_data()
 
         self.builder.dereference_object(f"{wid}|{tid}|icon_grid")
         self.builder.dereference_object(f"{wid}|{tid}")
 
-        store.clear()
-        # store.run_dispose()
-        icon_grid.destroy()
-        # icon_grid.run_dispose()
-        scroll.destroy()
-        #scroll.run_dispose()
-        tab_box.destroy()
-        #tab_box.run_dispose()
+        notebook.remove_page( notebook.page_num(scroll) )
 
-        del store
+        tab_box.tab = None
+        tab_box.unparent()
+        tab_box.run_dispose()
+        icon_grid.run_dispose()
+        scroll.run_dispose()
+        icon_grid.unparent()
+        scroll.unparent()
+
+        logger.debug(f"Reference count for tab_box is: {tab_box.__grefcount__}")
+        logger.debug(f"Reference count for icon_grid is: {icon_grid.__grefcount__}")
+        logger.debug(f"Reference count for scroll is: {scroll.__grefcount__}")
+
+        del tab_box
         del icon_grid
         del scroll
-        del tab_box
-        del watcher
-        del tab
 
         gc.collect()
+
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
         self.set_window_title()
 
-    # NOTE: Not actually getting called even tho set in the glade file...
     def on_tab_dnded(self, notebook, page, x, y):
-        ...
+        logger.info("Create new window on tab dnd outside stub...")
 
     def on_tab_reorder(self, child, page_num, new_index):
         wid, tid = page_num.get_name().split("|")
@@ -110,6 +128,8 @@ class TabMixin(GridMixin):
                 _tab    = window.get_tab_by_id(tid)
                 watcher = _tab.get_dir_watcher()
                 watcher.cancel()
+                watcher.disconnect(watcher.watch_id)
+                watcher.run_dispose()
                 window.get_all_tabs().insert(new_index, window.get_all_tabs().pop(i))
 
         tab = window.get_tab_by_id(tid)
@@ -120,12 +140,13 @@ class TabMixin(GridMixin):
     def on_tab_switch_update(self, notebook, content = None, index = None):
         self.selected_files.clear()
         wid, tid = content.get_children()[0].get_name().split("|")
+
         self.fm_controller.set_wid_and_tid(wid, tid)
         self.set_path_text(wid, tid)
         self.set_window_title()
 
     def get_id_from_tab_box(self, tab_box):
-        return tab_box.get_children()[2].get_text()
+        return tab_box.tab.get_id()
 
     def get_tab_label(self, notebook, icon_grid):
         return notebook.get_tab_label(icon_grid.get_parent()).get_children()[0]
@@ -140,6 +161,8 @@ class TabMixin(GridMixin):
         state = self.get_current_state()
         state.tab.load_directory()
         self.load_store(state.tab, state.store)
+
+        state = None
 
     def update_tab(self, tab_label, tab, store, wid, tid):
         self.load_store(tab, store)
@@ -181,15 +204,37 @@ class TabMixin(GridMixin):
             if isinstance(focused_obj, Gtk.Entry):
                 self.process_path_menu(widget, tab, dir)
 
+            action = None
+            store  = None
+
             if path.endswith(".") or path == dir:
+                tab_label = None
+                notebook  = None
+                wid, tid  = None, None
+                path = None
+                tab  = None
                 return
 
             if not tab.set_path(path):
+                tab_label = None
+                notebook  = None
+                wid, tid  = None, None
+                path = None
+                tab  = None
                 return
 
         icon_grid = self.get_icon_grid_from_notebook(notebook, f"{wid}|{tid}")
         icon_grid.clear_and_set_new_store()
-        self.update_tab(tab_label, tab, store, wid, tid)
+        self.update_tab(tab_label, tab, icon_grid.get_store(), wid, tid)
+
+        action    = None
+        wid, tid  = None, None
+        notebook  = None
+        store, tab_label = None, None
+        path      = None
+        tab       = None
+        icon_grid = None
+
 
     def process_path_menu(self, gtk_entry, tab, dir):
         path_menu_buttons  = self.builder.get_object("path_menu_buttons")
@@ -207,11 +252,16 @@ class TabMixin(GridMixin):
                     path_menu_buttons.add(button)
                     show_path_menu = True
 
+        query = None
+        files = None
+
         if not show_path_menu:
+            path_menu_buttons = None
             event_system.emit("hide_path_menu")
         else:
             event_system.emit("show_path_menu")
             buttons = path_menu_buttons.get_children()
+            path_menu_buttons = None
 
             if len(buttons) == 1:
                 self.slowed_focus(buttons[0])
@@ -224,6 +274,7 @@ class TabMixin(GridMixin):
     def do_focused_click(self, button):
         button.grab_focus()
         button.clicked()
+        return False
 
     def set_path_entry(self, button = None, eve = None):
         self.path_auto_filled = True
@@ -236,9 +287,17 @@ class TabMixin(GridMixin):
         path_entry.set_position(-1)
         event_system.emit("hide_path_menu")
 
+        state      = None
+        path       = None
+        path_entry = None
+
+
     def show_hide_hidden_files(self):
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         tab.set_hiding_hidden(not tab.is_hiding_hidden())
         tab.load_directory()
         self.builder.get_object("refresh_tab").released()
+
+        wid, tid = None, None
+        tab      = None

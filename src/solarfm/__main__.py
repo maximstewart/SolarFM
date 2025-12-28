@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 
 # Python imports
+import resource
 import argparse
 import faulthandler
-import locale
 import traceback
 from setproctitle import setproctitle
 
+import tracemalloc
+tracemalloc.start()
+
 # Lib imports
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
 # Application imports
 from __builtins__ import *
@@ -18,39 +18,46 @@ from app import Application
 
 
 
-def run():
-    try:
-        locale.setlocale(locale.LC_NUMERIC, 'C')
+def limit_memory(maxsize): 
+    soft, hard = resource.getrlimit(resource.RLIMIT_AS) 
+    resource.setrlimit(resource.RLIMIT_AS, (maxsize, hard)) 
 
-        setproctitle(f"{app_name}")
-        faulthandler.enable()  # For better debug info
 
-        parser = argparse.ArgumentParser()
-        # Add long and short arguments
-        parser.add_argument("--debug", "-d", default="false", help="Do extra console messaging.")
-        parser.add_argument("--trace-debug", "-td", default="false", help="Disable saves, ignore IPC lock, do extra console messaging.")
-        parser.add_argument("--no-plugins", "-np", default="false", help="Do not load plugins.")
+def main(args, unknownargs):
+    setproctitle(f'{app_name}')
 
-        parser.add_argument("--new-tab", "-t", default="", help="Open a file into new tab.")
-        parser.add_argument("--new-window", "-w", default="", help="Open a file into a new window.")
+    if args.debug == "true":
+        settings_manager.set_debug(True)
 
-        # Read arguments (If any...)
-        args, unknownargs = parser.parse_known_args()
+    if args.trace_debug == "true":
+        settings_manager.set_trace_debug(True)
 
-        if args.debug == "true":
-            settings_manager.set_debug(True)
+    settings_manager.do_dirty_start_check()
 
-        if args.trace_debug == "true":
-            settings_manager.set_trace_debug(True)
+    app = Application()
+    app.run()
 
-        settings_manager.do_dirty_start_check()
-        Application(args, unknownargs)
-        Gtk.main()
-    except Exception as e:
-        traceback.print_exc()
-        quit()
 
 
 if __name__ == "__main__":
-    """ Set process title, get arguments, and create GTK main thread. """
-    run()
+    ''' Set process title, get arguments, and create GTK main thread. '''
+
+    parser = argparse.ArgumentParser()
+    # Add long and short arguments
+    parser.add_argument("--debug", "-d", default="false", help="Do extra console messaging.")
+    parser.add_argument("--trace-debug", "-td", default="false", help="Disable saves, ignore IPC lock, do extra console messaging.")
+    parser.add_argument("--no-plugins", "-np", default="false", help="Do not load plugins.")
+
+    parser.add_argument("--new-tab", "-nt", default="false", help="Opens a 'New Tab' if a handler is set for it.")
+    parser.add_argument("--file", "-f", default="default", help="JUST SOME FILE ARG.")
+
+    # Read arguments (If any...)
+    args, unknownargs = parser.parse_known_args()
+    settings_manager.set_starting_args( args, unknownargs )
+
+    try:
+        faulthandler.enable()  # For better debug info
+        main(args, unknownargs)
+    except Exception as e:
+        traceback.print_exc()
+        quit()

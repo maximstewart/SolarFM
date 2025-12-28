@@ -184,8 +184,8 @@ class Plugin(PluginBase):
         response = requests.post(self.vqd_link, headers=self.vqd_headers, data=self.vqd_data, timeout=2)
         if response.status_code == 200:
             data             = response.content
-            vqd_start_index  = data.index(b"vqd='") + 5
-            vqd_end_index    = data.index(b"'", vqd_start_index)
+            vqd_start_index  = data.index(b"vqd=\"") + 5
+            vqd_end_index    = data.index(b"\"", vqd_start_index)
             self._vqd_attrib = data[vqd_start_index:vqd_end_index].decode("utf-8")
 
             print(f"Translation VQD: {self._vqd_attrib}")

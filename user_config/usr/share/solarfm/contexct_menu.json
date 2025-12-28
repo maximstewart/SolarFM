@@ -1,8 +1,9 @@
 {
     "Open Actions": {
-        "Open":      ["STOCK_OPEN", "open"],
-        "Open With": ["STOCK_OPEN", "open_with"],
-        "Execute":   ["STOCK_EXECUTE", "execute"],
+        "Open":       ["STOCK_OPEN", "open"],
+        "Open With":  ["STOCK_OPEN", "open_with"],
+        "Open 2 Tab": ["STOCK_OPEN", "open_2_new_tab"],
+        "Execute":    ["STOCK_EXECUTE", "execute"],
         "Execute in Terminal": ["STOCK_EXECUTE", "execute_in_terminal"]
     },
     "File Actions": {

@@ -87,17 +87,18 @@ class SettingsManager(StartCheckMixin, Singleton):
             print( f"Settings: {self._CONTEXT_MENU}\n\t\t{repr(e)}" )
 
 
-        self.settings: Settings = None
-        self._main_window       = None
-        self._main_window_w     = 1670
-        self._main_window_h     = 830
-        self._builder           = None
-        self.PAINT_BG_COLOR     = (0, 0, 0, 0.0)
+        self.settings: Settings    = None
+        self._main_window          = None
+        self._main_window_w        = 1670
+        self._main_window_h        = 830
+        self._builder              = None
+        self.PAINT_BG_COLOR        = (0, 0, 0, 0.0)
 
-        self._trace_debug       = False
-        self._debug             = False
-        self._dirty_start       = False
-
+        self._trace_debug          = False
+        self._debug                = False
+        self._dirty_start          = False
+        self._passed_in_file: bool = False
+        self._starting_files: list = []
 
     def register_signals_to_builder(self, classes=None, builder=None):
         handlers = {}
@@ -143,8 +144,25 @@ class SettingsManager(StartCheckMixin, Singleton):
     def get_trash_info_path(self)   -> str: return self._TRASH_INFO_PATH
     def get_plugins_path(self)      -> str: return self._PLUGINS_PATH
 
+    def get_starting_args(self):
+        return self.args, self.unknownargs
+
+    def set_is_starting_with_file(self, is_passed_in_file: bool = False):
+        self._passed_in_file = is_passed_in_file
+
     def is_trace_debug(self)    -> bool:  return self._trace_debug
     def is_debug(self)          -> bool:  return self._debug
+
+    def set_main_window_x(self, x = 0):  self.settings.config.main_window_x  = x
+    def set_main_window_y(self, y = 0):  self.settings.config.main_window_y  = y
+    def set_main_window_width(self, width = 800):   self.settings.config.main_window_width  = width
+    def set_main_window_height(self, height = 600): self.settings.config.main_window_height = height
+    def set_main_window_min_width(self, width = 720):   self.settings.config.main_window_min_width  = width
+    def set_main_window_min_height(self, height = 480): self.settings.config.main_window_min_height = height
+
+    def set_starting_args(self, args, unknownargs):
+        self.args = args
+        self.unknownargs = unknownargs
 
     def set_trace_debug(self, trace_debug: bool):
         self._trace_debug = trace_debug

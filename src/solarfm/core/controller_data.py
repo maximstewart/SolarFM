@@ -29,7 +29,7 @@ class Controller_Data:
 
         self._load_glade_file()
         self.fm_controller      = WindowController()
-        self.plugins            = PluginsController()
+        self.plugins_controller = PluginsController()
         self.fm_controller_data = self.fm_controller.get_state_from_file()
 
         self.window1            = self.builder.get_object("window_1")
@@ -54,6 +54,7 @@ class Controller_Data:
         self.ctrl_down          = False
         self.shift_down         = False
         self.alt_down           = False
+        self.was_midified_key   = None
 
         self._state           = State()
         self.message_dialog   = MessageWidget()
@@ -70,23 +71,16 @@ class Controller_Data:
                 Returns:
                         state (obj): State
         '''
-        # state                  = State()
+
         state                  = self._state
         state.fm_controller    = self.fm_controller
         state.notebooks        = self.notebooks
         state.wid, state.tid   = self.fm_controller.get_active_wid_and_tid()
         state.tab              = self.get_fm_window(state.wid).get_tab_by_id(state.tid)
         state.icon_grid        = self.builder.get_object(f"{state.wid}|{state.tid}|icon_grid", use_gtk = False)
-        # state.icon_grid        = event_system.emit_and_await("get_files_view_icon_grid", (state.wid, state.tid))
         state.store            = state.icon_grid.get_model()
-
-        # NOTE: Need to watch this as I thought we had issues with just using single reference upon closing it.
-        # But, I found that not doing it this way caused objects to generate upon every click... (Because we're getting state info, duh)
-        # Yet interactive debug view shows them just pilling on and never clearing...
         state.message_dialog   = self.message_dialog
         state.user_pass_dialog = self.user_pass_dialog
-        # state.message_dialog   = MessageWidget()
-        # state.user_pass_dialog = UserPassWidget()
 
         selected_files     = state.icon_grid.get_selected_items()
         if selected_files:
@@ -94,12 +88,6 @@ class Controller_Data:
             state.uris_raw = self.format_to_uris(state.store, state.wid, state.tid, selected_files)
 
         state.selected_files = event_system.emit_and_await("get_selected_files")
-
-        # if self.to_copy_files:
-        #     state.to_copy_files  = self.format_to_uris(state.store, state.wid, state.tid, self.to_copy_files, True)
-        #
-        # if self.to_cut_files:
-        #     state.to_cut_files   = self.format_to_uris(state.store, state.wid, state.tid, self.to_cut_files, True)
 
         event_system.emit("update_state_info_plugins", state) # NOTE: Need to remove after we convert plugins to use emit_and_await
         return state
@@ -120,6 +108,9 @@ class Controller_Data:
                 fpath = f"{dir}/{file}"
 
             uris.append(fpath)
+
+        tab = None
+        dir = None
 
         return uris
 

@@ -13,7 +13,7 @@ class IPCSignalsMixin:
     def print_to_console(self, message=None):
         print(message)
 
-    def handle_file_from_ipc(self, path):
+    def handle_dir_from_ipc(self, path):
         window = self.builder.get_object("main_window")
         window.deiconify()
         window.show()

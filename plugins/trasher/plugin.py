@@ -111,6 +111,8 @@ class Plugin(PluginBase):
         for uri in state.uris:
             self.trashman.trash(uri, verbocity)
 
+        self.trashman.regenerate()
+
     def restore_trash_files(self, widget = None, eve = None, verbocity = False):
         self._event_system.emit("get_current_state")
         state = self._fm_state

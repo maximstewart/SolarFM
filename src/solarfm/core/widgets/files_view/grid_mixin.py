@@ -7,6 +7,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import GLib
+from gi.repository import Gio
 
 # Application imports
 from ...widgets.tab_header_widget import TabHeaderWidget
@@ -25,61 +26,49 @@ class GridMixin:
         for file in files:
             store.append([None, file[0]])
 
-        Gtk.main_iteration()
-        if use_generator:
-            # NOTE: tab > icon > _get_system_thumbnail_gtk_thread must not be used
-            # as the attempted promotion back to gtk threading stalls the generator. (We're already in main gtk thread)
-            for i, icon in enumerate( self.create_icons_generator(tab, dir, files) ):
-                self.load_icon(i, store, icon)
-        else:
-            # for i, file in enumerate(files):
-            #     self.create_icon(i, tab, store, dir, file[0])
-            try:
-                loop = asyncio.get_running_loop()
-            except RuntimeError:
-                loop = None
-
-            if loop and loop.is_running():
-                loop.create_task( self.create_icons(tab, store, dir, files) )
-            else:
-                asyncio.run( self.create_icons(tab, store, dir, files) )
+        self.load_icons(tab, store, dir, files, self.update_store)
 
         # NOTE: Not likely called often from here but it could be useful
         if save_state and not trace_debug:
             self.fm_controller.save_state()
 
-    async def create_icons(self, tab, store, dir, files):
-        tasks = [self.update_store(i, store, dir, tab, file[0]) for i, file in enumerate(files)]
-        await asyncio.gather(*tasks)
+    @daemon_threaded
+    def load_icons(self, tab, store, dir, files, callback):
+        icons = []
+        for file in files:
+            icons.append(
+                tab.create_icon(dir, file[0])
+            )
 
-    async def load_icon(self, i, store, icon):
-        self.update_store(i, store, icon)
+        GLib.idle_add(callback, store, icons)
 
-    async def update_store(self, i, store, dir, tab, file):
-        icon = tab.create_icon(dir, file)
-        itr  = store.get_iter(i)
+    def update_store(self, store, icons):
+        for i, icon in enumerate(icons):
+            try:
+                itr  = store.get_iter(i)
+                store.set_value(itr, 0, icon)
+                icon.run_dispose()
+            except:
+                icon.run_dispose()
+                continue
+
+        store.run_dispose()
+        del icons
+        del store
+
+    def insert_store(self, store, itr, icon):
         store.set_value(itr, 0, icon)
 
-    def create_icons_generator(self, tab, dir, files):
-        for file in files:
-            icon = tab.create_icon(dir, file[0])
-            yield icon
+        # Note:  If the function returns GLib.SOURCE_REMOVE or False it is automatically removed from the list of event sources and will not be called again.
+        return False
 
-    # @daemon_threaded
-    # def create_icon(self, i, tab, store, dir, file):
-    #     icon = tab.create_icon(dir, file)
-    #     GLib.idle_add(self.update_store, *(i, store, icon,))
-    #
-    # @daemon_threaded
-    # def load_icon(self, i, store, icon):
-    #     GLib.idle_add(self.update_store, *(i, store, icon,))
-    #
-    # def update_store(self, i, store, icon):
-    #     itr = store.get_iter(i)
-    #     store.set_value(itr, 0, icon)
+    def do_ui_update(self):
+        Gtk.main_iteration()
+        # Note:  If the function returns GLib.SOURCE_REMOVE or False it is automatically removed from the list of event sources and will not be called again.
+        return False
 
-    def create_tab_widget(self, tab):
-        return TabHeaderWidget(tab, self.close_tab)
+    def create_tab_widget(self):
+        return TabHeaderWidget(self.close_tab)
 
     def create_scroll_and_store(self, tab, wid, use_tree_view = False):
         scroll = Gtk.ScrolledWindow()
@@ -136,4 +125,12 @@ class GridMixin:
                 store     = icon_grid.get_model()
                 tab_label = notebook.get_tab_label(obj).get_children()[0]
 
+        icon_grid = None
         return store, tab_label
+
+    def get_icon_grid_from_notebook(self, notebook, _name):
+        for obj in notebook.get_children():
+            icon_grid = obj.get_children()[0]
+            name      = icon_grid.get_name()
+            if name == _name:
+                return icon_grid

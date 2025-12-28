@@ -65,19 +65,20 @@ class IOWidget(Gtk.Box):
         logger.info(f"Canceling: [{self._action}] of {self._basename} ...")
         eve.cancel()
 
-    def update_progress(self, current, total, eve=None):
+    def update_progress(self, current, total, eve = None):
         self.progress.set_fraction(current/total)
 
-    def finish_callback(self, file, task=None, eve=None):
+    def finish_callback(self, file, task = None, eve = None):
+        if task.had_error():
+            logger.info(f"{self._action} of {self._basename} cancelled/failed...")
+            return
+
         if self._action == "move" or self._action == "rename":
             status = self._file.move_finish(task)
         if self._action == "copy":
             status = self._file.copy_finish(task)
 
-        if status:
-            self.delete_self()
-        else:
-            logger.info(f"{self._action} of {self._basename} failed...")
+        self.delete_self()
 
-    def delete_self(self, widget=None, eve=None):
+    def delete_self(self, widget = None, eve = None):
         self.get_parent().remove(self)

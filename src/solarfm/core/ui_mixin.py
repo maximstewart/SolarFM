@@ -6,10 +6,11 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GLib
 
 # Application imports
 from .mixins.ui.pane_mixin import PaneMixin
-from .mixins.ui.window_mixin import WindowMixin
+from .widgets.files_view.window_mixin import WindowMixin
 
 from .widgets.files_view.files_widget import FilesWidget
 
@@ -34,17 +35,19 @@ class UIMixin(PaneMixin, WindowMixin):
             nickname = session["window"]["Nickname"]
             tabs     = session["window"]["tabs"]
             isHidden = True if session["window"]["isHidden"] == "True" else False
-            event_system.emit("load_files_view_state", (nickname, tabs))
+            event_system.emit_and_await("load_files_view_state", (nickname, tabs, isHidden))
 
-    @daemon_threaded
+
     def _focus_last_visible_notebook(self, icon_grid):
         import time
 
         window = settings_manager.get_main_window()
         while not window.is_visible() and not window.get_realized():
-            time.sleep(0.1)
+            time.sleep(0.2)
 
         icon_grid.event(Gdk.Event().new(type = Gdk.EventType.BUTTON_RELEASE))
+
+        window = None
 
     def _current_loading_process(self, session_json = None):
         if session_json:
@@ -75,9 +78,10 @@ class UIMixin(PaneMixin, WindowMixin):
                 elif not self.is_pane1_hidden:
                     notebook = self.window1
 
+                # Todo: Maybe use 'realize' signal to focus widget instead...
                 scroll_win = notebook.get_children()[-1]
                 icon_grid  = scroll_win.get_children()[0]
-                self._focus_last_visible_notebook(icon_grid)
+                GLib.Thread("", self._focus_last_visible_notebook, icon_grid)
             except UIMixinException as e:
                 logger.info("\n:  The saved session might be missing window data!  :\nLocation: ~/.config/solarfm/session.json\nFix: Back it up and delete it to reset.\n")
                 logger.debug(repr(e))

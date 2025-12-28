@@ -36,41 +36,76 @@ class PluginsController:
 
         self._plugins_dir_watcher = None
         self._plugin_collection   = []
+        self._plugin_manifests    = {}
+
+        self._load_manifests()
 
 
-    def launch_plugins(self) -> None:
+    def _load_manifests(self):
+        logger.info(f"Loading manifests...")
+
+        for path, folder in [[join(self._plugins_path, item), item] if os.path.isdir(join(self._plugins_path, item)) else None for item in os.listdir(self._plugins_path)]:
+            manifest = ManifestProcessor(path, self._builder)
+            self._plugin_manifests[path] =  {
+                "path": path,
+                "folder": folder,
+                "manifest": manifest
+            }
+
         self._set_plugins_watcher()
-        self.load_plugins()
 
     def _set_plugins_watcher(self) -> None:
         self._plugins_dir_watcher  = Gio.File.new_for_path(self._plugins_path) \
                                             .monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, Gio.Cancellable())
         self._plugins_dir_watcher.connect("changed", self._on_plugins_changed, ())
 
-    def _on_plugins_changed(self, file_monitor, file, other_file=None, eve_type=None, data=None):
+    def _on_plugins_changed(self, file_monitor, file, other_file = None, eve_type = None, data = None):
         if eve_type in [Gio.FileMonitorEvent.CREATED, Gio.FileMonitorEvent.DELETED,
                         Gio.FileMonitorEvent.RENAMED, Gio.FileMonitorEvent.MOVED_IN,
                                                     Gio.FileMonitorEvent.MOVED_OUT]:
             self.reload_plugins(file)
 
-    @daemon_threaded
-    def load_plugins(self, file: str = None) -> None:
-        logger.info(f"Loading plugins...")
+    def pre_launch_plugins(self) -> None:
+        logger.info(f"Loading pre-launch plugins...")
+        plugin_manifests: {} = {}
+
+        for key in self._plugin_manifests:
+            target_manifest = self._plugin_manifests[key]["manifest"]
+            if target_manifest.is_pre_launch():
+                plugin_manifests[key] = self._plugin_manifests[key]
+
+        self._load_plugins(plugin_manifests, is_pre_launch = True)
+
+    def post_launch_plugins(self) -> None:
+        logger.info(f"Loading post-launch plugins...")
+        plugin_manifests: {} = {}
+
+        for key in self._plugin_manifests:
+            target_manifest = self._plugin_manifests[key]["manifest"]
+            if not target_manifest.is_pre_launch():
+                plugin_manifests[key] = self._plugin_manifests[key]
+
+        self._load_plugins(plugin_manifests)
+
+    def _load_plugins(self, plugin_manifests: {} = {}, is_pre_launch: bool = False) -> None:
         parent_path = os.getcwd()
 
-        for path, folder in [[join(self._plugins_path, item), item] if os.path.isdir(join(self._plugins_path, item)) else None for item in os.listdir(self._plugins_path)]:
-            try:
-                target   = join(path, "plugin.py")
-                manifest = ManifestProcessor(path, self._builder)
+        for key in plugin_manifests:
+            target_manifest = plugin_manifests[key]
+            path, folder, manifest = target_manifest["path"], target_manifest["folder"], target_manifest["manifest"]
 
+            try:
+                target = join(path, "plugin.py")
                 if not os.path.exists(target):
                     raise FileNotFoundError("Invalid Plugin Structure: Plugin doesn't have 'plugin.py'. Aboarting load...")
 
                 plugin, loading_data = manifest.get_loading_data()
                 module               = self.load_plugin_module(path, folder, target)
 
-                GLib.idle_add(self.execute_plugin, *(module, plugin, loading_data))
-                # self.execute_plugin(module, plugin, loading_data)
+                if is_pre_launch:
+                    self.execute_plugin(module, plugin, loading_data)
+                else:
+                    GLib.idle_add(self.execute_plugin, *(module, plugin, loading_data))
             except InvalidPluginException as e:
                 logger.info(f"Malformed Plugin: Not loading -->: '{folder}' !")
                 logger.debug("Trace: ", traceback.print_exc())
@@ -100,24 +135,25 @@ class PluginsController:
 
     def execute_plugin(self, module: type, plugin: PluginInfo, loading_data: []):
         plugin.reference = module.Plugin()
-        keys             = loading_data.keys()
 
-        if "ui_target" in keys:
+        if "ui_target" in loading_data:
             loading_data["ui_target"].add( plugin.reference.generate_reference_ui_element() )
             loading_data["ui_target"].show_all()
 
-        if "pass_ui_objects" in keys:
+        if "pass_ui_objects" in loading_data:
             plugin.reference.set_ui_object_collection( loading_data["pass_ui_objects"] )
 
-        if "pass_fm_events" in keys:
+        if "pass_fm_events" in loading_data:
             plugin.reference.set_fm_event_system(event_system)
             plugin.reference.subscribe_to_events()
 
-        if "bind_keys" in keys:
+        if "bind_keys" in loading_data:
             keybindings.append_bindings( loading_data["bind_keys"] )
 
         plugin.reference.run()
         self._plugin_collection.append(plugin)
+
+        return False
 
     def reload_plugins(self, file: str = None) -> None:
         logger.info(f"Reloading plugins...")

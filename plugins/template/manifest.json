@@ -8,6 +8,7 @@
             "ui_target": "plugin_control_list",
             "pass_fm_events": "true",
             "bind_keys": ["Example Plugin||send_message:<Control>f"]
-        }
+        },
+        "pre_launch": "false"
     }
 }

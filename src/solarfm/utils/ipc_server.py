@@ -5,7 +5,6 @@ from multiprocessing.connection import Client
 from multiprocessing.connection import Listener
 
 # Lib imports
-from gi.repository import GLib
 
 # Application imports
 from .singleton import Singleton
@@ -16,7 +15,7 @@ class IPCServer(Singleton):
     """ Create a listener so that other SolarFM instances send requests back to existing instance. """
     def __init__(self, ipc_address: str = '127.0.0.1', conn_type: str = "socket"):
         self.is_ipc_alive     = False
-        self._ipc_port        = 4848
+        self._ipc_port        = 0 # Use 0 to let Listener chose port
         self._ipc_address     = ipc_address
         self._conn_type       = conn_type
         self._ipc_authkey     = b'' + bytes(f'{app_name}-ipc', 'utf-8')
@@ -43,8 +42,7 @@ class IPCServer(Singleton):
             if os.path.exists(self._ipc_address) and settings_manager.is_dirty_start():
                 os.unlink(self._ipc_address)
 
-            listener = Listener(address = self._ipc_address, family = "AF_UNIX", authkey = self._ipc_authkey)
-
+            listener = Listener(self._ipc_address, family = "AF_UNIX", authkey = self._ipc_authkey)
         elif "unsecured" not in self._conn_type:
             listener = Listener((self._ipc_address, self._ipc_port), authkey = self._ipc_authkey)
         else:
@@ -59,9 +57,14 @@ class IPCServer(Singleton):
             try:
                 conn       = listener.accept()
                 start_time = time.perf_counter()
-                GLib.idle_add(self._handle_ipc_message, *(conn, start_time,))
+
+                self._handle_ipc_message(conn, start_time)
+            except EOFError as e:
+                logger.debug( repr(e) )
             except Exception as e:
                 logger.debug( repr(e) )
+            finally:
+                conn.close()
 
         listener.close()
 
@@ -73,13 +76,21 @@ class IPCServer(Singleton):
             if "FILE|" in msg:
                 file = msg.split("FILE|")[1].strip()
                 if file:
-                    event_system.emit("handle_file_from_ipc", file)
+                    event_system.emit_and_await("handle_file_from_ipc", file)
+
+                conn.close()
+                break
+
+            if "DIR|" in msg:
+                file = msg.split("DIR|")[1].strip()
+                if file:
+                    event_system.emit_and_await("handle_dir_from_ipc", file)
 
                 conn.close()
                 break
 
 
-            if msg in ['close connection', 'close server']:
+            if msg in ['close connection', 'close server', 'Empty Data...']:
                 conn.close()
                 break
 

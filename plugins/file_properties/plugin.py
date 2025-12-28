@@ -122,7 +122,6 @@ class Plugin(PluginBase):
             uri  = state.uris[0]
             path = state.tab.get_current_directory()
 
-
             properties = self._set_ui_data(uri, path)
             response   = self._properties_dialog.run()
             if response in [Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT]:
@@ -168,13 +167,13 @@ class Plugin(PluginBase):
 
     def _set_ui_data(self, uri, path):
         properties = Properties()
-        file_info  = Gio.File.new_for_path(uri).query_info(attributes="standard::*,owner::*,time::access,time::changed",
-                                                            flags=Gio.FileQueryInfoFlags.NONE,
-                                                            cancellable=None)
+        file_info  = Gio.File.new_for_path(uri).query_info(attributes = "standard::*,owner::*,time::access,time::changed",
+                                                            flags = Gio.FileQueryInfoFlags.NONE,
+                                                            cancellable = None)
 
         is_symlink               = file_info.get_attribute_as_string("standard::is-symlink")
         properties.file_uri      = uri
-        properties.file_target   = file_info.get_attribute_as_string("standard::symlink-target") if is_symlink else ""
+        properties.file_target   = file_info.get_attribute_as_string("standard::symlink-target") if is_symlink in [True, "TRUE"] else ""
         properties.file_name     = file_info.get_display_name()
         properties.file_location = path
         properties.mime_type     = file_info.get_content_type()
@@ -186,7 +185,7 @@ class Plugin(PluginBase):
 
         # NOTE: Read = 4,  Write = 2,  Exec = 1
         command = ["stat", "-c", "%a", uri]
-        with subprocess.Popen(command, stdout=subprocess.PIPE) as proc:
+        with subprocess.Popen(command, stdout = subprocess.PIPE) as proc:
             properties.chmod_stat = list(proc.stdout.read().decode("UTF-8").strip())
             owner  = self._chmod_map[f"{properties.chmod_stat[0]}"]
             group  = self._chmod_map[f"{properties.chmod_stat[1]}"]

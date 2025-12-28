@@ -20,6 +20,10 @@ function main() {
         files[$size]="${target}"
     done
 
-    python /opt/solarfm.zip "${files[@]}"
+    export G_SLICE=always-malloc
+    export G_DEBUG=gc-friendly
+    export GOBJECT_DEBUG=instance-count
+    export GSK_RENDERER=cairo
+    python /opt/solarfm.zip "$@"
 }
 main "$@";

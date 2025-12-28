@@ -40,6 +40,7 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
 
         event_system.subscribe("open_files", self.open_files)
         event_system.subscribe("open_with_files", self.open_with_files)
+        event_system.subscribe("open_2_new_tab", self.open_2_new_tab)
         event_system.subscribe("execute_files", self.execute_files)
 
         event_system.subscribe("cut_files", self.cut_files)
@@ -104,6 +105,12 @@ class FileSystemActions(HandlerMixin, CRUDMixin):
 
         state.tab.app_chooser_exec(app_info, uris)
 
+    def open_2_new_tab(self):
+        state   = event_system.emit_and_await("get_current_state")
+        uri     = state.uris[0]
+        message = f"FILE|{uri}"
+        logger.info(message)
+        event_system.emit("post_file_to_ipc", message)
 
     def execute_files(self, in_terminal=False):
         state       = event_system.emit_and_await("get_current_state")

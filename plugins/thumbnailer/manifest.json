@@ -1,0 +1,12 @@
+{
+    "manifest": {
+        "name": "Thumbnailer",
+        "author": "ITDominator",
+        "version": "0.0.1",
+        "support": "",
+        "requests": {
+            "pass_fm_events": "true"
+        },
+        "pre_launch": "true"
+    }
+}

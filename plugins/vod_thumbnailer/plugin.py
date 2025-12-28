@@ -26,6 +26,8 @@ def threaded(fn):
     return wrapper
 
 
+class VODThumbnailerException(Exception):
+    ...
 
 
 class Plugin(PluginBase):
@@ -94,32 +96,39 @@ class Plugin(PluginBase):
         file          = self._file_name.get_text()
         dir           = self._file_location.get_text()
         file_hash     = self._file_hash.get_text()
-        hash_img_pth  = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
+        hash_img_pth  = f"{self.ABS_THUMBS_PTH}/{file_hash}.jpg"
 
         try:
-            self._fm_state.tab.create_video_thumbnail(f"{dir}/{file}", f"{scrub_percent}%", True)
+            self._event_system.emit_and_await("create-video-thumbnail", (f"{dir}/{file}", f"{scrub_percent}%", True,))
             preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
             self._thumbnail_preview_img.set_from_pixbuf(preview_pixbuf)
 
-            img_pixbuf = self._fm_state.tab.create_scaled_image(hash_img_pth)
+            img_pixbuf = self._event_system.emit_and_await("create-scaled-image", (hash_img_pth,))
             tree_pth   = self._fm_state.icon_grid.get_selected_items()[0]
             itr        = self._fm_state.store.get_iter(tree_pth)
             pixbuff    = self._fm_state.store.get(itr, 0)[0]
             self._fm_state.store.set(itr, 0, img_pixbuf)
         except Exception as e:
-            print(repr(e))
             print("Couldn't regenerate thumbnail!")
+            print(repr(e))
 
 
     def _set_ui_data(self):
         uri            = self._fm_state.uris[0]
         path           = self._fm_state.tab.get_current_directory()
         parts          = uri.split("/")
-        file_hash      = self._fm_state.tab.fast_hash(uri)
-        hash_img_pth   = f"{self._fm_state.tab.ABS_THUMBS_PTH}/{file_hash}.jpg"
+        path_exists, \
+        img_hash,    \
+        hash_img_pth   = self._event_system.emit_and_await("get-thumbnail-hash", (uri,))
+
+        if not path_exists:
+            raise VODThumbnailerException(f"Could not generate file_hash from: {uri}")
+
+
+        self.ABS_THUMBS_PTH = self._event_system.emit_and_await("get-thumbnails-path")
         preview_pixbuf = GdkPixbuf.Pixbuf.new_from_file(hash_img_pth)
 
         self._thumbnail_preview_img.set_from_pixbuf(preview_pixbuf)
         self._file_name.set_text(parts[ len(parts) - 1 ])
         self._file_location.set_text(path)
-        self._file_hash.set_text(file_hash)
+        self._file_hash.set_text(img_hash)

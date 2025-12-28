@@ -1,5 +1,4 @@
 # Python imports
-import time
 import signal
 
 # Lib imports
@@ -23,19 +22,20 @@ class ControllerStartException(Exception):
 class Window(Gtk.ApplicationWindow):
     """docstring for Window."""
 
-    def __init__(self, args, unknownargs):
-        super(Window, self).__init__()
+    def __init__(self):
+        Gtk.ApplicationWindow.__init__(self)
 
-        self._controller = None
         settings_manager.set_main_window(self)
 
-        self._set_window_data()
+        self._controller = None
+
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()
+        self._load_widgets()
 
-        self._load_widgets(args, unknownargs)
-
+        self._set_window_data()
+        self._set_size_constraints()
         self.show()
 
 
@@ -55,16 +55,28 @@ class Window(Gtk.ApplicationWindow):
         event_system.subscribe("tear_down", self._tear_down)
         event_system.subscribe("load_interactive_debug", self._load_interactive_debug)
 
-    def _load_widgets(self, args, unknownargs):
+    def _load_widgets(self):
         if settings_manager.is_debug():
             self.set_interactive_debugging(True)
 
-        self._controller = Controller(args, unknownargs)
+        self._controller = Controller()
 
         if not self._controller:
             raise ControllerStartException("Controller exited and doesn't exist...")
 
         self.add( self._controller.get_core_widget() )
+
+    def _set_size_constraints(self):
+        _window_x   = settings.config.main_window_x
+        _window_y   = settings.config.main_window_y
+        _min_width  = settings.config.main_window_min_width
+        _min_height = settings.config.main_window_min_height
+        _width      = settings.config.main_window_width
+        _height     = settings.config.main_window_height
+
+        self.move(_window_x, _window_y - 28)
+        self.set_size_request(_min_width, _min_height)
+        self.set_default_size(_width, _height)
 
     def _set_window_data(self) -> None:
         screen = self.get_screen()
@@ -73,7 +85,7 @@ class Window(Gtk.ApplicationWindow):
         if visual != None and screen.is_composited():
             self.set_visual(visual)
             self.set_app_paintable(True)
-            self.connect("draw", self._area_draw)
+            # self.connect("draw", self._area_draw)
 
         # bind css file
         cssProvider  = Gtk.CssProvider()
@@ -87,12 +99,25 @@ class Window(Gtk.ApplicationWindow):
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         cr.set_operator(cairo.OPERATOR_OVER)
-    
+
     def _load_interactive_debug(self):
         self.set_interactive_debugging(True)
 
 
     def _tear_down(self, widget = None, eve = None):
         event_system.emit("shutting_down")
+
+        size = self.get_size()
+        pos  = self.get_position()
+
+        settings_manager.set_main_window_width(size.width)
+        settings_manager.set_main_window_height(size.height)
+        settings_manager.set_main_window_x(pos.root_x)
+        settings_manager.set_main_window_y(pos.root_y)
+        settings_manager.save_settings()
+
         settings_manager.clear_pid()
         Gtk.main_quit()
+
+    def start(self):
+        Gtk.main()

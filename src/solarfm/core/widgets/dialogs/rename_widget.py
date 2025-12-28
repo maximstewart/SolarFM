@@ -50,6 +50,9 @@ class RenameWidget:
     def show_rename_file_menu(self, widget=None, eve=None):
         if widget:
             widget.grab_focus()
+            end_i = widget.get_text().rfind(".")
+            if end_i > 0:
+                widget.select_region(0, end_i)
 
         response = self._rename_file_menu.run()
         if response == Gtk.ResponseType.CLOSE:
@@ -61,16 +64,56 @@ class RenameWidget:
 
 
     def set_to_title_case(self, widget, eve=None):
-        self._rename_fname.set_text( self._rename_fname.get_text().title() )
+        bounds = self._rename_fname.get_selection_bounds()
+        fname  = self._rename_fname.get_text()
+
+        if bounds:
+            start, end = bounds
+            replace = fname[start:end]
+            fname   = fname.replace(replace, replace.title())
+        else:
+            fname   = fname.title()
+
+        self._rename_fname.set_text(fname)
 
     def set_to_upper_case(self, widget, eve=None):
-        self._rename_fname.set_text( self._rename_fname.get_text().upper() )
+        bounds = self._rename_fname.get_selection_bounds()
+        fname   = self._rename_fname.get_text()
+
+        if bounds:
+            start, end = bounds
+            replace = fname[start:end]
+            fname   = fname.replace(replace, replace.upper())
+        else:
+            fname   = fname.upper()
+
+        self._rename_fname.set_text(fname)
 
     def set_to_lower_case(self, widget, eve=None):
-        self._rename_fname.set_text( self._rename_fname.get_text().lower() )
+        bounds = self._rename_fname.get_selection_bounds()
+        fname  = self._rename_fname.get_text()
+
+        if bounds:
+            start, end = bounds
+            replace = fname[start:end]
+            fname   = fname.replace(replace, replace.lower())
+        else:
+            fname   = fname.lower()
+
+        self._rename_fname.set_text(fname)
 
     def set_to_invert_case(self, widget, eve=None):
-        self._rename_fname.set_text( self._rename_fname.get_text().swapcase() )
+        bounds = self._rename_fname.get_selection_bounds()
+        fname  = self._rename_fname.get_text()
+
+        if bounds:
+            start, end = bounds
+            replace = fname[start:end]
+            fname   = fname.replace(replace, replace.swapcase())
+        else:
+            fname   = fname.swapcase()
+
+        self._rename_fname.set_text(fname)
 
     def hide_rename_file_menu(self, widget=None, eve=None):
         self._rename_file_menu.hide()

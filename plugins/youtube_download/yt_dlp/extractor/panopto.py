@@ -1,25 +1,22 @@
 import calendar
-import json
+import datetime as dt
 import functools
-from datetime import datetime
-from random import random
+import json
+import random
+import urllib.parse
 
 from .common import InfoExtractor
-from ..compat import (
-    compat_urllib_parse_urlparse,
-    compat_urlparse
-)
-
 from ..utils import (
-    bug_reports_message,
     ExtractorError,
+    OnDemandPagedList,
+    bug_reports_message,
     get_first,
     int_or_none,
-    OnDemandPagedList,
     parse_qs,
     srt_subtitles_timecode,
-    traverse_obj,
+    url_or_none,
 )
+from ..utils.traversal import traverse_obj
 
 
 class PanoptoBaseIE(InfoExtractor):
@@ -48,7 +45,7 @@ class PanoptoBaseIE(InfoExtractor):
         18: 'hu-HU',
         19: 'nb-NO',
         20: 'sv-SE',
-        21: 'it-IT'
+        21: 'it-IT',
     }
 
     def _call_api(self, base_url, path, video_id, data=None, fatal=True, **kwargs):
@@ -70,7 +67,7 @@ class PanoptoBaseIE(InfoExtractor):
 
     @staticmethod
     def _parse_fragment(url):
-        return {k: json.loads(v[0]) for k, v in compat_urlparse.parse_qs(compat_urllib_parse_urlparse(url).fragment).items()}
+        return {k: json.loads(v[0]) for k, v in urllib.parse.parse_qs(urllib.parse.urlparse(url).fragment).items()}
 
 
 class PanoptoIE(PanoptoBaseIE):
@@ -92,7 +89,7 @@ class PanoptoIE(PanoptoBaseIE):
                 'average_rating': int,
                 'uploader_id': '2db6b718-47a0-4b0b-9e17-ab0b00f42b1e',
                 'channel_id': 'e4c6a2fc-1214-4ca0-8fb7-aef2e29ff63a',
-                'channel': 'Showcase Videos'
+                'channel': 'Showcase Videos',
             },
         },
         {
@@ -135,7 +132,7 @@ class PanoptoIE(PanoptoBaseIE):
                 'uploader': 'Kathryn Kelly',
                 'channel_id': 'fb93bc3c-6750-4b80-a05b-a921013735d3',
                 'channel': 'Getting Started',
-            }
+            },
         },
         {
             # Does not allow normal Viewer.aspx. AUDIO livestream has no url, so should be skipped and only give one stream.
@@ -178,7 +175,7 @@ class PanoptoIE(PanoptoBaseIE):
                 'chapters': 'count:28',
                 'thumbnail': r're:https://demo\.hosted\.panopto\.com/.+',
             },
-            'params': {'format': 'mhtml', 'skip_download': True}
+            'params': {'format': 'mhtml', 'skip_download': True},
         },
         {
             'url': 'https://na-training-1.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=8285224a-9a2b-4957-84f2-acb0000c4ea9',
@@ -200,7 +197,7 @@ class PanoptoIE(PanoptoBaseIE):
                 'subtitles': {'en-US': [{'ext': 'srt', 'data': 'md5:a3f4d25963fdeace838f327097c13265'}],
                               'es-ES': [{'ext': 'srt', 'data': 'md5:57e9dad365fd0fbaf0468eac4949f189'}]},
             },
-            'params': {'writesubtitles': True, 'skip_download': True}
+            'params': {'writesubtitles': True, 'skip_download': True},
         }, {
             # On Panopto there are two subs: "Default" and en-US. en-US is blank and should be skipped.
             'url': 'https://na-training-1.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=940cbd41-f616-4a45-b13e-aaf1000c915b',
@@ -222,15 +219,15 @@ class PanoptoIE(PanoptoBaseIE):
                 'upload_date': '20191129',
 
             },
-            'params': {'writesubtitles': True, 'skip_download': True}
+            'params': {'writesubtitles': True, 'skip_download': True},
         },
         {
             'url': 'https://ucc.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=0e8484a4-4ceb-4d98-a63f-ac0200b455cb',
-            'only_matching': True
+            'only_matching': True,
         },
         {
             'url': 'https://brown.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0b3ff73b-36a0-46c5-8455-aadf010a3638',
-            'only_matching': True
+            'only_matching': True,
         },
     ]
 
@@ -243,7 +240,7 @@ class PanoptoIE(PanoptoBaseIE):
         invocation_id = delivery_info.get('InvocationId')
         stream_id = traverse_obj(delivery_info, ('Delivery', 'Streams', ..., 'PublicID'), get_all=False, expected_type=str)
         if invocation_id and stream_id and duration:
-            timestamp_str = f'/Date({calendar.timegm(datetime.utcnow().timetuple())}000)/'
+            timestamp_str = f'/Date({calendar.timegm(dt.datetime.now(dt.timezone.utc).timetuple())}000)/'
             data = {
                 'streamRequests': [
                     {
@@ -258,7 +255,7 @@ class PanoptoIE(PanoptoBaseIE):
                         'StopReason': None,
                         'StreamID': stream_id,
                         'TimeStamp': timestamp_str,
-                        'UpdatesRejected': 0
+                        'UpdatesRejected': 0,
                     },
                 ]}
 
@@ -278,7 +275,7 @@ class PanoptoIE(PanoptoBaseIE):
             chapters.append({
                 'start_time': start,
                 'end_time': start + duration,
-                'title': caption
+                'title': caption,
             })
         return chapters
 
@@ -287,11 +284,11 @@ class PanoptoIE(PanoptoBaseIE):
         image_frags = {}
         for timestamp in timestamps or []:
             duration = timestamp.get('Duration')
-            obj_id, obj_sn = timestamp.get('ObjectIdentifier'), timestamp.get('ObjectSequenceNumber'),
+            obj_id, obj_sn = timestamp.get('ObjectIdentifier'), timestamp.get('ObjectSequenceNumber')
             if timestamp.get('EventTargetType') == 'PowerPoint' and obj_id is not None and obj_sn is not None:
                 image_frags.setdefault('slides', []).append({
                     'url': base_url + f'/Pages/Viewer/Image.aspx?id={obj_id}&number={obj_sn}',
-                    'duration': duration
+                    'duration': duration,
                 })
 
             obj_pid, session_id, abs_time = timestamp.get('ObjectPublicIdentifier'), timestamp.get('SessionID'), timestamp.get('AbsoluteTime')
@@ -308,7 +305,7 @@ class PanoptoIE(PanoptoBaseIE):
                 'acodec': 'none',
                 'vcodec': 'none',
                 'url': 'about:invalid',
-                'fragments': fragments
+                'fragments': fragments,
             }
 
     @staticmethod
@@ -333,8 +330,8 @@ class PanoptoIE(PanoptoBaseIE):
                     'deliveryId': video_id,
                     'getCaptions': True,
                     'language': str(lang),
-                    'responseType': 'json'
-                }
+                    'responseType': 'json',
+                },
             )
             if not isinstance(response, list):
                 continue
@@ -349,26 +346,21 @@ class PanoptoIE(PanoptoBaseIE):
         subtitles = {}
         for stream in streams or []:
             stream_formats = []
-            http_stream_url = stream.get('StreamHttpUrl')
-            stream_url = stream.get('StreamUrl')
-
-            if http_stream_url:
-                stream_formats.append({'url': http_stream_url})
-
-            if stream_url:
+            for stream_url in set(traverse_obj(stream, (('StreamHttpUrl', 'StreamUrl'), {url_or_none}))):
                 media_type = stream.get('ViewerMediaFileTypeName')
                 if media_type in ('hls', ):
-                    m3u8_formats, stream_subtitles = self._extract_m3u8_formats_and_subtitles(stream_url, video_id)
-                    stream_formats.extend(m3u8_formats)
-                    subtitles = self._merge_subtitles(subtitles, stream_subtitles)
+                    fmts, subs = self._extract_m3u8_formats_and_subtitles(stream_url, video_id, m3u8_id='hls', fatal=False)
+                    stream_formats.extend(fmts)
+                    self._merge_subtitles(subs, target=subtitles)
                 else:
                     stream_formats.append({
-                        'url': stream_url
+                        'url': stream_url,
+                        'ext': media_type,
                     })
             for fmt in stream_formats:
                 fmt.update({
                     'format_note': stream.get('Tag'),
-                    **fmt_kwargs
+                    **fmt_kwargs,
                 })
             formats.extend(stream_formats)
 
@@ -388,7 +380,7 @@ class PanoptoIE(PanoptoBaseIE):
                 'isKollectiveAgentInstalled': 'false',
                 'isEmbed': 'false',
                 'responseType': 'json',
-            }
+            },
         )
 
         delivery = delivery_info['Delivery']
@@ -415,7 +407,7 @@ class PanoptoIE(PanoptoBaseIE):
             'cast': traverse_obj(delivery, ('Contributors', ..., 'DisplayName'), expected_type=lambda x: x or None),
             'timestamp': session_start_time - 11640000000 if session_start_time else None,
             'duration': delivery.get('Duration'),
-            'thumbnail': base_url + f'/Services/FrameGrabber.svc/FrameRedirect?objectId={video_id}&mode=Delivery&random={random()}',
+            'thumbnail': base_url + f'/Services/FrameGrabber.svc/FrameRedirect?objectId={video_id}&mode=Delivery&random={random.random()}',
             'average_rating': delivery.get('AverageRating'),
             'chapters': self._extract_chapters(timestamps),
             'uploader': delivery.get('OwnerDisplayName') or None,
@@ -425,7 +417,7 @@ class PanoptoIE(PanoptoBaseIE):
             'channel_id': delivery.get('SessionGroupPublicID'),
             'channel': traverse_obj(delivery, 'SessionGroupLongName', 'SessionGroupShortName', get_all=False),
             'formats': formats,
-            'subtitles': subtitles
+            'subtitles': subtitles,
         }
 
 
@@ -439,7 +431,7 @@ class PanoptoPlaylistIE(PanoptoBaseIE):
                 'id': 'f3b39fcf-882f-4849-93d6-a9f401236d36',
                 'description': '',
             },
-            'playlist_mincount': 36
+            'playlist_mincount': 36,
         },
         {
             'url': 'https://utsa.hosted.panopto.com/Panopto/Pages/Viewer.aspx?pid=e2900555-3ad4-4bdb-854d-ad2401686190',
@@ -448,7 +440,7 @@ class PanoptoPlaylistIE(PanoptoBaseIE):
                 'id': 'e2900555-3ad4-4bdb-854d-ad2401686190',
                 'description': 'md5:f958bca50a1cbda15fdc1e20d32b3ecb',
             },
-            'playlist_mincount': 4
+            'playlist_mincount': 4,
         },
 
     ]
@@ -470,7 +462,7 @@ class PanoptoPlaylistIE(PanoptoBaseIE):
                 'description': item.get('Description'),
                 'duration': item.get('Duration'),
                 'channel': traverse_obj(item, ('Parent', 'Name')),
-                'channel_id': traverse_obj(item, ('Parent', 'Id'))
+                'channel_id': traverse_obj(item, ('Parent', 'Id')),
             }
 
     def _real_extract(self, url):
@@ -479,7 +471,7 @@ class PanoptoPlaylistIE(PanoptoBaseIE):
         video_id = get_first(parse_qs(url), 'id')
         if video_id:
             if self.get_param('noplaylist'):
-                self.to_screen('Downloading just video %s because of --no-playlist' % video_id)
+                self.to_screen(f'Downloading just video {video_id} because of --no-playlist')
                 return self.url_result(base_url + f'/Pages/Viewer.aspx?id={video_id}', ie_key=PanoptoIE.ie_key(), video_id=video_id)
             else:
                 self.to_screen(f'Downloading playlist {playlist_id}; add --no-playlist to just download video {video_id}')
@@ -499,28 +491,28 @@ class PanoptoListIE(PanoptoBaseIE):
             'url': 'https://demo.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx#folderID=%22e4c6a2fc-1214-4ca0-8fb7-aef2e29ff63a%22',
             'info_dict': {
                 'id': 'e4c6a2fc-1214-4ca0-8fb7-aef2e29ff63a',
-                'title': 'Showcase Videos'
+                'title': 'Showcase Videos',
             },
-            'playlist_mincount': 140
+            'playlist_mincount': 140,
 
         },
         {
             'url': 'https://demo.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx#view=2&maxResults=250',
             'info_dict': {
                 'id': 'panopto_list',
-                'title': 'panopto_list'
+                'title': 'panopto_list',
             },
-            'playlist_mincount': 300
+            'playlist_mincount': 300,
         },
         {
             # Folder that contains 8 folders and a playlist
             'url': 'https://howtovideos.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?noredirect=true#folderID=%224b9de7ae-0080-4158-8496-a9ba01692c2e%22',
             'info_dict': {
                 'id': '4b9de7ae-0080-4158-8496-a9ba01692c2e',
-                'title': 'Video Tutorials'
+                'title': 'Video Tutorials',
             },
-            'playlist_mincount': 9
-        }
+            'playlist_mincount': 9,
+        },
 
     ]
 
@@ -536,7 +528,7 @@ class PanoptoListIE(PanoptoBaseIE):
         }
 
         response = self._call_api(
-            base_url, '/Services/Data.svc/GetSessions', f'{display_id} page {page+1}',
+            base_url, '/Services/Data.svc/GetSessions', f'{display_id} page {page + 1}',
             data={'queryParameters': params}, fatal=False)
 
         for result in get_first(response, 'Results', default=[]):
@@ -563,7 +555,7 @@ class PanoptoListIE(PanoptoBaseIE):
             base_url, '/Services/Data.svc/GetFolderInfo', folder_id,
             data={'folderID': folder_id}, fatal=False)
         return {
-            'title': get_first(response, 'Name')
+            'title': get_first(response, 'Name'),
         }
 
     def _real_extract(self, url):

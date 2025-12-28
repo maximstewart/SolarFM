@@ -34,17 +34,31 @@ class WindowMixin(TabMixin):
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         dir      = tab.get_current_directory()
 
-        event_system.emit("unset_selected_files_views")
-        ctx = self.files_view.get_style_context()
+        for _notebook in self.notebooks:
+            ctx = _notebook.get_style_context()
+            ctx.remove_class("notebook-selected-focus")
+            ctx.add_class("notebook-unselected-focus")
+
+        ctx = notebook.get_style_context()
         ctx.remove_class("notebook-unselected-focus")
         ctx.add_class("notebook-selected-focus")
 
-        event_system.emit("set_window_title", (dir,))
+        self.window.set_title(f"{app_name} ~ {dir}")
         self.set_bottom_labels(tab)
 
+        wid, tid = None, None
+        notebook = None
+        tab      = None
+        dir      = None
+
     def set_path_text(self, wid, tid):
-        tab = self.get_fm_window(wid).get_tab_by_id(tid)
-        event_system.emit("go_to_path", (tab.get_current_directory(),))
+        path_entry = self.builder.get_object("path_entry")
+        tab        = self.get_fm_window(wid).get_tab_by_id(tid)
+        path_entry.set_text(tab.get_current_directory())
+        path_entry.set_position(-1)
+
+        path_entry = None
+        tab        = None
 
     def grid_set_selected_items(self, icons_grid):
         new_items      = icons_grid.get_selected_items()
@@ -103,7 +117,6 @@ class WindowMixin(TabMixin):
                 self.execute_files()
                 return
 
-
             state      = self.get_current_state()
             notebook   = self.builder.get_object(f"window_{state.wid}")
             tab_label  = self.get_tab_label(notebook, state.icon_grid)
@@ -118,6 +131,10 @@ class WindowMixin(TabMixin):
                 self.update_tab(tab_label, state.tab, state.icon_grid.get_store(), state.wid, state.tid)
             else:
                 event_system.emit("open_files")
+
+            state     = None
+            notebook  = None
+            tab_label = None
         except WindowException as e:
             traceback.print_exc()
             self.display_message(settings.theming.error_color, f"{repr(e)}")
@@ -160,6 +177,12 @@ class WindowMixin(TabMixin):
         if target not in current:
             self.fm_controller.set_wid_and_tid(wid, tid)
 
+        current     = None
+        target      = None
+        wid, tid    = None, None
+        store       = None
+        path_at_loc = None
+
 
     def grid_on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
         if info == 80:
@@ -173,6 +196,10 @@ class WindowMixin(TabMixin):
             if from_uri != dest:
                 event_system.emit("move_files", (uris, dest))
 
+            Gtk.drag_finish(drag_context, True, False, time)
+            return
+
+        Gtk.drag_finish(drag_context, False, False, time)
 
     def create_new_tab_notebook(self, widget=None, wid=None, path=None):
         self.create_tab(wid, None, path)

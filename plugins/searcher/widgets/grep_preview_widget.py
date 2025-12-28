@@ -48,7 +48,7 @@ class GrepPreviewWidget(Gtk.Box):
         return bytes(f"\n<span foreground='{color}'>{target}</span>", "utf-8").decode("utf-8")
 
     def make_utf8_line_highlight(self, buffer, itr, i, color, target, query):
-        parts = re.split(r"(" + query + ")(?i)", target.replace("\n", ""))
+        parts = re.split(r"(?i)(" + query + ")", target.replace("\n", ""))
         for part in parts:
             itr  = buffer.get_end_iter()
 

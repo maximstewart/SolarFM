@@ -2,13 +2,11 @@
 SolarFM is a Gtk+ Python file manager.
 
 # Notes
-<b>Still Work in  progress! Use at own risk!</b>
-
-Additionally, if not building a .deb then just move the contents of user_config to their respective folders.
+If not building a .deb then just move the contents of user_config to their respective folders.
 Copy the share/solarfm folder to your user .config/ directory too.
 
 `pyrightconfig.json`
-<p>The pyrightconfig file needs to stay on same level as the .git folders in order to have settings detected when using pyright with lsp functionality.</p>
+<p>The pyrightconfig file needs to stay on same level as the .git folders in order to have settings detected when using pyright with lsp functionality. "pyrightconfig.json" can prompt IDEs such as Zed on settings to use and where imports are located- look at venvPath and venv. "venvPath" is parent path of "venv" where "venv" is just the name of the folder under the parent path that is the python created venv.
 
 <h6>Install Setup</h6>
 ```
@@ -17,7 +15,7 @@ sudo apt-get install xclip python3.8 python3-setproctitle python3-gi wget ffmpeg
 
 # Known Issues
 <ul>
-<li>The memory leak has now been mostly mitigated in that it doesn't balloon to 2GB'. Still working out where the smaller one(s) is/are.</li>
+<li>There is a memory leak that has been slowed down but can get to 2GB over a long enough time period OR active accessing image based dirs.</li>
 <li>Doing Ctrl+D when in Terminator (maybe other terminals too) somehow propagates the signal to SolarFM too.
 A selected file in the active quad-pane will move to trash since it is the default key-binding for that action.</li>
 </ul>
@@ -25,7 +23,6 @@ A selected file in the active quad-pane will move to trash since it is the defau
 # TODO
 <ul>
 <li>Add simpleish preview plugin for various file types.</li>
-<li>Add simpleish bulk-renamer.</li>
 </ul>
 
 # Images

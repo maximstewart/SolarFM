@@ -59,7 +59,7 @@ class IconTreeWidget(Gtk.TreeView):
         name   = Gtk.CellRendererText()
         selec  = self.get_selection()
 
-        self.set_model(store)
+        self.set_model(self._store)
         selec.set_mode(3)
 
         column.pack_start(icon, False)

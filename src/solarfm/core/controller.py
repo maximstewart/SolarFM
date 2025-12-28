@@ -36,23 +36,14 @@ from .ui_mixin import UIMixin
 class Controller(UIMixin, SignalsMixins, Controller_Data):
     """ Controller coordinates the mixins and is somewhat the root hub of it all. """
 
-    def __init__(self, args, unknownargs):
+    def __init__(self):
         self._setup_controller_data()
 
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()
         self._load_widgets()
-
-        self._generate_file_views(self.fm_controller_data)
-
-        if args.no_plugins == "false":
-            self.plugins.launch_plugins()
-
-        for arg in unknownargs + [args.new_tab,]:
-            if os.path.isdir(arg):
-                message = f"FILE|{arg}"
-                event_system.emit("post_file_to_ipc", message)
+        self._load_plugins_and_files()
 
 
     def _setup_styling(self):
@@ -66,7 +57,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
 
     def _subscribe_to_events(self):
         event_system.subscribe("shutting_down", self._shutting_down)
-        event_system.subscribe("handle_file_from_ipc", self.handle_file_from_ipc)
+        event_system.subscribe("handle_dir_from_ipc", self.handle_dir_from_ipc)
         event_system.subscribe("generate_file_views", self._generate_file_views)
         event_system.subscribe("clear_notebooks", self.clear_notebooks)
 
@@ -77,6 +68,7 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         event_system.subscribe("format_to_uris", self.format_to_uris)
         event_system.subscribe("do_action_from_menu_controls", self.do_action_from_menu_controls)
         event_system.subscribe("set_clipboard_data", self.set_clipboard_data)
+
 
     def _load_glade_file(self):
         self.builder.add_from_file( settings_manager.get_glade_file() )
@@ -109,12 +101,29 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         FileExistsWidget()
         SaveLoadWidget()
 
+    def _load_plugins_and_files(self):
+        args, unknownargs = settings_manager.get_starting_args()
+
+        if args.no_plugins == "false":
+            self.plugins_controller.pre_launch_plugins()
+
+        self._generate_file_views(self.fm_controller_data)
+
+        if args.no_plugins == "false":
+            self.plugins_controller.post_launch_plugins()
+
+        for arg in unknownargs + [args.new_tab,]:
+            if os.path.isdir(arg):
+                message = f"FILE|{arg}"
+                event_system.emit("post_file_to_ipc", message)
+
     def _shutting_down(self):
         if not settings_manager.is_trace_debug():
             self.fm_controller.save_state()
 
+
     def reload_plugins(self, widget=None, eve=None):
-        self.plugins.reload_plugins()
+        self.plugins_controller.reload_plugins()
 
 
     def do_action_from_menu_controls(self, _action=None, eve=None):
@@ -130,44 +139,48 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
         event_system.emit("hide_rename_file_menu")
 
         if action == "open":
-            event_system.emit("open_files")
+            event_system.emit_and_await("open_files")
         if action == "open_with":
-            event_system.emit("show_appchooser_menu")
+            event_system.emit_and_await("show_appchooser_menu")
+        if action == "open_2_new_tab":
+            event_system.emit_and_await("open_2_new_tab")
         if action == "execute":
-            event_system.emit("execute_files")
+            event_system.emit_and_await("execute_files")
         if action == "execute_in_terminal":
-            event_system.emit("execute_files", (True,))
+            event_system.emit_and_await("execute_files", (True,))
         if action == "rename":
-            event_system.emit("rename_files")
+            event_system.emit_and_await("rename_files")
         if action == "cut":
-            event_system.emit("cut_files")
+            event_system.emit_and_await("cut_files")
         if action == "copy":
-            event_system.emit("copy_files")
+            event_system.emit_and_await("copy_files")
         if action == "copy_path":
-            event_system.emit("copy_path")
+            event_system.emit_and_await("copy_path")
         if action == "copy_name":
-            event_system.emit("copy_name")
+            event_system.emit_and_await("copy_name")
         if action == "copy_path_name":
-            event_system.emit("copy_path_name")
+            event_system.emit_and_await("copy_path_name")
         if action == "paste":
-            event_system.emit("paste_files")
+            event_system.emit_and_await("paste_files")
         if action == "create":
-            event_system.emit("create_files")
+            event_system.emit_and_await("create_files")
         if action in ["save_session", "save_session_as", "load_session"]:
-            event_system.emit("save_load_session", (action))
+            event_system.emit_and_await("save_load_session", (action))
 
         if action == "about_page":
-            event_system.emit("show_about_page")
+            event_system.emit_and_await("show_about_page")
         if action == "io_popup":
-            event_system.emit("show_io_popup")
+            event_system.emit_and_await("show_io_popup")
         if action == "plugins_popup":
-            event_system.emit("show_plugins_popup")
+            event_system.emit_and_await("show_plugins_popup")
         if action == "messages_popup":
-            event_system.emit("show_messages_popup")
+            event_system.emit_and_await("show_messages_popup")
         if action == "ui_debug":
-            event_system.emit("load_interactive_debug")
+            event_system.emit_and_await("load_interactive_debug")
         if action == "tear_down":
-            event_system.emit("tear_down")
+            event_system.emit_and_await("tear_down")
+
+        action = None
 
 
     def go_home(self, widget=None, eve=None):
@@ -185,11 +198,14 @@ class Controller(UIMixin, SignalsMixins, Controller_Data):
     def tggl_top_main_menubar(self, widget=None, eve=None):
         top_main_menubar = self.builder.get_object("top_main_menubar")
         top_main_menubar.hide() if top_main_menubar.is_visible() else top_main_menubar.show()
+        top_main_menubar = None
 
     def open_terminal(self, widget=None, eve=None):
         wid, tid = self.fm_controller.get_active_wid_and_tid()
         tab      = self.get_fm_window(wid).get_tab_by_id(tid)
         tab.execute([f"{tab.terminal_app}"], start_dir=tab.get_current_directory())
+
+        wid, tid, tab = None, None, None
 
     def go_to_path(self, path: str):
         self.builder.get_object("path_entry").set_text(path)
