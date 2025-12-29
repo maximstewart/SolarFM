@@ -37,9 +37,6 @@ class HandlerMixin:
 
                 file = Gio.File.new_for_path(path)
                 if _target_path:
-                    if file.get_parent().get_path() == _target_path:
-                        raise HandlerMixinException("Parent dir of target and file locations are the same! Won't copy or move!")
-
                     if os.path.isdir(_target_path):
                         info    = file.query_info("standard::display-name", 0, cancellable=None)
                         _target = f"{_target_path}/{info.get_display_name()}"
