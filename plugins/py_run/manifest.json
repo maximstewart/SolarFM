@@ -1,13 +1,11 @@
 {
-    "manifest": {
-        "name": "PyRun",
-        "author": "ITDominator",
-        "version": "0.0.1",
-        "support": "",
-        "requests": {
-            "ui_target": "plugin_control_list",
-            "pass_fm_events": "true",
-            "bind_keys": ["PyRun||send_message:<Shift><Control>r"]
-        }
+    "name": "PyRun",
+    "author": "ITDominator",
+    "version": "0.0.1",
+    "support": "",
+    "requests": {
+        "ui_target": "plugin_control_list",
+        "pass_fm_events": true,
+        "bind_keys": ["PyRun||send_message:<Shift><Control>r"]
     }
 }

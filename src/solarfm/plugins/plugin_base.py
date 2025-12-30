@@ -15,9 +15,9 @@ class PluginBaseException(Exception):
 class PluginBase:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
         self.name               = "Example Plugin"  # NOTE: Need to remove after establishing private bidirectional 1-1 message bus
                                                     #       where self.name should not be needed for message comms
+
         self._builder           = None
         self._ui_objects        = None
         self._fm_state          = None
@@ -47,15 +47,22 @@ class PluginBase:
         """
         self._ui_objects = ui_objects
 
+    def set_event_system(self, event_system):
+        """
+            Requests Key:  'pass_events': "true"
+            Must define in plugin if "pass_events" is set to "true" string.
+        """
+        self._event_system = event_system
+
+    def subscribe_to_events(self):
+        self._event_system.subscribe("update_state_info_plugins", self._update_fm_state_info)
+
     def set_fm_event_system(self, fm_event_system):
         """
             Requests Key:  'pass_fm_events': "true"
             Must define in plugin if "pass_fm_events" is set to "true" string.
         """
         self._event_system = fm_event_system
-
-    def subscribe_to_events(self):
-        self._event_system.subscribe("update_state_info_plugins", self._update_fm_state_info)
 
     def _update_fm_state_info(self, state):
         self._fm_state = state

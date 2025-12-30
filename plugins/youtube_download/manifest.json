@@ -1,12 +1,10 @@
 {
-    "manifest": {
-        "name": "Youtube Download",
-        "author": "ITDominator",
-        "version": "0.0.1",
-        "support": "",
-        "requests": {
-            "ui_target": "plugin_control_list",
-            "pass_fm_events": "true"
-        }
+    "name": "Youtube Download",
+    "author": "ITDominator",
+    "version": "0.0.1",
+    "support": "",
+    "requests": {
+        "ui_target": "plugin_control_list",
+        "pass_fm_events": true
     }
 }

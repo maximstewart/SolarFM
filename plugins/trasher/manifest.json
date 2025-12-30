@@ -1,16 +1,14 @@
 {
-    "manifest": {
-        "name": "Trasher",
-        "author": "ITDominator",
-        "version": "0.0.1",
-        "support": "",
-        "requests": {
-            "ui_target": "context_menu",
-            "pass_fm_events": "true",
-            "bind_keys": [
-                            "Trasher||delete_files:Delete",
-                            "Trasher||trash_files:<Control>d"
-                        ]
-        }
+    "name": "Trasher",
+    "author": "ITDominator",
+    "version": "0.0.1",
+    "support": "",
+    "requests": {
+        "ui_target": "context_menu",
+        "pass_fm_events": true,
+        "bind_keys": [
+                        "Trasher||delete_files:Delete",
+                        "Trasher||trash_files:<Control>d"
+                    ]
     }
 }

@@ -28,7 +28,7 @@ function main() {
 
     # Note:  Download video
     python "${_SPATH}/yt_dlp/__main__.py" \
-            -f "bestvideo[height<=1080][ext=mp4][vcodec^=avc]+bestaudio[ext=m4a]/best[ext=mp4]/best" \
+            -f "bestvideo[height<=1080][ext=mp4][vcodec^=av]+bestaudio[ext=m4a]/best[ext=mp4]/best" \
             --cookies "${_SPATH}/../../cookies.txt" --write-sub --embed-sub --sub-langs en \
             -o "${_STARGET}/%(title)s.%(ext)s" "${LINK}"
 

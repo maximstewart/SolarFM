@@ -1,14 +1,12 @@
 {
-    "manifest": {
-        "name": "Favorites",
-        "author": "ITDominator",
-        "version": "0.0.1",
-        "support": "",
-        "requests": {
-            "ui_target": "main_menu_bttn_box_bar",
-            "pass_fm_events": "true",
-            "pass_ui_objects": ["path_entry"],
-            "bind_keys": ["Favorites||show_favorites_menu:<Control>f"]
-        }
+    "name": "Favorites",
+    "author": "ITDominator",
+    "version": "0.0.1",
+    "support": "",
+    "requests": {
+        "ui_target": "main_menu_bttn_box_bar",
+        "pass_fm_events": true,
+        "pass_ui_objects": ["path_entry"],
+        "bind_keys": ["Favorites||show_favorites_menu:<Control>f"]
     }
 }

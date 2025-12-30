@@ -1,13 +1,11 @@
 {
-    "manifest": {
-        "name": "Search",
-        "author": "ITDominator",
-        "version": "0.0.1",
-        "support": "",
-        "requests": {
-            "ui_target": "context_menu",
-            "pass_fm_events": "true",
-            "bind_keys": ["Search||show_search_page:<Control>s"]
-        }
+    "name": "Search",
+    "author": "ITDominator",
+    "version": "0.0.1",
+    "support": "",
+    "requests": {
+        "ui_target": "context_menu",
+        "pass_fm_events": true,
+        "bind_keys": ["Search||show_search_page:<Control>s"]
     }
 }

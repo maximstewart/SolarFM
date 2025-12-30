@@ -44,6 +44,8 @@ class GridMixin:
 
     def update_store(self, store, icons):
         for i, icon in enumerate(icons):
+            if not icon: continue
+
             try:
                 itr  = store.get_iter(i)
                 store.set_value(itr, 0, icon)

@@ -1,14 +1,12 @@
 {
-    "manifest": {
-        "name": "Example Plugin",
-        "author": "John Doe",
-        "version": "0.0.1",
-        "support": "",
-        "requests": {
-            "ui_target": "plugin_control_list",
-            "pass_fm_events": "true",
-            "bind_keys": ["Example Plugin||send_message:<Control>f"]
-        },
-        "pre_launch": "false"
-    }
+    "name": "Example Plugin",
+    "author": "John Doe",
+    "version": "0.0.1",
+    "support": "",
+    "requests": {
+        "ui_target": "plugin_control_list",
+        "pass_fm_events": true,
+        "bind_keys": ["Example Plugin||send_message:<Control>f"]
+    },
+    "pre_launch": false
 }

@@ -18,22 +18,22 @@ from ..widgets.file_preview_widget import FilePreviewWidget
 
 
 # NOTE: Threads WILL NOT die with parent's destruction.
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
-
-    return wrapper
-
+# def threaded(fn):
+#     def wrapper(*args, **kwargs):
+#         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=False).start()
+# 
+#     return wrapper
+# 
 # NOTE: Threads WILL die with parent's destruction.
-def daemon_threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
-
-    return wrapper
+# def daemon_threaded(fn):
+#     def wrapper(*args, **kwargs):
+#         threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
+# 
+#     return wrapper
 
 
 class FileSearchMixin:
-    def _run_find_file_query(self, widget=None, eve=None):
+    def _run_find_file_query(self, widget = None, eve = None):
         self._queue_search = True
 
         if not self._search_watcher_running:
@@ -52,22 +52,22 @@ class FileSearchMixin:
 
 # Need to implement this over the threaded stuffs....
 
-
-    def cancel_timer(self):
-		if self.timer:
-			self.timer.cancel()
-			GLib.idle_remove_by_data(None)
-
-	def delay_search_Glib(self):
-		GLib.idle_add(self._do_highlight)
-
-	def delay_search(self):
-		wait_time = self.search_time / len(self.search_text)
-		wait_time = max(wait_time, 0.05)
-
-		self.timer = threading.Timer(wait_time, self.delay_search_Glib)
-		self.timer.daemon = True
-		self.timer.start()
+# 
+#     def cancel_timer(self):
+# 		if self.timer:
+# 			self.timer.cancel()
+# 			GLib.idle_remove_by_data(None)
+# 
+# 	def delay_search_glib(self, query):
+# 		GLib.idle_add(self._exec_find_file_query, *(query,))
+# 
+# 	def delay_search(self):
+# 		wait_time = self.search_time / len(self.search_text)
+# 		wait_time = max(wait_time, 0.05)
+# 
+# 		self.timer = threading.Timer(wait_time, self.delay_search_glib, *(query,))
+# 		self.timer.daemon = True
+# 		self.timer.start()
 
 
 
