@@ -6,6 +6,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk
+from gi.repository import GLib
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 
@@ -66,6 +67,11 @@ class IconGridWidget(Gtk.IconView):
             self.connect("drag-motion",          grid_on_drag_motion)
         ]
 
+        def _destroy(grid):
+            self.clear_signals_and_data()
+
+        self._handler_ids.append(self.connect("destroy", _destroy))
+
     def _load_widgets(self):
         self.clear_and_set_new_store()
 
@@ -123,6 +129,9 @@ class IconGridWidget(Gtk.IconView):
 
         store.clear()
         store.run_dispose()
+        # GLib.idle_add(store.clear)
+        # GLib.idle_add(store.run_dispose)
+        # store.run_dispose()
         # store_ptr = int(hash(store))  # WARNING: not stable across runs
         # gtkmemreaper.free_list_store(store)
         del store

@@ -29,13 +29,17 @@ class IconException(Exception):
 
 
 class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
+    cache = {}
+
     def create_icon(self, dir, file):
         full_path = f"{dir}/{file}"
         return self.get_icon_image(dir, file, full_path)
 
     def get_icon_image(self, dir, file, full_path):
         try:
-            thumbnl = None
+            thumbnl = self.cache.get(full_path)
+            if thumbnl:
+                return thumbnl
 
             if file.lower().endswith(self.fmeshs):               # 3D Mesh icon
                 ...
@@ -55,7 +59,7 @@ class Icon(DesktopIconMixin, VideoIconMixin, MeshsIconMixin):
                 if not thumbnl:
                     raise IconException("No known icons found.")
 
-
+            self.cache[full_path] = thumbnl
             return thumbnl
         except IconException:
             ...

@@ -50,8 +50,10 @@ class GridMixin:
                 itr  = store.get_iter(i)
                 store.set_value(itr, 0, icon)
                 icon.run_dispose()
+                del icon
             except:
                 icon.run_dispose()
+                del icon
                 continue
 
         store.run_dispose()

@@ -55,3 +55,4 @@ class TabHeaderWidget(Gtk.Box):
         for child in self.get_children():
             child.unparent()
             child.run_dispose()
+            child.destroy()

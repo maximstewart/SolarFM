@@ -85,7 +85,7 @@ class TabMixin(GridMixin):
         logger.debug(f"Reference count for scroll is: {scroll.__grefcount__}")
 
         tab_box.clear_signals_and_data()
-        icon_grid.clear_signals_and_data()
+        # icon_grid.clear_signals_and_data()
 
         self.builder.dereference_object(f"{wid}|{tid}|icon_grid")
         self.builder.dereference_object(f"{wid}|{tid}")
@@ -94,11 +94,19 @@ class TabMixin(GridMixin):
 
         tab_box.tab = None
         tab_box.unparent()
+        icon_grid.unparent()
+        scroll.unparent()
+
         tab_box.run_dispose()
         icon_grid.run_dispose()
         scroll.run_dispose()
-        icon_grid.unparent()
-        scroll.unparent()
+
+        tab_box.destroy()
+        tab_box.destroy()
+        icon_grid.destroy()
+        scroll.destroy()
+        icon_grid.destroy()
+        scroll.destroy()
 
         logger.debug(f"Reference count for tab_box is: {tab_box.__grefcount__}")
         logger.debug(f"Reference count for icon_grid is: {icon_grid.__grefcount__}")
