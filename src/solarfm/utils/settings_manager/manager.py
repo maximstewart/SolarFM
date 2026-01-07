@@ -36,8 +36,8 @@ class SettingsManager(StartCheckMixin, Singleton):
         self._KEY_BINDINGS_FILE = f"{self._HOME_CONFIG_PATH}/key-bindings.json"
         self._PID_FILE          = f"{self._HOME_CONFIG_PATH}/{app_name.lower()}.pid"
         self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
-        self._UI_WIDEGTS_PATH   = f"{self._HOME_CONFIG_PATH}/ui_widgets"
-        self._CONTEXT_MENU      = f"{self._HOME_CONFIG_PATH}/contexct_menu.json"
+        self._UI_WIDGETS_PATH   = f"{self._HOME_CONFIG_PATH}/ui_widgets"
+        self._CONTEXT_MENU      = f"{self._HOME_CONFIG_PATH}/context_menu.json"
         self._TRASH_FILES_PATH  = f"{GLib.get_user_data_dir()}/Trash/files"
         self._TRASH_INFO_PATH   = f"{GLib.get_user_data_dir()}/Trash/info"
         self._ICON_THEME        = Gtk.IconTheme.get_default()
@@ -67,10 +67,10 @@ class SettingsManager(StartCheckMixin, Singleton):
             self._WINDOW_ICON   = f"{self._USR_PATH}/icons/{app_name.lower()}.png"
             if not path.exists(self._WINDOW_ICON):
                 raise MissingConfigError("Unable to find the application icon.")
-        if not path.exists(self._UI_WIDEGTS_PATH):
-            self._UI_WIDEGTS_PATH  = f"{self._USR_PATH}/ui_widgets"
+        if not path.exists(self._UI_WIDGETS_PATH):
+            self._UI_WIDGETS_PATH  = f"{self._USR_PATH}/ui_widgets"
         if not path.exists(self._CONTEXT_MENU):
-            self._CONTEXT_MENU  = f"{self._USR_PATH}/contexct_menu.json"
+            self._CONTEXT_MENU  = f"{self._USR_PATH}/context_menu.json"
 
 
         try:
@@ -139,7 +139,7 @@ class SettingsManager(StartCheckMixin, Singleton):
 
     def get_context_menu_data(self) -> str: return self._context_menu_data
     def get_home_path(self)         -> str: return self._USER_HOME
-    def get_ui_widgets_path(self)   -> str: return self._UI_WIDEGTS_PATH
+    def get_ui_widgets_path(self)   -> str: return self._UI_WIDGETS_PATH
     def get_trash_files_path(self)  -> str: return self._TRASH_FILES_PATH
     def get_trash_info_path(self)   -> str: return self._TRASH_INFO_PATH
     def get_plugins_path(self)      -> str: return self._PLUGINS_PATH
