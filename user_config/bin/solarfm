@@ -6,6 +6,8 @@
 # set -o errexit      ## To exit on error
 # set -o errunset     ## To exit if a variable is referenced but not set
 
+export PYTHONDONTWRITEBYTECODE=1
+
 
 function main() {
     call_path=`pwd`

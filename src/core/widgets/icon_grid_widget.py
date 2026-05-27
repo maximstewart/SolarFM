@@ -59,7 +59,7 @@ class IconGridWidget(Gtk.IconView):
     ):
 
         self._handler_ids = [
-            self.connect("button_release_event", grid_icon_single_click),
+            self.connect("button-release-event", grid_icon_single_click),
             self.connect("item-activated",       grid_icon_double_click),
             self.connect("selection-changed",    grid_set_selected_items),
             self.connect("drag-data-get",        grid_on_drag_set),

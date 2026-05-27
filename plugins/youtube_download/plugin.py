@@ -47,4 +47,4 @@ class Plugin(PluginBase):
 
     @threaded
     def _download(self, dir):
-        subprocess.Popen([f'{self.path}/download.sh', dir], start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
+        subprocess.Popen([f'{self.path}/download.sh', dir], start_new_session=True, stdout=subprocess.DEVNULL, close_fds=True)
