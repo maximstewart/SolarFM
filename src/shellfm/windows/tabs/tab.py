@@ -74,10 +74,17 @@ class Tab(Settings, FileHandler, Launcher, Path):
             self.set_to_home()
             return ""
 
+        dot_hidden_file = join(path, ".hidden")
+        if os.path.exists(dot_hidden_file):
+            with open(dot_hidden_file, "r") as f:
+                for line in f.readlines():
+                    if not line: continue
+                    self._hidden.append(line)
+
         for f in listdir(path):
             file = join(path, f)
             if self._hide_hidden:
-                if f.startswith('.'):
+                if f.startswith('.') or f in self._hidden:
                     self._hidden.append(f)
                     continue
 
